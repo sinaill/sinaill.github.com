@@ -342,13 +342,57 @@
 
       
         <h3 id="特性"><a href="#特性" class="headerlink" title="特性"></a>特性</h3><p>java接口中的default方法是在java 8之后引入的，即在不破坏java现有实现架构的情况下能往接口里增加新方法，这个特征又叫做虚拟扩展方法（Virtual extension methods），通常也称之为 defender 方法，它目前可以添加到接口中，为声明的方法提供默认的实现，子类可以直接调用或者复写该方法。作用为优化接口的同时，避免跟现有实现架构的兼容问题。</p>
-<h3 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">List&lt;Integer&gt; list &#x3D; new ArrayList&lt;Integer&gt;();</span><br><span class="line">list.add(1);</span><br><span class="line">list.add(2);</span><br><span class="line">list.forEach(System.out::println);</span><br></pre></td></tr></table></figure>
+<h3 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h3><pre><code class="highlight plain">List&lt;Integer&gt; list &#x3D; new ArrayList&lt;Integer&gt;();
+list.add(1);
+list.add(2);
+list.forEach(System.out::println);</code></pre>
 
 <p>java8之后list多了一个forEach方法来方便我们遍历集合，向上查找父类和实现的接口发现Iterable接口中多了一个default方法</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * Performs the given action for each element of the &#123;@code Iterable&#125;</span><br><span class="line"> * until all elements have been processed or the action throws an</span><br><span class="line"> * exception.  Unless otherwise specified by the implementing class,</span><br><span class="line"> * actions are performed in the order of iteration (if an iteration order</span><br><span class="line"> * is specified).  Exceptions thrown by the action are relayed to the</span><br><span class="line"> * caller.</span><br><span class="line"> *</span><br><span class="line"> * @implSpec</span><br><span class="line"> * &lt;p&gt;The default implementation behaves as if:</span><br><span class="line"> * &lt;pre&gt;&#123;@code</span><br><span class="line"> *     for (T t : this)</span><br><span class="line"> *         action.accept(t);</span><br><span class="line"> * &#125;&lt;&#x2F;pre&gt;</span><br><span class="line"> *</span><br><span class="line"> * @param action The action to be performed for each element</span><br><span class="line"> * @throws NullPointerException if the specified action is null</span><br><span class="line"> * @since 1.8</span><br><span class="line"> *&#x2F;</span><br><span class="line">default void forEach(Consumer&lt;? super T&gt; action) &#123;</span><br><span class="line">    Objects.requireNonNull(action);</span><br><span class="line">    for (T t : this) &#123;</span><br><span class="line">        action.accept(t);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">&#x2F;**
+ * Performs the given action for each element of the &#123;@code Iterable&#125;
+ * until all elements have been processed or the action throws an
+ * exception.  Unless otherwise specified by the implementing class,
+ * actions are performed in the order of iteration (if an iteration order
+ * is specified).  Exceptions thrown by the action are relayed to the
+ * caller.
+ *
+ * @implSpec
+ * &lt;p&gt;The default implementation behaves as if:
+ * &lt;pre&gt;&#123;@code
+ *     for (T t : this)
+ *         action.accept(t);
+ * &#125;&lt;&#x2F;pre&gt;
+ *
+ * @param action The action to be performed for each element
+ * @throws NullPointerException if the specified action is null
+ * @since 1.8
+ *&#x2F;
+default void forEach(Consumer&lt;? super T&gt; action) &#123;
+    Objects.requireNonNull(action);
+    for (T t : this) &#123;
+        action.accept(t);
+    &#125;
+&#125;</code></pre>
 
 <p>与此相同的还有Collection接口新增的stream方法，用来帮助我们更方便地处理集合元素</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * Returns a sequential &#123;@code Stream&#125; with this collection as its source.</span><br><span class="line"> *</span><br><span class="line"> * &lt;p&gt;This method should be overridden when the &#123;@link #spliterator()&#125;</span><br><span class="line"> * method cannot return a spliterator that is &#123;@code IMMUTABLE&#125;,</span><br><span class="line"> * &#123;@code CONCURRENT&#125;, or &lt;em&gt;late-binding&lt;&#x2F;em&gt;. (See &#123;@link #spliterator()&#125;</span><br><span class="line"> * for details.)</span><br><span class="line"> *</span><br><span class="line"> * @implSpec</span><br><span class="line"> * The default implementation creates a sequential &#123;@code Stream&#125; from the</span><br><span class="line"> * collection&#39;s &#123;@code Spliterator&#125;.</span><br><span class="line"> *</span><br><span class="line"> * @return a sequential &#123;@code Stream&#125; over the elements in this collection</span><br><span class="line"> * @since 1.8</span><br><span class="line"> *&#x2F;</span><br><span class="line">default Stream&lt;E&gt; stream() &#123;</span><br><span class="line">    return StreamSupport.stream(spliterator(), false);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">&#x2F;**
+ * Returns a sequential &#123;@code Stream&#125; with this collection as its source.
+ *
+ * &lt;p&gt;This method should be overridden when the &#123;@link #spliterator()&#125;
+ * method cannot return a spliterator that is &#123;@code IMMUTABLE&#125;,
+ * &#123;@code CONCURRENT&#125;, or &lt;em&gt;late-binding&lt;&#x2F;em&gt;. (See &#123;@link #spliterator()&#125;
+ * for details.)
+ *
+ * @implSpec
+ * The default implementation creates a sequential &#123;@code Stream&#125; from the
+ * collection&#39;s &#123;@code Spliterator&#125;.
+ *
+ * @return a sequential &#123;@code Stream&#125; over the elements in this collection
+ * @since 1.8
+ *&#x2F;
+default Stream&lt;E&gt; stream() &#123;
+    return StreamSupport.stream(spliterator(), false);
+&#125;</code></pre>
       
     </div>
     
@@ -727,7 +771,7 @@
 
   
 
-  <link rel="stylesheet" href="/lib/prettify/skins/desert.css" type="text/css">
+  <link rel="stylesheet" href="/lib/prettify/skins/sunburst.css" type="text/css">
 <script src="/lib/prettify/prettify.js" type="text/javascript"></script>
 <script type="text/javascript">
   $(document).ready(function() {

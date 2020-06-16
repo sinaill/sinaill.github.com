@@ -349,46 +349,179 @@
 <p>容器会自动创建它的实例，并且调用接口方法<code>onStartup</code></p>
 <p><code>@handlesTypes</code>注解在实现了<code>servletContainerInitializer</code>的类上，决定可以这个类可以处理的类型，作为第一个参数<code>set</code>类型，被传到<code>onStartup</code>方法中</p>
 <h3 id="SpringServletContainerInitializer"><a href="#SpringServletContainerInitializer" class="headerlink" title="SpringServletContainerInitializer"></a>SpringServletContainerInitializer</h3><p>在<code>spring-web-4.17.RELEASE.jar</code>的<code>META-INF</code>目录的<code>services</code>下找到文件<code>javax.servlet.ServlerContainerInitializer</code>，其中内容为</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">org.springframework.web.SpringServletContainerInitializer</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">org.springframework.web.SpringServletContainerInitializer</code></pre>
 
 <p>查看这个类</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@HandlesTypes(WebApplicationInitializer.class)</span><br><span class="line">public class SpringServletContainerInitializer implements ServletContainerInitializer &#123;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public void onStartup(Set&lt;Class&lt;?&gt;&gt; webAppInitializerClasses, ServletContext servletContext)</span><br><span class="line">			throws ServletException &#123;</span><br><span class="line"></span><br><span class="line">		List&lt;WebApplicationInitializer&gt; initializers &#x3D; new LinkedList&lt;WebApplicationInitializer&gt;();</span><br><span class="line"></span><br><span class="line">		if (webAppInitializerClasses !&#x3D; null) &#123;</span><br><span class="line">			for (Class&lt;?&gt; waiClass : webAppInitializerClasses) &#123;</span><br><span class="line">				&#x2F;&#x2F; Be defensive: Some servlet containers provide us with invalid classes,</span><br><span class="line">				&#x2F;&#x2F; no matter what @HandlesTypes says...</span><br><span class="line">				if (!waiClass.isInterface() &amp;&amp; !Modifier.isAbstract(waiClass.getModifiers()) &amp;&amp;</span><br><span class="line">						WebApplicationInitializer.class.isAssignableFrom(waiClass)) &#123;</span><br><span class="line">					try &#123;</span><br><span class="line">						initializers.add((WebApplicationInitializer) waiClass.newInstance());</span><br><span class="line">					&#125;</span><br><span class="line">					catch (Throwable ex) &#123;</span><br><span class="line">						throw new ServletException(&quot;Failed to instantiate WebApplicationInitializer class&quot;, ex);</span><br><span class="line">					&#125;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		if (initializers.isEmpty()) &#123;</span><br><span class="line">			servletContext.log(&quot;No Spring WebApplicationInitializer types detected on classpath&quot;);</span><br><span class="line">			return;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		AnnotationAwareOrderComparator.sort(initializers);</span><br><span class="line">		servletContext.log(&quot;Spring WebApplicationInitializers detected on classpath: &quot; + initializers);</span><br><span class="line"></span><br><span class="line">		for (WebApplicationInitializer initializer : initializers) &#123;</span><br><span class="line">			initializer.onStartup(servletContext);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">@HandlesTypes(WebApplicationInitializer.class)
+public class SpringServletContainerInitializer implements ServletContainerInitializer &#123;
+
+	@Override
+	public void onStartup(Set&lt;Class&lt;?&gt;&gt; webAppInitializerClasses, ServletContext servletContext)
+			throws ServletException &#123;
+
+		List&lt;WebApplicationInitializer&gt; initializers &#x3D; new LinkedList&lt;WebApplicationInitializer&gt;();
+
+		if (webAppInitializerClasses !&#x3D; null) &#123;
+			for (Class&lt;?&gt; waiClass : webAppInitializerClasses) &#123;
+				&#x2F;&#x2F; Be defensive: Some servlet containers provide us with invalid classes,
+				&#x2F;&#x2F; no matter what @HandlesTypes says...
+				if (!waiClass.isInterface() &amp;&amp; !Modifier.isAbstract(waiClass.getModifiers()) &amp;&amp;
+						WebApplicationInitializer.class.isAssignableFrom(waiClass)) &#123;
+					try &#123;
+						initializers.add((WebApplicationInitializer) waiClass.newInstance());
+					&#125;
+					catch (Throwable ex) &#123;
+						throw new ServletException(&quot;Failed to instantiate WebApplicationInitializer class&quot;, ex);
+					&#125;
+				&#125;
+			&#125;
+		&#125;
+
+		if (initializers.isEmpty()) &#123;
+			servletContext.log(&quot;No Spring WebApplicationInitializer types detected on classpath&quot;);
+			return;
+		&#125;
+
+		AnnotationAwareOrderComparator.sort(initializers);
+		servletContext.log(&quot;Spring WebApplicationInitializers detected on classpath: &quot; + initializers);
+
+		for (WebApplicationInitializer initializer : initializers) &#123;
+			initializer.onStartup(servletContext);
+		&#125;
+	&#125;
+
+&#125;</code></pre>
 
 <p>我们看到类上有<code>handlesTypes</code>注解，值为<code>WebApplicationInitializer.class</code></p>
 <p>断点调试查看<code>onStartup</code>方法第一个参数</p>
 <p><img src="https://raw.githubusercontent.com/sinaill/pic/master/wenAppInitializerClasses.jpg" alt="webApplicationInitializerClasses"></p>
 <p>确实把我们定义的继承了<code>WebApplicationInitializer</code>的子类<code>AbstractAnnotationConfigDispatcherServletInitializer</code>的类传入了</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class WebInitializer extends AbstractAnnotationConfigDispatcherServletInitializer &#123;</span><br><span class="line">    protected Class&lt;?&gt;[] getRootConfigClasses() &#123;</span><br><span class="line">        return new Class&lt;?&gt;[]&#123;RootConfig.class&#125;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    protected Class&lt;?&gt;[] getServletConfigClasses() &#123;</span><br><span class="line">        return new Class&lt;?&gt;[]&#123;MvcConfig.class&#125;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    protected String[] getServletMappings() &#123;</span><br><span class="line">        return new String[]&#123;&quot;&#x2F;&quot;&#125;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public class WebInitializer extends AbstractAnnotationConfigDispatcherServletInitializer &#123;
+    protected Class&lt;?&gt;[] getRootConfigClasses() &#123;
+        return new Class&lt;?&gt;[]&#123;RootConfig.class&#125;;
+    &#125;
+
+    protected Class&lt;?&gt;[] getServletConfigClasses() &#123;
+        return new Class&lt;?&gt;[]&#123;MvcConfig.class&#125;;
+    &#125;
+
+    protected String[] getServletMappings() &#123;
+        return new String[]&#123;&quot;&#x2F;&quot;&#125;;
+    &#125;
+
+&#125;</code></pre>
 
 <h3 id="开始配置"><a href="#开始配置" class="headerlink" title="开始配置"></a>开始配置</h3><p>最后容器会调用<code>WebApplicationInitializer</code>接口的<code>onStartup</code>方法，也就是调用我们上面的那个类来开始配置</p>
 <p>由于我们是继承的<code>AbstractAnnotationConfigDispatcherServletInitializer</code>，所以该方法调用的是<code>AbstractDispatcherServletInitializer</code>的<code>onStartup</code>方法</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Override</span><br><span class="line">public void onStartup(ServletContext servletContext) throws ServletException &#123;</span><br><span class="line">	super.onStartup(servletContext);</span><br><span class="line">	registerDispatcherServlet(servletContext);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">@Override
+public void onStartup(ServletContext servletContext) throws ServletException &#123;
+	super.onStartup(servletContext);
+	registerDispatcherServlet(servletContext);
+&#125;</code></pre>
 
 <h4 id="super-onStartup-servletContext"><a href="#super-onStartup-servletContext" class="headerlink" title="super.onStartup(servletContext)"></a>super.onStartup(servletContext)</h4><p>调用了父类<code>AbstractContextLoaderInitializer</code>的<code>onStartup</code>方法</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Override</span><br><span class="line">public void onStartup(ServletContext servletContext) throws ServletException &#123;</span><br><span class="line">	registerContextLoaderListener(servletContext);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">protected void registerContextLoaderListener(ServletContext servletContext) &#123;</span><br><span class="line">	WebApplicationContext rootAppContext &#x3D; createRootApplicationContext();</span><br><span class="line">	if (rootAppContext !&#x3D; null) &#123;</span><br><span class="line">		servletContext.addListener(new ContextLoaderListener(rootAppContext));</span><br><span class="line">	&#125;</span><br><span class="line">	else &#123;</span><br><span class="line">		logger.debug(&quot;No ContextLoaderListener registered, as &quot; +</span><br><span class="line">				&quot;createRootApplicationContext() did not return an application context&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">@Override
+public void onStartup(ServletContext servletContext) throws ServletException &#123;
+	registerContextLoaderListener(servletContext);
+&#125;
+
+
+
+protected void registerContextLoaderListener(ServletContext servletContext) &#123;
+	WebApplicationContext rootAppContext &#x3D; createRootApplicationContext();
+	if (rootAppContext !&#x3D; null) &#123;
+		servletContext.addListener(new ContextLoaderListener(rootAppContext));
+	&#125;
+	else &#123;
+		logger.debug(&quot;No ContextLoaderListener registered, as &quot; +
+				&quot;createRootApplicationContext() did not return an application context&quot;);
+	&#125;
+&#125;</code></pre>
 
 <p>这里调用了<code>createRootApplicationContext</code>方法创建<code>Spring</code>容器，然后创建了<code>ContextLoaderListener</code>监听器，注册到<code>servletContext</code>中，所以使用注解式配置ssm的时候，在<code>contextLoaderListener</code>被触发的时候，容器已经被创建好了，而使用配置文件的方式就是在触发<code>contextLoaderListener</code>的时候创建<code>Spring</code>容器和<code>SpringMVC</code>容器</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Override</span><br><span class="line">protected WebApplicationContext createRootApplicationContext() &#123;</span><br><span class="line">	Class&lt;?&gt;[] configClasses &#x3D; getRootConfigClasses();</span><br><span class="line">	if (!ObjectUtils.isEmpty(configClasses)) &#123;</span><br><span class="line">		&#x2F;&#x2F;创建Spring容器</span><br><span class="line">		AnnotationConfigWebApplicationContext rootAppContext &#x3D; new AnnotationConfigWebApplicationContext();</span><br><span class="line">		rootAppContext.register(configClasses);</span><br><span class="line">		return rootAppContext;</span><br><span class="line">	&#125;</span><br><span class="line">	else &#123;</span><br><span class="line">		return null;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">@Override
+protected WebApplicationContext createRootApplicationContext() &#123;
+	Class&lt;?&gt;[] configClasses &#x3D; getRootConfigClasses();
+	if (!ObjectUtils.isEmpty(configClasses)) &#123;
+		&#x2F;&#x2F;创建Spring容器
+		AnnotationConfigWebApplicationContext rootAppContext &#x3D; new AnnotationConfigWebApplicationContext();
+		rootAppContext.register(configClasses);
+		return rootAppContext;
+	&#125;
+	else &#123;
+		return null;
+	&#125;
+&#125;</code></pre>
 
 <p>可以看到创建了<code>Spring</code>容器并且调用了我们实现的<code>getRootConfigClasses</code>方法，把获得的<code>Class</code>注册到<code>Spring容器中</code>，然后只要调用<code>Spring</code>容器的<code>refresh</code>方法就能在容器中实例化它们</p>
-<h4 id="registerDispatcherServlet-servletContext"><a href="#registerDispatcherServlet-servletContext" class="headerlink" title="registerDispatcherServlet(servletContext)"></a>registerDispatcherServlet(servletContext)</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">protected void registerDispatcherServlet(ServletContext servletContext) &#123;</span><br><span class="line">	String servletName &#x3D; getServletName();</span><br><span class="line">	Assert.hasLength(servletName, &quot;getServletName() must not return empty or null&quot;);</span><br><span class="line"></span><br><span class="line">	WebApplicationContext servletAppContext &#x3D; createServletApplicationContext();</span><br><span class="line">	Assert.notNull(servletAppContext,</span><br><span class="line">			&quot;createServletApplicationContext() did not return an application &quot; +</span><br><span class="line">			&quot;context for servlet [&quot; + servletName + &quot;]&quot;);</span><br><span class="line"></span><br><span class="line">	DispatcherServlet dispatcherServlet &#x3D; new DispatcherServlet(servletAppContext);</span><br><span class="line">	ServletRegistration.Dynamic registration &#x3D; servletContext.addServlet(servletName, dispatcherServlet);</span><br><span class="line">	Assert.notNull(registration,</span><br><span class="line">			&quot;Failed to register servlet with name &#39;&quot; + servletName + &quot;&#39;.&quot; +</span><br><span class="line">			&quot;Check if there is another servlet registered under the same name.&quot;);</span><br><span class="line"></span><br><span class="line">	registration.setLoadOnStartup(1);</span><br><span class="line">	registration.addMapping(getServletMappings());</span><br><span class="line">	registration.setAsyncSupported(isAsyncSupported());</span><br><span class="line"></span><br><span class="line">	Filter[] filters &#x3D; getServletFilters();</span><br><span class="line">	if (!ObjectUtils.isEmpty(filters)) &#123;</span><br><span class="line">		for (Filter filter : filters) &#123;</span><br><span class="line">			registerServletFilter(servletContext, filter);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	customizeRegistration(registration);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="registerDispatcherServlet-servletContext"><a href="#registerDispatcherServlet-servletContext" class="headerlink" title="registerDispatcherServlet(servletContext)"></a>registerDispatcherServlet(servletContext)</h4><pre><code class="highlight plain">protected void registerDispatcherServlet(ServletContext servletContext) &#123;
+	String servletName &#x3D; getServletName();
+	Assert.hasLength(servletName, &quot;getServletName() must not return empty or null&quot;);
+
+	WebApplicationContext servletAppContext &#x3D; createServletApplicationContext();
+	Assert.notNull(servletAppContext,
+			&quot;createServletApplicationContext() did not return an application &quot; +
+			&quot;context for servlet [&quot; + servletName + &quot;]&quot;);
+
+	DispatcherServlet dispatcherServlet &#x3D; new DispatcherServlet(servletAppContext);
+	ServletRegistration.Dynamic registration &#x3D; servletContext.addServlet(servletName, dispatcherServlet);
+	Assert.notNull(registration,
+			&quot;Failed to register servlet with name &#39;&quot; + servletName + &quot;&#39;.&quot; +
+			&quot;Check if there is another servlet registered under the same name.&quot;);
+
+	registration.setLoadOnStartup(1);
+	registration.addMapping(getServletMappings());
+	registration.setAsyncSupported(isAsyncSupported());
+
+	Filter[] filters &#x3D; getServletFilters();
+	if (!ObjectUtils.isEmpty(filters)) &#123;
+		for (Filter filter : filters) &#123;
+			registerServletFilter(servletContext, filter);
+		&#125;
+	&#125;
+
+	customizeRegistration(registration);
+&#125;</code></pre>
 
 <p><code>createServletApplicationContext</code>创建<code>SpringMVC</code>容器</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Override</span><br><span class="line">protected WebApplicationContext createServletApplicationContext() &#123;</span><br><span class="line">	AnnotationConfigWebApplicationContext servletAppContext &#x3D; new AnnotationConfigWebApplicationContext();</span><br><span class="line">	Class&lt;?&gt;[] configClasses &#x3D; getServletConfigClasses();</span><br><span class="line">	if (!ObjectUtils.isEmpty(configClasses)) &#123;</span><br><span class="line">		servletAppContext.register(configClasses);</span><br><span class="line">	&#125;</span><br><span class="line">	return servletAppContext;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">@Override
+protected WebApplicationContext createServletApplicationContext() &#123;
+	AnnotationConfigWebApplicationContext servletAppContext &#x3D; new AnnotationConfigWebApplicationContext();
+	Class&lt;?&gt;[] configClasses &#x3D; getServletConfigClasses();
+	if (!ObjectUtils.isEmpty(configClasses)) &#123;
+		servletAppContext.register(configClasses);
+	&#125;
+	return servletAppContext;
+&#125;</code></pre>
 
 <p>同样创建了一个<code>AnnotationConfigWebApplicationContext</code>对象，然后调用我们实现的<code>getServletConfigClasses</code>将获取的<code>Class</code>注册到<code>SpringMVC</code>容器中</p>
 <p>接着开始注册<code>DispatcherServlet</code>，创建<code>DispatcherServlet</code>对象绑定到<code>servetContext</code>中，并将<code>SpringMVC</code>容器传入<code>DispatcherServlet</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">registration.setLoadOnStartup(1);</span><br><span class="line">registration.addMapping(getServletMappings());</span><br><span class="line">registration.setAsyncSupported(isAsyncSupported());</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">registration.setLoadOnStartup(1);
+registration.addMapping(getServletMappings());
+registration.setAsyncSupported(isAsyncSupported());</code></pre>
 
 <p>配置启动优先级，配置<code>serlvet</code>映射方式</p>
 <p>还有后面调用<code>getServletFilters</code>方法获取过滤器</p>
 <h3 id="疑问"><a href="#疑问" class="headerlink" title="疑问"></a>疑问</h3><p>在使用配置文件方式的时候，创建<code>SpringMVC</code>容器</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">wac &#x3D; createWebApplicationContext(rootContext);</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">wac &#x3D; createWebApplicationContext(rootContext);</code></pre>
 
 <p>将<code>Spring</code>作为父容器传入，所以<code>SpringMVC</code>容器中能取出在<code>Spring</code>容器中的对象</p>
 <p>而这里使用注解方式了，没发现两个容器的关联</p>
 <p>原来在两个容器关联的代码在<code>ContextLoaderListener</code>中的<code>initWebApplicationContext</code>方法中</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">if (this.context instanceof ConfigurableWebApplicationContext) &#123;</span><br><span class="line">	ConfigurableWebApplicationContext cwac &#x3D; (ConfigurableWebApplicationContext) this.context;</span><br><span class="line">	if (!cwac.isActive()) &#123;</span><br><span class="line">		&#x2F;&#x2F; The context has not yet been refreshed -&gt; provide services such as</span><br><span class="line">		&#x2F;&#x2F; setting the parent context, setting the application context id, etc</span><br><span class="line">		if (cwac.getParent() &#x3D;&#x3D; null) &#123;</span><br><span class="line">			&#x2F;&#x2F; The context instance was injected without an explicit parent -&gt;</span><br><span class="line">			&#x2F;&#x2F; determine parent for root web application context, if any.</span><br><span class="line">			ApplicationContext parent &#x3D; loadParentContext(servletContext);</span><br><span class="line">			cwac.setParent(parent);</span><br><span class="line">		&#125;</span><br><span class="line">		configureAndRefreshWebApplicationContext(cwac, servletContext);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">if (this.context instanceof ConfigurableWebApplicationContext) &#123;
+	ConfigurableWebApplicationContext cwac &#x3D; (ConfigurableWebApplicationContext) this.context;
+	if (!cwac.isActive()) &#123;
+		&#x2F;&#x2F; The context has not yet been refreshed -&gt; provide services such as
+		&#x2F;&#x2F; setting the parent context, setting the application context id, etc
+		if (cwac.getParent() &#x3D;&#x3D; null) &#123;
+			&#x2F;&#x2F; The context instance was injected without an explicit parent -&gt;
+			&#x2F;&#x2F; determine parent for root web application context, if any.
+			ApplicationContext parent &#x3D; loadParentContext(servletContext);
+			cwac.setParent(parent);
+		&#125;
+		configureAndRefreshWebApplicationContext(cwac, servletContext);
+	&#125;
+&#125;</code></pre>
 
 <p>调用了<code>setParent</code>方法将<code>Spring</code>容器作为<code>SpringMVC</code>的父容器</p>
 
@@ -433,8 +566,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2020/06/17/Spring%E4%B8%ADBean%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/" rel="prev" title="Spring中Bean的生命周期">
-                Spring中Bean的生命周期 <i class="fa fa-chevron-right"></i>
+              <a href="/2020/06/17/Spring%E4%B8%AD%E4%BE%9D%E8%B5%96%E7%9A%84%E6%B3%A8%E5%85%A5%E6%96%B9%E5%BC%8F/" rel="prev" title="Spring中依赖的注入方式">
+                Spring中依赖的注入方式 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -772,7 +905,7 @@
 
   
 
-  <link rel="stylesheet" href="/lib/prettify/skins/desert.css" type="text/css">
+  <link rel="stylesheet" href="/lib/prettify/skins/sunburst.css" type="text/css">
 <script src="/lib/prettify/prettify.js" type="text/javascript"></script>
 <script type="text/javascript">
   $(document).ready(function() {

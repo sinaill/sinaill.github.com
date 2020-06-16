@@ -503,19 +503,140 @@
 <h3 id="java流类结构图"><a href="#java流类结构图" class="headerlink" title="java流类结构图"></a>java流类结构图</h3><p>通过一张关系图来了解一下Java中的IO流构成：</p>
 <p><img src="http://wx4.sinaimg.cn/large/96b7c0f4gy1fzorzopl97j20j30l70tu.jpg" alt=""></p>
 <h3 id="IO流的具体应用"><a href="#IO流的具体应用" class="headerlink" title="IO流的具体应用"></a>IO流的具体应用</h3><h4 id="FileinputStream-FileoutputStream"><a href="#FileinputStream-FileoutputStream" class="headerlink" title="FileinputStream/FileoutputStream"></a>FileinputStream/FileoutputStream</h4><p>从类名就看出是用来操作文件的字节流，将c盘中一张jpg格式的图片复制并更改文件名</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Copy &#123;</span><br><span class="line">	public static void main(String[] args)&#123;</span><br><span class="line">		InputStream in &#x3D; null;</span><br><span class="line">		OutputStream out &#x3D; null;</span><br><span class="line">		try &#123;</span><br><span class="line">			in &#x3D; new FileInputStream(&quot;c:&#x2F;1.jpg&quot;);</span><br><span class="line">			out &#x3D; new FileOutputStream(new File(&quot;c:&#x2F;2.jpg&quot;));</span><br><span class="line">			byte buffer[] &#x3D; new byte[20];</span><br><span class="line">			while(in.read(buffer) !&#x3D; -1)&#123;</span><br><span class="line">				out.write(buffer);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; catch (FileNotFoundException e) &#123;</span><br><span class="line">			&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;catch (IOException e) &#123;</span><br><span class="line">			&#x2F;&#x2F; TODO: handle exception</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;finally &#123;</span><br><span class="line">			try &#123;</span><br><span class="line">				in.close();</span><br><span class="line">				out.close();</span><br><span class="line">			&#125; catch (IOException e) &#123;</span><br><span class="line">				&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">				e.printStackTrace();</span><br><span class="line">			&#125;</span><br><span class="line">			</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public class Copy &#123;
+	public static void main(String[] args)&#123;
+		InputStream in &#x3D; null;
+		OutputStream out &#x3D; null;
+		try &#123;
+			in &#x3D; new FileInputStream(&quot;c:&#x2F;1.jpg&quot;);
+			out &#x3D; new FileOutputStream(new File(&quot;c:&#x2F;2.jpg&quot;));
+			byte buffer[] &#x3D; new byte[20];
+			while(in.read(buffer) !&#x3D; -1)&#123;
+				out.write(buffer);
+			&#125;
+		&#125; catch (FileNotFoundException e) &#123;
+			&#x2F;&#x2F; TODO Auto-generated catch block
+			e.printStackTrace();
+		&#125;catch (IOException e) &#123;
+			&#x2F;&#x2F; TODO: handle exception
+			e.printStackTrace();
+		&#125;finally &#123;
+			try &#123;
+				in.close();
+				out.close();
+			&#125; catch (IOException e) &#123;
+				&#x2F;&#x2F; TODO Auto-generated catch block
+				e.printStackTrace();
+			&#125;
+			
+		&#125;
+	&#125;
+&#125;</code></pre>
 
 <h4 id="FileReader-FileWriter"><a href="#FileReader-FileWriter" class="headerlink" title="FileReader/FileWriter"></a>FileReader/FileWriter</h4><p>从类名能看出是操作文件的字符流(实际上是简单装饰了父类<code>InputStreamReader/OutputStreamWriter</code>，这两个字符流仅仅只有构造函数没有覆写方法，可以当作可接收字符流的<code>InputStreamReader/OutputStreamWriter</code>)，将一个txt文件的内容复制到一个新建的名为test2的txt文件里。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Copy2 &#123;</span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		Reader reader &#x3D; null;</span><br><span class="line">		Writer writer &#x3D; null;</span><br><span class="line">		try &#123;</span><br><span class="line">			reader &#x3D; new FileReader(&quot;c:&#x2F;test.txt&quot;);</span><br><span class="line">			writer &#x3D; new FileWriter(new File(&quot;c:&#x2F;test2.txt&quot;));</span><br><span class="line">			char buff[] &#x3D; new char[20];</span><br><span class="line">			while(reader.read(buff) !&#x3D; -1)&#123;</span><br><span class="line">				writer.write(buff);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; catch (Exception e) &#123;</span><br><span class="line">			&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;finally &#123;</span><br><span class="line">			try &#123;</span><br><span class="line">				reader.close();</span><br><span class="line">				writer.close();</span><br><span class="line">			&#125; catch (IOException e) &#123;</span><br><span class="line">				&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">				e.printStackTrace();</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public class Copy2 &#123;
+	public static void main(String[] args) &#123;
+		Reader reader &#x3D; null;
+		Writer writer &#x3D; null;
+		try &#123;
+			reader &#x3D; new FileReader(&quot;c:&#x2F;test.txt&quot;);
+			writer &#x3D; new FileWriter(new File(&quot;c:&#x2F;test2.txt&quot;));
+			char buff[] &#x3D; new char[20];
+			while(reader.read(buff) !&#x3D; -1)&#123;
+				writer.write(buff);
+			&#125;
+		&#125; catch (Exception e) &#123;
+			&#x2F;&#x2F; TODO Auto-generated catch block
+			e.printStackTrace();
+		&#125;finally &#123;
+			try &#123;
+				reader.close();
+				writer.close();
+			&#125; catch (IOException e) &#123;
+				&#x2F;&#x2F; TODO Auto-generated catch block
+				e.printStackTrace();
+			&#125;
+		&#125;
+	&#125;
+&#125;</code></pre>
 
 <h4 id="BufferedReader-BufferedWriter"><a href="#BufferedReader-BufferedWriter" class="headerlink" title="BufferedReader/BufferedWriter"></a>BufferedReader/BufferedWriter</h4><p>这两个类为带缓冲的字符流，采用装饰者模式对普通字符流进行装饰，构造方法传入一个<code>Reader/Writer</code>，内部维护一个8192长度的字符数组作为缓冲，当使用<code>public int read(char cbuf[], int offset, int length)</code>一次读取字符数超过缓冲默认长度8192，将不使用缓冲，直接读取到我们自定义的字符数组中(另一个输出流同理)。关闭输出流时，<code>close</code>方法清空缓冲并将缓冲中剩余字符写入。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class BufferCopy &#123;</span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		Reader reader &#x3D; null;</span><br><span class="line">		Writer writer &#x3D; null;</span><br><span class="line">		try &#123;</span><br><span class="line">			reader &#x3D; new BufferedReader(new FileReader(&quot;c:&#x2F;test.txt&quot;));</span><br><span class="line">			writer &#x3D; new BufferedWriter(new FileWriter(&quot;c:&#x2F;test2.txt&quot;));</span><br><span class="line">			int ch;</span><br><span class="line">			while((ch &#x3D; reader.read()) !&#x3D; -1)&#123;</span><br><span class="line">				writer.write(ch);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; catch (Exception e) &#123;</span><br><span class="line">			&#x2F;&#x2F; TODO: handle exception</span><br><span class="line">		&#125;finally &#123;</span><br><span class="line">			try &#123;</span><br><span class="line">				reader.close();</span><br><span class="line">				writer.close();</span><br><span class="line">			&#125; catch (IOException e) &#123;</span><br><span class="line">				&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">				e.printStackTrace();</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public class BufferCopy &#123;
+	public static void main(String[] args) &#123;
+		Reader reader &#x3D; null;
+		Writer writer &#x3D; null;
+		try &#123;
+			reader &#x3D; new BufferedReader(new FileReader(&quot;c:&#x2F;test.txt&quot;));
+			writer &#x3D; new BufferedWriter(new FileWriter(&quot;c:&#x2F;test2.txt&quot;));
+			int ch;
+			while((ch &#x3D; reader.read()) !&#x3D; -1)&#123;
+				writer.write(ch);
+			&#125;
+		&#125; catch (Exception e) &#123;
+			&#x2F;&#x2F; TODO: handle exception
+		&#125;finally &#123;
+			try &#123;
+				reader.close();
+				writer.close();
+			&#125; catch (IOException e) &#123;
+				&#x2F;&#x2F; TODO Auto-generated catch block
+				e.printStackTrace();
+			&#125;
+		&#125;
+	&#125;
+&#125;</code></pre>
 
 <h4 id="BufferedInputStream-BufferedOutputStream"><a href="#BufferedInputStream-BufferedOutputStream" class="headerlink" title="BufferedInputStream/BufferedOutputStream"></a>BufferedInputStream/BufferedOutputStream</h4><p>带缓冲的字节流，采用装饰者模式对普通字节流进行装饰，构造方法传入一个<code>InputStream</code>，内部维护8192长度的字节数组作为缓冲，当使用<code>public synchronized int read(byte b[], int off, int len)</code>一次读取字节数超过8192个字节，将不使用缓冲，直接读取到我们自定义的字节数组中(另一个输出流同理)，关闭输出流时，<code>close</code>方法清空缓冲并将剩余字节写入。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class BufferCopy2 &#123;</span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		BufferedInputStream bis &#x3D; null;</span><br><span class="line">		BufferedOutputStream bos &#x3D; null;</span><br><span class="line">		try &#123;</span><br><span class="line">			bis &#x3D; new BufferedInputStream(new FileInputStream(&quot;c:&#x2F;test.txt&quot;));</span><br><span class="line">			bos &#x3D; new BufferedOutputStream(new FileOutputStream(&quot;c:&#x2F;test2.txt&quot;));</span><br><span class="line">			int b;</span><br><span class="line">			while((b&#x3D;bis.read()) !&#x3D; -1)&#123;</span><br><span class="line">				bos.write(b);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; catch (Exception e) &#123;</span><br><span class="line">			&#x2F;&#x2F; TODO: handle exception</span><br><span class="line">		&#125;finally &#123;</span><br><span class="line">			try &#123;</span><br><span class="line">				bis.close();</span><br><span class="line">				bos.close();</span><br><span class="line">			&#125; catch (IOException e) &#123;</span><br><span class="line">				&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">				e.printStackTrace();</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public class BufferCopy2 &#123;
+	public static void main(String[] args) &#123;
+		BufferedInputStream bis &#x3D; null;
+		BufferedOutputStream bos &#x3D; null;
+		try &#123;
+			bis &#x3D; new BufferedInputStream(new FileInputStream(&quot;c:&#x2F;test.txt&quot;));
+			bos &#x3D; new BufferedOutputStream(new FileOutputStream(&quot;c:&#x2F;test2.txt&quot;));
+			int b;
+			while((b&#x3D;bis.read()) !&#x3D; -1)&#123;
+				bos.write(b);
+			&#125;
+		&#125; catch (Exception e) &#123;
+			&#x2F;&#x2F; TODO: handle exception
+		&#125;finally &#123;
+			try &#123;
+				bis.close();
+				bos.close();
+			&#125; catch (IOException e) &#123;
+				&#x2F;&#x2F; TODO Auto-generated catch block
+				e.printStackTrace();
+			&#125;
+		&#125;
+	&#125;
+&#125;</code></pre>
 
 <h4 id="InputStreamReader-OutputStreamWriter"><a href="#InputStreamReader-OutputStreamWriter" class="headerlink" title="InputStreamReader/OutputStreamWriter"></a>InputStreamReader/OutputStreamWriter</h4><p>这两个类是转化流，就是将字节流转化为字符流，通过构造函数传入的字节流和编码，使用<code>StreamDecoder/StreamEncode</code>将传进来的字节输入流/字节输出流编码为字符流。<code>StreamDecoder</code>的<code>read/write</code>实现字符的读写。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Transfer &#123;</span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		Reader isr &#x3D; null;</span><br><span class="line">		Writer osw &#x3D; null;</span><br><span class="line">		try &#123;</span><br><span class="line">			isr &#x3D; new InputStreamReader(new FileInputStream(&quot;c:&#x2F;test.txt&quot;));</span><br><span class="line">			osw &#x3D; new OutputStreamWriter(new FileOutputStream(&quot;c:&#x2F;test2.txt&quot;));</span><br><span class="line">			int ch;</span><br><span class="line">			while((ch &#x3D; isr.read()) !&#x3D; -1)&#123;</span><br><span class="line">				osw.write(ch);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; catch (Exception e) &#123;</span><br><span class="line">			&#x2F;&#x2F; TODO: handle exception</span><br><span class="line">		&#125;finally &#123;</span><br><span class="line">			try &#123;</span><br><span class="line">				isr.close();</span><br><span class="line">				osw.close();</span><br><span class="line">			&#125; catch (IOException e) &#123;</span><br><span class="line">				&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">				e.printStackTrace();</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public class Transfer &#123;
+	public static void main(String[] args) &#123;
+		Reader isr &#x3D; null;
+		Writer osw &#x3D; null;
+		try &#123;
+			isr &#x3D; new InputStreamReader(new FileInputStream(&quot;c:&#x2F;test.txt&quot;));
+			osw &#x3D; new OutputStreamWriter(new FileOutputStream(&quot;c:&#x2F;test2.txt&quot;));
+			int ch;
+			while((ch &#x3D; isr.read()) !&#x3D; -1)&#123;
+				osw.write(ch);
+			&#125;
+		&#125; catch (Exception e) &#123;
+			&#x2F;&#x2F; TODO: handle exception
+		&#125;finally &#123;
+			try &#123;
+				isr.close();
+				osw.close();
+			&#125; catch (IOException e) &#123;
+				&#x2F;&#x2F; TODO Auto-generated catch block
+				e.printStackTrace();
+			&#125;
+		&#125;
+	&#125;
+&#125;</code></pre>
           
         
       
@@ -672,7 +793,36 @@
 <li>Type[] getActualTypeArguments();</li>
 </ul>
 <p>该方法返回参数化类型&lt;&gt;中的实际参数类型， 如 Map&lt;String,Person&gt; map 这个 ParameterizedType 返回的是 String 类,Person 类的全限定类名的 Type Array。注意: 该方法只返回最外层的&lt;&gt;中的类型，无论该&lt;&gt;内有多少个&lt;&gt;。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class testType&#123;</span><br><span class="line">	HashMap&lt;String,Object&gt; map;</span><br><span class="line">	List&lt;Integer&gt; list;</span><br><span class="line">	String str;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@Test</span><br><span class="line">public void testType() &#123;</span><br><span class="line">	Field fields[] &#x3D; testType.class.getDeclaredFields();</span><br><span class="line">	for(Field field:fields) &#123;</span><br><span class="line">		System.out.println(&quot;Field : &quot;+field.getName() + &quot; is parameterizedType :&quot;+(field.getGenericType() instanceof ParameterizedType));</span><br><span class="line">		</span><br><span class="line">		if(field.getGenericType() instanceof ParameterizedType) &#123;</span><br><span class="line">			System.out.println(&quot;getRawType: &quot;+((ParameterizedType)field.getGenericType()).getRawType());</span><br><span class="line">			for(Type type:((ParameterizedType)field.getGenericType()).getActualTypeArguments())</span><br><span class="line">			&#x2F;&#x2F;getActualTypeArguments返回的类型为TypeVariable</span><br><span class="line">			System.out.println(&quot;getActualTypeArguments: &quot;+type.getTypeName());</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Field : map is parameterizedType :true</span><br><span class="line">getRawType: class java.util.HashMap</span><br><span class="line">getActualTypeArguments: java.lang.String</span><br><span class="line">getActualTypeArguments: java.lang.Object</span><br><span class="line">Field : list is parameterizedType :true</span><br><span class="line">getRawType: interface java.util.List</span><br><span class="line">getActualTypeArguments: java.lang.Integer</span><br><span class="line">Field : str is parameterizedType :false</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">class testType&#123;
+	HashMap&lt;String,Object&gt; map;
+	List&lt;Integer&gt; list;
+	String str;
+&#125;
+
+@Test
+public void testType() &#123;
+	Field fields[] &#x3D; testType.class.getDeclaredFields();
+	for(Field field:fields) &#123;
+		System.out.println(&quot;Field : &quot;+field.getName() + &quot; is parameterizedType :&quot;+(field.getGenericType() instanceof ParameterizedType));
+		
+		if(field.getGenericType() instanceof ParameterizedType) &#123;
+			System.out.println(&quot;getRawType: &quot;+((ParameterizedType)field.getGenericType()).getRawType());
+			for(Type type:((ParameterizedType)field.getGenericType()).getActualTypeArguments())
+			&#x2F;&#x2F;getActualTypeArguments返回的类型为TypeVariable
+			System.out.println(&quot;getActualTypeArguments: &quot;+type.getTypeName());
+		&#125;
+	&#125;
+&#125;
+
+
+Field : map is parameterizedType :true
+getRawType: class java.util.HashMap
+getActualTypeArguments: java.lang.String
+getActualTypeArguments: java.lang.Object
+Field : list is parameterizedType :true
+getRawType: interface java.util.List
+getActualTypeArguments: java.lang.Integer
+Field : str is parameterizedType :false</code></pre>
 
 <h4 id="TypeVariable"><a href="#TypeVariable" class="headerlink" title="TypeVariable"></a>TypeVariable</h4><p>类型变量，即泛型中的变量；例如：T、K、V等变量，可以表示任何类；在这需要强调的是，TypeVariable代表着泛型中的变量，而ParameterizedType则代表整个泛型；</p>
 <ul>
@@ -687,10 +837,66 @@
 <li>String getName();</li>
 </ul>
 <p>返回当前类型的类名</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class testType&lt;k extends Number,T&gt;&#123;</span><br><span class="line">	HashMap&lt;String,Object&gt; map;</span><br><span class="line">	List&lt;Integer&gt; list;</span><br><span class="line">	String str;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@Test</span><br><span class="line">public void testTypeVariable()&#123;</span><br><span class="line">	 Type types[] &#x3D; testType.class.getTypeParameters();</span><br><span class="line">	 &#x2F;&#x2F;返回的数组包含泛型表示的类型变量K,T</span><br><span class="line">	 for(Type type:types) &#123;</span><br><span class="line">		 &#x2F;&#x2F;遍历K,T</span><br><span class="line">		 TypeVariable t &#x3D; (TypeVariable)type;</span><br><span class="line">		 int index &#x3D; t.getBounds().length-1;</span><br><span class="line">         &#x2F;&#x2F;返回的表示上边界的是一个数组</span><br><span class="line">		 System.out.println(&quot;getBounds: &quot;+t.getBounds()[index]);</span><br><span class="line">		 System.out.println(&quot;getName: &quot;+t.getName());</span><br><span class="line">         &#x2F;&#x2F;表示泛型变量所在的类</span><br><span class="line">		 System.out.println(&quot;getGenericDeclaration: &quot;+t.getGenericDeclaration());</span><br><span class="line">	 &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">getBounds: class java.lang.Number</span><br><span class="line">getName: K</span><br><span class="line">getGenericDeclaration: class test.testType</span><br><span class="line">getBounds: class java.lang.Object</span><br><span class="line">getName: T</span><br><span class="line">getGenericDeclaration: class test.testType</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">class testType&lt;k extends Number,T&gt;&#123;
+	HashMap&lt;String,Object&gt; map;
+	List&lt;Integer&gt; list;
+	String str;
+&#125;
+
+@Test
+public void testTypeVariable()&#123;
+	 Type types[] &#x3D; testType.class.getTypeParameters();
+	 &#x2F;&#x2F;返回的数组包含泛型表示的类型变量K,T
+	 for(Type type:types) &#123;
+		 &#x2F;&#x2F;遍历K,T
+		 TypeVariable t &#x3D; (TypeVariable)type;
+		 int index &#x3D; t.getBounds().length-1;
+         &#x2F;&#x2F;返回的表示上边界的是一个数组
+		 System.out.println(&quot;getBounds: &quot;+t.getBounds()[index]);
+		 System.out.println(&quot;getName: &quot;+t.getName());
+         &#x2F;&#x2F;表示泛型变量所在的类
+		 System.out.println(&quot;getGenericDeclaration: &quot;+t.getGenericDeclaration());
+	 &#125;
+&#125;
+
+
+getBounds: class java.lang.Number
+getName: K
+getGenericDeclaration: class test.testType
+getBounds: class java.lang.Object
+getName: T
+getGenericDeclaration: class test.testType</code></pre>
 
 <h4 id="GenericArrayType"><a href="#GenericArrayType" class="headerlink" title="GenericArrayType"></a>GenericArrayType</h4><p>泛型数组类型，用来描述ParameterizedType、TypeVariable类型的数组；即List<T>[] 、T[]等</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class testType&lt;K,T&gt;&#123;</span><br><span class="line">	HashMap&lt;K,T&gt;[] map;</span><br><span class="line">	List&lt;K&gt;[] list;</span><br><span class="line">	T Array[];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@Test</span><br><span class="line">public void testGenericArrayType() &#123;</span><br><span class="line">	Field fields[] &#x3D; testType.class.getDeclaredFields();</span><br><span class="line">	for(Field field:fields) &#123;</span><br><span class="line">		System.out.println(field.getName()+&quot; instance of GenericArrayType: &quot;+(field.getGenericType() instanceof GenericArrayType));</span><br><span class="line">		System.out.println(field.getName()+&quot; instance of GenericArrayType: &quot;+(field.getGenericType() instanceof ParameterizedType));</span><br><span class="line">		&#x2F;&#x2F;对于getGenericComponentType</span><br><span class="line">        &#x2F;&#x2F;如果是参数化类型数组，则这里返回的是parameterizedType类型</span><br><span class="line">		&#x2F;&#x2F;普通泛型数组，返回的TypeVariable类型</span><br><span class="line">		System.out.println(field.getName()+&quot;:getGenericComponentType &quot;+((GenericArrayType)field.getGenericType()).getGenericComponentType());</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">map instance of GenericArrayType: true</span><br><span class="line">map instance of GenericArrayType: false</span><br><span class="line">map:getGenericComponentType java.util.HashMap&lt;K, T&gt;</span><br><span class="line">list instance of GenericArrayType: true</span><br><span class="line">list instance of GenericArrayType: false</span><br><span class="line">list:getGenericComponentType java.util.List&lt;K&gt;</span><br><span class="line">Array instance of GenericArrayType: true</span><br><span class="line">Array instance of GenericArrayType: false</span><br><span class="line">Array:getGenericComponentType T</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">class testType&lt;K,T&gt;&#123;
+	HashMap&lt;K,T&gt;[] map;
+	List&lt;K&gt;[] list;
+	T Array[];
+&#125;
+
+@Test
+public void testGenericArrayType() &#123;
+	Field fields[] &#x3D; testType.class.getDeclaredFields();
+	for(Field field:fields) &#123;
+		System.out.println(field.getName()+&quot; instance of GenericArrayType: &quot;+(field.getGenericType() instanceof GenericArrayType));
+		System.out.println(field.getName()+&quot; instance of GenericArrayType: &quot;+(field.getGenericType() instanceof ParameterizedType));
+		&#x2F;&#x2F;对于getGenericComponentType
+        &#x2F;&#x2F;如果是参数化类型数组，则这里返回的是parameterizedType类型
+		&#x2F;&#x2F;普通泛型数组，返回的TypeVariable类型
+		System.out.println(field.getName()+&quot;:getGenericComponentType &quot;+((GenericArrayType)field.getGenericType()).getGenericComponentType());
+	&#125;
+&#125;
+
+
+map instance of GenericArrayType: true
+map instance of GenericArrayType: false
+map:getGenericComponentType java.util.HashMap&lt;K, T&gt;
+list instance of GenericArrayType: true
+list instance of GenericArrayType: false
+list:getGenericComponentType java.util.List&lt;K&gt;
+Array instance of GenericArrayType: true
+Array instance of GenericArrayType: false
+Array:getGenericComponentType T</code></pre>
 
 
 <h4 id="WildcardType"><a href="#WildcardType" class="headerlink" title="WildcardType"></a>WildcardType</h4><p>表示通配符类型，比如 &lt;?&gt;, &lt;? Extends Number&gt;等</p>
@@ -703,7 +909,39 @@
 </ul>
 <p>得到下边界的type数组</p>
 <p><strong>如果没有指定上边界，则默认为Object，如果没有指定下边界，则默认为String</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class testWildcardType&#123;</span><br><span class="line">	List&lt;? extends Number&gt; listNum;</span><br><span class="line">	List&lt;? super String&gt; listStr;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@Test</span><br><span class="line">public void testWildcardType() &#123;</span><br><span class="line">	Field fields[] &#x3D; testWildcardType.class.getDeclaredFields();</span><br><span class="line">	for(Field field:fields) &#123;</span><br><span class="line">		</span><br><span class="line">		ParameterizedType t &#x3D; (ParameterizedType) field.getGenericType();</span><br><span class="line">		System.out.println(t.getTypeName());</span><br><span class="line">		Type[] Type &#x3D; t.getActualTypeArguments();</span><br><span class="line">		System.out.println(field.getName()+&quot;.getGenericType.getActualTypeArguments(): instance of WildcardType is &quot;+(Type[0] instanceof WildcardType));</span><br><span class="line">		WildcardType wildcardType &#x3D; (WildcardType) Type[0];</span><br><span class="line">		if(wildcardType.getUpperBounds().length&gt;0) &#123;</span><br><span class="line">			</span><br><span class="line">			System.out.println(&quot;getUpperBounds: &quot;+wildcardType.getUpperBounds()[0].getTypeName());</span><br><span class="line">		&#125;</span><br><span class="line">		if(wildcardType.getLowerBounds().length&gt;0) &#123;</span><br><span class="line">			</span><br><span class="line">			System.out.println(&quot;getLowerBouds: &quot;+wildcardType.getLowerBounds()[0].getTypeName());</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">java.util.List&lt;? extends java.lang.Number&gt;</span><br><span class="line">listNum.getGenericType.getActualTypeArguments(): instance of WildcardType is true</span><br><span class="line">getUpperBounds: java.lang.Number</span><br><span class="line">java.util.List&lt;? super java.lang.String&gt;</span><br><span class="line">listStr.getGenericType.getActualTypeArguments(): instance of WildcardType is true</span><br><span class="line">getUpperBounds: java.lang.Object</span><br><span class="line">getLowerBouds: java.lang.String</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">class testWildcardType&#123;
+	List&lt;? extends Number&gt; listNum;
+	List&lt;? super String&gt; listStr;
+&#125;
+
+@Test
+public void testWildcardType() &#123;
+	Field fields[] &#x3D; testWildcardType.class.getDeclaredFields();
+	for(Field field:fields) &#123;
+		
+		ParameterizedType t &#x3D; (ParameterizedType) field.getGenericType();
+		System.out.println(t.getTypeName());
+		Type[] Type &#x3D; t.getActualTypeArguments();
+		System.out.println(field.getName()+&quot;.getGenericType.getActualTypeArguments(): instance of WildcardType is &quot;+(Type[0] instanceof WildcardType));
+		WildcardType wildcardType &#x3D; (WildcardType) Type[0];
+		if(wildcardType.getUpperBounds().length&gt;0) &#123;
+			
+			System.out.println(&quot;getUpperBounds: &quot;+wildcardType.getUpperBounds()[0].getTypeName());
+		&#125;
+		if(wildcardType.getLowerBounds().length&gt;0) &#123;
+			
+			System.out.println(&quot;getLowerBouds: &quot;+wildcardType.getLowerBounds()[0].getTypeName());
+		&#125;
+	&#125;
+&#125;
+
+java.util.List&lt;? extends java.lang.Number&gt;
+listNum.getGenericType.getActualTypeArguments(): instance of WildcardType is true
+getUpperBounds: java.lang.Number
+java.util.List&lt;? super java.lang.String&gt;
+listStr.getGenericType.getActualTypeArguments(): instance of WildcardType is true
+getUpperBounds: java.lang.Object
+getLowerBouds: java.lang.String</code></pre>
 
 <p>相关链接</p>
 <p><a href="https://juejin.im/post/5adefaba518825670e5cb44d" target="_blank" rel="noopener">参考一</a><br><a href="https://blog.csdn.net/ZytheMoon/article/details/79241988" target="_blank" rel="noopener">参考二</a></p>
@@ -852,47 +1090,138 @@
 <p>2.可以定义default类型方法(包括方法体)，实现接口后可override，实现接口后的类的实例可以调用</p>
 <h3 id="函数式接口"><a href="#函数式接口" class="headerlink" title="函数式接口"></a>函数式接口</h3><p>如果一个接口定义个唯一一个抽象方法，那么这个接口就成为函数式接口，引入了一个新的Annotation：@FunctionalInterface。可以把他它放在一个接口前，表示这个接口是一个函数式接口。加上它的接口不会被编译。<br><strong>函数式接口中还可以额外定义Object类中的抽象方法，例如Comparator接口</strong></p>
 <h3 id="lambda表达式"><a href="#lambda表达式" class="headerlink" title="lambda表达式"></a>lambda表达式</h3><p>基本语法:(parameters) -&gt; expression</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 1. 不需要参数,返回值为 5  </span><br><span class="line">() -&gt; 5  </span><br><span class="line">  </span><br><span class="line">&#x2F;&#x2F; 2. 接收一个参数(数字类型),返回其2倍的值  </span><br><span class="line">x -&gt; 2 * x  </span><br><span class="line">  </span><br><span class="line">&#x2F;&#x2F; 3. 接受2个参数(数字),并返回他们的差值  </span><br><span class="line">(x, y) -&gt; x – y  </span><br><span class="line">  </span><br><span class="line">&#x2F;&#x2F; 4. 接收2个int型整数,返回他们的和  </span><br><span class="line">(int x, int y) -&gt; x + y  </span><br><span class="line">  </span><br><span class="line">&#x2F;&#x2F; 5. 接受一个 string 对象,并在控制台打印,不返回任何值(看起来像是返回void)  </span><br><span class="line">(String s) -&gt; System.out.print(s)</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">&#x2F;&#x2F; 1. 不需要参数,返回值为 5  
+() -&gt; 5  
+  
+&#x2F;&#x2F; 2. 接收一个参数(数字类型),返回其2倍的值  
+x -&gt; 2 * x  
+  
+&#x2F;&#x2F; 3. 接受2个参数(数字),并返回他们的差值  
+(x, y) -&gt; x – y  
+  
+&#x2F;&#x2F; 4. 接收2个int型整数,返回他们的和  
+(int x, int y) -&gt; x + y  
+  
+&#x2F;&#x2F; 5. 接受一个 string 对象,并在控制台打印,不返回任何值(看起来像是返回void)  
+(String s) -&gt; System.out.print(s)</code></pre>
 
 <p>例子：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Integer a[] &#x3D; &#123;1,2,3,4,5,6,7,8,9&#125;;</span><br><span class="line">List&lt;Integer&gt; list &#x3D; Arrays.asList(a);</span><br><span class="line">list.forEach((Integer b)-&gt;System.out.println(b));</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">Integer a[] &#x3D; &#123;1,2,3,4,5,6,7,8,9&#125;;
+List&lt;Integer&gt; list &#x3D; Arrays.asList(a);
+list.forEach((Integer b)-&gt;System.out.println(b));</code></pre>
 
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">String[] players &#x3D; &#123;&quot;Rafael Nadal&quot;, &quot;Novak Djokovic&quot;,   </span><br><span class="line">   &quot;Stanislas Wawrinka&quot;, &quot;David Ferrer&quot;,  </span><br><span class="line">   &quot;Roger Federer&quot;, &quot;Andy Murray&quot;,  </span><br><span class="line">   &quot;Tomas Berdych&quot;, &quot;Juan Martin Del Potro&quot;,  </span><br><span class="line">   &quot;Richard Gasquet&quot;, &quot;John Isner&quot;&#125;; </span><br><span class="line">Arrays.sort(players, (String s1, String s2) -&gt; (s1.compareTo(s2)));</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">String[] players &#x3D; &#123;&quot;Rafael Nadal&quot;, &quot;Novak Djokovic&quot;,   
+   &quot;Stanislas Wawrinka&quot;, &quot;David Ferrer&quot;,  
+   &quot;Roger Federer&quot;, &quot;Andy Murray&quot;,  
+   &quot;Tomas Berdych&quot;, &quot;Juan Martin Del Potro&quot;,  
+   &quot;Richard Gasquet&quot;, &quot;John Isner&quot;&#125;; 
+Arrays.sort(players, (String s1, String s2) -&gt; (s1.compareTo(s2)));</code></pre>
 
 <p><code>Runnable r = () -&gt; { System.out.println(&quot;Running!&quot;); }</code></p>
 <h3 id="捕获和非捕获的Lambda表达式"><a href="#捕获和非捕获的Lambda表达式" class="headerlink" title="捕获和非捕获的Lambda表达式"></a>捕获和非捕获的Lambda表达式</h3><p>1.当Lambda表达式访问一个定义在Lambda表达式体外的非静态变量或者对象时，这个Lambda表达式称为“捕获的”。</p>
 <p>2.在lambda表达式中访问外层作用域和老版本的匿名对象中的方式很相似。你可以直接访问标记了final的外层局部变量，或者实例的字段以及静态变量。</p>
 <h3 id="Stream"><a href="#Stream" class="headerlink" title="Stream"></a>Stream</h3><p>这里的Stream可不是IO里面的OutputStream或InputStream之类，而是对java中Collection类聚合功能的增强。Stream API配合lamada表达式，极大的提升了编程效率和程序可读性。Stream中支持并行和串行两种聚合方式。</p>
 <p>Stream接口中提供了更多对集合操作的api</p>
-<h4 id="map"><a href="#map" class="headerlink" title="map"></a>map</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * Returns a stream consisting of the results of applying the given</span><br><span class="line"> * function to the elements of this stream.</span><br><span class="line"> *</span><br><span class="line"> * &lt;p&gt;This is an &lt;a href&#x3D;&quot;package-summary.html#StreamOps&quot;&gt;intermediate</span><br><span class="line"> * operation&lt;&#x2F;a&gt;.</span><br><span class="line"> *</span><br><span class="line"> * @param &lt;R&gt; The element type of the new stream</span><br><span class="line"> * @param mapper a &lt;a href&#x3D;&quot;package-summary.html#NonInterference&quot;&gt;non-interfering&lt;&#x2F;a&gt;,</span><br><span class="line"> *               &lt;a href&#x3D;&quot;package-summary.html#Statelessness&quot;&gt;stateless&lt;&#x2F;a&gt;</span><br><span class="line"> *               function to apply to each element</span><br><span class="line"> * @return the new stream</span><br><span class="line"> *&#x2F;</span><br><span class="line">&lt;R&gt; Stream&lt;R&gt; map(Function&lt;? super T, ? extends R&gt; mapper);</span><br></pre></td></tr></table></figure>
+<h4 id="map"><a href="#map" class="headerlink" title="map"></a>map</h4><pre><code class="highlight plain">&#x2F;**
+ * Returns a stream consisting of the results of applying the given
+ * function to the elements of this stream.
+ *
+ * &lt;p&gt;This is an &lt;a href&#x3D;&quot;package-summary.html#StreamOps&quot;&gt;intermediate
+ * operation&lt;&#x2F;a&gt;.
+ *
+ * @param &lt;R&gt; The element type of the new stream
+ * @param mapper a &lt;a href&#x3D;&quot;package-summary.html#NonInterference&quot;&gt;non-interfering&lt;&#x2F;a&gt;,
+ *               &lt;a href&#x3D;&quot;package-summary.html#Statelessness&quot;&gt;stateless&lt;&#x2F;a&gt;
+ *               function to apply to each element
+ * @return the new stream
+ *&#x2F;
+&lt;R&gt; Stream&lt;R&gt; map(Function&lt;? super T, ? extends R&gt; mapper);</code></pre>
 
 <p>与forEach方法不同，Function中apply方法有返回值，而Consumer中的accept方法没有，map返回的Stream中的元素为Function中apply方法返回值，forEach只提供对元素操作，不返回Stream</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">List&lt;Integer&gt; a &#x3D; new ArrayList&lt;Integer&gt;();</span><br><span class="line">a.add(1);</span><br><span class="line">a.add(2);</span><br><span class="line">a.add(5);</span><br><span class="line">a &#x3D; a.stream().map(i-&gt;++i).collect(Collectors.toList());</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">List&lt;Integer&gt; a &#x3D; new ArrayList&lt;Integer&gt;();
+a.add(1);
+a.add(2);
+a.add(5);
+a &#x3D; a.stream().map(i-&gt;++i).collect(Collectors.toList());</code></pre>
 <p><code>2 3 6</code><br>将集合中每个元素加1</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">List&lt;String&gt; l &#x3D; new ArrayList&lt;String&gt;();</span><br><span class="line">l.add(&quot;a&quot;);</span><br><span class="line">l.add(&quot;b&quot;);</span><br><span class="line">l.add(&quot;c&quot;);</span><br><span class="line">l &#x3D; l.stream().map(String::toUpperCase).collect(Collectors.toList());</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">List&lt;String&gt; l &#x3D; new ArrayList&lt;String&gt;();
+l.add(&quot;a&quot;);
+l.add(&quot;b&quot;);
+l.add(&quot;c&quot;);
+l &#x3D; l.stream().map(String::toUpperCase).collect(Collectors.toList());</code></pre>
 
 <p>将集合中每个字符串变大写</p>
-<h4 id="filter"><a href="#filter" class="headerlink" title="filter"></a>filter</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * Returns a stream consisting of the elements of this stream that match</span><br><span class="line"> * the given predicate.</span><br><span class="line"> *</span><br><span class="line"> * &lt;p&gt;This is an &lt;a href&#x3D;&quot;package-summary.html#StreamOps&quot;&gt;intermediate</span><br><span class="line"> * operation&lt;&#x2F;a&gt;.</span><br><span class="line"> *</span><br><span class="line"> * @param predicate a &lt;a href&#x3D;&quot;package-summary.html#NonInterference&quot;&gt;non-interfering&lt;&#x2F;a&gt;,</span><br><span class="line"> *                  &lt;a href&#x3D;&quot;package-summary.html#Statelessness&quot;&gt;stateless&lt;&#x2F;a&gt;</span><br><span class="line"> *                  predicate to apply to each element to determine if it</span><br><span class="line"> *                  should be included</span><br><span class="line"> * @return the new stream</span><br><span class="line"> *&#x2F;</span><br><span class="line">Stream&lt;T&gt; filter(Predicate&lt;? super T&gt; predicate);</span><br></pre></td></tr></table></figure>
+<h4 id="filter"><a href="#filter" class="headerlink" title="filter"></a>filter</h4><pre><code class="highlight plain">&#x2F;**
+ * Returns a stream consisting of the elements of this stream that match
+ * the given predicate.
+ *
+ * &lt;p&gt;This is an &lt;a href&#x3D;&quot;package-summary.html#StreamOps&quot;&gt;intermediate
+ * operation&lt;&#x2F;a&gt;.
+ *
+ * @param predicate a &lt;a href&#x3D;&quot;package-summary.html#NonInterference&quot;&gt;non-interfering&lt;&#x2F;a&gt;,
+ *                  &lt;a href&#x3D;&quot;package-summary.html#Statelessness&quot;&gt;stateless&lt;&#x2F;a&gt;
+ *                  predicate to apply to each element to determine if it
+ *                  should be included
+ * @return the new stream
+ *&#x2F;
+Stream&lt;T&gt; filter(Predicate&lt;? super T&gt; predicate);</code></pre>
 
 <p>predicate接口返回值为布尔值，用来过滤不符合条件的集合中的元素</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">List&lt;Integer&gt; a &#x3D; new ArrayList&lt;Integer&gt;();</span><br><span class="line">a.add(1);</span><br><span class="line">a.add(2);</span><br><span class="line">a.add(5);</span><br><span class="line">List&lt;Integer&gt; t &#x3D; new ArrayList&lt;Integer&gt;();</span><br><span class="line">t &#x3D; a.stream().filter(i-&gt;i&gt;2).collect(Collectors.toList());</span><br><span class="line">t.forEach(System.out::println);</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">List&lt;Integer&gt; a &#x3D; new ArrayList&lt;Integer&gt;();
+a.add(1);
+a.add(2);
+a.add(5);
+List&lt;Integer&gt; t &#x3D; new ArrayList&lt;Integer&gt;();
+t &#x3D; a.stream().filter(i-&gt;i&gt;2).collect(Collectors.toList());
+t.forEach(System.out::println);</code></pre>
 <p><code>5</code></p>
 <p>作用是过滤了小于等于2的元素</p>
-<h4 id="mapToInt-mapToLong-mapToDouble"><a href="#mapToInt-mapToLong-mapToDouble" class="headerlink" title="mapToInt (mapToLong  mapToDouble)"></a>mapToInt (mapToLong  mapToDouble)</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * Returns an &#123;@code IntStream&#125; consisting of the results of applying the</span><br><span class="line"> * given function to the elements of this stream.</span><br><span class="line"> *</span><br><span class="line"> * &lt;p&gt;This is an &lt;a href&#x3D;&quot;package-summary.html#StreamOps&quot;&gt;</span><br><span class="line"> *     intermediate operation&lt;&#x2F;a&gt;.</span><br><span class="line"> *</span><br><span class="line"> * @param mapper a &lt;a href&#x3D;&quot;package-summary.html#NonInterference&quot;&gt;non-interfering&lt;&#x2F;a&gt;,</span><br><span class="line"> *               &lt;a href&#x3D;&quot;package-summary.html#Statelessness&quot;&gt;stateless&lt;&#x2F;a&gt;</span><br><span class="line"> *               function to apply to each element</span><br><span class="line"> * @return the new stream</span><br><span class="line"> *&#x2F;</span><br><span class="line">IntStream mapToInt(ToIntFunction&lt;? super T&gt; mapper);</span><br></pre></td></tr></table></figure>
+<h4 id="mapToInt-mapToLong-mapToDouble"><a href="#mapToInt-mapToLong-mapToDouble" class="headerlink" title="mapToInt (mapToLong  mapToDouble)"></a>mapToInt (mapToLong  mapToDouble)</h4><pre><code class="highlight plain">&#x2F;**
+ * Returns an &#123;@code IntStream&#125; consisting of the results of applying the
+ * given function to the elements of this stream.
+ *
+ * &lt;p&gt;This is an &lt;a href&#x3D;&quot;package-summary.html#StreamOps&quot;&gt;
+ *     intermediate operation&lt;&#x2F;a&gt;.
+ *
+ * @param mapper a &lt;a href&#x3D;&quot;package-summary.html#NonInterference&quot;&gt;non-interfering&lt;&#x2F;a&gt;,
+ *               &lt;a href&#x3D;&quot;package-summary.html#Statelessness&quot;&gt;stateless&lt;&#x2F;a&gt;
+ *               function to apply to each element
+ * @return the new stream
+ *&#x2F;
+IntStream mapToInt(ToIntFunction&lt;? super T&gt; mapper);</code></pre>
 
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public interface ToIntFunction&lt;T&gt; &#123;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * Applies this function to the given argument.</span><br><span class="line">     *</span><br><span class="line">     * @param value the function argument</span><br><span class="line">     * @return the function result</span><br><span class="line">     *&#x2F;</span><br><span class="line">    int applyAsInt(T value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public interface ToIntFunction&lt;T&gt; &#123;
+
+    &#x2F;**
+     * Applies this function to the given argument.
+     *
+     * @param value the function argument
+     * @return the function result
+     *&#x2F;
+    int applyAsInt(T value);
+&#125;</code></pre>
 
 <p>实现ToIntFunction，将集合中元素转化为int类型，返回一个IntStream</p>
 <h4 id="flapMap"><a href="#flapMap" class="headerlink" title="flapMap"></a>flapMap</h4><p><code>&lt;R&gt; Stream&lt;R&gt; flatMap(Function&lt;? super T, ? extends Stream&lt;? extends R&gt;&gt; mapper);</code></p>
 <p>与map方法的区别是，Function返回的是Stream，意味着Function方法中可以返回含有多个元素的Stream，最后会将所有Stream合并并返回一个Stream</p>
 <p>例子：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Stream&lt;List&lt;Integer&gt;&gt; integerListStream &#x3D; Stream.of(</span><br><span class="line">		  Arrays.asList(1, 4), </span><br><span class="line">		  Arrays.asList(3, 2), </span><br><span class="line">		  Arrays.asList(5)</span><br><span class="line">		);</span><br><span class="line">integerListStream.flatMap(i-&gt;Stream.of(i.toArray())).forEach(System.out::println);</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">Stream&lt;List&lt;Integer&gt;&gt; integerListStream &#x3D; Stream.of(
+		  Arrays.asList(1, 4), 
+		  Arrays.asList(3, 2), 
+		  Arrays.asList(5)
+		);
+integerListStream.flatMap(i-&gt;Stream.of(i.toArray())).forEach(System.out::println);</code></pre>
 
 <p><code>1,4,3,2,5</code></p>
-<h4 id="flapMapToInt-flapMapToDouble-flapMapToLong"><a href="#flapMapToInt-flapMapToDouble-flapMapToLong" class="headerlink" title="flapMapToInt(flapMapToDouble flapMapToLong)"></a>flapMapToInt(flapMapToDouble flapMapToLong)</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">IntStream flatMapToInt(Function&lt;? super T, ? extends IntStream&gt; mapper);</span><br></pre></td></tr></table></figure>
+<h4 id="flapMapToInt-flapMapToDouble-flapMapToLong"><a href="#flapMapToInt-flapMapToDouble-flapMapToLong" class="headerlink" title="flapMapToInt(flapMapToDouble flapMapToLong)"></a>flapMapToInt(flapMapToDouble flapMapToLong)</h4><pre><code class="highlight plain">IntStream flatMapToInt(Function&lt;? super T, ? extends IntStream&gt; mapper);</code></pre>
 
 <p>与flapMap方法类似，Function返回的是IntStream，将多个IntStream合并然后返回一个IntStream</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Stream&lt;List&lt;String&gt;&gt; stringListStream &#x3D; Stream.of(</span><br><span class="line">		  Arrays.asList(&quot;1&quot;,&quot;4&quot;), </span><br><span class="line">		  Arrays.asList(&quot;3&quot;,&quot;2&quot;), </span><br><span class="line">		  Arrays.asList(&quot;5&quot;)</span><br><span class="line">		);</span><br><span class="line">stringListStream.flatMapToInt(i-&gt;i.stream().mapToInt(Integer::valueOf)).forEach(System.out::println);</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">Stream&lt;List&lt;String&gt;&gt; stringListStream &#x3D; Stream.of(
+		  Arrays.asList(&quot;1&quot;,&quot;4&quot;), 
+		  Arrays.asList(&quot;3&quot;,&quot;2&quot;), 
+		  Arrays.asList(&quot;5&quot;)
+		);
+stringListStream.flatMapToInt(i-&gt;i.stream().mapToInt(Integer::valueOf)).forEach(System.out::println);</code></pre>
 
 <p><code>1,4,3,2,5</code></p>
 <h4 id="distinct"><a href="#distinct" class="headerlink" title="distinct"></a>distinct</h4><p><code>Stream&lt;T&gt; distinct();</code></p>
@@ -937,16 +1266,45 @@
 <p>获取Stream第一个元素</p>
 <h4 id="findAny"><a href="#findAny" class="headerlink" title="findAny"></a>findAny</h4><p><code>Optional&lt;T&gt; findAny();</code></p>
 <p>返回任意元素</p>
-<h4 id="of"><a href="#of" class="headerlink" title="of"></a>of</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * Returns a sequential &#123;@code Stream&#125; containing a single element.</span><br><span class="line"> *</span><br><span class="line"> * @param t the single element</span><br><span class="line"> * @param &lt;T&gt; the type of stream elements</span><br><span class="line"> * @return a singleton sequential stream</span><br><span class="line"> *&#x2F;</span><br><span class="line">public static&lt;T&gt; Stream&lt;T&gt; of(T t) &#123;</span><br><span class="line">    return StreamSupport.stream(new Streams.StreamBuilderImpl&lt;&gt;(t), false);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="of"><a href="#of" class="headerlink" title="of"></a>of</h4><pre><code class="highlight plain">&#x2F;**
+ * Returns a sequential &#123;@code Stream&#125; containing a single element.
+ *
+ * @param t the single element
+ * @param &lt;T&gt; the type of stream elements
+ * @return a singleton sequential stream
+ *&#x2F;
+public static&lt;T&gt; Stream&lt;T&gt; of(T t) &#123;
+    return StreamSupport.stream(new Streams.StreamBuilderImpl&lt;&gt;(t), false);
+&#125;</code></pre>
 
 <p>返回包含t元素的Stream</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * Returns a sequential ordered stream whose elements are the specified values.</span><br><span class="line"> *</span><br><span class="line"> * @param &lt;T&gt; the type of stream elements</span><br><span class="line"> * @param values the elements of the new stream</span><br><span class="line"> * @return the new stream</span><br><span class="line"> *&#x2F;</span><br><span class="line">@SafeVarargs</span><br><span class="line">@SuppressWarnings(&quot;varargs&quot;) &#x2F;&#x2F; Creating a stream from an array is safe</span><br><span class="line">public static&lt;T&gt; Stream&lt;T&gt; of(T... values) &#123;</span><br><span class="line">    return Arrays.stream(values);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">&#x2F;**
+ * Returns a sequential ordered stream whose elements are the specified values.
+ *
+ * @param &lt;T&gt; the type of stream elements
+ * @param values the elements of the new stream
+ * @return the new stream
+ *&#x2F;
+@SafeVarargs
+@SuppressWarnings(&quot;varargs&quot;) &#x2F;&#x2F; Creating a stream from an array is safe
+public static&lt;T&gt; Stream&lt;T&gt; of(T... values) &#123;
+    return Arrays.stream(values);
+&#125;</code></pre>
 
 <p>使用不定长度参数来创建Stream，参数可以为数组(可以Integer[]，不能是int[]）</p>
 <h3 id="方法引用与构造引用"><a href="#方法引用与构造引用" class="headerlink" title="方法引用与构造引用"></a>方法引用与构造引用</h3><p>1.方法引用，用来配合lambda表达式使用，使用情况有三种：<br>(1)对象::实例方法<br>(2)类::静态方法<br>(3)类::实例方法</p>
 <p>前两种情况中，方法引用等同于提供方法参数的lambda表达式。比如：<strong>Math::pow等同于(x, y) -&gt; Math.pow(x, y)。</strong><br>第三种情况中，第一个参数会成为执行方法的对象。比如：<strong>String::compareToIgnoreCase等同于(x, y) -&gt; x.compareToIgnoreCase(y)。</strong></p>
 <p>2.构造引用，配合supplier接口使用</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@FunctionalInterface</span><br><span class="line">public interface Supplier&lt;T&gt; &#123;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * Gets a result.</span><br><span class="line">     *</span><br><span class="line">     * @return a result</span><br><span class="line">     *&#x2F;</span><br><span class="line">    T get();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">@FunctionalInterface
+public interface Supplier&lt;T&gt; &#123;
+
+    &#x2F;**
+     * Gets a result.
+     *
+     * @return a result
+     *&#x2F;
+    T get();
+&#125;</code></pre>
 
 <p><strong>()-&gt;new class()等同于class:new</strong></p>
 
@@ -1245,17 +1603,66 @@
           
             <h3 id="缓冲流的作用"><a href="#缓冲流的作用" class="headerlink" title="缓冲流的作用"></a>缓冲流的作用</h3><p>io中有几个带有缓冲功能的装饰类，<code>BufferedInputStream</code>，<code>BufferedInputStream</code>，<code>BufferedReader</code>，BufferedWriter，不带缓冲的操作，每读一个字节就要写入一个字节，由于涉及磁盘的IO操作相比内存的操作要慢很多，所以不带缓冲的流效率很低。带缓冲的流，可以一次读很多字节，但不向磁盘中写入，只是先放到内存里。等凑够了缓冲区大小的时候一次性写入磁盘，这种方式可以减少磁盘操作次数，速度就会提高很多</p>
 <h3 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h3><p>实现缓冲的主要承载是数组，在带缓冲的字节流和字符流中分别为</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">protected volatile byte buf[]</span><br><span class="line">private char cb[];</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">protected volatile byte buf[]
+private char cb[];</code></pre>
 
 <p>他们的默认长度为</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">private static int DEFAULT_BUFFER_SIZE &#x3D; 8192;</span><br><span class="line">private static int defaultCharBufferSize &#x3D; 8192;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">private static int DEFAULT_BUFFER_SIZE &#x3D; 8192;
+private static int defaultCharBufferSize &#x3D; 8192;</code></pre>
 
 <p>查看字节流中关于从输入流中读取数据的源码，如下</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * Reads a byte of data from this input stream. This method blocks</span><br><span class="line"> * if no input is yet available.</span><br><span class="line"> *</span><br><span class="line"> * @return     the next byte of data, or &lt;code&gt;-1&lt;&#x2F;code&gt; if the end of the</span><br><span class="line"> *             file is reached.</span><br><span class="line"> * @exception  IOException  if an I&#x2F;O error occurs.</span><br><span class="line"> *&#x2F;</span><br><span class="line">public int read() throws IOException &#123;</span><br><span class="line">    return read0();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private native int read0() throws IOException;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * Reads a subarray as a sequence of bytes.</span><br><span class="line"> * @param b the data to be written</span><br><span class="line"> * @param off the start offset in the data</span><br><span class="line"> * @param len the number of bytes that are written</span><br><span class="line"> * @exception IOException If an I&#x2F;O error has occurred.</span><br><span class="line"> *&#x2F;</span><br><span class="line">private native int readBytes(byte b[], int off, int len) throws IOException;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">&#x2F;**
+ * Reads a byte of data from this input stream. This method blocks
+ * if no input is yet available.
+ *
+ * @return     the next byte of data, or &lt;code&gt;-1&lt;&#x2F;code&gt; if the end of the
+ *             file is reached.
+ * @exception  IOException  if an I&#x2F;O error occurs.
+ *&#x2F;
+public int read() throws IOException &#123;
+    return read0();
+&#125;
+
+private native int read0() throws IOException;
+
+&#x2F;**
+ * Reads a subarray as a sequence of bytes.
+ * @param b the data to be written
+ * @param off the start offset in the data
+ * @param len the number of bytes that are written
+ * @exception IOException If an I&#x2F;O error has occurred.
+ *&#x2F;
+private native int readBytes(byte b[], int off, int len) throws IOException;</code></pre>
 
 <p><code>native</code>是用做java 和其他语言（如c++）进行协作时使用的，也就是<code>native</code> 后的函数的实现不是用java写的。从<br>文档中可以知道，<code>read0()</code>每次在输入流中读取一个字节的数据，而<code>readBytes(byte b[], int off, int len)</code>读取一段数据。</p>
 <p>查看字符流中关于从输入流中读取数据的源码，找到字节流转化为字符流的类<code>InputStreamReader</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * Reads a single character.</span><br><span class="line"> *</span><br><span class="line"> * @return The character read, or -1 if the end of the stream has been</span><br><span class="line"> *         reached</span><br><span class="line"> *</span><br><span class="line"> * @exception  IOException  If an I&#x2F;O error occurs</span><br><span class="line"> *&#x2F;</span><br><span class="line">public int read() throws IOException &#123;</span><br><span class="line">    return sd.read();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * Reads characters into a portion of an array.</span><br><span class="line"> *</span><br><span class="line"> * @param      cbuf     Destination buffer</span><br><span class="line"> * @param      offset   Offset at which to start storing characters</span><br><span class="line"> * @param      length   Maximum number of characters to read</span><br><span class="line"> *</span><br><span class="line"> * @return     The number of characters read, or -1 if the end of the</span><br><span class="line"> *             stream has been reached</span><br><span class="line"> *</span><br><span class="line"> * @exception  IOException  If an I&#x2F;O error occurs</span><br><span class="line"> *&#x2F;</span><br><span class="line">public int read(char cbuf[], int offset, int length) throws IOException &#123;</span><br><span class="line">    return sd.read(cbuf, offset, length);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">&#x2F;**
+ * Reads a single character.
+ *
+ * @return The character read, or -1 if the end of the stream has been
+ *         reached
+ *
+ * @exception  IOException  If an I&#x2F;O error occurs
+ *&#x2F;
+public int read() throws IOException &#123;
+    return sd.read();
+&#125;
+
+&#x2F;**
+ * Reads characters into a portion of an array.
+ *
+ * @param      cbuf     Destination buffer
+ * @param      offset   Offset at which to start storing characters
+ * @param      length   Maximum number of characters to read
+ *
+ * @return     The number of characters read, or -1 if the end of the
+ *             stream has been reached
+ *
+ * @exception  IOException  If an I&#x2F;O error occurs
+ *&#x2F;
+public int read(char cbuf[], int offset, int length) throws IOException &#123;
+    return sd.read(cbuf, offset, length);
+&#125;</code></pre>
 
 <p>字节流转化为字符流依靠<code>StreamDecode</code>r这个类，创建<code>InputStreamRreader</code>时可以制定编码模式。可以看出两种方法也是同样分为了一次读取一个和一段的区别。</p>
 <p>对于输出流也一样，就不再写了。</p>
@@ -1264,25 +1671,121 @@
 <ol>
 <li>仅仅使用字节流，且不使用数组接收(使用数组的话，会调用readBytes方法，一次从输入流读取多个数据)</li>
 </ol>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@org.junit.Test</span><br><span class="line">public void test() &#123;</span><br><span class="line">	FileInputStream fis &#x3D; null;</span><br><span class="line">	FileOutputStream fos &#x3D; null;</span><br><span class="line">	try &#123;</span><br><span class="line">		fis &#x3D; new FileInputStream(&quot;C:&#x2F;Users&#x2F;18813&#x2F;Desktop&#x2F;copy.tif&quot;);</span><br><span class="line">		fos &#x3D; new FileOutputStream(&quot;C:&#x2F;Users&#x2F;18813&#x2F;Desktop&#x2F;copy2.tif&quot;);</span><br><span class="line">		int b;</span><br><span class="line">		long start &#x3D; System.currentTimeMillis();</span><br><span class="line">		while((b&#x3D;fis.read()) !&#x3D; -1)&#123;</span><br><span class="line">			fos.write(b);</span><br><span class="line">		&#125;</span><br><span class="line">		long cost &#x3D; System.currentTimeMillis() - start;</span><br><span class="line">		System.out.println(&quot;耗时:&quot;+cost);</span><br><span class="line">	&#125; catch (Exception e) &#123;</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">		e.printStackTrace();</span><br><span class="line">	&#125;finally &#123;</span><br><span class="line">		try &#123;</span><br><span class="line">			fis.close();</span><br><span class="line">			fos.close();</span><br><span class="line">		&#125; catch (IOException e) &#123;</span><br><span class="line">			&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">@org.junit.Test
+public void test() &#123;
+	FileInputStream fis &#x3D; null;
+	FileOutputStream fos &#x3D; null;
+	try &#123;
+		fis &#x3D; new FileInputStream(&quot;C:&#x2F;Users&#x2F;18813&#x2F;Desktop&#x2F;copy.tif&quot;);
+		fos &#x3D; new FileOutputStream(&quot;C:&#x2F;Users&#x2F;18813&#x2F;Desktop&#x2F;copy2.tif&quot;);
+		int b;
+		long start &#x3D; System.currentTimeMillis();
+		while((b&#x3D;fis.read()) !&#x3D; -1)&#123;
+			fos.write(b);
+		&#125;
+		long cost &#x3D; System.currentTimeMillis() - start;
+		System.out.println(&quot;耗时:&quot;+cost);
+	&#125; catch (Exception e) &#123;
+		&#x2F;&#x2F; TODO Auto-generated catch block
+		e.printStackTrace();
+	&#125;finally &#123;
+		try &#123;
+			fis.close();
+			fos.close();
+		&#125; catch (IOException e) &#123;
+			&#x2F;&#x2F; TODO Auto-generated catch block
+			e.printStackTrace();
+		&#125;
+	&#125;
+&#125;</code></pre>
 
 <p>耗时:2859775ms，约为47.66分钟，这种每次读取一个字节，然后写入一个字节的模式很耗时间</p>
 <ol start="2">
 <li>下面使用普通字节流，但使用数组读取写入(io效率提升，每次读取和写入都是调用readBytes和writeBytes方法，一次读写多个数据)</li>
 </ol>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@org.junit.Test</span><br><span class="line">public void test2()&#123;</span><br><span class="line">	FileInputStream fis &#x3D; null;</span><br><span class="line">	FileOutputStream fos &#x3D; null;</span><br><span class="line">	try &#123;</span><br><span class="line">		fis &#x3D; new FileInputStream(&quot;C:&#x2F;Users&#x2F;18813&#x2F;Desktop&#x2F;copy.tif&quot;);</span><br><span class="line">		fos &#x3D; new FileOutputStream(&quot;C:&#x2F;Users&#x2F;18813&#x2F;Desktop&#x2F;copy2.tif&quot;);</span><br><span class="line">		byte b[] &#x3D; new byte[4096];</span><br><span class="line">		long start &#x3D; System.currentTimeMillis();</span><br><span class="line">		while((fis.read(b)) !&#x3D; -1)&#123;</span><br><span class="line">			fos.write(b);</span><br><span class="line">		&#125;</span><br><span class="line">		long cost &#x3D; System.currentTimeMillis() - start;</span><br><span class="line">		System.out.println(&quot;耗时:&quot;+cost);</span><br><span class="line">	&#125; catch (Exception e) &#123;</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">		e.printStackTrace();</span><br><span class="line">	&#125;finally &#123;</span><br><span class="line">		try &#123;</span><br><span class="line">			fis.close();</span><br><span class="line">			fos.close();</span><br><span class="line">		&#125; catch (IOException e) &#123;</span><br><span class="line">			&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">@org.junit.Test
+public void test2()&#123;
+	FileInputStream fis &#x3D; null;
+	FileOutputStream fos &#x3D; null;
+	try &#123;
+		fis &#x3D; new FileInputStream(&quot;C:&#x2F;Users&#x2F;18813&#x2F;Desktop&#x2F;copy.tif&quot;);
+		fos &#x3D; new FileOutputStream(&quot;C:&#x2F;Users&#x2F;18813&#x2F;Desktop&#x2F;copy2.tif&quot;);
+		byte b[] &#x3D; new byte[4096];
+		long start &#x3D; System.currentTimeMillis();
+		while((fis.read(b)) !&#x3D; -1)&#123;
+			fos.write(b);
+		&#125;
+		long cost &#x3D; System.currentTimeMillis() - start;
+		System.out.println(&quot;耗时:&quot;+cost);
+	&#125; catch (Exception e) &#123;
+		&#x2F;&#x2F; TODO Auto-generated catch block
+		e.printStackTrace();
+	&#125;finally &#123;
+		try &#123;
+			fis.close();
+			fos.close();
+		&#125; catch (IOException e) &#123;
+			&#x2F;&#x2F; TODO Auto-generated catch block
+			e.printStackTrace();
+		&#125;
+	&#125;
+&#125;</code></pre>
 
 <p>耗时:1640ms，约为1.64秒，单看读写上的区别，第一种每次读写1个字节，第二种每次读写4096个字节，效率提升4096倍，但一次读写4096字节的数据花费时间也比读写1个字节多，所以实际只提升了1743倍。</p>
 <ol start="3">
 <li>下面使用带缓冲的字节流，默认缓冲长度8192，但每次向缓冲中只读写1个字节。</li>
 </ol>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@org.junit.Test</span><br><span class="line">public void test3()&#123;</span><br><span class="line">	BufferedInputStream bis &#x3D; null;</span><br><span class="line">	BufferedOutputStream bos &#x3D; null;</span><br><span class="line">	try &#123;</span><br><span class="line">		bis &#x3D; new BufferedInputStream(new FileInputStream(&quot;C:&#x2F;Users&#x2F;18813&#x2F;Desktop&#x2F;copy.tif&quot;));</span><br><span class="line">		bos &#x3D; new BufferedOutputStream(new FileOutputStream(&quot;C:&#x2F;Users&#x2F;18813&#x2F;Desktop&#x2F;copy2.tif&quot;));</span><br><span class="line">		int b;</span><br><span class="line">		long start &#x3D; System.currentTimeMillis();</span><br><span class="line">		while((b&#x3D;bis.read()) !&#x3D; -1)&#123;</span><br><span class="line">			bos.write(b);</span><br><span class="line">		&#125;</span><br><span class="line">		long cost &#x3D; System.currentTimeMillis() - start;</span><br><span class="line">		System.out.println(&quot;耗时:&quot;+cost);</span><br><span class="line">	&#125; catch (Exception e) &#123;</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">		e.printStackTrace();</span><br><span class="line">	&#125;finally &#123;</span><br><span class="line">		try &#123;</span><br><span class="line">			bis.close();</span><br><span class="line">			bos.close();</span><br><span class="line">		&#125; catch (IOException e) &#123;</span><br><span class="line">			&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">@org.junit.Test
+public void test3()&#123;
+	BufferedInputStream bis &#x3D; null;
+	BufferedOutputStream bos &#x3D; null;
+	try &#123;
+		bis &#x3D; new BufferedInputStream(new FileInputStream(&quot;C:&#x2F;Users&#x2F;18813&#x2F;Desktop&#x2F;copy.tif&quot;));
+		bos &#x3D; new BufferedOutputStream(new FileOutputStream(&quot;C:&#x2F;Users&#x2F;18813&#x2F;Desktop&#x2F;copy2.tif&quot;));
+		int b;
+		long start &#x3D; System.currentTimeMillis();
+		while((b&#x3D;bis.read()) !&#x3D; -1)&#123;
+			bos.write(b);
+		&#125;
+		long cost &#x3D; System.currentTimeMillis() - start;
+		System.out.println(&quot;耗时:&quot;+cost);
+	&#125; catch (Exception e) &#123;
+		&#x2F;&#x2F; TODO Auto-generated catch block
+		e.printStackTrace();
+	&#125;finally &#123;
+		try &#123;
+			bis.close();
+			bos.close();
+		&#125; catch (IOException e) &#123;
+			&#x2F;&#x2F; TODO Auto-generated catch block
+			e.printStackTrace();
+		&#125;
+	&#125;
+&#125;</code></pre>
 
 <p>耗时:21837ms，约为21.837秒，比起第二种方法多使用了20秒，从源码上看区别是，这种方法在读写过程中需要通过输入流缓冲数组，它先读取8192字节数据到缓冲数组，然后再从缓冲数组中取1字节数据(全部取完后，重新读取8192字节数组到输入流缓冲数组)，再将这个字节写入到8192个字节的输出流缓冲数组，输出流缓冲数组满了后将缓冲数组中所有数组一次写入输出流。而第二种方法是直接从输入流和输出流中一次读写4096字节数组。</p>
 <ol start="4">
 <li>将第三种方法改进，每次读写4096字节(8192字节的话，和默认缓冲数组长度相等，将不使用缓冲)</li>
 </ol>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@org.junit.Test</span><br><span class="line">public void test4()&#123;</span><br><span class="line">	BufferedInputStream bis &#x3D; null;</span><br><span class="line">	BufferedOutputStream bos &#x3D; null;</span><br><span class="line">	try &#123;</span><br><span class="line">		bis &#x3D; new BufferedInputStream(new FileInputStream(&quot;C:&#x2F;Users&#x2F;18813&#x2F;Desktop&#x2F;copy.tif&quot;));</span><br><span class="line">		bos &#x3D; new BufferedOutputStream(new FileOutputStream(&quot;C:&#x2F;Users&#x2F;18813&#x2F;Desktop&#x2F;copy2.tif&quot;));</span><br><span class="line">		byte b[] &#x3D; new byte[4096];</span><br><span class="line">		long start &#x3D; System.currentTimeMillis();</span><br><span class="line">		while((bis.read(b)) !&#x3D; -1)&#123;</span><br><span class="line">			bos.write(b);</span><br><span class="line">		&#125;</span><br><span class="line">		long cost &#x3D; System.currentTimeMillis() - start;</span><br><span class="line">		System.out.println(&quot;耗时:&quot;+cost);</span><br><span class="line">	&#125; catch (Exception e) &#123;</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">		e.printStackTrace();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">@org.junit.Test
+public void test4()&#123;
+	BufferedInputStream bis &#x3D; null;
+	BufferedOutputStream bos &#x3D; null;
+	try &#123;
+		bis &#x3D; new BufferedInputStream(new FileInputStream(&quot;C:&#x2F;Users&#x2F;18813&#x2F;Desktop&#x2F;copy.tif&quot;));
+		bos &#x3D; new BufferedOutputStream(new FileOutputStream(&quot;C:&#x2F;Users&#x2F;18813&#x2F;Desktop&#x2F;copy2.tif&quot;));
+		byte b[] &#x3D; new byte[4096];
+		long start &#x3D; System.currentTimeMillis();
+		while((bis.read(b)) !&#x3D; -1)&#123;
+			bos.write(b);
+		&#125;
+		long cost &#x3D; System.currentTimeMillis() - start;
+		System.out.println(&quot;耗时:&quot;+cost);
+	&#125; catch (Exception e) &#123;
+		&#x2F;&#x2F; TODO Auto-generated catch block
+		e.printStackTrace();
+	&#125;
+&#125;</code></pre>
 <p>耗时:1098ms，约为1s，时间比第二种短的原因在默认的缓冲数组的长度为8192，每次读写8192字节长度数据，并且每次从缓冲流的读写为4096字节。但如果第二种方法每次读取长度不是4096而是大于8192，即缓冲数组的长度，则第二种方法速度更快。这样看来第二种方法有种手动使用缓冲的意思。</p>
 
           
@@ -1432,200 +1935,105 @@
 <hr>
 <p>得到这样一个结构图就能更好的理解io，以装饰类<code>BufferedInputStream</code>为例，如果使用继承的方法，那么要为具体构件例如<code>ByteArrayInputStream</code>，<code>FileInputStream</code>等都添加缓冲功能，需要为他们都设计一个子类，而现在，只需要将他们传入<code>BufferedInputStream</code>中，就能获取相应的带缓冲的流。</p>
 <p>首先看构造方法，需要传入一个普通字节输入流</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public BufferedInputStream(InputStream in) &#123;</span><br><span class="line">    this(in, DEFAULT_BUFFER_SIZE);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public BufferedInputStream(InputStream in, int size) &#123;</span><br><span class="line">    super(in);</span><br><span class="line">    if (size &lt;&#x3D; 0) &#123;</span><br><span class="line">        throw new IllegalArgumentException(&quot;Buffer size &lt;&#x3D; 0&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    buf &#x3D; new byte[size];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public BufferedInputStream(InputStream in) &#123;
+    this(in, DEFAULT_BUFFER_SIZE);
+&#125;
+
+public BufferedInputStream(InputStream in, int size) &#123;
+    super(in);
+    if (size &lt;&#x3D; 0) &#123;
+        throw new IllegalArgumentException(&quot;Buffer size &lt;&#x3D; 0&quot;);
+    &#125;
+    buf &#x3D; new byte[size];
+&#125;</code></pre>
 
 <p>接着，装饰类中新定义一个字节数组作为缓冲区</p>
 <p><code>protected volatile byte buf[]</code></p>
 <p>接下来我们看装饰类是怎么让普通的输入流用上缓冲的,这是装饰类中的read方法，在调用普通输入流的read方法前后进行了一系列操作(对read方法进行修饰)。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public synchronized int read(byte b[], int off, int len)</span><br><span class="line">    throws IOException</span><br><span class="line">&#123;</span><br><span class="line">    getBufIfOpen(); &#x2F;&#x2F; Check for closed stream</span><br><span class="line">    if ((off | len | (off + len) | (b.length - (off + len))) &lt; 0) &#123;</span><br><span class="line">        throw new IndexOutOfBoundsException();</span><br><span class="line">    &#125; else if (len &#x3D;&#x3D; 0) &#123;</span><br><span class="line">        return 0;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    int n &#x3D; 0;</span><br><span class="line">    for (;;) &#123;</span><br><span class="line">        int nread &#x3D; read1(b, off + n, len - n);&#x2F;&#x2F;此处跳入read1方法</span><br><span class="line">        if (nread &lt;&#x3D; 0)</span><br><span class="line">            return (n &#x3D;&#x3D; 0) ? nread : n;</span><br><span class="line">        n +&#x3D; nread;</span><br><span class="line">        if (n &gt;&#x3D; len)</span><br><span class="line">            return n;</span><br><span class="line">        &#x2F;&#x2F; if not closed but no bytes available, return</span><br><span class="line">        InputStream input &#x3D; in;</span><br><span class="line">        if (input !&#x3D; null &amp;&amp; input.available() &lt;&#x3D; 0)</span><br><span class="line">            return n;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private int read1(byte[] b, int off, int len) throws IOException &#123;</span><br><span class="line">    int avail &#x3D; count - pos;</span><br><span class="line">    if (avail &lt;&#x3D; 0) &#123;</span><br><span class="line">        &#x2F;* If the requested length is at least as large as the buffer, and</span><br><span class="line">           if there is no mark&#x2F;reset activity, do not bother to copy the</span><br><span class="line">           bytes into the local buffer.  In this way buffered streams will</span><br><span class="line">           cascade harmlessly. *&#x2F;</span><br><span class="line">        if (len &gt;&#x3D; getBufIfOpen().length &amp;&amp; markpos &lt; 0) &#123;</span><br><span class="line">            return getInIfOpen().read(b, off, len);&#x2F;&#x2F;这里调用了普通输入流的read方法，读取长度超过缓冲默认长度时，不使用缓冲直接读取。</span><br><span class="line">        &#125;</span><br><span class="line">        fill();&#x2F;&#x2F;填充缓冲区，进入这个方法</span><br><span class="line">        avail &#x3D; count - pos;</span><br><span class="line">        if (avail &lt;&#x3D; 0) return -1;</span><br><span class="line">    &#125;</span><br><span class="line">    int cnt &#x3D; (avail &lt; len) ? avail : len;</span><br><span class="line">    System.arraycopy(getBufIfOpen(), pos, b, off, cnt);</span><br><span class="line">    pos +&#x3D; cnt;</span><br><span class="line">    return cnt;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">private void fill() throws IOException &#123;</span><br><span class="line">    byte[] buffer &#x3D; getBufIfOpen();</span><br><span class="line">    if (markpos &lt; 0)</span><br><span class="line">        pos &#x3D; 0;            &#x2F;* no mark: throw away the buffer *&#x2F;</span><br><span class="line">    else if (pos &gt;&#x3D; buffer.length)  &#x2F;* no room left in buffer *&#x2F;</span><br><span class="line">        if (markpos &gt; 0) &#123;  &#x2F;* can throw away early part of the buffer *&#x2F;</span><br><span class="line">            int sz &#x3D; pos - markpos;</span><br><span class="line">            System.arraycopy(buffer, markpos, buffer, 0, sz);</span><br><span class="line">            pos &#x3D; sz;</span><br><span class="line">            markpos &#x3D; 0;</span><br><span class="line">        &#125; else if (buffer.length &gt;&#x3D; marklimit) &#123;</span><br><span class="line">            markpos &#x3D; -1;   &#x2F;* buffer got too big, invalidate mark *&#x2F;</span><br><span class="line">            pos &#x3D; 0;        &#x2F;* drop buffer contents *&#x2F;</span><br><span class="line">        &#125; else if (buffer.length &gt;&#x3D; MAX_BUFFER_SIZE) &#123;</span><br><span class="line">            throw new OutOfMemoryError(&quot;Required array size too large&quot;);</span><br><span class="line">        &#125; else &#123;            &#x2F;* grow buffer *&#x2F;</span><br><span class="line">            int nsz &#x3D; (pos &lt;&#x3D; MAX_BUFFER_SIZE - pos) ?</span><br><span class="line">                    pos * 2 : MAX_BUFFER_SIZE;</span><br><span class="line">            if (nsz &gt; marklimit)</span><br><span class="line">                nsz &#x3D; marklimit;</span><br><span class="line">            byte nbuf[] &#x3D; new byte[nsz];</span><br><span class="line">            System.arraycopy(buffer, 0, nbuf, 0, pos);</span><br><span class="line">            if (!bufUpdater.compareAndSet(this, buffer, nbuf)) &#123;</span><br><span class="line">                &#x2F;&#x2F; Can&#39;t replace buf if there was an async close.</span><br><span class="line">                &#x2F;&#x2F; Note: This would need to be changed if fill()</span><br><span class="line">                &#x2F;&#x2F; is ever made accessible to multiple threads.</span><br><span class="line">                &#x2F;&#x2F; But for now, the only way CAS can fail is via close.</span><br><span class="line">                &#x2F;&#x2F; assert buf &#x3D;&#x3D; null;</span><br><span class="line">                throw new IOException(&quot;Stream closed&quot;);</span><br><span class="line">            &#125;</span><br><span class="line">            buffer &#x3D; nbuf;</span><br><span class="line">        &#125;</span><br><span class="line">    count &#x3D; pos;</span><br><span class="line">    int n &#x3D; getInIfOpen().read(buffer, pos, buffer.length - pos);&#x2F;&#x2F;在这个地方又再次调用普通输入流的read方法，一次读取默认长度8192个长度的数据到缓冲区</span><br><span class="line">    if (n &gt; 0)</span><br><span class="line">        count &#x3D; n + pos;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public synchronized int read(byte b[], int off, int len)
+    throws IOException
+&#123;
+    getBufIfOpen(); &#x2F;&#x2F; Check for closed stream
+    if ((off | len | (off + len) | (b.length - (off + len))) &lt; 0) &#123;
+        throw new IndexOutOfBoundsException();
+    &#125; else if (len &#x3D;&#x3D; 0) &#123;
+        return 0;
+    &#125;
+
+    int n &#x3D; 0;
+    for (;;) &#123;
+        int nread &#x3D; read1(b, off + n, len - n);&#x2F;&#x2F;此处跳入read1方法
+        if (nread &lt;&#x3D; 0)
+            return (n &#x3D;&#x3D; 0) ? nread : n;
+        n +&#x3D; nread;
+        if (n &gt;&#x3D; len)
+            return n;
+        &#x2F;&#x2F; if not closed but no bytes available, return
+        InputStream input &#x3D; in;
+        if (input !&#x3D; null &amp;&amp; input.available() &lt;&#x3D; 0)
+            return n;
+    &#125;
+&#125;
+
+private int read1(byte[] b, int off, int len) throws IOException &#123;
+    int avail &#x3D; count - pos;
+    if (avail &lt;&#x3D; 0) &#123;
+        &#x2F;* If the requested length is at least as large as the buffer, and
+           if there is no mark&#x2F;reset activity, do not bother to copy the
+           bytes into the local buffer.  In this way buffered streams will
+           cascade harmlessly. *&#x2F;
+        if (len &gt;&#x3D; getBufIfOpen().length &amp;&amp; markpos &lt; 0) &#123;
+            return getInIfOpen().read(b, off, len);&#x2F;&#x2F;这里调用了普通输入流的read方法，读取长度超过缓冲默认长度时，不使用缓冲直接读取。
+        &#125;
+        fill();&#x2F;&#x2F;填充缓冲区，进入这个方法
+        avail &#x3D; count - pos;
+        if (avail &lt;&#x3D; 0) return -1;
+    &#125;
+    int cnt &#x3D; (avail &lt; len) ? avail : len;
+    System.arraycopy(getBufIfOpen(), pos, b, off, cnt);
+    pos +&#x3D; cnt;
+    return cnt;
+&#125;
+
+
+private void fill() throws IOException &#123;
+    byte[] buffer &#x3D; getBufIfOpen();
+    if (markpos &lt; 0)
+        pos &#x3D; 0;            &#x2F;* no mark: throw away the buffer *&#x2F;
+    else if (pos &gt;&#x3D; buffer.length)  &#x2F;* no room left in buffer *&#x2F;
+        if (markpos &gt; 0) &#123;  &#x2F;* can throw away early part of the buffer *&#x2F;
+            int sz &#x3D; pos - markpos;
+            System.arraycopy(buffer, markpos, buffer, 0, sz);
+            pos &#x3D; sz;
+            markpos &#x3D; 0;
+        &#125; else if (buffer.length &gt;&#x3D; marklimit) &#123;
+            markpos &#x3D; -1;   &#x2F;* buffer got too big, invalidate mark *&#x2F;
+            pos &#x3D; 0;        &#x2F;* drop buffer contents *&#x2F;
+        &#125; else if (buffer.length &gt;&#x3D; MAX_BUFFER_SIZE) &#123;
+            throw new OutOfMemoryError(&quot;Required array size too large&quot;);
+        &#125; else &#123;            &#x2F;* grow buffer *&#x2F;
+            int nsz &#x3D; (pos &lt;&#x3D; MAX_BUFFER_SIZE - pos) ?
+                    pos * 2 : MAX_BUFFER_SIZE;
+            if (nsz &gt; marklimit)
+                nsz &#x3D; marklimit;
+            byte nbuf[] &#x3D; new byte[nsz];
+            System.arraycopy(buffer, 0, nbuf, 0, pos);
+            if (!bufUpdater.compareAndSet(this, buffer, nbuf)) &#123;
+                &#x2F;&#x2F; Can&#39;t replace buf if there was an async close.
+                &#x2F;&#x2F; Note: This would need to be changed if fill()
+                &#x2F;&#x2F; is ever made accessible to multiple threads.
+                &#x2F;&#x2F; But for now, the only way CAS can fail is via close.
+                &#x2F;&#x2F; assert buf &#x3D;&#x3D; null;
+                throw new IOException(&quot;Stream closed&quot;);
+            &#125;
+            buffer &#x3D; nbuf;
+        &#125;
+    count &#x3D; pos;
+    int n &#x3D; getInIfOpen().read(buffer, pos, buffer.length - pos);&#x2F;&#x2F;在这个地方又再次调用普通输入流的read方法，一次读取默认长度8192个长度的数据到缓冲区
+    if (n &gt; 0)
+        count &#x3D; n + pos;
+&#125;</code></pre>
 <p>就这样，BufferedInputStream就成了带缓冲区的字节输入流，通过使用装饰者模式，对普通输入流的read方法添加修改，扩充了普通输入流的功能。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/fail-fast%20fail-safe/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/fail-fast%20fail-safe/" itemprop="url">fail-fast与fail-safe</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="fail-fast"><a href="#fail-fast" class="headerlink" title="fail-fast"></a>fail-fast</h3><p>java.util 包中的集合类都返回 fail-fast 迭代器，意味着在使用iterator遍历集合时，如果改变集合结构，将会抛出ConcurrentModificationException</p>
-<p>下面以ArrayList为例分析</p>
-<p>ArrayList继承于AbstractList，而AbstractList中定义了一个protected transient int modCount = 0，那么这个变量有什么作用呢</p>
-<p>我们看ArrayList中实现了Iterator接口的私有内部类ltr，有个变量接收了这个modCount</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int expectedModCount &#x3D; modCount;</span><br></pre></td></tr></table></figure>
-
-<p>当我们获取集合的迭代器对象Iterator时，这个动作发生</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public Iterator&lt;E&gt; iterator() &#123;</span><br><span class="line">    return new Itr();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>然后看看改变集合结构的几个方法，例如add,remove</p>
-<p>add方法：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public boolean add(E e) &#123;</span><br><span class="line">    ensureCapacityInternal(size + 1);  &#x2F;&#x2F; Increments modCount!!</span><br><span class="line">    elementData[size++] &#x3D; e;</span><br><span class="line">    return true;</span><br><span class="line">&#125;</span><br><span class="line">private void ensureCapacityInternal(int minCapacity) &#123;</span><br><span class="line">    if (elementData &#x3D;&#x3D; DEFAULTCAPACITY_EMPTY_ELEMENTDATA) &#123;</span><br><span class="line">        minCapacity &#x3D; Math.max(DEFAULT_CAPACITY, minCapacity);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ensureExplicitCapacity(minCapacity);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private void ensureExplicitCapacity(int minCapacity) &#123;</span><br><span class="line">    modCount++;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; overflow-conscious code</span><br><span class="line">    if (minCapacity - elementData.length &gt; 0)</span><br><span class="line">        grow(minCapacity);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>remove方法：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public E remove(int index) &#123;</span><br><span class="line">    rangeCheck(index);</span><br><span class="line"></span><br><span class="line">    modCount++;</span><br><span class="line">    E oldValue &#x3D; elementData(index);</span><br><span class="line"></span><br><span class="line">    int numMoved &#x3D; size - index - 1;</span><br><span class="line">    if (numMoved &gt; 0)</span><br><span class="line">        System.arraycopy(elementData, index+1, elementData, index,</span><br><span class="line">                         numMoved);</span><br><span class="line">    elementData[--size] &#x3D; null; &#x2F;&#x2F; clear to let GC do its work</span><br><span class="line"></span><br><span class="line">    return oldValue;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>我们发现在这些操作中都会将集合自身变量modCount自增1，会造成什么影响呢，接着往下看</strong></p>
-<p>迭代器Iterator中的next()方法中调用了checkForComodification()</p>
-<p>查看方法checkForComodification：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">final void checkForComodification() &#123;</span><br><span class="line">          if (modCount !&#x3D; expectedModCount)</span><br><span class="line">              throw new ConcurrentModificationException();</span><br><span class="line">      &#125;</span><br></pre></td></tr></table></figure>
-
-<p>可以看到我们在获取下个元素时，Iterator会先比较modCount和expectedModCount，如果我们在迭代器遍历时调用了add或者remove等改变集合结构的方法时，modCount自增了，而expectedModCount不变，所以在此处会抛出ConcurrentModificationException</p>
-<p>但是如果是在我们自己遍历集合时想修改集合结构，而且不是多线程环境中的话，我们可以看Iterator中给我们提供的方法，在ArrayList中的内部类Iterator中给我们提供了一个remove方法</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void remove() &#123;</span><br><span class="line">    if (lastRet &lt; 0)</span><br><span class="line">        throw new IllegalStateException();</span><br><span class="line">    checkForComodification();</span><br><span class="line"></span><br><span class="line">    try &#123;</span><br><span class="line">        ArrayList.this.remove(lastRet);</span><br><span class="line">        cursor &#x3D; lastRet;</span><br><span class="line">        lastRet &#x3D; -1;</span><br><span class="line">        expectedModCount &#x3D; modCount;</span><br><span class="line">    &#125; catch (IndexOutOfBoundsException ex) &#123;</span><br><span class="line">        throw new ConcurrentModificationException();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>我们可以看到在移除元素后，重新对expectedModCount赋值，所以checkForComodification()不会抛出异常</p>
-<p>ArrayList还提供了一个更丰富的ListIterator内部类，是一个双向迭代器，可以双向遍历，在这里比Iterator多了add方法</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">    public void add(E e) &#123;</span><br><span class="line">        checkForComodification();</span><br><span class="line"></span><br><span class="line">        try &#123;</span><br><span class="line">            int i &#x3D; cursor;</span><br><span class="line">            ArrayList.this.add(i, e);</span><br><span class="line">            cursor &#x3D; i + 1;</span><br><span class="line">            lastRet &#x3D; -1;</span><br><span class="line">            expectedModCount &#x3D; modCount;</span><br><span class="line">        &#125; catch (IndexOutOfBoundsException ex) &#123;</span><br><span class="line">            throw new ConcurrentModificationException();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>依旧是处理了expectedModCount = modCount。</p>
-<h3 id="fail-safe"><a href="#fail-safe" class="headerlink" title="fail-safe"></a>fail-safe</h3><p>以ArrayList的替代类CopyOnWriteArrayList为例分析，CopyOnWriteArrayList为何物？ArrayList 的一个线程安全的变体，其中所有可变操作（add、set 等等）都是通过对底层数组进行一次新的复制来实现的。 该类产生的开销比较大，但是在两种情况下，它非常适合使用。</p>
-<ol>
-<li>在不能或不想进行同步遍历，但又需要从并发线程中排除冲突时。</li>
-<li>当遍历操作的数量大大超过可变操作的数量时。</li>
-</ol>
-<p>查看迭代器</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public E next() &#123;</span><br><span class="line">    if (! hasNext())</span><br><span class="line">        throw new NoSuchElementException();</span><br><span class="line">    return (E) snapshot[cursor++];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>没有像ArrayList的迭代器一样，它不需要检查expectedModCount = modCount</p>
-<p>再看add方法</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public boolean add(E paramE) &#123;    </span><br><span class="line">        ReentrantLock localReentrantLock &#x3D; this.lock;    </span><br><span class="line">        localReentrantLock.lock();    </span><br><span class="line">        try &#123;    </span><br><span class="line">            Object[] arrayOfObject1 &#x3D; getArray();    </span><br><span class="line">            int i &#x3D; arrayOfObject1.length;    </span><br><span class="line">            Object[] arrayOfObject2 &#x3D; Arrays.copyOf(arrayOfObject1, i + 1);    </span><br><span class="line">            arrayOfObject2[i] &#x3D; paramE;    </span><br><span class="line">            setArray(arrayOfObject2);    </span><br><span class="line">            int j &#x3D; 1;    </span><br><span class="line">            return j;    </span><br><span class="line">        &#125; finally &#123;    </span><br><span class="line">            localReentrantLock.unlock();    </span><br><span class="line">        &#125;    </span><br><span class="line">    &#125;    </span><br><span class="line">    final void setArray(Object[] paramArrayOfObject) &#123;    </span><br><span class="line">        this.array &#x3D; paramArrayOfObject;    </span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p>看关键代码：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Object[] arrayOfObject2 &#x3D; Arrays.copyOf(arrayOfObject1, i + 1);    </span><br><span class="line">arrayOfObject2[i] &#x3D; paramE;    </span><br><span class="line">setArray(arrayOfObject2)</span><br></pre></td></tr></table></figure>
-
-<p>所以在多线程环境时，可以使用CopyOnWriterArrayList来替代，它们的原理为先复制原有集合，然后在复制集合上作修改，然后将原引用指向复制修改后的集合，而迭代器遍历集合是先接收CopyOnWriterArrayList中存储元素的数组，然后对其遍历。这样就达到了遍历和修改集合结构分别在不同的存储数组中。</p>
 
           
         
@@ -1772,17 +2180,46 @@
 <p>StringBuffer中用来存储字符串的char[]为</p>
 <p><code>char[] value;</code></p>
 <h3 id="构造方法的差别"><a href="#构造方法的差别" class="headerlink" title="构造方法的差别"></a>构造方法的差别</h3><h4 id="String"><a href="#String" class="headerlink" title="String"></a>String</h4><p>String的构造方法较为简单</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public String(String original) &#123;</span><br><span class="line">       this.value &#x3D; original.value;</span><br><span class="line">       this.hash &#x3D; original.hash;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public String(String original) &#123;
+       this.value &#x3D; original.value;
+       this.hash &#x3D; original.hash;
+   &#125;</code></pre>
 
 <p>通过反射获取两个String对象中的value[]，结果为true;</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">String a &#x3D; new String(&quot;abc&quot;);</span><br><span class="line">String b &#x3D; new String(&quot;abc&quot;);</span><br><span class="line">&#x2F;&#x2F;&quot;abc&quot;返回同一个String对象(常量池)，调用参数为String的构造方法</span><br><span class="line">Field af &#x3D; a.getClass().getDeclaredField(&quot;value&quot;);</span><br><span class="line">Field bf &#x3D; b.getClass().getDeclaredField(&quot;value&quot;);</span><br><span class="line">af.setAccessible(true);</span><br><span class="line">bf.setAccessible(true);</span><br><span class="line">System.out.println(af.get(a) &#x3D;&#x3D; bf.get(b));</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">String a &#x3D; new String(&quot;abc&quot;);
+String b &#x3D; new String(&quot;abc&quot;);
+&#x2F;&#x2F;&quot;abc&quot;返回同一个String对象(常量池)，调用参数为String的构造方法
+Field af &#x3D; a.getClass().getDeclaredField(&quot;value&quot;);
+Field bf &#x3D; b.getClass().getDeclaredField(&quot;value&quot;);
+af.setAccessible(true);
+bf.setAccessible(true);
+System.out.println(af.get(a) &#x3D;&#x3D; bf.get(b));</code></pre>
 
 <p><strong>由此我们可以看出，由于String常量池的存在，当我们用同一字符串来构造String对象时，他们中的value[]都指向了常量池中的该字符串对象的value[]</strong></p>
 <h4 id="StringBuffer"><a href="#StringBuffer" class="headerlink" title="StringBuffer"></a>StringBuffer</h4><p>StringBuffer中参数为StringBuffer和String的构造函数，跟源码得</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public StringBuffer(String str) &#123;</span><br><span class="line">    super(str.length() + 16);</span><br><span class="line">    append(str);</span><br><span class="line">&#125;</span><br><span class="line">	</span><br><span class="line">public AbstractStringBuilder append(String str) &#123;</span><br><span class="line">    if (str &#x3D;&#x3D; null)</span><br><span class="line">        return appendNull();</span><br><span class="line">    int len &#x3D; str.length();</span><br><span class="line">    ensureCapacityInternal(count + len);</span><br><span class="line">    str.getChars(0, len, value, count);</span><br><span class="line">    count +&#x3D; len;</span><br><span class="line">    return this;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public StringBuffer(String str) &#123;
+    super(str.length() + 16);
+    append(str);
+&#125;
+	
+public AbstractStringBuilder append(String str) &#123;
+    if (str &#x3D;&#x3D; null)
+        return appendNull();
+    int len &#x3D; str.length();
+    ensureCapacityInternal(count + len);
+    str.getChars(0, len, value, count);
+    count +&#x3D; len;
+    return this;
+&#125;</code></pre>
 
 <p>与String不同，它时将传进来的string复制到变量value中，所以用相同字符串初始化StringBuffer，利用反射获取value[]，比较它们的引用，结果为false</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">StringBuffer a &#x3D; new StringBuffer(&quot;abc&quot;);</span><br><span class="line">StringBuffer b &#x3D; new StringBuffer(&quot;abc&quot;);</span><br><span class="line">Field af &#x3D; a.getClass().getSuperclass().getDeclaredField(&quot;value&quot;);</span><br><span class="line">Field bf &#x3D; a.getClass().getSuperclass().getDeclaredField(&quot;value&quot;);</span><br><span class="line">af.setAccessible(true);</span><br><span class="line">bf.setAccessible(true);</span><br><span class="line">System.out.println(af.get(a) &#x3D;&#x3D; bf.get(b));</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">StringBuffer a &#x3D; new StringBuffer(&quot;abc&quot;);
+StringBuffer b &#x3D; new StringBuffer(&quot;abc&quot;);
+Field af &#x3D; a.getClass().getSuperclass().getDeclaredField(&quot;value&quot;);
+Field bf &#x3D; a.getClass().getSuperclass().getDeclaredField(&quot;value&quot;);
+af.setAccessible(true);
+bf.setAccessible(true);
+System.out.println(af.get(a) &#x3D;&#x3D; bf.get(b));</code></pre>
 
 <p><strong>可以看出StringBuffer中的value[]指向不同地址</strong></p>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p><strong>1.对于equals为true的String对象，它们内部value[]指向相同地址，且为final类型，初始化后无法改变其引用，虽然可以通过反射获取引用，来改变value中的值，但是会改变所有String对象中的value</strong></p>
@@ -1939,17 +2376,312 @@
 <p>2.final初始化可以在三个地方<br>(1)声明的时候初始化<br>(2)构造函数里初始化(！ static &amp;&amp; final，一起时会报错)<br>(3)要是没有static修饰的话可以在非静态块里初始化,要是有static修饰的话可以在静态块里初始化</p>
 <p>3.使用final成员前要确保已经初始化</p>
 <h3 id="深入理解"><a href="#深入理解" class="headerlink" title="深入理解"></a>深入理解</h3><p>1.当final变量是基本数据类型以及String类型时，如果在编译期间能知道它的确切值，则编译器会把它当做编译期常量使用。也就是说在用到该final变量的地方，相当于直接访问的这个常量，不需要在运行时确定。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Test &#123;</span><br><span class="line">    public static void main(String[] args)  &#123;</span><br><span class="line">        String a &#x3D; &quot;hello2&quot;; </span><br><span class="line">        final String b &#x3D; &quot;hello&quot;;</span><br><span class="line">        String d &#x3D; &quot;hello&quot;;</span><br><span class="line">        String c &#x3D; b + 2; </span><br><span class="line">        String e &#x3D; d + 2;</span><br><span class="line">        System.out.println((a &#x3D;&#x3D; c));</span><br><span class="line">        System.out.println((a &#x3D;&#x3D; e));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public class Test &#123;
+    public static void main(String[] args)  &#123;
+        String a &#x3D; &quot;hello2&quot;; 
+        final String b &#x3D; &quot;hello&quot;;
+        String d &#x3D; &quot;hello&quot;;
+        String c &#x3D; b + 2; 
+        String e &#x3D; d + 2;
+        System.out.println((a &#x3D;&#x3D; c));
+        System.out.println((a &#x3D;&#x3D; e));
+    &#125;
+&#125;</code></pre>
 
 <p><code>true false</code></p>
 <p>不过要注意，只有在编译期间能确切知道final变量值的情况下，编译器才会进行这样的优化</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Test &#123;</span><br><span class="line">    public static void main(String[] args)  &#123;</span><br><span class="line">        String a &#x3D; &quot;hello2&quot;; </span><br><span class="line">        final String b &#x3D; getHello();</span><br><span class="line">        String c &#x3D; b + 2; </span><br><span class="line">        System.out.println((a &#x3D;&#x3D; c));</span><br><span class="line"> </span><br><span class="line">    &#125;</span><br><span class="line">     </span><br><span class="line">    public static String getHello() &#123;</span><br><span class="line">        return &quot;hello&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public class Test &#123;
+    public static void main(String[] args)  &#123;
+        String a &#x3D; &quot;hello2&quot;; 
+        final String b &#x3D; getHello();
+        String c &#x3D; b + 2; 
+        System.out.println((a &#x3D;&#x3D; c));
+ 
+    &#125;
+     
+    public static String getHello() &#123;
+        return &quot;hello&quot;;
+    &#125;
+&#125;</code></pre>
 
 <p><code>false</code></p>
 <p>2.final也可以用来修饰方法的形参，防止方法内部修改形参</p>
 <p>3.匿名内部类使用的外部变量必须为final</p>
 <p><strong>外部类和外部局部变量是作为构造方法的参数传入匿名内部类的</strong></p>
 <p>为什么在匿名内部类中引用外部对象要加final修饰符呢，因为，在匿名内部类中引用的外部对象受到外部线程的作用域的制约有其特定的生命周期，以线程为例，当外部的变量生命周期已经完结之后，内部的线程还在运行，怎么样解决这个外部生命周期已经结束而在内部却需要继续使用呢，这个时候就需要在外部变量中添加final修饰符，<strong>其实内部匿名类使用的这个变量就是外部变量的一个“复制品”</strong>，即使外部变量生命周期已经结束，内部的“复制品“依然可用。并且<strong>final保证复制品与原始变量保持一致</strong></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/fail-fast%20fail-safe/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/fail-fast%20fail-safe/" itemprop="url">fail-fast与fail-safe</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="fail-fast"><a href="#fail-fast" class="headerlink" title="fail-fast"></a>fail-fast</h3><p>java.util 包中的集合类都返回 fail-fast 迭代器，意味着在使用iterator遍历集合时，如果改变集合结构，将会抛出ConcurrentModificationException</p>
+<p>下面以ArrayList为例分析</p>
+<p>ArrayList继承于AbstractList，而AbstractList中定义了一个protected transient int modCount = 0，那么这个变量有什么作用呢</p>
+<p>我们看ArrayList中实现了Iterator接口的私有内部类ltr，有个变量接收了这个modCount</p>
+<pre><code class="highlight plain">int expectedModCount &#x3D; modCount;</code></pre>
+
+<p>当我们获取集合的迭代器对象Iterator时，这个动作发生</p>
+<pre><code class="highlight plain">public Iterator&lt;E&gt; iterator() &#123;
+    return new Itr();
+&#125;</code></pre>
+
+<p>然后看看改变集合结构的几个方法，例如add,remove</p>
+<p>add方法：</p>
+<pre><code class="highlight plain">public boolean add(E e) &#123;
+    ensureCapacityInternal(size + 1);  &#x2F;&#x2F; Increments modCount!!
+    elementData[size++] &#x3D; e;
+    return true;
+&#125;
+private void ensureCapacityInternal(int minCapacity) &#123;
+    if (elementData &#x3D;&#x3D; DEFAULTCAPACITY_EMPTY_ELEMENTDATA) &#123;
+        minCapacity &#x3D; Math.max(DEFAULT_CAPACITY, minCapacity);
+    &#125;
+
+    ensureExplicitCapacity(minCapacity);
+&#125;
+
+private void ensureExplicitCapacity(int minCapacity) &#123;
+    modCount++;
+
+    &#x2F;&#x2F; overflow-conscious code
+    if (minCapacity - elementData.length &gt; 0)
+        grow(minCapacity);
+&#125;</code></pre>
+
+<p>remove方法：</p>
+<pre><code class="highlight plain">public E remove(int index) &#123;
+    rangeCheck(index);
+
+    modCount++;
+    E oldValue &#x3D; elementData(index);
+
+    int numMoved &#x3D; size - index - 1;
+    if (numMoved &gt; 0)
+        System.arraycopy(elementData, index+1, elementData, index,
+                         numMoved);
+    elementData[--size] &#x3D; null; &#x2F;&#x2F; clear to let GC do its work
+
+    return oldValue;
+&#125;</code></pre>
+
+<p><strong>我们发现在这些操作中都会将集合自身变量modCount自增1，会造成什么影响呢，接着往下看</strong></p>
+<p>迭代器Iterator中的next()方法中调用了checkForComodification()</p>
+<p>查看方法checkForComodification：</p>
+<pre><code class="highlight plain">final void checkForComodification() &#123;
+          if (modCount !&#x3D; expectedModCount)
+              throw new ConcurrentModificationException();
+      &#125;</code></pre>
+
+<p>可以看到我们在获取下个元素时，Iterator会先比较modCount和expectedModCount，如果我们在迭代器遍历时调用了add或者remove等改变集合结构的方法时，modCount自增了，而expectedModCount不变，所以在此处会抛出ConcurrentModificationException</p>
+<p>但是如果是在我们自己遍历集合时想修改集合结构，而且不是多线程环境中的话，我们可以看Iterator中给我们提供的方法，在ArrayList中的内部类Iterator中给我们提供了一个remove方法</p>
+<pre><code class="highlight plain">public void remove() &#123;
+    if (lastRet &lt; 0)
+        throw new IllegalStateException();
+    checkForComodification();
+
+    try &#123;
+        ArrayList.this.remove(lastRet);
+        cursor &#x3D; lastRet;
+        lastRet &#x3D; -1;
+        expectedModCount &#x3D; modCount;
+    &#125; catch (IndexOutOfBoundsException ex) &#123;
+        throw new ConcurrentModificationException();
+    &#125;
+&#125;</code></pre>
+
+<p>我们可以看到在移除元素后，重新对expectedModCount赋值，所以checkForComodification()不会抛出异常</p>
+<p>ArrayList还提供了一个更丰富的ListIterator内部类，是一个双向迭代器，可以双向遍历，在这里比Iterator多了add方法</p>
+<pre><code class="highlight plain">    public void add(E e) &#123;
+        checkForComodification();
+
+        try &#123;
+            int i &#x3D; cursor;
+            ArrayList.this.add(i, e);
+            cursor &#x3D; i + 1;
+            lastRet &#x3D; -1;
+            expectedModCount &#x3D; modCount;
+        &#125; catch (IndexOutOfBoundsException ex) &#123;
+            throw new ConcurrentModificationException();
+        &#125;
+    &#125;
+&#125;</code></pre>
+
+<p>依旧是处理了expectedModCount = modCount。</p>
+<h3 id="fail-safe"><a href="#fail-safe" class="headerlink" title="fail-safe"></a>fail-safe</h3><p>以ArrayList的替代类CopyOnWriteArrayList为例分析，CopyOnWriteArrayList为何物？ArrayList 的一个线程安全的变体，其中所有可变操作（add、set 等等）都是通过对底层数组进行一次新的复制来实现的。 该类产生的开销比较大，但是在两种情况下，它非常适合使用。</p>
+<ol>
+<li>在不能或不想进行同步遍历，但又需要从并发线程中排除冲突时。</li>
+<li>当遍历操作的数量大大超过可变操作的数量时。</li>
+</ol>
+<p>查看迭代器</p>
+<pre><code class="highlight plain">public E next() &#123;
+    if (! hasNext())
+        throw new NoSuchElementException();
+    return (E) snapshot[cursor++];
+&#125;</code></pre>
+
+<p>没有像ArrayList的迭代器一样，它不需要检查expectedModCount = modCount</p>
+<p>再看add方法</p>
+<pre><code class="highlight plain">public boolean add(E paramE) &#123;    
+        ReentrantLock localReentrantLock &#x3D; this.lock;    
+        localReentrantLock.lock();    
+        try &#123;    
+            Object[] arrayOfObject1 &#x3D; getArray();    
+            int i &#x3D; arrayOfObject1.length;    
+            Object[] arrayOfObject2 &#x3D; Arrays.copyOf(arrayOfObject1, i + 1);    
+            arrayOfObject2[i] &#x3D; paramE;    
+            setArray(arrayOfObject2);    
+            int j &#x3D; 1;    
+            return j;    
+        &#125; finally &#123;    
+            localReentrantLock.unlock();    
+        &#125;    
+    &#125;    
+    final void setArray(Object[] paramArrayOfObject) &#123;    
+        this.array &#x3D; paramArrayOfObject;    
+    &#125;</code></pre>
+
+<p>看关键代码：</p>
+<pre><code class="highlight plain">Object[] arrayOfObject2 &#x3D; Arrays.copyOf(arrayOfObject1, i + 1);    
+arrayOfObject2[i] &#x3D; paramE;    
+setArray(arrayOfObject2)</code></pre>
+
+<p>所以在多线程环境时，可以使用CopyOnWriterArrayList来替代，它们的原理为先复制原有集合，然后在复制集合上作修改，然后将原引用指向复制修改后的集合，而迭代器遍历集合是先接收CopyOnWriterArrayList中存储元素的数组，然后对其遍历。这样就达到了遍历和修改集合结构分别在不同的存储数组中。</p>
 
           
         
@@ -2275,7 +3007,7 @@
 
   
 
-  <link rel="stylesheet" href="/lib/prettify/skins/desert.css" type="text/css">
+  <link rel="stylesheet" href="/lib/prettify/skins/sunburst.css" type="text/css">
 <script src="/lib/prettify/prettify.js" type="text/javascript"></script>
 <script type="text/javascript">
   $(document).ready(function() {

@@ -345,36 +345,195 @@
 <h3 id="Sychronized"><a href="#Sychronized" class="headerlink" title="Sychronized"></a>Sychronized</h3><p><code>Synchronized</code>使用方式：</p>
 <p><img src="http://wx1.sinaimg.cn/large/96b7c0f4gy1fzfjb5cgrmj20rl0gajrn.jpg" alt=""></p>
 <h4 id="方法锁"><a href="#方法锁" class="headerlink" title="方法锁"></a>方法锁</h4><p>由于java的每个对象都有一个内置锁，当用此关键字修饰方法时，内置锁会保护整个方法。在进入该方法前，需要获得当前对象的内置锁，否则就处于阻塞状态。<code>synchronized</code>关键字也可以修饰静态方法，此时如果调用该静态方法，将会锁住整个类。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Mythread &#123;</span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		testThread MyThread &#x3D; new testThread();</span><br><span class="line">		new Thread(MyThread,&quot;线程1&quot;).start();</span><br><span class="line">		new Thread(MyThread,&quot;线程2&quot;).start();</span><br><span class="line">		new Thread(MyThread,&quot;线程3&quot;).start();</span><br><span class="line">		new Thread(MyThread,&quot;线程4&quot;).start();</span><br><span class="line">		new Thread(MyThread,&quot;线程5&quot;).start();</span><br><span class="line">		new Thread(MyThread,&quot;线程6&quot;).start();</span><br><span class="line">		new Thread(MyThread,&quot;线程7&quot;).start();</span><br><span class="line">		new Thread(MyThread,&quot;线程8&quot;).start();</span><br><span class="line">		new Thread(MyThread,&quot;线程9&quot;).start();</span><br><span class="line">		new Thread(MyThread,&quot;线程10&quot;).start();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class testThread implements Runnable&#123;</span><br><span class="line">	public int i &#x3D; 10;</span><br><span class="line">	@Override</span><br><span class="line">	public void run() &#123;</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated method stub</span><br><span class="line">				try &#123;</span><br><span class="line">					Thread.sleep(1000);</span><br><span class="line">				&#125; catch (InterruptedException e) &#123;</span><br><span class="line">					&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">					e.printStackTrace();</span><br><span class="line">				&#125;</span><br><span class="line">				System.out.println(Thread.currentThread().getName()+&quot;:&quot;+i--);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public class Mythread &#123;
+	public static void main(String[] args) &#123;
+		testThread MyThread &#x3D; new testThread();
+		new Thread(MyThread,&quot;线程1&quot;).start();
+		new Thread(MyThread,&quot;线程2&quot;).start();
+		new Thread(MyThread,&quot;线程3&quot;).start();
+		new Thread(MyThread,&quot;线程4&quot;).start();
+		new Thread(MyThread,&quot;线程5&quot;).start();
+		new Thread(MyThread,&quot;线程6&quot;).start();
+		new Thread(MyThread,&quot;线程7&quot;).start();
+		new Thread(MyThread,&quot;线程8&quot;).start();
+		new Thread(MyThread,&quot;线程9&quot;).start();
+		new Thread(MyThread,&quot;线程10&quot;).start();
+	&#125;
+&#125;
+
+
+class testThread implements Runnable&#123;
+	public int i &#x3D; 10;
+	@Override
+	public void run() &#123;
+		&#x2F;&#x2F; TODO Auto-generated method stub
+				try &#123;
+					Thread.sleep(1000);
+				&#125; catch (InterruptedException e) &#123;
+					&#x2F;&#x2F; TODO Auto-generated catch block
+					e.printStackTrace();
+				&#125;
+				System.out.println(Thread.currentThread().getName()+&quot;:&quot;+i--);
+		&#125;
+	&#125;</code></pre>
 
 <p>输出结果为</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">线程8:8</span><br><span class="line">线程2:3</span><br><span class="line">线程9:4</span><br><span class="line">线程1:2</span><br><span class="line">线程5:10</span><br><span class="line">线程6:10</span><br><span class="line">线程10:6</span><br><span class="line">线程7:5</span><br><span class="line">线程3:7</span><br><span class="line">线程4:9</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">线程8:8
+线程2:3
+线程9:4
+线程1:2
+线程5:10
+线程6:10
+线程10:6
+线程7:5
+线程3:7
+线程4:9</code></pre>
 
 <p>由于多个线程同时进入<code>run</code>方法，导致输出的结果出现异常，接下来在<code>run</code>方法加入关键字<code>synchronized</code>，<code>public synchronized void run()</code>，输出结果如下</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">线程2:10</span><br><span class="line">线程10:9</span><br><span class="line">线程8:8</span><br><span class="line">线程9:7</span><br><span class="line">线程7:6</span><br><span class="line">线程6:5</span><br><span class="line">线程5:4</span><br><span class="line">线程4:3</span><br><span class="line">线程3:2</span><br><span class="line">线程1:1</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">线程2:10
+线程10:9
+线程8:8
+线程9:7
+线程7:6
+线程6:5
+线程5:4
+线程4:3
+线程3:2
+线程1:1</code></pre>
 
 <p>可以看到变量i按顺序依次减1输出，run方法被加锁后每次只有一个获取了锁的线程能运行，其它线程则处于阻塞状态。</p>
 <h4 id="对象锁-synchronized代码块"><a href="#对象锁-synchronized代码块" class="headerlink" title="对象锁(synchronized代码块)"></a>对象锁(synchronized代码块)</h4><p>上面代码除了将<code>run</code>方法加入关键字<code>Synchronized</code>，还可以使用对象锁，方法锁实际也是对象锁，锁的是调用同步方法的实例，代码如下</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class testThread implements Runnable&#123;</span><br><span class="line">	public int i &#x3D; 10;</span><br><span class="line">	@Override</span><br><span class="line">	public void run() &#123;</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated method stub</span><br><span class="line">			synchronized(this) &#123;</span><br><span class="line">				try &#123;</span><br><span class="line">					Thread.sleep(1000);</span><br><span class="line">				&#125; catch (InterruptedException e) &#123;</span><br><span class="line">					&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">					e.printStackTrace();</span><br><span class="line">				&#125;</span><br><span class="line">				System.out.println(Thread.currentThread().getName()+&quot;:&quot;+i--);</span><br><span class="line">			&#125;</span><br><span class="line">				</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">class testThread implements Runnable&#123;
+	public int i &#x3D; 10;
+	@Override
+	public void run() &#123;
+		&#x2F;&#x2F; TODO Auto-generated method stub
+			synchronized(this) &#123;
+				try &#123;
+					Thread.sleep(1000);
+				&#125; catch (InterruptedException e) &#123;
+					&#x2F;&#x2F; TODO Auto-generated catch block
+					e.printStackTrace();
+				&#125;
+				System.out.println(Thread.currentThread().getName()+&quot;:&quot;+i--);
+			&#125;
+				
+		&#125;
+	&#125;</code></pre>
 
 <h4 id="类锁"><a href="#类锁" class="headerlink" title="类锁"></a>类锁</h4><p>对象锁是用来控制实例方法之间的同步，而类锁是用来控制静态方法（或者静态变量互斥体）之间的同步的。</p>
 <p>类锁只是一个概念上的东西，并不是真实存在的，他只是用来帮助我们理解锁定实例方法和静态方法的区别的。<br>java类可能会有很多对象，但是只有一个Class(字节码)对象，也就是说类的不同实例之间共享该类的<code>Class</code>对象。<code>Class</code>对象其实也仅仅是1个java对象，只不过有点特殊而已。<br>由于每个java对象都有1个互斥锁，而类的静态方法是需要<code>Class</code>对象。所以所谓的类锁，只不过是<code>Class</code>对象的锁而已。<br>获取类的<code>Class</code>对象的方法有好几种，最简单的是[类名.class]的方式</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Mythread &#123;</span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		</span><br><span class="line">		new testThread(&quot;线程1&quot;).start();</span><br><span class="line">		new testThread(&quot;线程2&quot;).start();</span><br><span class="line">		new testThread(&quot;线程3&quot;).start();</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class testThread extends Thread&#123;</span><br><span class="line">	</span><br><span class="line">	@Override</span><br><span class="line">	public void run() &#123;</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated method stub</span><br><span class="line">		super.run();</span><br><span class="line">		testThread.out();</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	public testThread(String name) &#123;</span><br><span class="line">		super(name);</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated constructor stub</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public static void out()&#123;</span><br><span class="line">		int i &#x3D; 5;</span><br><span class="line">		while(i&gt;0)&#123;</span><br><span class="line">			System.out.println(Thread.currentThread().getName()+&quot;:&quot;+--i);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public class Mythread &#123;
+	public static void main(String[] args) &#123;
+		
+		new testThread(&quot;线程1&quot;).start();
+		new testThread(&quot;线程2&quot;).start();
+		new testThread(&quot;线程3&quot;).start();
+
+	&#125;
+&#125;
+
+
+class testThread extends Thread&#123;
+	
+	@Override
+	public void run() &#123;
+		&#x2F;&#x2F; TODO Auto-generated method stub
+		super.run();
+		testThread.out();
+	&#125;
+	
+	public testThread(String name) &#123;
+		super(name);
+		&#x2F;&#x2F; TODO Auto-generated constructor stub
+	&#125;
+
+	public static void out()&#123;
+		int i &#x3D; 5;
+		while(i&gt;0)&#123;
+			System.out.println(Thread.currentThread().getName()+&quot;:&quot;+--i);
+		&#125;
+	&#125;
+	
+
+&#125;</code></pre>
 <p>创建多个线程<code>testThread</code>，<code>run</code>方法中调用静态方法<code>out()</code>，结果为</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">线程3:1</span><br><span class="line">线程2:2</span><br><span class="line">线程3:0</span><br><span class="line">线程1:2</span><br><span class="line">线程2:1</span><br><span class="line">线程1:1</span><br><span class="line">线程2:0</span><br><span class="line">线程1:0</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">线程3:1
+线程2:2
+线程3:0
+线程1:2
+线程2:1
+线程1:1
+线程2:0
+线程1:0</code></pre>
 
 <p>给静态方法加上锁<code>public synchronized static void out()</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">线程1:4</span><br><span class="line">线程1:3</span><br><span class="line">线程1:2</span><br><span class="line">线程1:1</span><br><span class="line">线程1:0</span><br><span class="line">线程3:4</span><br><span class="line">线程3:3</span><br><span class="line">线程3:2</span><br><span class="line">线程3:1</span><br><span class="line">线程3:0</span><br><span class="line">线程2:4</span><br><span class="line">线程2:3</span><br><span class="line">线程2:2</span><br><span class="line">线程2:1</span><br><span class="line">线程2:0</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">线程1:4
+线程1:3
+线程1:2
+线程1:1
+线程1:0
+线程3:4
+线程3:3
+线程3:2
+线程3:1
+线程3:0
+线程2:4
+线程2:3
+线程2:2
+线程2:1
+线程2:0</code></pre>
 
 <p>另一种使用代码块实现类锁的方法为</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void out()&#123;</span><br><span class="line">	synchronized(testThread.class)&#123;</span><br><span class="line">		int i &#x3D; 5;</span><br><span class="line">		while(i&gt;0)&#123;</span><br><span class="line">			System.out.println(Thread.currentThread().getName()+&quot;:&quot;+--i);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public static void out()&#123;
+	synchronized(testThread.class)&#123;
+		int i &#x3D; 5;
+		while(i&gt;0)&#123;
+			System.out.println(Thread.currentThread().getName()+&quot;:&quot;+--i);
+		&#125;
+	&#125;
+&#125;</code></pre>
 
 <h4 id="线程间通信"><a href="#线程间通信" class="headerlink" title="线程间通信"></a>线程间通信</h4><p>必须在同步代码块中,且获得对应的锁才能使用</p>
 <p><code>wait()</code>:使一个线程处于等待状态，并且释放所持有的对象的lock。<br><code>notify()</code>:唤醒一个处于等待状态的线程，注意的是在调用此方法的时候，并不能确切的唤醒某一个等待状态的线程，而是由JVM确定唤醒哪个线程，而且不是按优先级。<br><code>notifyAll()</code>:唤醒所有处入等待状态的线程，注意并不是给所有唤醒线程一个对象的锁，而是让它们竞争。<br>线程间通信使用例子 生产者消费者模型。</p>
-<h3 id="ReentrantLock"><a href="#ReentrantLock" class="headerlink" title="ReentrantLock"></a>ReentrantLock</h3><h4 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Rlock &#123;</span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		ReentrantLock lock &#x3D; new ReentrantLock();</span><br><span class="line">		new Thread(new Mythread5(lock)).start();</span><br><span class="line">		new Thread(new Mythread5(lock)).start();</span><br><span class="line">		new Thread(new Mythread5(lock)).start();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Mythread5 implements Runnable&#123;</span><br><span class="line">	private ReentrantLock lock;</span><br><span class="line">	int num &#x3D; 10;</span><br><span class="line">	public Mythread5(ReentrantLock lock) &#123;</span><br><span class="line">		this.lock &#x3D; lock;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public void run() &#123;</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated method stub</span><br><span class="line">		lock.lock();</span><br><span class="line">		for (int i &#x3D; 0; i &lt; 10; i++) &#123;</span><br><span class="line">			System.out.println(--num);</span><br><span class="line">		&#125;</span><br><span class="line">		lock.unlock();</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="ReentrantLock"><a href="#ReentrantLock" class="headerlink" title="ReentrantLock"></a>ReentrantLock</h3><h4 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h4><pre><code class="highlight plain">public class Rlock &#123;
+	public static void main(String[] args) &#123;
+		ReentrantLock lock &#x3D; new ReentrantLock();
+		new Thread(new Mythread5(lock)).start();
+		new Thread(new Mythread5(lock)).start();
+		new Thread(new Mythread5(lock)).start();
+	&#125;
+&#125;
+
+class Mythread5 implements Runnable&#123;
+	private ReentrantLock lock;
+	int num &#x3D; 10;
+	public Mythread5(ReentrantLock lock) &#123;
+		this.lock &#x3D; lock;
+	&#125;
+
+	@Override
+	public void run() &#123;
+		&#x2F;&#x2F; TODO Auto-generated method stub
+		lock.lock();
+		for (int i &#x3D; 0; i &lt; 10; i++) &#123;
+			System.out.println(--num);
+		&#125;
+		lock.unlock();
+	&#125;
+	
+&#125;</code></pre>
 
 <p>同样使用加锁和解锁的操作实现多线程排队执行目标代码</p>
-<h4 id="公平锁与非公平锁"><a href="#公平锁与非公平锁" class="headerlink" title="公平锁与非公平锁"></a>公平锁与非公平锁</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * Creates an instance of &#123;@code ReentrantLock&#125; with the</span><br><span class="line"> * given fairness policy.</span><br><span class="line"> *</span><br><span class="line"> * @param fair &#123;@code true&#125; if this lock should use a fair ordering policy</span><br><span class="line"> *&#x2F;</span><br><span class="line">public ReentrantLock(boolean fair) &#123;</span><br><span class="line">    sync &#x3D; fair ? new FairSync() : new NonfairSync();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="公平锁与非公平锁"><a href="#公平锁与非公平锁" class="headerlink" title="公平锁与非公平锁"></a>公平锁与非公平锁</h4><pre><code class="highlight plain">&#x2F;**
+ * Creates an instance of &#123;@code ReentrantLock&#125; with the
+ * given fairness policy.
+ *
+ * @param fair &#123;@code true&#125; if this lock should use a fair ordering policy
+ *&#x2F;
+public ReentrantLock(boolean fair) &#123;
+    sync &#x3D; fair ? new FairSync() : new NonfairSync();
+&#125;</code></pre>
 
 <p>创建锁时可以指定锁为公平锁还是非公平锁，当设为<code>true</code>时，锁倾向于等待时间最长的线程。否则锁不保证特定的访问顺序。</p>
 <h4 id="trylock"><a href="#trylock" class="headerlink" title="trylock"></a>trylock</h4><p><code>tryLock()</code>方法只有在成功获取了锁的情况下才会返回<code>true</code>，如果别的线程当前正持有锁，则会立即返回<code>false</code>。如果为这个方法加上<code>timeout</code>参数，则会在等待<code>timeout</code>的时间才会返回<code>false</code>或者在获取到锁的时候返回<code>true</code>。</p>
@@ -525,7 +684,78 @@
           
             <h3 id="什么是适配器模式"><a href="#什么是适配器模式" class="headerlink" title="什么是适配器模式"></a>什么是适配器模式</h3><p>适配器模式把一个类的接口变换成客户端所期待的另一种接口，从而使原本因接口不匹配而无法在一起工作的两个类能够在一起工作。</p>
 <h3 id="类适配器模式（采用继承实现）"><a href="#类适配器模式（采用继承实现）" class="headerlink" title="类适配器模式（采用继承实现）"></a>类适配器模式（采用继承实现）</h3><p><img src="http://wx1.sinaimg.cn/large/96b7c0f4gy1g0l72acl2gj20h8081dfu.jpg" alt=""></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;目标接口，或称为标准接口 </span><br><span class="line">public interface Target &#123;</span><br><span class="line">    &#x2F;&#x2F;普通功能</span><br><span class="line">    public void request();</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">&#x2F;&#x2F;已存在的、具有特殊功能、但不符合我们既有的标准接口的类  </span><br><span class="line">public class Adaptee &#123;</span><br><span class="line">    public void specificRequest() &#123;</span><br><span class="line">        System.out.println(&quot;被适配类...我是两孔插座  具有特殊功能&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">&#x2F;&#x2F;适配器类，继承了被适配类，同时实现标准接口</span><br><span class="line">public class Adapter extends Adaptee implements Target  &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void request() &#123;</span><br><span class="line">        System.out.println(&quot;我是适配器类 我能适配任何两孔插座 让它正常工作&quot;);</span><br><span class="line">        this.specificRequest();</span><br><span class="line">    &#125;</span><br><span class="line"> &#125;</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">public class Client &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">         Target adapter &#x3D; new Adapter(); </span><br><span class="line">         &#x2F;&#x2F;通过适配器调用特殊功能</span><br><span class="line">         adapter.request();  </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">对象适配器（采用对象组合方式实现）</span><br><span class="line">对象适配器</span><br><span class="line"></span><br><span class="line">源代码：</span><br><span class="line">&#x2F;&#x2F;目标接口，或称为标准接口 </span><br><span class="line">public interface Target &#123;</span><br><span class="line">    &#x2F;&#x2F;普通功能</span><br><span class="line">    public void request();</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">&#x2F;&#x2F;已存在的、具有特殊功能、但不符合我们既有的标准接口的类  </span><br><span class="line">public class Adaptee &#123;</span><br><span class="line">    public void specificRequest() &#123;</span><br><span class="line">        System.out.println(&quot;被适配类...我是两孔插座  具有特殊功能&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125; </span><br><span class="line"> </span><br><span class="line">&#x2F;&#x2F;适配器类，直接关联被适配类，同时实现标准接口  </span><br><span class="line">class Adapter implements Target &#123;</span><br><span class="line">    &#x2F;&#x2F; 直接关联被适配类</span><br><span class="line">    private Adaptee adaptee;</span><br><span class="line"> </span><br><span class="line">    &#x2F;&#x2F; 可以通过构造函数传入具体需要适配的被适配类对象</span><br><span class="line">    public Adapter(Adaptee adaptee) &#123;</span><br><span class="line">        this.adaptee &#x3D; adaptee;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    public void request() &#123;</span><br><span class="line">        &#x2F;&#x2F; 这里是使用委托的方式完成特殊功能</span><br><span class="line">        System.out.println(&quot;我是适配器类 我能适配任何两孔插座 让它正常工作&quot;);</span><br><span class="line">        this.adaptee.specificRequest();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">public class Client &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        &#x2F;&#x2F;使用特殊功能类，即适配类，  </span><br><span class="line">        &#x2F;&#x2F; 需要先创建一个被适配类的对象作为参数  </span><br><span class="line">        Target adapter &#x3D; new Adapter(new Adaptee());  </span><br><span class="line">        adapter.request();  </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">&#x2F;&#x2F;目标接口，或称为标准接口 
+public interface Target &#123;
+    &#x2F;&#x2F;普通功能
+    public void request();
+&#125;
+ 
+&#x2F;&#x2F;已存在的、具有特殊功能、但不符合我们既有的标准接口的类  
+public class Adaptee &#123;
+    public void specificRequest() &#123;
+        System.out.println(&quot;被适配类...我是两孔插座  具有特殊功能&quot;);
+    &#125;
+&#125;
+ 
+&#x2F;&#x2F;适配器类，继承了被适配类，同时实现标准接口
+public class Adapter extends Adaptee implements Target  &#123;
+    @Override
+    public void request() &#123;
+        System.out.println(&quot;我是适配器类 我能适配任何两孔插座 让它正常工作&quot;);
+        this.specificRequest();
+    &#125;
+ &#125;
+ 
+ 
+public class Client &#123;
+    public static void main(String[] args) &#123;
+         Target adapter &#x3D; new Adapter(); 
+         &#x2F;&#x2F;通过适配器调用特殊功能
+         adapter.request();  
+    &#125;
+&#125;
+对象适配器（采用对象组合方式实现）
+对象适配器
+
+源代码：
+&#x2F;&#x2F;目标接口，或称为标准接口 
+public interface Target &#123;
+    &#x2F;&#x2F;普通功能
+    public void request();
+&#125;
+ 
+&#x2F;&#x2F;已存在的、具有特殊功能、但不符合我们既有的标准接口的类  
+public class Adaptee &#123;
+    public void specificRequest() &#123;
+        System.out.println(&quot;被适配类...我是两孔插座  具有特殊功能&quot;);
+    &#125;
+&#125; 
+ 
+&#x2F;&#x2F;适配器类，直接关联被适配类，同时实现标准接口  
+class Adapter implements Target &#123;
+    &#x2F;&#x2F; 直接关联被适配类
+    private Adaptee adaptee;
+ 
+    &#x2F;&#x2F; 可以通过构造函数传入具体需要适配的被适配类对象
+    public Adapter(Adaptee adaptee) &#123;
+        this.adaptee &#x3D; adaptee;
+    &#125;
+ 
+    public void request() &#123;
+        &#x2F;&#x2F; 这里是使用委托的方式完成特殊功能
+        System.out.println(&quot;我是适配器类 我能适配任何两孔插座 让它正常工作&quot;);
+        this.adaptee.specificRequest();
+    &#125;
+&#125;
+ 
+public class Client &#123;
+    public static void main(String[] args) &#123;
+        &#x2F;&#x2F;使用特殊功能类，即适配类，  
+        &#x2F;&#x2F; 需要先创建一个被适配类的对象作为参数  
+        Target adapter &#x3D; new Adapter(new Adaptee());  
+        adapter.request();  
+    &#125;
+&#125;</code></pre>
 
 <h3 id="两种方式使用权衡"><a href="#两种方式使用权衡" class="headerlink" title="两种方式使用权衡"></a>两种方式使用权衡</h3><ul>
 <li>类适配器使用对象继承的方式，是静态的定义方式；而对象适配器使用对象组合的方式，是动态组合的方式。</li>
@@ -679,7 +909,45 @@
 <h3 id="装饰者模式结构"><a href="#装饰者模式结构" class="headerlink" title="装饰者模式结构"></a>装饰者模式结构</h3><p>结构图：</p>
 <p><img src="http://wx3.sinaimg.cn/large/96b7c0f4gy1g0aprtaiiwj20hg0abjre.jpg" alt=""></p>
 <p>例子代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;抽象构件（Component）角色</span><br><span class="line"></span><br><span class="line">public interface Component&#123;</span><br><span class="line">	void sampleOperation();	</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;具体构件（ConcreteComponent）角色</span><br><span class="line"></span><br><span class="line">public class ConcreteComponent&#123;</span><br><span class="line">	public void sampleOperation()&#123;</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;抽象装饰（Decorator）角色</span><br><span class="line"></span><br><span class="line">public class Decorator implements Component&#123;</span><br><span class="line">	Component component;</span><br><span class="line">	public Decorator(Component component)&#123;</span><br><span class="line">		this.component &#x3D; component;</span><br><span class="line">	&#125;</span><br><span class="line">	public void sampleOperation()&#123;</span><br><span class="line">		component.sampleOperation();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">具体装饰（ConcreteDecorator）角色</span><br><span class="line"></span><br><span class="line">public void ConcreteDecorator extends Decorator&#123;</span><br><span class="line">	public ConcreteDecorator(Component component)&#123;</span><br><span class="line">		super(Component component);</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	public void sampleOperation()&#123;</span><br><span class="line">		&#x2F;&#x2F;动态扩展功能代码</span><br><span class="line">		component.sampleOperation();</span><br><span class="line">		&#x2F;&#x2F;动态扩展功能代码</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">&#x2F;&#x2F;抽象构件（Component）角色
+
+public interface Component&#123;
+	void sampleOperation();	
+&#125;
+
+&#x2F;&#x2F;具体构件（ConcreteComponent）角色
+
+public class ConcreteComponent&#123;
+	public void sampleOperation()&#123;
+		
+	&#125;
+&#125;
+
+&#x2F;&#x2F;抽象装饰（Decorator）角色
+
+public class Decorator implements Component&#123;
+	Component component;
+	public Decorator(Component component)&#123;
+		this.component &#x3D; component;
+	&#125;
+	public void sampleOperation()&#123;
+		component.sampleOperation();
+	&#125;
+&#125;
+
+具体装饰（ConcreteDecorator）角色
+
+public void ConcreteDecorator extends Decorator&#123;
+	public ConcreteDecorator(Component component)&#123;
+		super(Component component);
+	&#125;
+	
+	public void sampleOperation()&#123;
+		&#x2F;&#x2F;动态扩展功能代码
+		component.sampleOperation();
+		&#x2F;&#x2F;动态扩展功能代码
+	&#125;
+&#125;</code></pre>
           
         
       
@@ -839,7 +1107,7 @@
 <li>TYPE:用于描述类、接口(包括注解类型) 或enum声明</li>
 </ul>
 <p>例子</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Target(ElementType.ANNOTATION_TYPE)</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">@Target(ElementType.ANNOTATION_TYPE)</code></pre>
 <p>表示注解作用范围为注解类型</p>
 <h4 id="Retention"><a href="#Retention" class="headerlink" title="@Retention"></a>@Retention</h4><p><code>@Retention</code>定义了该Annotation被保留的时间长短</p>
 <p>从<code>enum</code>类型的<code>RentetionPolicy</code>取值</p>
@@ -851,7 +1119,18 @@
 <p>我们在自定义注解用用的比较多的自然是RUNTIME了，这样保证注解在运行时是有效的，我们在其他框架中遇到的也大部分都是RUNTIME的。</p>
 <h4 id="Documented"><a href="#Documented" class="headerlink" title="@Documented"></a>@Documented</h4><p><code>@Documented</code>用于描述其它类型的<code>annotation</code>应该被作为被标注的程序成员的公共API，因此可以被例如javadoc此类的工具文档化。<code>Documented</code>是一个标记注解，没有成员。</p>
 <h4 id="Inherited"><a href="#Inherited" class="headerlink" title="@Inherited"></a>@Inherited</h4><p><code>@Inherited</code>元注解是一个标记注解，<code>@Inherited</code>阐述了某个被标注的类型是被继承的。如果一个使用了<code>@Inherited</code>修饰的annotation类型被用于一个<code>class</code>，则这个<code>annotation</code>将被用于该<code>class</code>的子类。</p>
-<h3 id="自定义注解"><a href="#自定义注解" class="headerlink" title="自定义注解"></a>自定义注解</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Documented</span><br><span class="line">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="line">@Target(ElementType.ANNOTATION_TYPE)</span><br><span class="line">public @interface Target &#123;</span><br><span class="line">    &#x2F;**</span><br><span class="line">     * Returns an array of the kinds of elements an annotation type</span><br><span class="line">     * can be applied to.</span><br><span class="line">     * @return an array of the kinds of elements an annotation type</span><br><span class="line">     * can be applied to</span><br><span class="line">     *&#x2F;</span><br><span class="line">    ElementType[] value();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="自定义注解"><a href="#自定义注解" class="headerlink" title="自定义注解"></a>自定义注解</h3><pre><code class="highlight plain">@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.ANNOTATION_TYPE)
+public @interface Target &#123;
+    &#x2F;**
+     * Returns an array of the kinds of elements an annotation type
+     * can be applied to.
+     * @return an array of the kinds of elements an annotation type
+     * can be applied to
+     *&#x2F;
+    ElementType[] value();
+&#125;</code></pre>
 
 <p>以<code>@Target</code>注解为例，<code>@interface</code>用来声明一个注解，注解类的方法返回值就是该注解的配置参数</p>
 <p>使用<code>@interface</code>自定义注解时，自动继承了java.lang.annotation.Annotation接口，由编译程序自动完成其他细节。</p>
@@ -865,13 +1144,26 @@
 <li>以上所有类型的数组</li>
 </ul>
 <h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><p>定义一个注解</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Target(ElementType.TYPE)</span><br><span class="line">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="line">@Documented</span><br><span class="line">@interface classInfo&#123;</span><br><span class="line">    String name() default &quot;&quot;;</span><br><span class="line">    boolean isPublic() default true;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@interface classInfo&#123;
+    String name() default &quot;&quot;;
+    boolean isPublic() default true;
+&#125;</code></pre>
 
 <p>作用于类上面</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@classInfo(name &#x3D; &quot;Annotation&quot;,isPublic &#x3D; false)</span><br><span class="line">class testAnnotation&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">@classInfo(name &#x3D; &quot;Annotation&quot;,isPublic &#x3D; false)
+class testAnnotation&#123;
+
+&#125;</code></pre>
 
 <p>获取注解配置</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Test</span><br><span class="line">public void test()&#123;</span><br><span class="line">    classInfo annotation &#x3D; AnnotationUtils.findAnnotation(testAnnotation.class,classInfo.class);</span><br><span class="line">    System.out.println(annotation.name()+&quot; &quot;+annotation.isPublic());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">@Test
+public void test()&#123;
+    classInfo annotation &#x3D; AnnotationUtils.findAnnotation(testAnnotation.class,classInfo.class);
+    System.out.println(annotation.name()+&quot; &quot;+annotation.isPublic());
+&#125;</code></pre>
 
 
 
@@ -1017,17 +1309,88 @@
           
             <h3 id="什么是线程"><a href="#什么是线程" class="headerlink" title="什么是线程"></a>什么是线程</h3><p>线程，有时被称为轻量进程(Lightweight Process，LWP），是程序执行流的最小单元。一个标准的线程由线程ID，当前指令指针(PC），寄存器集合和堆栈组成。另外，线程是进程中的一个实体，是被系统独立调度和分派的基本单位，线程自己不拥有系统资源，只拥有一点儿在运行中必不可少的资源，但它可与同属一个进程的其它线程共享进程所拥有的全部资源。一个线程可以创建和撤消另一个线程，同一进程中的多个线程之间可以并发执行。由于线程之间的相互制约，致使线程在运行中呈现出间断性。线程也有就绪、阻塞和运行三种基本状态。就绪状态是指线程具备运行的所有条件，逻辑上可以运行，在等待处理机；运行状态是指线程占有处理机正在运行；阻塞状态是指线程在等待一个事件（如某个信号量），逻辑上不可执行。每一个程序都至少有一个线程，若程序只有一个线程，那就是程序本身。</p>
 <h3 id="线程的创建"><a href="#线程的创建" class="headerlink" title="线程的创建"></a>线程的创建</h3><h4 id="Thread"><a href="#Thread" class="headerlink" title="Thread"></a>Thread</h4><p>直接继承<code>Thread</code>，覆写<code>run</code>方法</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Mythread &#123;</span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		Thread t &#x3D; new testThread();</span><br><span class="line">		t.start();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class testThread extends Thread&#123;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public void run() &#123;</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated method stub</span><br><span class="line">		super.run();</span><br><span class="line">		System.out.println(1);</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public class Mythread &#123;
+	public static void main(String[] args) &#123;
+		Thread t &#x3D; new testThread();
+		t.start();
+	&#125;
+&#125;
+
+
+class testThread extends Thread&#123;
+
+	@Override
+	public void run() &#123;
+		&#x2F;&#x2F; TODO Auto-generated method stub
+		super.run();
+		System.out.println(1);
+	&#125;
+	
+&#125;</code></pre>
 
 <h4 id="Runnable"><a href="#Runnable" class="headerlink" title="Runnable"></a>Runnable</h4><p>实现<code>Runnable</code>接口，覆写<code>run</code>方法</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Mythread &#123;</span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		testThread MyThread &#x3D; new testThread();</span><br><span class="line">		new Thread(MyThread).start();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class testThread implements Runnable&#123;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public void run() &#123;</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated method stub</span><br><span class="line">		System.out.println(1);</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public class Mythread &#123;
+	public static void main(String[] args) &#123;
+		testThread MyThread &#x3D; new testThread();
+		new Thread(MyThread).start();
+	&#125;
+&#125;
+
+
+class testThread implements Runnable&#123;
+
+	@Override
+	public void run() &#123;
+		&#x2F;&#x2F; TODO Auto-generated method stub
+		System.out.println(1);
+	&#125;
+	
+&#125;</code></pre>
 
 <h3 id="两种创建方法的区别"><a href="#两种创建方法的区别" class="headerlink" title="两种创建方法的区别"></a>两种创建方法的区别</h3><p>使用实现<code>Runnable</code>接口的方法可以很容易实现线程之间共享资源</p>
 <p>采用实现接口的方法可以避免java中的单继承限制</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Mythread &#123;</span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		testThread MyThread &#x3D; new testThread();</span><br><span class="line">		new Thread(MyThread,&quot;线程1&quot;).start();</span><br><span class="line">		new Thread(MyThread,&quot;线程2&quot;).start();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class testThread implements Runnable&#123;</span><br><span class="line">	public int i &#x3D; 10;</span><br><span class="line">	@Override</span><br><span class="line">	public void run() &#123;</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated method stub</span><br><span class="line">		for(int a &#x3D; 0;a &lt; 10;a++)&#123;</span><br><span class="line">			if(a&gt;0)&#123;</span><br><span class="line">				System.out.println(Thread.currentThread().getName()+&quot;:&quot;+i--);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public class Mythread &#123;
+	public static void main(String[] args) &#123;
+		testThread MyThread &#x3D; new testThread();
+		new Thread(MyThread,&quot;线程1&quot;).start();
+		new Thread(MyThread,&quot;线程2&quot;).start();
+	&#125;
+&#125;
+
+
+class testThread implements Runnable&#123;
+	public int i &#x3D; 10;
+	@Override
+	public void run() &#123;
+		&#x2F;&#x2F; TODO Auto-generated method stub
+		for(int a &#x3D; 0;a &lt; 10;a++)&#123;
+			if(a&gt;0)&#123;
+				System.out.println(Thread.currentThread().getName()+&quot;:&quot;+i--);
+			&#125;
+		&#125;
+	&#125;
+	
+&#125;</code></pre>
 
 <p>输出为：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">线程2:10</span><br><span class="line">线程1:9</span><br><span class="line">线程1:7</span><br><span class="line">线程1:6</span><br><span class="line">线程1:5</span><br><span class="line">线程2:8</span><br><span class="line">线程1:4</span><br><span class="line">线程1:2</span><br><span class="line">线程1:1</span><br><span class="line">线程1:0</span><br><span class="line">线程1:-1</span><br><span class="line">线程2:3</span><br><span class="line">线程2:-2</span><br><span class="line">线程2:-3</span><br><span class="line">线程2:-4</span><br><span class="line">线程2:-5</span><br><span class="line">线程2:-6</span><br><span class="line">线程2:-7</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">线程2:10
+线程1:9
+线程1:7
+线程1:6
+线程1:5
+线程2:8
+线程1:4
+线程1:2
+线程1:1
+线程1:0
+线程1:-1
+线程2:3
+线程2:-2
+线程2:-3
+线程2:-4
+线程2:-5
+线程2:-6
+线程2:-7</code></pre>
 
 <p>从以上结果可以看出，实现<code>runnable</code>的类中定义的变量是所有用它来创建的线程共享的，并且两个线程进入同一个<code>run</code>方法。</p>
 <h3 id="线程优先级"><a href="#线程优先级" class="headerlink" title="线程优先级"></a>线程优先级</h3><p>Java线程有优先级，优先级高的线程会获得较多的运行机会(调用start方法只是使线程处于就绪状态，需要等cpu调度)</p>
@@ -1178,7 +1541,13 @@
             <h3 id="线程池的概念"><a href="#线程池的概念" class="headerlink" title="线程池的概念"></a>线程池的概念</h3><p>帮我们重复管理线程，避免线程的创建和销毁带来的性能开销</p>
 <h3 id="类结构"><a href="#类结构" class="headerlink" title="类结构"></a>类结构</h3><p><img src="http://wx2.sinaimg.cn/large/96b7c0f4gy1g0zzdg7e7nj20lv0dv3z3.jpg" alt=""></p>
 <h3 id="ThreadPoolExecutor"><a href="#ThreadPoolExecutor" class="headerlink" title="ThreadPoolExecutor"></a>ThreadPoolExecutor</h3><h4 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h4><p>创建线程池我们需要用到ThreadPoolExecutor。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public ThreadPoolExecutor(int corePoolSize,</span><br><span class="line">                          int maximumPoolSize,</span><br><span class="line">                          long keepAliveTime,</span><br><span class="line">                          TimeUnit unit,</span><br><span class="line">                          BlockingQueue&lt;Runnable&gt; workQueue,</span><br><span class="line">                          ThreadFactory threadFactory,</span><br><span class="line">                          RejectedExecutionHandler handler)</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public ThreadPoolExecutor(int corePoolSize,
+                          int maximumPoolSize,
+                          long keepAliveTime,
+                          TimeUnit unit,
+                          BlockingQueue&lt;Runnable&gt; workQueue,
+                          ThreadFactory threadFactory,
+                          RejectedExecutionHandler handler)</code></pre>
 <p>构造函数中这些参数的意义：</p>
 <p><code>corePoolSize</code>: 核心线程池数量</p>
 <ul>
@@ -1219,30 +1588,208 @@
 <li>如果<code>workerCount &gt;= maximumPoolSize</code>，并且线程池内的阻塞队列已满, 则根据拒绝策略来处理该任务, 默认的处理方式是直接抛异常。</li>
 </ol>
 <h3 id="Executors"><a href="#Executors" class="headerlink" title="Executors"></a>Executors</h3><p>JDK为我们内置了常见线程池的实现，均可以使用Executors工厂类创建。</p>
-<h4 id="newFixedThreadPool"><a href="#newFixedThreadPool" class="headerlink" title="newFixedThreadPool"></a>newFixedThreadPool</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static ExecutorService newFixedThreadPool(int nThreads) &#123;</span><br><span class="line">    return new ThreadPoolExecutor(nThreads, nThreads,</span><br><span class="line">                                  0L, TimeUnit.MILLISECONDS,</span><br><span class="line">                                  new LinkedBlockingQueue&lt;Runnable&gt;());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="newFixedThreadPool"><a href="#newFixedThreadPool" class="headerlink" title="newFixedThreadPool"></a>newFixedThreadPool</h4><pre><code class="highlight plain">public static ExecutorService newFixedThreadPool(int nThreads) &#123;
+    return new ThreadPoolExecutor(nThreads, nThreads,
+                                  0L, TimeUnit.MILLISECONDS,
+                                  new LinkedBlockingQueue&lt;Runnable&gt;());
+&#125;</code></pre>
 <p>可以看出<code>nThreads</code>为核心线程数和最大线程数，由于传入的阻塞队列是无界的，队列可以一直添加至<code>LinkedBlockingQueue</code>的最大值<code>Integer.MAX_VALUE</code>,可能导致OOM。</p>
-<h4 id="newSingleThreadExecutor"><a href="#newSingleThreadExecutor" class="headerlink" title="newSingleThreadExecutor"></a>newSingleThreadExecutor</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static ExecutorService newSingleThreadExecutor() &#123;</span><br><span class="line">    return new FinalizableDelegatedExecutorService</span><br><span class="line">        (new ThreadPoolExecutor(1, 1,</span><br><span class="line">                                0L, TimeUnit.MILLISECONDS,</span><br><span class="line">                                new LinkedBlockingQueue&lt;Runnable&gt;()));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="newSingleThreadExecutor"><a href="#newSingleThreadExecutor" class="headerlink" title="newSingleThreadExecutor"></a>newSingleThreadExecutor</h4><pre><code class="highlight plain">public static ExecutorService newSingleThreadExecutor() &#123;
+    return new FinalizableDelegatedExecutorService
+        (new ThreadPoolExecutor(1, 1,
+                                0L, TimeUnit.MILLISECONDS,
+                                new LinkedBlockingQueue&lt;Runnable&gt;()));
+&#125;</code></pre>
 
 <p>创建一个单线程的线程池。这个线程池只有一个线程在工作，也就是相当于单线程串行执行所有任务。如果这个唯一的线程因为异常结束，那么会有一个新的线程来替代它。此线程池保证所有任务的执行顺序，按照任务的提交顺序执行</p>
-<h4 id="newCachedThreadPool"><a href="#newCachedThreadPool" class="headerlink" title="newCachedThreadPool"></a>newCachedThreadPool</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static ExecutorService newCachedThreadPool() &#123;</span><br><span class="line">    return new ThreadPoolExecutor(0, Integer.MAX_VALUE,</span><br><span class="line">                                  60L, TimeUnit.SECONDS,</span><br><span class="line">                                  new SynchronousQueue&lt;Runnable&gt;());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="newCachedThreadPool"><a href="#newCachedThreadPool" class="headerlink" title="newCachedThreadPool"></a>newCachedThreadPool</h4><pre><code class="highlight plain">public static ExecutorService newCachedThreadPool() &#123;
+    return new ThreadPoolExecutor(0, Integer.MAX_VALUE,
+                                  60L, TimeUnit.SECONDS,
+                                  new SynchronousQueue&lt;Runnable&gt;());
+&#125;</code></pre>
 
 <p>没有核心线程数，没有核心线程，直接向<code>SynchronousQueue</code>中提交任务，空闲线程存活时间60s，可以看到存储队列用的是<code>SynchronousQueue</code>，这个阻塞队列没有存储空间，这意味着只要有请求到来，就必须要找到一条工作线程处理他，如果当前没有空闲的线程，那么就会再创建一条新的线程。极端情况下会创建过多的线程，耗尽 CPU 和内存资源。</p>
 <h4 id="newScheduledThreadPool"><a href="#newScheduledThreadPool" class="headerlink" title="newScheduledThreadPool"></a>newScheduledThreadPool</h4><p>用来处理延时任务或定时任务</p>
 <h3 id="Callable和FutureTask"><a href="#Callable和FutureTask" class="headerlink" title="Callable和FutureTask"></a>Callable和FutureTask</h3><h4 id="callable"><a href="#callable" class="headerlink" title="callable"></a>callable</h4><p>和Runnable类似，但是Callable有返回结果或抛出异常</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@FunctionalInterface</span><br><span class="line">public interface Callable&lt;V&gt; &#123;</span><br><span class="line">    &#x2F;**</span><br><span class="line">     * Computes a result, or throws an exception if unable to do so.</span><br><span class="line">     *</span><br><span class="line">     * @return computed result</span><br><span class="line">     * @throws Exception if unable to compute a result</span><br><span class="line">     *&#x2F;</span><br><span class="line">    V call() throws Exception;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">@FunctionalInterface
+public interface Callable&lt;V&gt; &#123;
+    &#x2F;**
+     * Computes a result, or throws an exception if unable to do so.
+     *
+     * @return computed result
+     * @throws Exception if unable to compute a result
+     *&#x2F;
+    V call() throws Exception;
+&#125;</code></pre>
 
 <h4 id="FutureTask"><a href="#FutureTask" class="headerlink" title="FutureTask"></a>FutureTask</h4><p>在线程池中，<code>executorService</code>的<code>submit</code>方法可以返回线程执行结果</p>
 <p><code>&lt;T&gt; Future&lt;T&gt; submit(Callable&lt;T&gt; task);</code></p>
 <p><code>&lt;T&gt; Future&lt;T&gt; submit(Runnable task, T result);</code></p>
 <p><code>Future&lt;?&gt; submit(Runnable task);</code></p>
 <p><code>FutureTask</code>实现了<code>RunnableFuture</code>接口，而<code>RunnableFuture</code>继承了<code>Runnable</code>和<code>Future</code>接口，所以它既可以作为<code>Runnable</code>被线程执行，又可以作为<code>Future</code>得到<code>Callable</code>的返回值</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">V get() throws InterruptedException, ExecutionException;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">V get() throws InterruptedException, ExecutionException;</code></pre>
 
 <p>通过<code>future</code>的<code>get</code>方法获取线程运行返回值(阻塞)</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Test &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        ExecutorService executor &#x3D; Executors.newCachedThreadPool();</span><br><span class="line">        Task task &#x3D; new Task();</span><br><span class="line">        Future&lt;Integer&gt; result &#x3D; executor.submit(task);</span><br><span class="line">        executor.shutdown();</span><br><span class="line">         </span><br><span class="line">        try &#123;</span><br><span class="line">            Thread.sleep(1000);</span><br><span class="line">        &#125; catch (InterruptedException e1) &#123;</span><br><span class="line">            e1.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">         </span><br><span class="line">        System.out.println(&quot;主线程在执行任务&quot;);</span><br><span class="line">         </span><br><span class="line">        try &#123;</span><br><span class="line">            System.out.println(&quot;task运行结果&quot;+result.get());</span><br><span class="line">        &#125; catch (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; catch (ExecutionException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">         </span><br><span class="line">        System.out.println(&quot;所有任务执行完毕&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">class Task implements Callable&lt;Integer&gt;&#123;</span><br><span class="line">    @Override</span><br><span class="line">    public Integer call() throws Exception &#123;</span><br><span class="line">        System.out.println(&quot;子线程在进行计算&quot;);</span><br><span class="line">        Thread.sleep(3000);</span><br><span class="line">        int sum &#x3D; 0;</span><br><span class="line">        for(int i&#x3D;0;i&lt;100;i++)</span><br><span class="line">            sum +&#x3D; i;</span><br><span class="line">        return sum;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public class Test &#123;
+    public static void main(String[] args) &#123;
+        ExecutorService executor &#x3D; Executors.newCachedThreadPool();
+        Task task &#x3D; new Task();
+        Future&lt;Integer&gt; result &#x3D; executor.submit(task);
+        executor.shutdown();
+         
+        try &#123;
+            Thread.sleep(1000);
+        &#125; catch (InterruptedException e1) &#123;
+            e1.printStackTrace();
+        &#125;
+         
+        System.out.println(&quot;主线程在执行任务&quot;);
+         
+        try &#123;
+            System.out.println(&quot;task运行结果&quot;+result.get());
+        &#125; catch (InterruptedException e) &#123;
+            e.printStackTrace();
+        &#125; catch (ExecutionException e) &#123;
+            e.printStackTrace();
+        &#125;
+         
+        System.out.println(&quot;所有任务执行完毕&quot;);
+    &#125;
+&#125;
+class Task implements Callable&lt;Integer&gt;&#123;
+    @Override
+    public Integer call() throws Exception &#123;
+        System.out.println(&quot;子线程在进行计算&quot;);
+        Thread.sleep(3000);
+        int sum &#x3D; 0;
+        for(int i&#x3D;0;i&lt;100;i++)
+            sum +&#x3D; i;
+        return sum;
+    &#125;
+&#125;</code></pre>
 
 <p>大致看一下代码，写下流程</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">   public Future&lt;?&gt; submit(Runnable task) &#123;</span><br><span class="line">       if (task &#x3D;&#x3D; null) throw new NullPointerException();</span><br><span class="line">       RunnableFuture&lt;Void&gt; ftask &#x3D; newTaskFor(task, null);</span><br><span class="line">       execute(ftask);</span><br><span class="line">       return ftask;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   public &lt;T&gt; Future&lt;T&gt; submit(Runnable task, T result) &#123;</span><br><span class="line">       if (task &#x3D;&#x3D; null) throw new NullPointerException();</span><br><span class="line">       RunnableFuture&lt;T&gt; ftask &#x3D; newTaskFor(task, result);</span><br><span class="line">       execute(ftask);</span><br><span class="line">       return ftask;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   public &lt;T&gt; Future&lt;T&gt; submit(Callable&lt;T&gt; task) &#123;</span><br><span class="line">       if (task &#x3D;&#x3D; null) throw new NullPointerException();</span><br><span class="line">       RunnableFuture&lt;T&gt; ftask &#x3D; newTaskFor(task);</span><br><span class="line">       execute(ftask);</span><br><span class="line">       return ftask;</span><br><span class="line">   &#125;</span><br><span class="line">&#x2F;&#x2F;以上为AbstractExecutorService实现的三种submit方法</span><br><span class="line"></span><br><span class="line">protected &lt;T&gt; RunnableFuture&lt;T&gt; newTaskFor(Runnable runnable, T value) &#123;</span><br><span class="line">       return new FutureTask&lt;T&gt;(runnable, value);</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   protected &lt;T&gt; RunnableFuture&lt;T&gt; newTaskFor(Callable&lt;T&gt; callable) &#123;</span><br><span class="line">       return new FutureTask&lt;T&gt;(callable);</span><br><span class="line">   &#125;</span><br><span class="line">&#x2F;&#x2F;接着查看newTaskFor方法，创建了FutureTask实例并返回</span><br><span class="line">    protected &lt;T&gt; RunnableFuture&lt;T&gt; newTaskFor(Callable&lt;T&gt; callable) &#123;</span><br><span class="line">        return new FutureTask&lt;T&gt;(callable);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;直接成员变量callable接收传入的callable</span><br><span class="line">   public FutureTask(Callable&lt;V&gt; callable) &#123;</span><br><span class="line">       if (callable &#x3D;&#x3D; null)</span><br><span class="line">           throw new NullPointerException();</span><br><span class="line">       this.callable &#x3D; callable;</span><br><span class="line">       this.state &#x3D; NEW;       &#x2F;&#x2F; ensure visibility of callable</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;将Runnable通过适配器模式转接callable接收，查看callable方法</span><br><span class="line">   public FutureTask(Runnable runnable, V result) &#123;</span><br><span class="line">       this.callable &#x3D; Executors.callable(runnable, result);</span><br><span class="line">       this.state &#x3D; NEW;       &#x2F;&#x2F; ensure visibility of callable</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">   public static &lt;T&gt; Callable&lt;T&gt; callable(Runnable task, T result) &#123;</span><br><span class="line">       if (task &#x3D;&#x3D; null)</span><br><span class="line">           throw new NullPointerException();</span><br><span class="line">       return new RunnableAdapter&lt;T&gt;(task, result);</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   static final class RunnableAdapter&lt;T&gt; implements Callable&lt;T&gt; &#123;</span><br><span class="line">       final Runnable task;</span><br><span class="line">       final T result;</span><br><span class="line">       RunnableAdapter(Runnable task, T result) &#123;</span><br><span class="line">           this.task &#x3D; task;</span><br><span class="line">           this.result &#x3D; result;</span><br><span class="line">       &#125;</span><br><span class="line">       public T call() &#123;</span><br><span class="line">           task.run();</span><br><span class="line">           return result;</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;再往回追溯result，submit方法中只有一个参数runnable时，result为null</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;此时，创建futuretask完成了(最终的runnable)</span><br><span class="line">&#x2F;&#x2F;下一步submit方法中执行了excute方法，传入初始化好的futuretask</span><br><span class="line">&#x2F;&#x2F;查看FutureTask的run方法</span><br><span class="line">   public void run() &#123;</span><br><span class="line">       if (state !&#x3D; NEW ||</span><br><span class="line">           !UNSAFE.compareAndSwapObject(this, runnerOffset,</span><br><span class="line">                                        null, Thread.currentThread()))</span><br><span class="line">           return;</span><br><span class="line">       try &#123;</span><br><span class="line">           Callable&lt;V&gt; c &#x3D; callable;</span><br><span class="line">           if (c !&#x3D; null &amp;&amp; state &#x3D;&#x3D; NEW) &#123;</span><br><span class="line">               V result;</span><br><span class="line">               boolean ran;</span><br><span class="line">               try &#123;</span><br><span class="line">                   result &#x3D; c.call();</span><br><span class="line">                   ran &#x3D; true;</span><br><span class="line">               &#125; catch (Throwable ex) &#123;</span><br><span class="line">                   result &#x3D; null;</span><br><span class="line">                   ran &#x3D; false;</span><br><span class="line">                   setException(ex);</span><br><span class="line">               &#125;</span><br><span class="line">               if (ran)</span><br><span class="line">                   set(result);</span><br><span class="line">           &#125;</span><br><span class="line">       &#125; finally &#123;</span><br><span class="line">           &#x2F;&#x2F; runner must be non-null until state is settled to</span><br><span class="line">           &#x2F;&#x2F; prevent concurrent calls to run()</span><br><span class="line">           runner &#x3D; null;</span><br><span class="line">           &#x2F;&#x2F; state must be re-read after nulling runner to prevent</span><br><span class="line">           &#x2F;&#x2F; leaked interrupts</span><br><span class="line">           int s &#x3D; state;</span><br><span class="line">           if (s &gt;&#x3D; INTERRUPTING)</span><br><span class="line">               handlePossibleCancellationInterrupt(s);</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;大致流程为将我们传入的runnable或callable包装为FutureTask，然后执行FutureTask</span><br><span class="line">&#x2F;&#x2F;run方法中调用callable的call方法，从上面代码看到，创建FutureTask实例时</span><br><span class="line">&#x2F;&#x2F;传入一个runnable时，result为null，传入一个runnable和value时，result为</span><br><span class="line">&#x2F;&#x2F;value，传入的是callable时，result为call方法返回值，然后通过set方法，将</span><br><span class="line">&#x2F;&#x2F;result传给成员变量outcome,最后return</span><br><span class="line"></span><br><span class="line">   protected void set(V v) &#123;</span><br><span class="line">       if (UNSAFE.compareAndSwapInt(this, stateOffset, NEW, COMPLETING)) &#123;</span><br><span class="line">           outcome &#x3D; v;</span><br><span class="line">           UNSAFE.putOrderedInt(this, stateOffset, NORMAL); &#x2F;&#x2F; final state</span><br><span class="line">           finishCompletion();</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">   public Future&lt;?&gt; submit(Runnable task) &#123;
+       if (task &#x3D;&#x3D; null) throw new NullPointerException();
+       RunnableFuture&lt;Void&gt; ftask &#x3D; newTaskFor(task, null);
+       execute(ftask);
+       return ftask;
+   &#125;
+
+   public &lt;T&gt; Future&lt;T&gt; submit(Runnable task, T result) &#123;
+       if (task &#x3D;&#x3D; null) throw new NullPointerException();
+       RunnableFuture&lt;T&gt; ftask &#x3D; newTaskFor(task, result);
+       execute(ftask);
+       return ftask;
+   &#125;
+
+   public &lt;T&gt; Future&lt;T&gt; submit(Callable&lt;T&gt; task) &#123;
+       if (task &#x3D;&#x3D; null) throw new NullPointerException();
+       RunnableFuture&lt;T&gt; ftask &#x3D; newTaskFor(task);
+       execute(ftask);
+       return ftask;
+   &#125;
+&#x2F;&#x2F;以上为AbstractExecutorService实现的三种submit方法
+
+protected &lt;T&gt; RunnableFuture&lt;T&gt; newTaskFor(Runnable runnable, T value) &#123;
+       return new FutureTask&lt;T&gt;(runnable, value);
+   &#125;
+
+   protected &lt;T&gt; RunnableFuture&lt;T&gt; newTaskFor(Callable&lt;T&gt; callable) &#123;
+       return new FutureTask&lt;T&gt;(callable);
+   &#125;
+&#x2F;&#x2F;接着查看newTaskFor方法，创建了FutureTask实例并返回
+    protected &lt;T&gt; RunnableFuture&lt;T&gt; newTaskFor(Callable&lt;T&gt; callable) &#123;
+        return new FutureTask&lt;T&gt;(callable);
+    &#125;
+
+&#x2F;&#x2F;直接成员变量callable接收传入的callable
+   public FutureTask(Callable&lt;V&gt; callable) &#123;
+       if (callable &#x3D;&#x3D; null)
+           throw new NullPointerException();
+       this.callable &#x3D; callable;
+       this.state &#x3D; NEW;       &#x2F;&#x2F; ensure visibility of callable
+   &#125;
+
+
+&#x2F;&#x2F;将Runnable通过适配器模式转接callable接收，查看callable方法
+   public FutureTask(Runnable runnable, V result) &#123;
+       this.callable &#x3D; Executors.callable(runnable, result);
+       this.state &#x3D; NEW;       &#x2F;&#x2F; ensure visibility of callable
+   &#125;
+
+
+   public static &lt;T&gt; Callable&lt;T&gt; callable(Runnable task, T result) &#123;
+       if (task &#x3D;&#x3D; null)
+           throw new NullPointerException();
+       return new RunnableAdapter&lt;T&gt;(task, result);
+   &#125;
+
+   static final class RunnableAdapter&lt;T&gt; implements Callable&lt;T&gt; &#123;
+       final Runnable task;
+       final T result;
+       RunnableAdapter(Runnable task, T result) &#123;
+           this.task &#x3D; task;
+           this.result &#x3D; result;
+       &#125;
+       public T call() &#123;
+           task.run();
+           return result;
+       &#125;
+   &#125;
+
+&#x2F;&#x2F;再往回追溯result，submit方法中只有一个参数runnable时，result为null
+
+
+&#x2F;&#x2F;此时，创建futuretask完成了(最终的runnable)
+&#x2F;&#x2F;下一步submit方法中执行了excute方法，传入初始化好的futuretask
+&#x2F;&#x2F;查看FutureTask的run方法
+   public void run() &#123;
+       if (state !&#x3D; NEW ||
+           !UNSAFE.compareAndSwapObject(this, runnerOffset,
+                                        null, Thread.currentThread()))
+           return;
+       try &#123;
+           Callable&lt;V&gt; c &#x3D; callable;
+           if (c !&#x3D; null &amp;&amp; state &#x3D;&#x3D; NEW) &#123;
+               V result;
+               boolean ran;
+               try &#123;
+                   result &#x3D; c.call();
+                   ran &#x3D; true;
+               &#125; catch (Throwable ex) &#123;
+                   result &#x3D; null;
+                   ran &#x3D; false;
+                   setException(ex);
+               &#125;
+               if (ran)
+                   set(result);
+           &#125;
+       &#125; finally &#123;
+           &#x2F;&#x2F; runner must be non-null until state is settled to
+           &#x2F;&#x2F; prevent concurrent calls to run()
+           runner &#x3D; null;
+           &#x2F;&#x2F; state must be re-read after nulling runner to prevent
+           &#x2F;&#x2F; leaked interrupts
+           int s &#x3D; state;
+           if (s &gt;&#x3D; INTERRUPTING)
+               handlePossibleCancellationInterrupt(s);
+       &#125;
+   &#125;
+
+&#x2F;&#x2F;大致流程为将我们传入的runnable或callable包装为FutureTask，然后执行FutureTask
+&#x2F;&#x2F;run方法中调用callable的call方法，从上面代码看到，创建FutureTask实例时
+&#x2F;&#x2F;传入一个runnable时，result为null，传入一个runnable和value时，result为
+&#x2F;&#x2F;value，传入的是callable时，result为call方法返回值，然后通过set方法，将
+&#x2F;&#x2F;result传给成员变量outcome,最后return
+
+   protected void set(V v) &#123;
+       if (UNSAFE.compareAndSwapInt(this, stateOffset, NEW, COMPLETING)) &#123;
+           outcome &#x3D; v;
+           UNSAFE.putOrderedInt(this, stateOffset, NORMAL); &#x2F;&#x2F; final state
+           finishCompletion();
+       &#125;
+   &#125;</code></pre>
 
 <p><code>Future</code>接口还有一个<code>boolean cancel(boolean mayInterruptIfRunning)</code>方法来取消线程运行，参数决定当线程在运行时是否执行中断操作</p>
 <p>the mayInterruptIfRunning parameter determines whether the thread executing this task should be interrupted in an attempt to stop the task</p>
@@ -1250,7 +1797,43 @@
 <p><code>shutdown()</code>：将线程池的状态设置为<code>SHUTDOWN</code>，然后中断所有没有执行的线程，无法再添加线程。<br><code>shutdownNow()</code>：将线程池设置为 <code>STOP</code>，然后尝试停止所有线程，并返回等待执行任务的列表。</p>
 <p><code>isTerminated</code>: 当调用<code>shutdown()</code>方法后，并且所有提交的任务完成后返回为<code>true</code><br><code>isShutDown</code>: 当调用<code>shutdown()</code>方法后返回为<code>true</code>。</p>
 <p>创建一个线程池</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class ThreadPoolManager &#123;</span><br><span class="line">    private final String TAG &#x3D; this.getClass().getSimpleName();</span><br><span class="line">    private static final int CORE_POOL_SIZE &#x3D; Runtime.getRuntime().availableProcessors() * 2; &#x2F;&#x2F; 核心线程数为 CPU数＊2</span><br><span class="line">    private static final int MAXIMUM_POOL_SIZE &#x3D; 64;    &#x2F;&#x2F; 线程队列最大线程数</span><br><span class="line">    private static final int KEEP_ALIVE_TIME &#x3D; 1;    &#x2F;&#x2F; 保持存活时间 1秒</span><br><span class="line"></span><br><span class="line">    private final BlockingQueue&lt;Runnable&gt; mWorkQueue &#x3D; new LinkedBlockingQueue&lt;&gt;(128);</span><br><span class="line"></span><br><span class="line">    private final ThreadFactory DEFAULT_THREAD_FACTORY &#x3D; new ThreadFactory() &#123;</span><br><span class="line">        private final AtomicInteger mCount &#x3D; new AtomicInteger(1);</span><br><span class="line"></span><br><span class="line">        public Thread newThread(Runnable r) &#123;</span><br><span class="line">            Thread thread &#x3D; new Thread(r, TAG + &quot; #&quot; + mCount.getAndIncrement());</span><br><span class="line">            thread.setPriority(Thread.NORM_PRIORITY);</span><br><span class="line">            return thread;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    private ThreadPoolExecutor mExecutor &#x3D; new ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE_TIME,</span><br><span class="line">            TimeUnit.SECONDS, mWorkQueue, DEFAULT_THREAD_FACTORY,</span><br><span class="line">            new ThreadPoolExecutor.DiscardOldestPolicy());</span><br><span class="line"></span><br><span class="line">    private static volatile ThreadPoolManager mInstance &#x3D; new ThreadPoolManager();</span><br><span class="line"></span><br><span class="line">    public static ThreadPoolManager getInstance() &#123;</span><br><span class="line">        return mInstance;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void addTask(Runnable runnable) &#123;</span><br><span class="line">        mExecutor.execute(runnable);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">    public void shutdownNow() &#123;</span><br><span class="line">        mExecutor.shutdownNow();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public class ThreadPoolManager &#123;
+    private final String TAG &#x3D; this.getClass().getSimpleName();
+    private static final int CORE_POOL_SIZE &#x3D; Runtime.getRuntime().availableProcessors() * 2; &#x2F;&#x2F; 核心线程数为 CPU数＊2
+    private static final int MAXIMUM_POOL_SIZE &#x3D; 64;    &#x2F;&#x2F; 线程队列最大线程数
+    private static final int KEEP_ALIVE_TIME &#x3D; 1;    &#x2F;&#x2F; 保持存活时间 1秒
+
+    private final BlockingQueue&lt;Runnable&gt; mWorkQueue &#x3D; new LinkedBlockingQueue&lt;&gt;(128);
+
+    private final ThreadFactory DEFAULT_THREAD_FACTORY &#x3D; new ThreadFactory() &#123;
+        private final AtomicInteger mCount &#x3D; new AtomicInteger(1);
+
+        public Thread newThread(Runnable r) &#123;
+            Thread thread &#x3D; new Thread(r, TAG + &quot; #&quot; + mCount.getAndIncrement());
+            thread.setPriority(Thread.NORM_PRIORITY);
+            return thread;
+        &#125;
+    &#125;;
+
+    private ThreadPoolExecutor mExecutor &#x3D; new ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE_TIME,
+            TimeUnit.SECONDS, mWorkQueue, DEFAULT_THREAD_FACTORY,
+            new ThreadPoolExecutor.DiscardOldestPolicy());
+
+    private static volatile ThreadPoolManager mInstance &#x3D; new ThreadPoolManager();
+
+    public static ThreadPoolManager getInstance() &#123;
+        return mInstance;
+    &#125;
+
+    public void addTask(Runnable runnable) &#123;
+        mExecutor.execute(runnable);
+    &#125;
+
+    
+    public void shutdownNow() &#123;
+        mExecutor.shutdownNow();
+    &#125;
+&#125;</code></pre>
           
         
       
@@ -1618,13 +2201,21 @@
 <h3 id="final类型的静态属性"><a href="#final类型的静态属性" class="headerlink" title="final类型的静态属性"></a>final类型的静态属性</h3><ol>
 <li>当<code>final</code>属性编译时就确定时，访问该属性不会触发类的初始化，例如</li>
 </ol>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static final int a &#x3D;1</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public static final int a &#x3D;1</code></pre>
 
 <p>在以下情况访问类变量<code>a</code>时，会触发初始化</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static final int a;</span><br><span class="line">static&#123;</span><br><span class="line">    a &#x3D; 1;</span><br><span class="line">    System.out.println(&quot;out&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public static final int a;
+static&#123;
+    a &#x3D; 1;
+    System.out.println(&quot;out&quot;);
+&#125;</code></pre>
 
 <p>和</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static int a;</span><br><span class="line"></span><br><span class="line">public ttt() &#123;</span><br><span class="line">    a &#x3D; 1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public static int a;
+
+public ttt() &#123;
+    a &#x3D; 1;
+&#125;</code></pre>
           
         
       
@@ -1767,10 +2358,41 @@
           
             <h3 id="初始化顺序"><a href="#初始化顺序" class="headerlink" title="初始化顺序"></a>初始化顺序</h3><p>当第一次加载初始化一个类的时候，首先执行静态代码块和静态变量初始化(按照先后顺序）,然后执行非静态代码块和非静态变量初始化(按照先后顺序),最后执行构造函数</p>
 <p>当涉及到继承关系时</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class father&#123;</span><br><span class="line">	static&#123;</span><br><span class="line">		System.out.println(&quot;父类静态代码块&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	&#123;</span><br><span class="line">		System.out.println(&quot;父类非静态代码块&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	public father()&#123;</span><br><span class="line">		System.out.println(&quot;父类构造函数&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class son extends father&#123;</span><br><span class="line">	static&#123;</span><br><span class="line">		System.out.println(&quot;子类静态代码块&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">	&#123;</span><br><span class="line">		System.out.println(&quot;子类非静态代码块&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">	public son()&#123;</span><br><span class="line">		System.out.println(&quot;子类构造函数&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">执行 new son();</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">class father&#123;
+	static&#123;
+		System.out.println(&quot;父类静态代码块&quot;);
+	&#125;
+	
+	&#123;
+		System.out.println(&quot;父类非静态代码块&quot;);
+	&#125;
+	
+	public father()&#123;
+		System.out.println(&quot;父类构造函数&quot;);
+	&#125;
+&#125;
+
+class son extends father&#123;
+	static&#123;
+		System.out.println(&quot;子类静态代码块&quot;);
+	&#125;
+	&#123;
+		System.out.println(&quot;子类非静态代码块&quot;);
+	&#125;
+	public son()&#123;
+		System.out.println(&quot;子类构造函数&quot;);
+	&#125;
+&#125;
+
+执行 new son();</code></pre>
 
 <p>得到结果</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">父类静态代码块</span><br><span class="line">子类静态代码块</span><br><span class="line">父类非静态代码块</span><br><span class="line">父类构造函数</span><br><span class="line">子类非静态代码块</span><br><span class="line">子类构造函数</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">父类静态代码块
+子类静态代码块
+父类非静态代码块
+父类构造函数
+子类非静态代码块
+子类构造函数</code></pre>
 
 <p>当子类和父类都未被加载过时，初始化一个子类，首先执行父类静态代码块和静态变量初始化(按照先后顺序)，然后执行子类静态代码块和静态变量初始化(按照先后顺序)，然后执行父类非静态代码块和非静态变量初始化(按照先后顺序)，再执行父类构造方法，然后执行子类非静态方法和非静态变量初始化(按照先后顺序)，再执行子类构造方法</p>
 
@@ -1917,10 +2539,14 @@
             <h3 id="什么是泛型，为什么要使用泛型"><a href="#什么是泛型，为什么要使用泛型" class="headerlink" title="什么是泛型，为什么要使用泛型"></a>什么是泛型，为什么要使用泛型</h3><p>泛型，即“参数化类型”。一提到参数，最熟悉的就是定义方法时有形参，然后调用此方法时传递实参。那么参数化类型怎么理解呢？顾名思义，就是将类型由原来的具体的类型参数化，类似于方法中的变量参数，此时类型也定义成参数形式（可以称之为类型形参），然后在使用/调用时传入具体的类型（类型实参）。</p>
 <p>泛型的本质是为了参数化类型（在不创建新的类型的情况下，通过泛型指定的不同类型来控制形参具体限制的类型）。也就是说在泛型使用过程中，操作的数据类型被指定为一个参数，这种参数类型可以用在类、接口和方法中，分别被称为泛型类、泛型接口、泛型方法。</p>
 <p>如果你定义了一个泛型（类、接口），那么Java规定，你不能在所有的静态方法、静态初块等所有静态内容中使用泛型的类型参数</p>
-<h3 id="泛型类"><a href="#泛型类" class="headerlink" title="泛型类"></a>泛型类</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class generic&lt;T&gt;&#123;</span><br><span class="line">	T element;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="泛型类"><a href="#泛型类" class="headerlink" title="泛型类"></a>泛型类</h3><pre><code class="highlight plain">class generic&lt;T&gt;&#123;
+	T element;
+&#125;</code></pre>
 
 <p>创建对象时指定T的参数类型例如<code>new generic&lt;Integer&gt;</code>，将成员变量的类型参数化</p>
-<h3 id="泛型接口"><a href="#泛型接口" class="headerlink" title="泛型接口"></a>泛型接口</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">interface generic&lt;T&gt;&#123;</span><br><span class="line">	public T get();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="泛型接口"><a href="#泛型接口" class="headerlink" title="泛型接口"></a>泛型接口</h3><pre><code class="highlight plain">interface generic&lt;T&gt;&#123;
+	public T get();
+&#125;</code></pre>
 
 <p>若实现类中确定了参数类型，在实现接口时可以指定，<code>class a implements generic&lt;Integer&gt;</code>，若不确定参数类型，<code>class a&lt;T&gt; implements generic&lt;T&gt;</code>，用法一样</p>
 <h3 id="泛型方法"><a href="#泛型方法" class="headerlink" title="泛型方法"></a>泛型方法</h3><p>在非泛型类中定义泛型方法，格式为：修饰符 返回值类型 方法名(形参列表)</p>
@@ -1930,16 +2556,59 @@
 <li><T>表明该方法将使用泛型类型T，此时才可以在方法中使用泛型类型T</li>
 <li>与泛型类的定义一样，此处T可以随便写为任意标识，常见的如T、E、K、V等形式的参数常用于表示泛型</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Method&#123;</span><br><span class="line">	public &lt;T&gt; void out(T a)&#123;</span><br><span class="line">		System.out.println(a.getClass().getName());</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public class Generic&#123;</span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		Method m &#x3D; new Method();</span><br><span class="line">		m.out(&quot;sss&quot;);&#x2F;&#x2F;输出java.lang.String</span><br><span class="line">		m.out(1);&#x2F;&#x2F;输出java.lang.Integer</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">class Method&#123;
+	public &lt;T&gt; void out(T a)&#123;
+		System.out.println(a.getClass().getName());
+	&#125;
+&#125;
+
+public class Generic&#123;
+	public static void main(String[] args) &#123;
+		Method m &#x3D; new Method();
+		m.out(&quot;sss&quot;);&#x2F;&#x2F;输出java.lang.String
+		m.out(1);&#x2F;&#x2F;输出java.lang.Integer
+	&#125;
+&#125;</code></pre>
 
 <h3 id="通配符"><a href="#通配符" class="headerlink" title="通配符"></a>通配符</h3><ul>
 <li>？表示类型参数赋予不确定值，任意类型</li>
 <li><strong>只能用在声明类型、方法参数上，不能用在定义泛型类上</strong></li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">	List&lt;Integer&gt; l1 &#x3D; new ArrayList&lt;Integer&gt;();</span><br><span class="line">	List&lt;String&gt; l2 &#x3D; new ArrayList&lt;String&gt;();</span><br><span class="line">	l1.add(1);</span><br><span class="line">	l1.add(2);</span><br><span class="line">	l2.add(&quot;aaa&quot;);</span><br><span class="line">	l2.add(&quot;bbb&quot;);</span><br><span class="line">	out1(l1);</span><br><span class="line">	out1(l2);</span><br><span class="line">	out2(l1);</span><br><span class="line">	out2(l2);&#x2F;&#x2F;报错</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static void out1(List&lt;?&gt; list)&#123;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br><span class="line">public static void out2(List&lt;Integer&gt; list)&#123;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public static void main(String[] args) &#123;
+	List&lt;Integer&gt; l1 &#x3D; new ArrayList&lt;Integer&gt;();
+	List&lt;String&gt; l2 &#x3D; new ArrayList&lt;String&gt;();
+	l1.add(1);
+	l1.add(2);
+	l2.add(&quot;aaa&quot;);
+	l2.add(&quot;bbb&quot;);
+	out1(l1);
+	out1(l2);
+	out2(l1);
+	out2(l2);&#x2F;&#x2F;报错
+&#125;
+
+public static void out1(List&lt;?&gt; list)&#123;
+	
+&#125;
+public static void out2(List&lt;Integer&gt; list)&#123;
+	
+&#125;</code></pre>
 
 <p>使用了通配符？定义的泛型变量和形参可以接受所有类型的同一泛型变量(不包括子类)，如下</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 用在形参上</span><br><span class="line">public static void test(List&lt;?&gt; list) &#123;</span><br><span class="line"> </span><br><span class="line"> List&lt;?&gt; list2; &#x2F;&#x2F; 用在声明变量上</span><br><span class="line"> list2 &#x3D; new ArrayList&lt;String&gt;();</span><br><span class="line"> list2 &#x3D; new ArrayList&lt;Integer&gt;();</span><br><span class="line"> list2 &#x3D; new ArrayList&lt;Object&gt;();</span><br><span class="line"> </span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line"> test(new ArrayList&lt;String&gt;());</span><br><span class="line"> test(new ArrayList&lt;Integer&gt;());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">&#x2F;&#x2F; 用在形参上
+public static void test(List&lt;?&gt; list) &#123;
+ 
+ List&lt;?&gt; list2; &#x2F;&#x2F; 用在声明变量上
+ list2 &#x3D; new ArrayList&lt;String&gt;();
+ list2 &#x3D; new ArrayList&lt;Integer&gt;();
+ list2 &#x3D; new ArrayList&lt;Object&gt;();
+ 
+&#125;
+ 
+public static void main(String[] args) &#123;
+ test(new ArrayList&lt;String&gt;());
+ test(new ArrayList&lt;Integer&gt;());
+&#125;</code></pre>
 
 <h3 id="泛型上下边界"><a href="#泛型上下边界" class="headerlink" title="泛型上下边界"></a>泛型上下边界</h3><p>在使用泛型的时候，我们还可以为传入的泛型类型实参进行上下边界的限制，如：类型实参只准传入某种类型的父类或某种类型的子类</p>
 <p>&lt;? extends T&gt;和&lt;? super T&gt;是Java泛型中的”通配符(Wildcards)”和”边界(Bounds)”的概念</p>
@@ -1950,20 +2619,92 @@
 <ol>
 <li>定义泛型类时使用，限定参数范围</li>
 </ol>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Generic&lt;T extends Number&gt;&#123;</span><br><span class="line">    private T key;</span><br><span class="line"></span><br><span class="line">    public Generic(T key) &#123;</span><br><span class="line">        this.key &#x3D; key;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public T getKey()&#123;</span><br><span class="line">        return key;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public class Generic&lt;T extends Number&gt;&#123;
+    private T key;
+
+    public Generic(T key) &#123;
+        this.key &#x3D; key;
+    &#125;
+
+    public T getKey()&#123;
+        return key;
+    &#125;
+&#125;</code></pre>
 
 <ol start="2">
 <li>作为变量时使用</li>
 </ol>
 <p><code>List</code>的<code>add</code>方法不能添加任何有意义的元素，但是可以接受现有的子类型<code>List</code>赋值</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">List&lt;? extends Number&gt; list &#x3D; new ArrayList&lt;Integer&gt;();</span><br><span class="line">list.add(1);&#x2F;&#x2F;报错</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">List&lt;? extends Number&gt; list &#x3D; new ArrayList&lt;Integer&gt;();
+list.add(1);&#x2F;&#x2F;报错</code></pre>
 
 <ol start="3">
 <li>作为形参时使用</li>
 </ol>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Method&#123;</span><br><span class="line">	public void out(List&lt;? extends Number&gt; a)&#123;</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">class Method&#123;
+	public void out(List&lt;? extends Number&gt; a)&#123;
+		
+	&#125;
+&#125;</code></pre>
 
-<h3 id="泛型的继承"><a href="#泛型的继承" class="headerlink" title="泛型的继承"></a>泛型的继承</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * 泛型继承</span><br><span class="line"> *</span><br><span class="line"> * 保留父类泛型 ----》泛型子类 </span><br><span class="line"> * 不保留父类泛型 -----》子类按需实现</span><br><span class="line"> *</span><br><span class="line"> * 子类重写父类的方法，泛型类型随父类而定 子类使用父类的属性，该属性类型随父类定义的泛型</span><br><span class="line"> *</span><br><span class="line"> * @author Administrator</span><br><span class="line"> *</span><br><span class="line"> * @param &lt;T1&gt;</span><br><span class="line"> * @param &lt;T2&gt;</span><br><span class="line"> *&#x2F;</span><br><span class="line">public abstract class Father&lt;T1, T2&gt; &#123;</span><br><span class="line">  T1 age;</span><br><span class="line"> </span><br><span class="line">  public abstract void test(T2 name);</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">&#x2F;&#x2F; 保留父类泛型 ----》泛型子类</span><br><span class="line">&#x2F;&#x2F; 1）全部保留</span><br><span class="line">class C1&lt;T1, T2&gt; extends Father&lt;T1, T2&gt; &#123;</span><br><span class="line"> </span><br><span class="line">  @Override</span><br><span class="line">  public void test(T2 name) &#123;</span><br><span class="line"> </span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">&#x2F;&#x2F; 2) 部分保留</span><br><span class="line">class C2&lt;T1&gt; extends Father&lt;T1, Integer&gt; &#123;</span><br><span class="line"> </span><br><span class="line">  @Override</span><br><span class="line">  public void test(Integer name) &#123;</span><br><span class="line"> </span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">&#x2F;&#x2F; 不保留父类泛型 -----》子类按需实现</span><br><span class="line">&#x2F;&#x2F; 1)具体类型</span><br><span class="line">class C3 extends Father&lt;String, Integer&gt; &#123;</span><br><span class="line"> </span><br><span class="line">  @Override</span><br><span class="line">  public void test(Integer name) &#123;</span><br><span class="line"> </span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">&#x2F;&#x2F; 2)没有具体类型</span><br><span class="line">&#x2F;&#x2F; 泛型擦除：实现或继承父类的子类，没有指定类型，类似于Object</span><br><span class="line">class C4 extends Father &#123;</span><br><span class="line"> </span><br><span class="line">  @Override</span><br><span class="line">  public void test(Object name) &#123;</span><br><span class="line"> </span><br><span class="line">  &#125;</span><br><span class="line"> </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="泛型的继承"><a href="#泛型的继承" class="headerlink" title="泛型的继承"></a>泛型的继承</h3><pre><code class="highlight plain">&#x2F;**
+ * 泛型继承
+ *
+ * 保留父类泛型 ----》泛型子类 
+ * 不保留父类泛型 -----》子类按需实现
+ *
+ * 子类重写父类的方法，泛型类型随父类而定 子类使用父类的属性，该属性类型随父类定义的泛型
+ *
+ * @author Administrator
+ *
+ * @param &lt;T1&gt;
+ * @param &lt;T2&gt;
+ *&#x2F;
+public abstract class Father&lt;T1, T2&gt; &#123;
+  T1 age;
+ 
+  public abstract void test(T2 name);
+&#125;
+ 
+&#x2F;&#x2F; 保留父类泛型 ----》泛型子类
+&#x2F;&#x2F; 1）全部保留
+class C1&lt;T1, T2&gt; extends Father&lt;T1, T2&gt; &#123;
+ 
+  @Override
+  public void test(T2 name) &#123;
+ 
+  &#125;
+&#125;
+ 
+&#x2F;&#x2F; 2) 部分保留
+class C2&lt;T1&gt; extends Father&lt;T1, Integer&gt; &#123;
+ 
+  @Override
+  public void test(Integer name) &#123;
+ 
+  &#125;
+&#125;
+ 
+&#x2F;&#x2F; 不保留父类泛型 -----》子类按需实现
+&#x2F;&#x2F; 1)具体类型
+class C3 extends Father&lt;String, Integer&gt; &#123;
+ 
+  @Override
+  public void test(Integer name) &#123;
+ 
+  &#125;
+&#125;
+ 
+&#x2F;&#x2F; 2)没有具体类型
+&#x2F;&#x2F; 泛型擦除：实现或继承父类的子类，没有指定类型，类似于Object
+class C4 extends Father &#123;
+ 
+  @Override
+  public void test(Object name) &#123;
+ 
+  &#125;
+ 
+&#125;</code></pre>
           
         
       
@@ -2288,7 +3029,7 @@
 
   
 
-  <link rel="stylesheet" href="/lib/prettify/skins/desert.css" type="text/css">
+  <link rel="stylesheet" href="/lib/prettify/skins/sunburst.css" type="text/css">
 <script src="/lib/prettify/prettify.js" type="text/javascript"></script>
 <script type="text/javascript">
   $(document).ready(function() {

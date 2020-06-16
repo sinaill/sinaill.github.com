@@ -248,174 +248,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E5%8D%95%E9%93%BE%E8%A1%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/%E5%8D%95%E9%93%BE%E8%A1%A8/" itemprop="url">单链表</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="单链表的概念"><a href="#单链表的概念" class="headerlink" title="单链表的概念"></a>单链表的概念</h3><p><img src="http://wx3.sinaimg.cn/large/96b7c0f4ly1fymvb9v22yj216q07qmx3.jpg" alt=""></p>
-<p>单链表每个节点node中存储了下一个节点的引用</p>
-<h3 id="结构"><a href="#结构" class="headerlink" title="结构"></a>结构</h3><h4 id="节点"><a href="#节点" class="headerlink" title="节点"></a>节点</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Node&lt;T&gt;&#123;</span><br><span class="line">	private T data;</span><br><span class="line">	private Node&lt;T&gt; next;&#x2F;&#x2F;下一个节点的引用</span><br><span class="line">	</span><br><span class="line">	public Node() &#123;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	public Node(T data) &#123;</span><br><span class="line">		super();</span><br><span class="line">		this.data &#x3D; data;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public T getData() &#123;</span><br><span class="line">		return data;</span><br><span class="line">	&#125;</span><br><span class="line">	public void setData(T data) &#123;</span><br><span class="line">		this.data &#x3D; data;</span><br><span class="line">	&#125;</span><br><span class="line">	public Node&lt;T&gt; getNext() &#123;</span><br><span class="line">		return next;</span><br><span class="line">	&#125;</span><br><span class="line">	public void setNext(Node&lt;T&gt; next) &#123;</span><br><span class="line">		this.next &#x3D; next;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="头节点"><a href="#头节点" class="headerlink" title="头节点"></a>头节点</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class LinkedList&lt;T&gt; &#123;</span><br><span class="line">	private Node&lt;T&gt; header;</span><br><span class="line">	</span><br><span class="line">	public LinkedList() &#123;</span><br><span class="line">		super();</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	public LinkedList(Node&lt;T&gt; header) &#123;</span><br><span class="line">		super();</span><br><span class="line">		this.header &#x3D; header;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public Node&lt;T&gt; getHeader() &#123;</span><br><span class="line">		return header;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public void setHeader(Node&lt;T&gt; header) &#123;</span><br><span class="line">		this.header &#x3D; header;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	·</span><br><span class="line">	·</span><br><span class="line">	·</span><br><span class="line"></span><br><span class="line">	单链表基本操作</span><br></pre></td></tr></table></figure>
-
-<h3 id="单链表的基本操作"><a href="#单链表的基本操作" class="headerlink" title="单链表的基本操作"></a>单链表的基本操作</h3><h4 id="头插法插入节点"><a href="#头插法插入节点" class="headerlink" title="头插法插入节点"></a>头插法插入节点</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void insertNodeHead(Node&lt;T&gt; node)&#123;</span><br><span class="line">	node.setNext(header);</span><br><span class="line">	header &#x3D; node;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="尾插法插入节点"><a href="#尾插法插入节点" class="headerlink" title="尾插法插入节点"></a>尾插法插入节点</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void insertNodeTail(Node&lt;T&gt; node)&#123;</span><br><span class="line">	Node&lt;T&gt; temp &#x3D; header;</span><br><span class="line">	if (header &#x3D;&#x3D; null) &#123;</span><br><span class="line">		header &#x3D; node;</span><br><span class="line">		return;</span><br><span class="line">	&#125;</span><br><span class="line">	while(temp.getNext() !&#x3D; null)&#123;</span><br><span class="line">		temp &#x3D; temp.getNext();</span><br><span class="line">	&#125;</span><br><span class="line">	temp.setNext(node);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="移除第一个节点"><a href="#移除第一个节点" class="headerlink" title="移除第一个节点"></a>移除第一个节点</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void removeFirstNode()&#123;</span><br><span class="line">	if(isEmpty())&#123;</span><br><span class="line">		return;</span><br><span class="line">	&#125;</span><br><span class="line">	header &#x3D; header.getNext();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="移除最后一个节点"><a href="#移除最后一个节点" class="headerlink" title="移除最后一个节点"></a>移除最后一个节点</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void removeLastNode()&#123;</span><br><span class="line">	if(isEmpty())&#123;</span><br><span class="line">		return;</span><br><span class="line">	&#125;</span><br><span class="line">	Node&lt;T&gt; temp &#x3D; header;</span><br><span class="line">	while(temp.getNext().getNext() !&#x3D; null)&#123;</span><br><span class="line">		temp &#x3D; temp.getNext();</span><br><span class="line">	&#125;</span><br><span class="line">	temp.setNext(null);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="获取单链表长度"><a href="#获取单链表长度" class="headerlink" title="获取单链表长度"></a>获取单链表长度</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public int getLength()&#123;</span><br><span class="line">	int tempLength &#x3D; 0;</span><br><span class="line">	Node&lt;T&gt; tempNode &#x3D; header;</span><br><span class="line">	while(tempNode !&#x3D; null)&#123;</span><br><span class="line">		tempLength++;</span><br><span class="line">		tempNode &#x3D; tempNode.getNext();</span><br><span class="line">	&#125;</span><br><span class="line">	return tempLength;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="显示所有节点信息"><a href="#显示所有节点信息" class="headerlink" title="显示所有节点信息"></a>显示所有节点信息</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void dislayAllNode()&#123;</span><br><span class="line">	if(isEmpty())&#123;</span><br><span class="line">		return;</span><br><span class="line">	&#125;</span><br><span class="line">	Node&lt;T&gt; temp &#x3D; header;</span><br><span class="line">	while(temp !&#x3D; null)&#123;</span><br><span class="line">		System.out.println(temp.getData());</span><br><span class="line">		temp &#x3D; temp.getNext();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="指定位置插入节点"><a href="#指定位置插入节点" class="headerlink" title="指定位置插入节点"></a>指定位置插入节点</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void insertNodeByPos(int pos,Node&lt;T&gt; node)&#123;</span><br><span class="line">	&#x2F;&#x2F;链表为空或者指定位置超过链表长度结束</span><br><span class="line">	if(isEmpty() || getLength()+1 &lt; pos)&#123;</span><br><span class="line">		return;</span><br><span class="line">	&#125;</span><br><span class="line">	if(pos &#x3D;&#x3D; 1)&#123;</span><br><span class="line">		insertNodeHead(node);</span><br><span class="line">	&#125;else if (pos &#x3D;&#x3D; getLength()+1) &#123;</span><br><span class="line">		insertNodeTail(node);</span><br><span class="line">	&#125;else &#123;</span><br><span class="line">		Node&lt;T&gt; temp &#x3D; header;</span><br><span class="line">		for (int i &#x3D; pos - 2; i &gt; 0 &amp;&amp; temp !&#x3D; null; i--) &#123;</span><br><span class="line">			temp &#x3D; temp.getNext();</span><br><span class="line">		&#125;</span><br><span class="line">		node.setNext(temp.getNext());</span><br><span class="line">		temp.setNext(node);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="删除指定位置节点"><a href="#删除指定位置节点" class="headerlink" title="删除指定位置节点"></a>删除指定位置节点</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void deleteNodeByPos(int pos)&#123;</span><br><span class="line">	if(isEmpty())&#123;</span><br><span class="line">		return;</span><br><span class="line">	&#125;</span><br><span class="line">	Node&lt;T&gt; temp &#x3D; header;</span><br><span class="line">	if (pos &#x3D;&#x3D; 1) &#123;</span><br><span class="line">		removeFirstNode();</span><br><span class="line">		return;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	for (int i &#x3D; pos - 2; i &gt; 0 &amp;&amp; temp !&#x3D; null; i--) &#123;</span><br><span class="line">		temp &#x3D; temp.getNext();</span><br><span class="line">	&#125;</span><br><span class="line">	temp.setNext(temp.getNext().getNext());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="查看元素在链表中位置"><a href="#查看元素在链表中位置" class="headerlink" title="查看元素在链表中位置"></a>查看元素在链表中位置</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public Integer elementPos(T data)&#123;</span><br><span class="line">	if(isEmpty())&#123;</span><br><span class="line">		return null;</span><br><span class="line">	&#125;</span><br><span class="line">	Node&lt;T&gt; temp &#x3D; header;</span><br><span class="line">	int pos &#x3D; 1;</span><br><span class="line">	while(temp !&#x3D; null)&#123;</span><br><span class="line">		if(temp.getData().equals(data))&#123;</span><br><span class="line">			return Integer.valueOf(pos);</span><br><span class="line">		&#125;</span><br><span class="line">		pos++;</span><br><span class="line">		temp &#x3D; temp.getNext();</span><br><span class="line">	&#125;</span><br><span class="line">	return null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="倒置链表"><a href="#倒置链表" class="headerlink" title="倒置链表"></a>倒置链表</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void reverse()&#123;</span><br><span class="line">	if(isEmpty() &amp;&amp; getLength()&#x3D;&#x3D;1)&#123;</span><br><span class="line">		return;</span><br><span class="line">	&#125;	</span><br><span class="line">	Node&lt;T&gt; next;&#x2F;&#x2F;保存下一个节点</span><br><span class="line">	Node&lt;T&gt; temp &#x3D; header;&#x2F;&#x2F;当前处理节点</span><br><span class="line">	header &#x3D; null;&#x2F;&#x2F;第一次做特殊处理，使尾节点中的next为空</span><br><span class="line">	while(temp !&#x3D; null)&#123;</span><br><span class="line">		next &#x3D; temp.getNext();</span><br><span class="line">		temp.setNext(header);</span><br><span class="line">		header &#x3D; temp;</span><br><span class="line">		temp &#x3D; next;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="查看链表是否为空"><a href="#查看链表是否为空" class="headerlink" title="查看链表是否为空"></a>查看链表是否为空</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public boolean isEmpty()&#123;</span><br><span class="line">	return Objects.isNull(header);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="清空链表"><a href="#清空链表" class="headerlink" title="清空链表"></a>清空链表</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void clear()&#123;</span><br><span class="line">	header &#x3D; null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -517,19 +349,387 @@
 <li>单例类必须给所有其他对象提供这一实例</li>
 </ul>
 <p>###单例模式的几种实现模式</p>
-<h4 id="懒汉式-线程不安全"><a href="#懒汉式-线程不安全" class="headerlink" title="懒汉式(线程不安全)"></a>懒汉式(线程不安全)</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Singleton &#123;</span><br><span class="line">    private static Singleton instance;</span><br><span class="line">    private Singleton ()&#123;&#125;</span><br><span class="line">    public static Singleton getInstance() &#123;</span><br><span class="line">        if (instance &#x3D;&#x3D; null) &#123;</span><br><span class="line">            instance &#x3D; new Singleton();</span><br><span class="line">        &#125;</span><br><span class="line">        return instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="懒汉式-线程不安全"><a href="#懒汉式-线程不安全" class="headerlink" title="懒汉式(线程不安全)"></a>懒汉式(线程不安全)</h4><pre><code class="highlight plain">public class Singleton &#123;
+    private static Singleton instance;
+    private Singleton ()&#123;&#125;
+    public static Singleton getInstance() &#123;
+        if (instance &#x3D;&#x3D; null) &#123;
+            instance &#x3D; new Singleton();
+        &#125;
+        return instance;
+    &#125;
+&#125;</code></pre>
 
 <p>懒加载，但线程不安全</p>
-<h4 id="懒汉式-线程安全"><a href="#懒汉式-线程安全" class="headerlink" title="懒汉式(线程安全)"></a>懒汉式(线程安全)</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Singleton &#123;</span><br><span class="line">    private static Singleton instance;</span><br><span class="line">    private Singleton ()&#123;&#125;</span><br><span class="line">    public static synchronized Singleton getInstance() &#123;</span><br><span class="line">        if (instance &#x3D;&#x3D; null) &#123;</span><br><span class="line">            instance &#x3D; new Singleton();</span><br><span class="line">        &#125;</span><br><span class="line">        return instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="懒汉式-线程安全"><a href="#懒汉式-线程安全" class="headerlink" title="懒汉式(线程安全)"></a>懒汉式(线程安全)</h4><pre><code class="highlight plain">public class Singleton &#123;
+    private static Singleton instance;
+    private Singleton ()&#123;&#125;
+    public static synchronized Singleton getInstance() &#123;
+        if (instance &#x3D;&#x3D; null) &#123;
+            instance &#x3D; new Singleton();
+        &#125;
+        return instance;
+    &#125;
+&#125;</code></pre>
 <p>懒加载，线程安全，但效率低</p>
-<h4 id="懒汉式-线程安全-1"><a href="#懒汉式-线程安全-1" class="headerlink" title="懒汉式(线程安全)"></a>懒汉式(线程安全)</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Singleton &#123;</span><br><span class="line">    private volatile static Singleton instance;</span><br><span class="line">    private Singleton ()&#123;&#125;</span><br><span class="line">    public static Singleton getInstance() &#123;</span><br><span class="line">        if (instance &#x3D;&#x3D; null) &#123;</span><br><span class="line">			synchronized(this.class)&#123;</span><br><span class="line">				if (instance &#x3D;&#x3D; null)&#123;</span><br><span class="line">					instance &#x3D; new Singleton();</span><br><span class="line">				&#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="懒汉式-线程安全-1"><a href="#懒汉式-线程安全-1" class="headerlink" title="懒汉式(线程安全)"></a>懒汉式(线程安全)</h4><pre><code class="highlight plain">public class Singleton &#123;
+    private volatile static Singleton instance;
+    private Singleton ()&#123;&#125;
+    public static Singleton getInstance() &#123;
+        if (instance &#x3D;&#x3D; null) &#123;
+			synchronized(this.class)&#123;
+				if (instance &#x3D;&#x3D; null)&#123;
+					instance &#x3D; new Singleton();
+				&#125;
+        &#125;
+        return instance;
+    &#125;
+&#125;</code></pre>
 <p>相比上一种，提高了效率，将同步代码块放到判断instance是否空后面，避免了创建实例instance后每个线程仍需要排队</p>
-<h4 id="饿汉式-线程安全"><a href="#饿汉式-线程安全" class="headerlink" title="饿汉式(线程安全)"></a>饿汉式(线程安全)</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Singleton &#123;  </span><br><span class="line">    private static Singleton instance &#x3D; new Singleton();  </span><br><span class="line">    private Singleton ()&#123;&#125;  </span><br><span class="line">    public static Singleton getInstance() &#123;  </span><br><span class="line">        return instance;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="饿汉式-线程安全"><a href="#饿汉式-线程安全" class="headerlink" title="饿汉式(线程安全)"></a>饿汉式(线程安全)</h4><pre><code class="highlight plain">public class Singleton &#123;  
+    private static Singleton instance &#x3D; new Singleton();  
+    private Singleton ()&#123;&#125;  
+    public static Singleton getInstance() &#123;  
+        return instance;  
+    &#125;  
+&#125;</code></pre>
 <p>没有实现懒加载，线程安全，缺点是：类加载时就初始化，浪费内存</p>
-<h4 id="静态内部类"><a href="#静态内部类" class="headerlink" title="静态内部类"></a>静态内部类</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class SingletonDemo5 &#123;</span><br><span class="line">    private static class SingletonHolder&#123;</span><br><span class="line">        private static final SingletonDemo5 instance &#x3D; new SingletonDemo5();</span><br><span class="line">    &#125;</span><br><span class="line">    private SingletonDemo5()&#123;&#125;</span><br><span class="line">    public static final SingletonDemo5 getInsatance()&#123;</span><br><span class="line">        return SingletonHolder.instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="静态内部类"><a href="#静态内部类" class="headerlink" title="静态内部类"></a>静态内部类</h4><pre><code class="highlight plain">public class SingletonDemo5 &#123;
+    private static class SingletonHolder&#123;
+        private static final SingletonDemo5 instance &#x3D; new SingletonDemo5();
+    &#125;
+    private SingletonDemo5()&#123;&#125;
+    public static final SingletonDemo5 getInsatance()&#123;
+        return SingletonHolder.instance;
+    &#125;
+&#125;</code></pre>
 
 <p>这种方式同样利用了classloder的机制来保证初始化instance时只有一个线程，它跟第三种和第四种方式不同的是（很细微的差别）：第三种和第四种方式是只要Singleton类被装载了，那么instance就会被实例化（没有达到lazy loading效果），而这种方式是Singleton类被装载了，instance不一定被初始化。因为SingletonHolder类没有被主动使用，只有显示通过调用getInstance方法时，才会显示装载SingletonHolder类，从而实例化instance。</p>
 
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E5%8D%95%E9%93%BE%E8%A1%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/%E5%8D%95%E9%93%BE%E8%A1%A8/" itemprop="url">单链表</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="单链表的概念"><a href="#单链表的概念" class="headerlink" title="单链表的概念"></a>单链表的概念</h3><p><img src="http://wx3.sinaimg.cn/large/96b7c0f4ly1fymvb9v22yj216q07qmx3.jpg" alt=""></p>
+<p>单链表每个节点node中存储了下一个节点的引用</p>
+<h3 id="结构"><a href="#结构" class="headerlink" title="结构"></a>结构</h3><h4 id="节点"><a href="#节点" class="headerlink" title="节点"></a>节点</h4><pre><code class="highlight plain">class Node&lt;T&gt;&#123;
+	private T data;
+	private Node&lt;T&gt; next;&#x2F;&#x2F;下一个节点的引用
+	
+	public Node() &#123;
+	&#125;
+	
+	public Node(T data) &#123;
+		super();
+		this.data &#x3D; data;
+	&#125;
+
+	public T getData() &#123;
+		return data;
+	&#125;
+	public void setData(T data) &#123;
+		this.data &#x3D; data;
+	&#125;
+	public Node&lt;T&gt; getNext() &#123;
+		return next;
+	&#125;
+	public void setNext(Node&lt;T&gt; next) &#123;
+		this.next &#x3D; next;
+	&#125;
+	
+	
+&#125;</code></pre>
+
+<h4 id="头节点"><a href="#头节点" class="headerlink" title="头节点"></a>头节点</h4><pre><code class="highlight plain">public class LinkedList&lt;T&gt; &#123;
+	private Node&lt;T&gt; header;
+	
+	public LinkedList() &#123;
+		super();
+	&#125;
+	
+	public LinkedList(Node&lt;T&gt; header) &#123;
+		super();
+		this.header &#x3D; header;
+	&#125;
+
+	public Node&lt;T&gt; getHeader() &#123;
+		return header;
+	&#125;
+
+	public void setHeader(Node&lt;T&gt; header) &#123;
+		this.header &#x3D; header;
+	&#125;
+
+	·
+	·
+	·
+
+	单链表基本操作</code></pre>
+
+<h3 id="单链表的基本操作"><a href="#单链表的基本操作" class="headerlink" title="单链表的基本操作"></a>单链表的基本操作</h3><h4 id="头插法插入节点"><a href="#头插法插入节点" class="headerlink" title="头插法插入节点"></a>头插法插入节点</h4><pre><code class="highlight plain">public void insertNodeHead(Node&lt;T&gt; node)&#123;
+	node.setNext(header);
+	header &#x3D; node;
+&#125;</code></pre>
+
+<h4 id="尾插法插入节点"><a href="#尾插法插入节点" class="headerlink" title="尾插法插入节点"></a>尾插法插入节点</h4><pre><code class="highlight plain">public void insertNodeTail(Node&lt;T&gt; node)&#123;
+	Node&lt;T&gt; temp &#x3D; header;
+	if (header &#x3D;&#x3D; null) &#123;
+		header &#x3D; node;
+		return;
+	&#125;
+	while(temp.getNext() !&#x3D; null)&#123;
+		temp &#x3D; temp.getNext();
+	&#125;
+	temp.setNext(node);
+&#125;</code></pre>
+<h4 id="移除第一个节点"><a href="#移除第一个节点" class="headerlink" title="移除第一个节点"></a>移除第一个节点</h4><pre><code class="highlight plain">public void removeFirstNode()&#123;
+	if(isEmpty())&#123;
+		return;
+	&#125;
+	header &#x3D; header.getNext();
+&#125;</code></pre>
+
+<h4 id="移除最后一个节点"><a href="#移除最后一个节点" class="headerlink" title="移除最后一个节点"></a>移除最后一个节点</h4><pre><code class="highlight plain">public void removeLastNode()&#123;
+	if(isEmpty())&#123;
+		return;
+	&#125;
+	Node&lt;T&gt; temp &#x3D; header;
+	while(temp.getNext().getNext() !&#x3D; null)&#123;
+		temp &#x3D; temp.getNext();
+	&#125;
+	temp.setNext(null);
+&#125;</code></pre>
+
+<h4 id="获取单链表长度"><a href="#获取单链表长度" class="headerlink" title="获取单链表长度"></a>获取单链表长度</h4><pre><code class="highlight plain">public int getLength()&#123;
+	int tempLength &#x3D; 0;
+	Node&lt;T&gt; tempNode &#x3D; header;
+	while(tempNode !&#x3D; null)&#123;
+		tempLength++;
+		tempNode &#x3D; tempNode.getNext();
+	&#125;
+	return tempLength;
+&#125;</code></pre>
+
+<h4 id="显示所有节点信息"><a href="#显示所有节点信息" class="headerlink" title="显示所有节点信息"></a>显示所有节点信息</h4><pre><code class="highlight plain">public void dislayAllNode()&#123;
+	if(isEmpty())&#123;
+		return;
+	&#125;
+	Node&lt;T&gt; temp &#x3D; header;
+	while(temp !&#x3D; null)&#123;
+		System.out.println(temp.getData());
+		temp &#x3D; temp.getNext();
+	&#125;
+&#125;</code></pre>
+
+<h4 id="指定位置插入节点"><a href="#指定位置插入节点" class="headerlink" title="指定位置插入节点"></a>指定位置插入节点</h4><pre><code class="highlight plain">public void insertNodeByPos(int pos,Node&lt;T&gt; node)&#123;
+	&#x2F;&#x2F;链表为空或者指定位置超过链表长度结束
+	if(isEmpty() || getLength()+1 &lt; pos)&#123;
+		return;
+	&#125;
+	if(pos &#x3D;&#x3D; 1)&#123;
+		insertNodeHead(node);
+	&#125;else if (pos &#x3D;&#x3D; getLength()+1) &#123;
+		insertNodeTail(node);
+	&#125;else &#123;
+		Node&lt;T&gt; temp &#x3D; header;
+		for (int i &#x3D; pos - 2; i &gt; 0 &amp;&amp; temp !&#x3D; null; i--) &#123;
+			temp &#x3D; temp.getNext();
+		&#125;
+		node.setNext(temp.getNext());
+		temp.setNext(node);
+	&#125;
+&#125;</code></pre>
+
+<h4 id="删除指定位置节点"><a href="#删除指定位置节点" class="headerlink" title="删除指定位置节点"></a>删除指定位置节点</h4><pre><code class="highlight plain">public void deleteNodeByPos(int pos)&#123;
+	if(isEmpty())&#123;
+		return;
+	&#125;
+	Node&lt;T&gt; temp &#x3D; header;
+	if (pos &#x3D;&#x3D; 1) &#123;
+		removeFirstNode();
+		return;
+	&#125;
+
+	for (int i &#x3D; pos - 2; i &gt; 0 &amp;&amp; temp !&#x3D; null; i--) &#123;
+		temp &#x3D; temp.getNext();
+	&#125;
+	temp.setNext(temp.getNext().getNext());
+&#125;</code></pre>
+
+<h4 id="查看元素在链表中位置"><a href="#查看元素在链表中位置" class="headerlink" title="查看元素在链表中位置"></a>查看元素在链表中位置</h4><pre><code class="highlight plain">public Integer elementPos(T data)&#123;
+	if(isEmpty())&#123;
+		return null;
+	&#125;
+	Node&lt;T&gt; temp &#x3D; header;
+	int pos &#x3D; 1;
+	while(temp !&#x3D; null)&#123;
+		if(temp.getData().equals(data))&#123;
+			return Integer.valueOf(pos);
+		&#125;
+		pos++;
+		temp &#x3D; temp.getNext();
+	&#125;
+	return null;
+&#125;</code></pre>
+
+<h4 id="倒置链表"><a href="#倒置链表" class="headerlink" title="倒置链表"></a>倒置链表</h4><pre><code class="highlight plain">public void reverse()&#123;
+	if(isEmpty() &amp;&amp; getLength()&#x3D;&#x3D;1)&#123;
+		return;
+	&#125;	
+	Node&lt;T&gt; next;&#x2F;&#x2F;保存下一个节点
+	Node&lt;T&gt; temp &#x3D; header;&#x2F;&#x2F;当前处理节点
+	header &#x3D; null;&#x2F;&#x2F;第一次做特殊处理，使尾节点中的next为空
+	while(temp !&#x3D; null)&#123;
+		next &#x3D; temp.getNext();
+		temp.setNext(header);
+		header &#x3D; temp;
+		temp &#x3D; next;
+	&#125;
+&#125;</code></pre>
+
+<h4 id="查看链表是否为空"><a href="#查看链表是否为空" class="headerlink" title="查看链表是否为空"></a>查看链表是否为空</h4><pre><code class="highlight plain">public boolean isEmpty()&#123;
+	return Objects.isNull(header);
+&#125;</code></pre>
+
+<h4 id="清空链表"><a href="#清空链表" class="headerlink" title="清空链表"></a>清空链表</h4><pre><code class="highlight plain">public void clear()&#123;
+	header &#x3D; null;
+&#125;</code></pre>
           
         
       
@@ -672,9 +872,125 @@
           
             <h3 id="实现方法"><a href="#实现方法" class="headerlink" title="实现方法"></a>实现方法</h3><p>利用阻塞队列中的两个方法：</p>
 <p><code>put(anObject)</code>:把<code>anObject</code>加到<code>BlockingQueue</code>里,如果<code>BlockQueue</code>没有空间,则调用此方法的线程被阻断<br><code>take()</code>:取走<code>BlockingQueue</code>里排在首位的对象,若<code>BlockingQueue</code>为空,阻断进入等待状态直到<code>BlockingQueue</code>有新的数据被加入:</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class PCtest &#123;</span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		BlockingQueue&lt;Object&gt; queue &#x3D; new LinkedBlockingQueue&lt;Object&gt;(100);</span><br><span class="line">		for(int i &#x3D; 0;i &lt; 10;i++)&#123;</span><br><span class="line">			new producer(&quot;生产者&quot;+i,queue).start();</span><br><span class="line">		&#125;</span><br><span class="line">		for(int i &#x3D; 0;i &lt; 10;i++)&#123;</span><br><span class="line">			new consumer(&quot;消费者&quot;+i,queue).start();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class producer extends Thread&#123;</span><br><span class="line">	BlockingQueue&lt;Object&gt; queue;</span><br><span class="line">	public producer() &#123;</span><br><span class="line">		super();</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated constructor stub</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public producer(String name,BlockingQueue&lt;Object&gt; queue) &#123;</span><br><span class="line">		super(name);</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated constructor stub</span><br><span class="line">		this.queue &#x3D; queue;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public void run() &#123;</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated method stub</span><br><span class="line">		while(true)&#123;</span><br><span class="line">			</span><br><span class="line">			try &#123;</span><br><span class="line">				queue.put(new Object());</span><br><span class="line">				System.out.println(getName()+&quot;生产一件商品&quot;);</span><br><span class="line">				producer.sleep(1000);</span><br><span class="line">			&#125; catch (Exception e) &#123;</span><br><span class="line">				&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">				e.printStackTrace();</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class consumer extends Thread&#123;</span><br><span class="line">	BlockingQueue&lt;Object&gt; queue;</span><br><span class="line">	public consumer() &#123;</span><br><span class="line">		super();</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated constructor stub</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public consumer(String name,BlockingQueue&lt;Object&gt; queue) &#123;</span><br><span class="line">		super(name);</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated constructor stub</span><br><span class="line">		this.queue &#x3D; queue;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public void run() &#123;</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated method stub</span><br><span class="line">		while(true)&#123;</span><br><span class="line">			</span><br><span class="line">			try &#123;</span><br><span class="line">				queue.take();</span><br><span class="line">				System.out.println(this.getName()+&quot;消费1件商品&quot;);</span><br><span class="line">				consumer.sleep(1000);</span><br><span class="line">			&#125; catch (InterruptedException e) &#123;</span><br><span class="line">				&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">				e.printStackTrace();</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public class PCtest &#123;
+	public static void main(String[] args) &#123;
+		BlockingQueue&lt;Object&gt; queue &#x3D; new LinkedBlockingQueue&lt;Object&gt;(100);
+		for(int i &#x3D; 0;i &lt; 10;i++)&#123;
+			new producer(&quot;生产者&quot;+i,queue).start();
+		&#125;
+		for(int i &#x3D; 0;i &lt; 10;i++)&#123;
+			new consumer(&quot;消费者&quot;+i,queue).start();
+		&#125;
+	&#125;
+&#125;
+
+
+class producer extends Thread&#123;
+	BlockingQueue&lt;Object&gt; queue;
+	public producer() &#123;
+		super();
+		&#x2F;&#x2F; TODO Auto-generated constructor stub
+	&#125;
+
+	public producer(String name,BlockingQueue&lt;Object&gt; queue) &#123;
+		super(name);
+		&#x2F;&#x2F; TODO Auto-generated constructor stub
+		this.queue &#x3D; queue;
+	&#125;
+
+	@Override
+	public void run() &#123;
+		&#x2F;&#x2F; TODO Auto-generated method stub
+		while(true)&#123;
+			
+			try &#123;
+				queue.put(new Object());
+				System.out.println(getName()+&quot;生产一件商品&quot;);
+				producer.sleep(1000);
+			&#125; catch (Exception e) &#123;
+				&#x2F;&#x2F; TODO Auto-generated catch block
+				e.printStackTrace();
+			&#125;
+		&#125;
+	&#125;
+	
+&#125;
+
+class consumer extends Thread&#123;
+	BlockingQueue&lt;Object&gt; queue;
+	public consumer() &#123;
+		super();
+		&#x2F;&#x2F; TODO Auto-generated constructor stub
+	&#125;
+
+	public consumer(String name,BlockingQueue&lt;Object&gt; queue) &#123;
+		super(name);
+		&#x2F;&#x2F; TODO Auto-generated constructor stub
+		this.queue &#x3D; queue;
+	&#125;
+
+	@Override
+	public void run() &#123;
+		&#x2F;&#x2F; TODO Auto-generated method stub
+		while(true)&#123;
+			
+			try &#123;
+				queue.take();
+				System.out.println(this.getName()+&quot;消费1件商品&quot;);
+				consumer.sleep(1000);
+			&#125; catch (InterruptedException e) &#123;
+				&#x2F;&#x2F; TODO Auto-generated catch block
+				e.printStackTrace();
+			&#125;
+		&#125;
+		
+	&#125;
+	
+&#125;</code></pre>
 <p>输出结果为</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">生产者2生产一件商品</span><br><span class="line">生产者9生产一件商品</span><br><span class="line">生产者6生产一件商品</span><br><span class="line">生产者5生产一件商品</span><br><span class="line">生产者0生产一件商品</span><br><span class="line">生产者3生产一件商品</span><br><span class="line">生产者4生产一件商品</span><br><span class="line">生产者1生产一件商品</span><br><span class="line">生产者8生产一件商品</span><br><span class="line">生产者7生产一件商品</span><br><span class="line">消费者0消费1件商品</span><br><span class="line">消费者1消费1件商品</span><br><span class="line">消费者2消费1件商品</span><br><span class="line">消费者6消费1件商品</span><br><span class="line">消费者9消费1件商品</span><br><span class="line">消费者7消费1件商品</span><br><span class="line">消费者8消费1件商品</span><br><span class="line">消费者4消费1件商品</span><br><span class="line">消费者5消费1件商品</span><br><span class="line">消费者3消费1件商品</span><br><span class="line">生产者6生产一件商品</span><br><span class="line">生产者4生产一件商品</span><br><span class="line">生产者8生产一件商品</span><br><span class="line">生产者3生产一件商品</span><br><span class="line">生产者2生产一件商品</span><br><span class="line">生产者5生产一件商品</span><br><span class="line">生产者0生产一件商品</span><br><span class="line">生产者9生产一件商品</span><br><span class="line">生产者1生产一件商品</span><br><span class="line">生产者7生产一件商品</span><br><span class="line">消费者0消费1件商品</span><br><span class="line">消费者1消费1件商品</span><br><span class="line">消费者2消费1件商品</span><br><span class="line">消费者8消费1件商品</span><br><span class="line">消费者5消费1件商品</span><br><span class="line">消费者6消费1件商品</span><br><span class="line">消费者4消费1件商品</span><br><span class="line">消费者7消费1件商品</span><br><span class="line">消费者9消费1件商品</span><br><span class="line">消费者3消费1件商品</span><br><span class="line">	·</span><br><span class="line">	·</span><br><span class="line">	·</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">生产者2生产一件商品
+生产者9生产一件商品
+生产者6生产一件商品
+生产者5生产一件商品
+生产者0生产一件商品
+生产者3生产一件商品
+生产者4生产一件商品
+生产者1生产一件商品
+生产者8生产一件商品
+生产者7生产一件商品
+消费者0消费1件商品
+消费者1消费1件商品
+消费者2消费1件商品
+消费者6消费1件商品
+消费者9消费1件商品
+消费者7消费1件商品
+消费者8消费1件商品
+消费者4消费1件商品
+消费者5消费1件商品
+消费者3消费1件商品
+生产者6生产一件商品
+生产者4生产一件商品
+生产者8生产一件商品
+生产者3生产一件商品
+生产者2生产一件商品
+生产者5生产一件商品
+生产者0生产一件商品
+生产者9生产一件商品
+生产者1生产一件商品
+生产者7生产一件商品
+消费者0消费1件商品
+消费者1消费1件商品
+消费者2消费1件商品
+消费者8消费1件商品
+消费者5消费1件商品
+消费者6消费1件商品
+消费者4消费1件商品
+消费者7消费1件商品
+消费者9消费1件商品
+消费者3消费1件商品
+	·
+	·
+	·</code></pre>
 <p>在实现生产者消费者模型时，与使用synchronized和reentrantlock相比，灵活度较低，一次只能从队列取一个，优点是不用我们亲自写多线程代码，控制线程运行。</p>
 
           
@@ -819,26 +1135,77 @@
           
             <h3 id="atomic是什么"><a href="#atomic是什么" class="headerlink" title="atomic是什么"></a>atomic是什么</h3><p>在多线程的场景中，我们需要如何同步数据，通常会使用synchronized或者lock来处理，使用了synchronized意味着内核态的一次切换。这是一个很重的操作。有没有一种方式，可以比较便利的实现一些简单的数据同步，比如计数器等等。concurrent包下的atomic提供我们这么一种轻量级的数据同步的选择。</p>
 <p>下面拿AtomicInteger为例分析</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Test &#123;</span><br><span class="line">	static AtomicInteger atomic &#x3D; new AtomicInteger(1);</span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		ExecutorService executor &#x3D; Executors.newCachedThreadPool();</span><br><span class="line">		for(int i &#x3D; 0;i &lt; 20;i++)&#123;</span><br><span class="line">			executor.execute(new Runnable() &#123;</span><br><span class="line">				</span><br><span class="line">				@Override</span><br><span class="line">				public void run() &#123;</span><br><span class="line">					&#x2F;&#x2F; TODO Auto-generated method stub</span><br><span class="line">					for(int j &#x3D; 0;j &lt; 100;j++)&#123;</span><br><span class="line">						</span><br><span class="line">						atomic.getAndIncrement();</span><br><span class="line">					&#125;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;);</span><br><span class="line">		&#125;</span><br><span class="line">		executor.shutdown();</span><br><span class="line">		try &#123;</span><br><span class="line">			while(! executor.awaitTermination(2, TimeUnit.SECONDS));</span><br><span class="line">		&#125; catch (InterruptedException e) &#123;</span><br><span class="line">			&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">		System.out.println(atomic.get());</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public class Test &#123;
+	static AtomicInteger atomic &#x3D; new AtomicInteger(1);
+	public static void main(String[] args) &#123;
+		ExecutorService executor &#x3D; Executors.newCachedThreadPool();
+		for(int i &#x3D; 0;i &lt; 20;i++)&#123;
+			executor.execute(new Runnable() &#123;
+				
+				@Override
+				public void run() &#123;
+					&#x2F;&#x2F; TODO Auto-generated method stub
+					for(int j &#x3D; 0;j &lt; 100;j++)&#123;
+						
+						atomic.getAndIncrement();
+					&#125;
+				&#125;
+			&#125;);
+		&#125;
+		executor.shutdown();
+		try &#123;
+			while(! executor.awaitTermination(2, TimeUnit.SECONDS));
+		&#125; catch (InterruptedException e) &#123;
+			&#x2F;&#x2F; TODO Auto-generated catch block
+			e.printStackTrace();
+		&#125;
+		System.out.println(atomic.get());
+	&#125;
+&#125;</code></pre>
 <p>输出结果稳定为2001，可以看到并没有使用重量级锁synchronized和reentrantlock，原子类是怎么实现不需要锁也不会在多线程并发中出错的呢？</p>
 <h3 id="AtomicInteger"><a href="#AtomicInteger" class="headerlink" title="AtomicInteger"></a>AtomicInteger</h3><p>####简介</p>
 <p>属于原子类</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">private static final Unsafe unsafe &#x3D; Unsafe.getUnsafe();</span><br><span class="line">private static final long valueOffset;</span><br><span class="line"></span><br><span class="line">static &#123;</span><br><span class="line">    try &#123;</span><br><span class="line">        valueOffset &#x3D; unsafe.objectFieldOffset</span><br><span class="line">            (AtomicInteger.class.getDeclaredField(&quot;value&quot;));</span><br><span class="line">    &#125; catch (Exception ex) &#123; throw new Error(ex); &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private volatile int value;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">private static final Unsafe unsafe &#x3D; Unsafe.getUnsafe();
+private static final long valueOffset;
+
+static &#123;
+    try &#123;
+        valueOffset &#x3D; unsafe.objectFieldOffset
+            (AtomicInteger.class.getDeclaredField(&quot;value&quot;));
+    &#125; catch (Exception ex) &#123; throw new Error(ex); &#125;
+&#125;
+
+private volatile int value;</code></pre>
 
 <p>原子类中几个成员变量</p>
 <p><code>unsafe</code>：<code>Unsafe</code>位于<code>sun.misc</code>包内，看其命名就知道和注重安全性的<code>java jdk</code>无缘，连文档都没，直接就叫”不安全” 。Unsafe的特点是可以直接操作堆外内存，可以随意查看及修改<code>JVM</code>中运行时的数据结构，例如查看和修改对象的成员，<code>Unsafe</code>的操作粒度不是类，而是数据和地址。<br><code>valueOffset</code>：<code>value</code>字段内存地址的偏移量(通过原子类实例的引用指向的内存空间和这个偏移量可以从内存中读取<code>field</code>为<code>value</code>的值)</p>
 <p><code>value</code>：存放真正的值，且为<code>volatile</code>，保证了<code>value</code>对所有线程的可见性</p>
 <h3 id="成员变量unsafe"><a href="#成员变量unsafe" class="headerlink" title="成员变量unsafe"></a>成员变量unsafe</h3><p>是CAS的核心类，由于Java方法无法直接访问底层系统，需要通过本地（native）方法来访问，Unsafe相当于一个后门，基于该类可以直接操作特定内存的数据。</p>
 <p>CAS指的是unsafe中的一个方法，<strong>整个比较并替换的操作是一个原子操作</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * Atomically update Java variable to &lt;tt&gt;x&lt;&#x2F;tt&gt; if it is currently</span><br><span class="line"> * holding &lt;tt&gt;expected&lt;&#x2F;tt&gt;.</span><br><span class="line"> * @return &lt;tt&gt;true&lt;&#x2F;tt&gt; if successful</span><br><span class="line"> *&#x2F;</span><br><span class="line">public final native boolean compareAndSwapInt(Object o, long offset,</span><br><span class="line">                                              int expected,</span><br><span class="line">                                              int x);</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">&#x2F;**
+ * Atomically update Java variable to &lt;tt&gt;x&lt;&#x2F;tt&gt; if it is currently
+ * holding &lt;tt&gt;expected&lt;&#x2F;tt&gt;.
+ * @return &lt;tt&gt;true&lt;&#x2F;tt&gt; if successful
+ *&#x2F;
+public final native boolean compareAndSwapInt(Object o, long offset,
+                                              int expected,
+                                              int x);</code></pre>
 
 <p>Object o：被修改值的所在的类的实例<br>long offset：存储值的类变量value在内存中的偏移量<br>int expected：修改前的值<br>int x：修改后的值</p>
 <p>方法的作用为：通过o和offset确定变量在内存中的值，expected存放了修改前的值，要将变量修改为x之前先比较内存中的值和expected中修改前的值，若不一致，说明变量被其它线程修改过，返回false。</p>
 <h4 id="原理分析"><a href="#原理分析" class="headerlink" title="原理分析"></a>原理分析</h4><p>以上面代码为例分析流程，先查看AtomicInteger的getAndIncrement()方法</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public final int getAndAdd(int delta) &#123;</span><br><span class="line">    return unsafe.getAndAddInt(this, valueOffset, delta);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public final int getAndAdd(int delta) &#123;
+    return unsafe.getAndAddInt(this, valueOffset, delta);
+&#125;</code></pre>
 
 <p>调用了unsafe的getAndAddInt方法，将自身实例和偏移量和要运算的数的值传入</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public final int getAndAddInt(Object o, long offset, int delta) &#123;</span><br><span class="line">    int v;</span><br><span class="line">    do &#123;</span><br><span class="line">        v &#x3D; getIntVolatile(o, offset);</span><br><span class="line">    &#125; while (!compareAndSwapInt(o, offset, v, v + delta));</span><br><span class="line">    return v;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public final int getAndAddInt(Object o, long offset, int delta) &#123;
+    int v;
+    do &#123;
+        v &#x3D; getIntVolatile(o, offset);
+    &#125; while (!compareAndSwapInt(o, offset, v, v + delta));
+    return v;
+&#125;</code></pre>
 <p>最后在unsafe中的<code>compareAndSwapInt</code>方法中完成整个CAS操作，<code>v = getIntVolatile(o, offset)</code>获取了主内存中的值value，存放在线程变量v中作为副本，<code>compareAndSwapInt</code>方法在完成计算v+delta的值后，再次通过o和offset查看此时主内存中的值(value为volatile类型，可见性保证value为最新的值)，看是否与线程中副本变量v相同，如果相同，则将新值刷新到主内存中，否则返回循环do中，更新线程变量副本v为主内存中最新变量的值，再进入compareAndSwapInt，如此循环。</p>
 
           
@@ -985,7 +1352,26 @@
 <h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p><img src="http://wx3.sinaimg.cn/large/96b7c0f4gy1g0t2gabww2j20hj08edfq.jpg" alt=""></p>
 <p>在 Java 内存模型中，所有的变量都存储在主存中，同时每个线程都拥有自己的工作线程，用于提高访问速度。线程会从主存中拷贝变量值到自己的工作内存中，然后在自己的工作线程中操作变量，而不是直接操作主存中的变量，由于每个线程在自己的内存中都有一个变量的拷贝，就会造成变量值不一致的问题。</p>
 <p>如果对声明了volatile的变量进行写操作，JVM就会向处理器发送一条Lock前缀的指令，将这个变量所在缓存行的数据写回到系统内存，同时让其它工作内存中这个变量的缓存失效，再次使用该变量的时候重新从主存中读取数据。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class VolatileTest extends  Thread&#123;</span><br><span class="line">    private boolean isRunning &#x3D; true;</span><br><span class="line">    public boolean isRunning()&#123;</span><br><span class="line">        return isRunning;</span><br><span class="line">    &#125;</span><br><span class="line">    public void setRunning(boolean isRunning)&#123;</span><br><span class="line">        this.isRunning&#x3D; isRunning;</span><br><span class="line">    &#125;</span><br><span class="line">    public void run()&#123;</span><br><span class="line">        System.out.println(&quot;进入了run...............&quot;);</span><br><span class="line">        while (isRunning)&#123;&#125;</span><br><span class="line">        System.out.println(&quot;isRunning的值被修改为为false,线程将被停止了&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    public static void main(String[] args) throws InterruptedException &#123;</span><br><span class="line">        VolatileTest volatileThread &#x3D; new VolatileTest();</span><br><span class="line">        volatileThread.start();</span><br><span class="line">        Thread.sleep(1000);</span><br><span class="line">        volatileThread.setRunning(false);   &#x2F;&#x2F;停止线程</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public class VolatileTest extends  Thread&#123;
+    private boolean isRunning &#x3D; true;
+    public boolean isRunning()&#123;
+        return isRunning;
+    &#125;
+    public void setRunning(boolean isRunning)&#123;
+        this.isRunning&#x3D; isRunning;
+    &#125;
+    public void run()&#123;
+        System.out.println(&quot;进入了run...............&quot;);
+        while (isRunning)&#123;&#125;
+        System.out.println(&quot;isRunning的值被修改为为false,线程将被停止了&quot;);
+    &#125;
+    public static void main(String[] args) throws InterruptedException &#123;
+        VolatileTest volatileThread &#x3D; new VolatileTest();
+        volatileThread.start();
+        Thread.sleep(1000);
+        volatileThread.setRunning(false);   &#x2F;&#x2F;停止线程
+    &#125;
+&#125;</code></pre>
 
 <p>以上结果为：线程进入死循环，将<code>isRunning</code>变量设为<code>volatile</code>变量后，线程成功停止。</p>
 <h3 id="volatile的特性"><a href="#volatile的特性" class="headerlink" title="volatile的特性"></a>volatile的特性</h3><ol>
@@ -994,12 +1380,45 @@
 <li>不保障原子性<code>volatile</code>关键字只能保证共享变量的可见性和有序性</li>
 </ol>
 <h3 id="非原子性"><a href="#非原子性" class="headerlink" title="非原子性"></a>非原子性</h3><p><code>volatile</code><strong>仅仅用来保证该变量对所有线程的可见性，但不保证原子性</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Test&#123;</span><br><span class="line"></span><br><span class="line">	volatile static int n;</span><br><span class="line">	</span><br><span class="line">	    public static void main(String[] args) throws InterruptedException &#123;</span><br><span class="line">	        Thread t1 &#x3D; new Thread(()-&gt;&#123;</span><br><span class="line">	        	for (int i &#x3D; 0; i &lt; 100; i++) &#123;</span><br><span class="line">					n++;</span><br><span class="line">				&#125;</span><br><span class="line">	        &#125;);</span><br><span class="line">	        Thread t2 &#x3D; new Thread(()-&gt;&#123;</span><br><span class="line">	        	for (int i &#x3D; 0; i &lt; 100; i++) &#123;</span><br><span class="line">					n++;</span><br><span class="line">				&#125;</span><br><span class="line">	        &#125;);</span><br><span class="line">	        t1.start();</span><br><span class="line">	        t2.start();</span><br><span class="line">	        t1.join();</span><br><span class="line">	        t2.join();</span><br><span class="line">	        System.out.println(n);</span><br><span class="line">	    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public class Test&#123;
+
+	volatile static int n;
+	
+	    public static void main(String[] args) throws InterruptedException &#123;
+	        Thread t1 &#x3D; new Thread(()-&gt;&#123;
+	        	for (int i &#x3D; 0; i &lt; 100; i++) &#123;
+					n++;
+				&#125;
+	        &#125;);
+	        Thread t2 &#x3D; new Thread(()-&gt;&#123;
+	        	for (int i &#x3D; 0; i &lt; 100; i++) &#123;
+					n++;
+				&#125;
+	        &#125;);
+	        t1.start();
+	        t2.start();
+	        t1.join();
+	        t2.join();
+	        System.out.println(n);
+	    &#125;
+&#125;</code></pre>
 <p>在多次运行中，以上程序输出结果不全是200</p>
 <p>不要将volatile用在getAndOperate场合（这种场合不原子，需要再加锁），仅仅set或者get的场景是适合volatile的。</p>
 <p>volatile在进行自增自减操作的时候，不能保证原子性，n++实际上是三个操作，不是原子操作，先从主内存读取值到线程工作内存，然后在工作内存中对数据进行处理，最后刷新到主内存中，让其它线程可见。<strong>一旦在这三步中线程被挂起，就会出现上面这种结果。</strong></p>
 <h3 id="禁止重排序"><a href="#禁止重排序" class="headerlink" title="禁止重排序"></a>禁止重排序</h3><p>下面是一个单例模式的代码</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Singleton &#123;</span><br><span class="line">    private volatile static Singleton instance;</span><br><span class="line">    private Singleton ()&#123;&#125;</span><br><span class="line">    public static Singleton getInstance() &#123;</span><br><span class="line">        if (instance &#x3D;&#x3D; null) &#123;</span><br><span class="line">			synchronized(this.class)&#123;</span><br><span class="line">				if (instance &#x3D;&#x3D; null)&#123;</span><br><span class="line">					instance &#x3D; new Singleton();</span><br><span class="line">				&#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public class Singleton &#123;
+    private volatile static Singleton instance;
+    private Singleton ()&#123;&#125;
+    public static Singleton getInstance() &#123;
+        if (instance &#x3D;&#x3D; null) &#123;
+			synchronized(this.class)&#123;
+				if (instance &#x3D;&#x3D; null)&#123;
+					instance &#x3D; new Singleton();
+				&#125;
+        &#125;
+        return instance;
+    &#125;
+&#125;</code></pre>
 
 <p>为什么要对<code>instance</code>使用<code>volatile</code>，<code>instance = new Singleton()</code>这句，这并非是一个原子操作，事实上在 JVM 中这句话大概做了下面 3 件事情，给<code>instance</code>分配内存，调用 Singleton 的构造函数来初始化成员变量，将instance对象指向分配的内存空间（执行完这步<code>instance</code>就为非 null 了）。但是在 JVM 的即时编译器中存在指令重排序的优化。也就是说上面的第二步和第三步的顺序是不能保证的，最终的执行顺序可能是 1-2-3 也可能是 1-3-2。如果是后者，则在 3 执行完毕、2 未执行之前，线程2进入第一个<code>instance==null</code>，这时<code>instance</code>已经是非null了（但却没有初始化），所以线程二会直接返回<code>instance</code>，然后使用，然后顺理成章地报错。</p>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>修改<code>volatile</code>变量时会强制将修改后的值刷新的主内存中</p>
@@ -1155,7 +1574,45 @@
 <p><strong>抽象角色</strong>：声明真实对象和代理对象的共同接口；</p>
 <p><strong>代理角色</strong>：代理对象角色内部含有对真实对象的引用，从而可以操作真实对象，同时代理对象提供与真实对象相同的接口以便在任何时刻都能代替真实对象。同时，代理对象可以在执行真实对象操作时，附加其他的操作，相当于对真实对象进行封装。</p>
 <p><strong>真实角色</strong>：代理角色所代表的真实对象，是我们最终要引用的对象。</p>
-<h3 id="静态代理"><a href="#静态代理" class="headerlink" title="静态代理"></a>静态代理</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;抽象角色</span><br><span class="line">interface Subject&#123;</span><br><span class="line">	void run();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;真实角色</span><br><span class="line">class target implements Subject&#123;</span><br><span class="line">	@Override</span><br><span class="line">	public void run() &#123;</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated method stub</span><br><span class="line">		System.out.println(&quot;target&#39;s run method&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">代理角色</span><br><span class="line">class proxy implements Subject&#123;</span><br><span class="line">	private target target;</span><br><span class="line">	public proxy() &#123;</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated constructor stub</span><br><span class="line">	&#125;</span><br><span class="line">	public proxy(target target) &#123;</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated constructor stub</span><br><span class="line">		this.target &#x3D; target;</span><br><span class="line">	&#125;</span><br><span class="line">	@Override</span><br><span class="line">	public void run() &#123;</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated method stub</span><br><span class="line">		System.out.println(&quot;proxy&#39;s run method&quot;);</span><br><span class="line">		target.run();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F;使用</span><br><span class="line">	@Test</span><br><span class="line">	public void test()&#123;</span><br><span class="line">		target t &#x3D; new target();</span><br><span class="line">		proxy  p &#x3D; new proxy(t);</span><br><span class="line">		p.run();</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="静态代理"><a href="#静态代理" class="headerlink" title="静态代理"></a>静态代理</h3><pre><code class="highlight plain">&#x2F;&#x2F;抽象角色
+interface Subject&#123;
+	void run();
+&#125;
+
+&#x2F;&#x2F;真实角色
+class target implements Subject&#123;
+	@Override
+	public void run() &#123;
+		&#x2F;&#x2F; TODO Auto-generated method stub
+		System.out.println(&quot;target&#39;s run method&quot;);
+	&#125;
+&#125;
+
+代理角色
+class proxy implements Subject&#123;
+	private target target;
+	public proxy() &#123;
+		&#x2F;&#x2F; TODO Auto-generated constructor stub
+	&#125;
+	public proxy(target target) &#123;
+		&#x2F;&#x2F; TODO Auto-generated constructor stub
+		this.target &#x3D; target;
+	&#125;
+	@Override
+	public void run() &#123;
+		&#x2F;&#x2F; TODO Auto-generated method stub
+		System.out.println(&quot;proxy&#39;s run method&quot;);
+		target.run();
+	&#125;
+&#125;
+
+	&#x2F;&#x2F;使用
+	@Test
+	public void test()&#123;
+		target t &#x3D; new target();
+		proxy  p &#x3D; new proxy(t);
+		p.run();
+	&#125;</code></pre>
 
 <p>使用静态代理：</p>
 <ol>
@@ -1164,31 +1621,100 @@
 </ol>
 <h3 id="jdk动态代理"><a href="#jdk动态代理" class="headerlink" title="jdk动态代理"></a>jdk动态代理</h3><p><strong>原理</strong>：java反射用传进来的接口和类加载器实例化一个代理类，代理类中所有方法转向<code>InvocationHandler</code>的<code>Invoke</code>方法.</p>
 <p>使用jdk实现代理，需要用到<code>java.lang.reflect.Proxy</code>，该类即为动态代理类,<code>newProxyInstance</code>方法实例化一个动态代理类，其中构造函数传入一个<code>InvocationHandler</code>实例到<code>Proxy</code>中。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static Object newProxyInstance(ClassLoader loader,</span><br><span class="line">                                          Class&lt;?&gt;[] interfaces,</span><br><span class="line">                                          InvocationHandler h)</span><br><span class="line">        throws IllegalArgumentException</span><br><span class="line">&#123;</span><br><span class="line">    &#x2F;&#x2F;......</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public static Object newProxyInstance(ClassLoader loader,
+                                          Class&lt;?&gt;[] interfaces,
+                                          InvocationHandler h)
+        throws IllegalArgumentException
+&#123;
+    &#x2F;&#x2F;......
+&#125;</code></pre>
 
 <p><code>ClassLoader loader</code>：指定当前目标对象使用类加载器，获取加载器的方法是固定<br><code>Class&lt;?&gt;[] interfaces</code>：目标对象实现的接口类型，使用泛型方式确认类型。<br><code>InvocationHandler h</code>：事件处理。执行目标对象的方法时，会触发事件处理器的方法，会把当前执行目标对象的方法作为参数传入。</p>
 <p>InvocationHandler接口的作用：每个代理类的实例都关联到了一个handler(通过代理类的构造函数)，当我们通过代理对象调用一个方法的时候，这个方法的调用就会被转发为由InvocationHandler这个接口的 invoke 方法来进行调用</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public Object invoke(Object proxy, Method method, Object[] args)</span><br><span class="line">    throws Throwable;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public Object invoke(Object proxy, Method method, Object[] args)
+    throws Throwable;</code></pre>
 
 <p>proxy参数为代理类实例<br>method参数为所要调用真实对象的某个方法的Method对象<br>args参数为调用真实对象某个方法时接受的参数</p>
 <hr>
 <p><strong>JDK动态代理的使用</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">interface Subject&#123;</span><br><span class="line">	void run();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class target implements Subject&#123;</span><br><span class="line">	@Override</span><br><span class="line">	public void run() &#123;</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated method stub</span><br><span class="line">		System.out.println(&quot;target&#39;s run method&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class ProxyFactory&#123;</span><br><span class="line">	private Object target;</span><br><span class="line"></span><br><span class="line">	public ProxyFactory(Object target) &#123;</span><br><span class="line">		this.target &#x3D; target;</span><br><span class="line">	&#125;</span><br><span class="line">	public ProxyFactory() &#123;</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated constructor stub</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	public Object getProxyInstance()&#123;</span><br><span class="line">		return Proxy.newProxyInstance(target.getClass().getClassLoader(),target.getClass().getInterfaces(),new InvocationHandler() &#123;</span><br><span class="line">			</span><br><span class="line">			@Override</span><br><span class="line">			public Object invoke(Object proxy, Method method, Object[] args) throws Throwable &#123;</span><br><span class="line">				&#x2F;&#x2F; TODO Auto-generated method stub</span><br><span class="line">				System.out.println(&quot;before&quot;);</span><br><span class="line">				Object returnValue &#x3D; method.invoke(target, args);</span><br><span class="line">				System.out.println(&quot;after&quot;);</span><br><span class="line">				return returnValue;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">	@Test</span><br><span class="line">	public void test2()&#123;</span><br><span class="line">		target t &#x3D; new target();</span><br><span class="line">		Subject sub &#x3D; (Subject) new ProxyFactory(t).getProxyInstance();</span><br><span class="line">		sub.run();</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">interface Subject&#123;
+	void run();
+&#125;
+
+class target implements Subject&#123;
+	@Override
+	public void run() &#123;
+		&#x2F;&#x2F; TODO Auto-generated method stub
+		System.out.println(&quot;target&#39;s run method&quot;);
+	&#125;
+&#125;
+
+class ProxyFactory&#123;
+	private Object target;
+
+	public ProxyFactory(Object target) &#123;
+		this.target &#x3D; target;
+	&#125;
+	public ProxyFactory() &#123;
+		&#x2F;&#x2F; TODO Auto-generated constructor stub
+	&#125;
+	
+	public Object getProxyInstance()&#123;
+		return Proxy.newProxyInstance(target.getClass().getClassLoader(),target.getClass().getInterfaces(),new InvocationHandler() &#123;
+			
+			@Override
+			public Object invoke(Object proxy, Method method, Object[] args) throws Throwable &#123;
+				&#x2F;&#x2F; TODO Auto-generated method stub
+				System.out.println(&quot;before&quot;);
+				Object returnValue &#x3D; method.invoke(target, args);
+				System.out.println(&quot;after&quot;);
+				return returnValue;
+			&#125;
+		&#125;);
+	&#125;
+&#125;
+
+	@Test
+	public void test2()&#123;
+		target t &#x3D; new target();
+		Subject sub &#x3D; (Subject) new ProxyFactory(t).getProxyInstance();
+		sub.run();
+	&#125;</code></pre>
 
 <p>最后由动态代理生成的动态代理实例，就是继承了Proxy类和实现了抽象角色(要代理的对象实现的接口)，再通过构造函数传入的InvocationHandler实例的invoke方法来实现最终代理。其中动态代理类实例实现抽象角色即接口的方式为调用InvocationHandler实例的invoke方法并传入相应参数。</p>
 <p><a href="https://blog.csdn.net/mhmyqn/article/details/48474815" target="_blank" rel="noopener">参考</a></p>
 <h3 id="cglib动态代理"><a href="#cglib动态代理" class="headerlink" title="cglib动态代理"></a>cglib动态代理</h3><p>使用cglib的方法可以为没有实现接口的类实现代理，同样也是要先实现接口<code>MethodInterceptor</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class CGLibDynamicProxy implements MethodInterceptor&#123;</span><br><span class="line">    @Override</span><br><span class="line">    public Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy) throws Throwable &#123;</span><br><span class="line">        System.out.println(&quot;before&quot;);</span><br><span class="line">        Object object &#x3D; methodProxy.invokeSuper(o,objects);</span><br><span class="line">        System.out.println(&quot;after&quot;);</span><br><span class="line">        System.out.println(method.getDeclaringClass().getName());</span><br><span class="line">        return object;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">class CGLibDynamicProxy implements MethodInterceptor&#123;
+    @Override
+    public Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy) throws Throwable &#123;
+        System.out.println(&quot;before&quot;);
+        Object object &#x3D; methodProxy.invokeSuper(o,objects);
+        System.out.println(&quot;after&quot;);
+        System.out.println(method.getDeclaringClass().getName());
+        return object;
+    &#125;
+&#125;</code></pre>
 
 <p>再定义一个要代理的类</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Human&#123;</span><br><span class="line">    public void out()&#123;</span><br><span class="line">        System.out.println(&quot;out&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">class Human&#123;
+    public void out()&#123;
+        System.out.println(&quot;out&quot;);
+    &#125;
+&#125;</code></pre>
 
 <p>cglib用来实例化代理的类是<code>Enhancer</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Test</span><br><span class="line">public void test()&#123;</span><br><span class="line">    Human humanProxy &#x3D; (Human) Enhancer.create(Human.class, new CGLibDynamicProxy());</span><br><span class="line">    humanProxy.out();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">@Test
+public void test()&#123;
+    Human humanProxy &#x3D; (Human) Enhancer.create(Human.class, new CGLibDynamicProxy());
+    humanProxy.out();
+&#125;</code></pre>
 
 <p>只需要传入代理的类的<code>Class</code>对象和实现了<code>MethodInterceptor</code>接口的实例就能获得代理</p>
 <p>输出结果为</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">before</span><br><span class="line">out</span><br><span class="line">after</span><br><span class="line">Test.Human</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">before
+out
+after
+Test.Human</code></pre>
           
         
       
@@ -1340,7 +1866,9 @@
 <li>织入(Weaving): 利用代理实现切面方法增强连接点方法的过程叫织入</li>
 </ul>
 <h4 id="Aspect"><a href="#Aspect" class="headerlink" title="Aspect"></a>Aspect</h4><p>声明一个切面有两种方法，一种是通过xml配置的方法</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;bean id&#x3D;&quot;myAspect&quot; class&#x3D;&quot;org.xyz.NotVeryUsefulAspect&quot;&gt;</span><br><span class="line">    &lt;!-- configure properties of the aspect here --&gt;</span><br><span class="line">&lt;&#x2F;bean&gt;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">&lt;bean id&#x3D;&quot;myAspect&quot; class&#x3D;&quot;org.xyz.NotVeryUsefulAspect&quot;&gt;
+    &lt;!-- configure properties of the aspect here --&gt;
+&lt;&#x2F;bean&gt;</code></pre>
 
 <p>当然，配置的这个类上需要有<code>@Aspect</code>注解</p>
 <p>第二种就是注解配置的方法</p>
@@ -1358,20 +1886,26 @@
 <ol>
 <li>execution</li>
 </ol>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Pointcut(&quot;execution(public String org.baeldung.dao.FooDao.findById(Long))&quot;)</span><br><span class="line"></span><br><span class="line">@Pointcut(&quot;execution(* org.baeldung.dao.FooDao.*(..))&quot;)</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">@Pointcut(&quot;execution(public String org.baeldung.dao.FooDao.findById(Long))&quot;)
+
+@Pointcut(&quot;execution(* org.baeldung.dao.FooDao.*(..))&quot;)</code></pre>
 
 <p>通过第一种指定特定方法或者第二种模糊匹配</p>
 <ol start="2">
 <li>within</li>
 </ol>
 <p>within是用来指定类型的，指定类型中的所有方法将被拦截</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Pointcut(&quot;within(org.baeldung.dao.FooDao)&quot;)</span><br><span class="line"></span><br><span class="line">@Pointcut(&quot;within(org.baeldung..*)&quot;)</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">@Pointcut(&quot;within(org.baeldung.dao.FooDao)&quot;)
+
+@Pointcut(&quot;within(org.baeldung..*)&quot;)</code></pre>
 
 <p>指定某个类或者某个包下所有类的所有方法(子类型无效)</p>
 <ol start="3">
 <li>this and target</li>
 </ol>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Pointcut(&quot;target(org.baeldung.dao.BarDao)&quot;)</span><br><span class="line"></span><br><span class="line">@Pointcut(&quot;this(org.baeldung.dao.FooDao)&quot;)</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">@Pointcut(&quot;target(org.baeldung.dao.BarDao)&quot;)
+
+@Pointcut(&quot;this(org.baeldung.dao.FooDao)&quot;)</code></pre>
 
 <p>其中target指代被代理的类(连接点方法所在的类)，this表示代理类，匹配条件为是给定值的类的实例</p>
 <ol start="4">
@@ -1389,31 +1923,108 @@
 <li>@target</li>
 </ol>
 <p>与上面的target是不同的，这个是指定目标类(子类无效)要有指定的注解才能匹配，</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Pointcut(&quot;@target(org.springframework.stereotype.Repository)&quot;)</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">@Pointcut(&quot;@target(org.springframework.stereotype.Repository)&quot;)</code></pre>
 
 <ol start="6">
 <li>@args</li>
 </ol>
 <p>用来匹配参数带有指定注解的方法</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Pointcut(&quot;@args(com.elim.spring.support.MyAnnotation)&quot;)</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">@Pointcut(&quot;@args(com.elim.spring.support.MyAnnotation)&quot;)</code></pre>
 
 <ol start="7">
 <li>@within</li>
 </ol>
 <p>和<code>@target</code>差不多，但是<code>@within</code>范围更大，被注解类的子类中未被覆写的方法也匹配</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Pointcut(&quot;@target(org.springframework.stereotype.Repository)&quot;)</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">@Pointcut(&quot;@target(org.springframework.stereotype.Repository)&quot;)</code></pre>
 
 
 <ol start="8">
 <li>@annotation</li>
 </ol>
 <p>@annotation用于匹配方法上拥有指定注解的情况。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Point(&quot;@annotation(com.elim.spring.support.MyAnnotation)&quot;)</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">@Point(&quot;@annotation(com.elim.spring.support.MyAnnotation)&quot;)</code></pre>
 
-<h3 id="五种通知方法"><a href="#五种通知方法" class="headerlink" title="五种通知方法"></a>五种通知方法</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Aspect</span><br><span class="line">@Component</span><br><span class="line">public class Log &#123;</span><br><span class="line">	@Pointcut(&quot;execution(* crj.ssm.service.*.*(..))&quot;)</span><br><span class="line">	private void startLog() &#123;</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Before(&quot;startLog()&quot;)</span><br><span class="line">	public void beforeMethod(JoinPoint point) &#123;</span><br><span class="line">		System.out.println(&quot;@Before方法开始&quot;);</span><br><span class="line">		System.out.println(&quot;getSignature方法：&quot;+point.getSignature().getName());</span><br><span class="line">		&#x2F;&#x2F;获取目标方法的参数，返回的是Object[]</span><br><span class="line">		System.out.println(&quot;getArgs方法： &quot;+point.getArgs());</span><br><span class="line">		&#x2F;&#x2F;返回目标方法所在的类</span><br><span class="line">		System.out.println(&quot;getTarget方法：&quot;+point.getTarget());</span><br><span class="line">		&#x2F;&#x2F;也是返回目标方法所在的类</span><br><span class="line">		System.out.println(&quot;getThis方法&quot; +point.getThis());</span><br><span class="line">		System.out.println(&quot;@Before方法结束&quot;);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Around(&quot;startLog()&quot;)</span><br><span class="line">	public Object aroundMethod(ProceedingJoinPoint point) throws Throwable&#123;</span><br><span class="line">		System.out.println(&quot;@aroundMethod方法开始&quot;);</span><br><span class="line">		&#x2F;&#x2F;同上</span><br><span class="line">		System.out.println(point.getArgs());</span><br><span class="line">		Object object &#x3D; point.proceed(point.getArgs());</span><br><span class="line">		System.out.println(&quot;@aroundMethod方法结束&quot;);</span><br><span class="line">		return object;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@After(&quot;startLog()&quot;)</span><br><span class="line">	public void afterMethod(JoinPoint point) &#123;</span><br><span class="line">		System.out.println(&quot;@afterMethod方法开始&quot;);</span><br><span class="line">		System.out.println(&quot;this is after-method&quot;);</span><br><span class="line">		System.out.println(&quot;@afterMethod方法结束&quot;);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@AfterReturning(value &#x3D; &quot;startLog()&quot;, returning &#x3D; &quot;result&quot;)</span><br><span class="line">	public void afterReturningMethod(JoinPoint point, Object result) &#123;</span><br><span class="line">		System.out.println(&quot;@AfterReturning方法开始&quot;);</span><br><span class="line">		System.out.println(result);</span><br><span class="line">		System.out.println(&quot;@AfterReturning方法结束&quot;);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@AfterThrowing(value &#x3D; &quot;startLog()&quot;, throwing &#x3D; &quot;ex&quot;)</span><br><span class="line">	public void afterThrowingMethod(JoinPoint point, Throwable ex) &#123;</span><br><span class="line">		System.out.println(&quot;this is afterThrowing-method&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="五种通知方法"><a href="#五种通知方法" class="headerlink" title="五种通知方法"></a>五种通知方法</h3><pre><code class="highlight plain">@Aspect
+@Component
+public class Log &#123;
+	@Pointcut(&quot;execution(* crj.ssm.service.*.*(..))&quot;)
+	private void startLog() &#123;
+		
+	&#125;
+
+	@Before(&quot;startLog()&quot;)
+	public void beforeMethod(JoinPoint point) &#123;
+		System.out.println(&quot;@Before方法开始&quot;);
+		System.out.println(&quot;getSignature方法：&quot;+point.getSignature().getName());
+		&#x2F;&#x2F;获取目标方法的参数，返回的是Object[]
+		System.out.println(&quot;getArgs方法： &quot;+point.getArgs());
+		&#x2F;&#x2F;返回目标方法所在的类
+		System.out.println(&quot;getTarget方法：&quot;+point.getTarget());
+		&#x2F;&#x2F;也是返回目标方法所在的类
+		System.out.println(&quot;getThis方法&quot; +point.getThis());
+		System.out.println(&quot;@Before方法结束&quot;);
+	&#125;
+
+	@Around(&quot;startLog()&quot;)
+	public Object aroundMethod(ProceedingJoinPoint point) throws Throwable&#123;
+		System.out.println(&quot;@aroundMethod方法开始&quot;);
+		&#x2F;&#x2F;同上
+		System.out.println(point.getArgs());
+		Object object &#x3D; point.proceed(point.getArgs());
+		System.out.println(&quot;@aroundMethod方法结束&quot;);
+		return object;
+	&#125;
+
+	@After(&quot;startLog()&quot;)
+	public void afterMethod(JoinPoint point) &#123;
+		System.out.println(&quot;@afterMethod方法开始&quot;);
+		System.out.println(&quot;this is after-method&quot;);
+		System.out.println(&quot;@afterMethod方法结束&quot;);
+	&#125;
+
+	@AfterReturning(value &#x3D; &quot;startLog()&quot;, returning &#x3D; &quot;result&quot;)
+	public void afterReturningMethod(JoinPoint point, Object result) &#123;
+		System.out.println(&quot;@AfterReturning方法开始&quot;);
+		System.out.println(result);
+		System.out.println(&quot;@AfterReturning方法结束&quot;);
+	&#125;
+
+	@AfterThrowing(value &#x3D; &quot;startLog()&quot;, throwing &#x3D; &quot;ex&quot;)
+	public void afterThrowingMethod(JoinPoint point, Throwable ex) &#123;
+		System.out.println(&quot;this is afterThrowing-method&quot;);
+	&#125;
+&#125;</code></pre>
 
 <p>执行顺序为</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">prehandle方法</span><br><span class="line">@aroundMethod方法开始</span><br><span class="line">getArgs方法[Ljava.lang.Object;@493d696c</span><br><span class="line">@Before方法开始</span><br><span class="line">getSignature方法：selectById</span><br><span class="line">getArgs方法： [Ljava.lang.Object;@72e6ef43</span><br><span class="line">getTarget方法：crj.ssm.service.impl.PersonServiceImpl@177185be</span><br><span class="line">getThis方法crj.ssm.service.impl.PersonServiceImpl@177185be</span><br><span class="line">@Before方法结束</span><br><span class="line">-----------------------------------------</span><br><span class="line">22:44:37.933 [http-bio-8080-exec-2] DEBUG org.mybatis.spring.SqlSessionUtils - Creating a new SqlSession</span><br><span class="line">22:44:37.946 [http-bio-8080-exec-2] DEBUG org.mybatis.spring.SqlSessionUtils - Registering transaction synchronization for SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@711b6130]</span><br><span class="line">22:44:37.960 [http-bio-8080-exec-2] DEBUG o.m.s.t.SpringManagedTransaction - JDBC Connection [com.mchange.v2.c3p0.impl.NewProxyConnection@21118e0c] will be managed by Spring</span><br><span class="line">22:44:37.967 [http-bio-8080-exec-2] DEBUG crj.ssm.dao.PersonDao.selectById - &#x3D;&#x3D;&gt;  Preparing: SELECT * from person where id &#x3D; ? </span><br><span class="line">22:44:38.029 [http-bio-8080-exec-2] DEBUG crj.ssm.dao.PersonDao.selectById - &#x3D;&#x3D;&gt; Parameters: 1(Integer)</span><br><span class="line">22:44:38.065 [http-bio-8080-exec-2] DEBUG crj.ssm.dao.PersonDao.selectById - &lt;&#x3D;&#x3D;      Total: 1</span><br><span class="line">22:44:38.078 [http-bio-8080-exec-2] DEBUG org.mybatis.spring.SqlSessionUtils - Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@711b6130]</span><br><span class="line">@aroundMethod方法结束</span><br><span class="line">@afterMethod方法开始</span><br><span class="line">this is after-method</span><br><span class="line">@afterMethod方法结束</span><br><span class="line">@AfterReturning方法开始</span><br><span class="line">crj.ssm.entity.Person@77e5c255</span><br><span class="line">@AfterReturning方法结束</span><br><span class="line">22:44:38.106 [http-bio-8080-exec-2] DEBUG org.mybatis.spring.SqlSessionUtils - Transaction synchronization committing SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@711b6130]</span><br><span class="line">22:44:38.108 [http-bio-8080-exec-2] DEBUG org.mybatis.spring.SqlSessionUtils - Transaction synchronization deregistering SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@711b6130]</span><br><span class="line">22:44:38.108 [http-bio-8080-exec-2] DEBUG org.mybatis.spring.SqlSessionUtils - Transaction synchronization closing SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@711b6130]</span><br><span class="line">postHandle方法</span><br><span class="line">afterCompletion方法</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">prehandle方法
+@aroundMethod方法开始
+getArgs方法[Ljava.lang.Object;@493d696c
+@Before方法开始
+getSignature方法：selectById
+getArgs方法： [Ljava.lang.Object;@72e6ef43
+getTarget方法：crj.ssm.service.impl.PersonServiceImpl@177185be
+getThis方法crj.ssm.service.impl.PersonServiceImpl@177185be
+@Before方法结束
+-----------------------------------------
+22:44:37.933 [http-bio-8080-exec-2] DEBUG org.mybatis.spring.SqlSessionUtils - Creating a new SqlSession
+22:44:37.946 [http-bio-8080-exec-2] DEBUG org.mybatis.spring.SqlSessionUtils - Registering transaction synchronization for SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@711b6130]
+22:44:37.960 [http-bio-8080-exec-2] DEBUG o.m.s.t.SpringManagedTransaction - JDBC Connection [com.mchange.v2.c3p0.impl.NewProxyConnection@21118e0c] will be managed by Spring
+22:44:37.967 [http-bio-8080-exec-2] DEBUG crj.ssm.dao.PersonDao.selectById - &#x3D;&#x3D;&gt;  Preparing: SELECT * from person where id &#x3D; ? 
+22:44:38.029 [http-bio-8080-exec-2] DEBUG crj.ssm.dao.PersonDao.selectById - &#x3D;&#x3D;&gt; Parameters: 1(Integer)
+22:44:38.065 [http-bio-8080-exec-2] DEBUG crj.ssm.dao.PersonDao.selectById - &lt;&#x3D;&#x3D;      Total: 1
+22:44:38.078 [http-bio-8080-exec-2] DEBUG org.mybatis.spring.SqlSessionUtils - Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@711b6130]
+@aroundMethod方法结束
+@afterMethod方法开始
+this is after-method
+@afterMethod方法结束
+@AfterReturning方法开始
+crj.ssm.entity.Person@77e5c255
+@AfterReturning方法结束
+22:44:38.106 [http-bio-8080-exec-2] DEBUG org.mybatis.spring.SqlSessionUtils - Transaction synchronization committing SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@711b6130]
+22:44:38.108 [http-bio-8080-exec-2] DEBUG org.mybatis.spring.SqlSessionUtils - Transaction synchronization deregistering SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@711b6130]
+22:44:38.108 [http-bio-8080-exec-2] DEBUG org.mybatis.spring.SqlSessionUtils - Transaction synchronization closing SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@711b6130]
+postHandle方法
+afterCompletion方法</code></pre>
 
 <p>先执行<code>@Around</code>方法，直到调用proceed方法前，调用<code>@Before</code>方法，然后就是执行目标方法，执行完目标方法，开始执行<code>@AfterMethod</code>方法，然后<code>@Around</code>方法执行完proceed返回值，然后是<code>@AfterReturning</code>方法。</p>
 
@@ -1559,14 +2170,37 @@
           
             <h3 id="拦截器"><a href="#拦截器" class="headerlink" title="拦截器"></a>拦截器</h3><p>Java 里的拦截器是动态拦截action调用的对象。它提供了一种机制可以使开发者可以定义在一个action执行的前后执行的代码，也可以在一个action执行前阻止其执行，同时也提供了一种可以提取action中可重用部分的方式。</p>
 <h3 id="HandlerInterceptorAdapter类"><a href="#HandlerInterceptorAdapter类" class="headerlink" title="HandlerInterceptorAdapter类"></a>HandlerInterceptorAdapter类</h3><p>它有以下三个方法</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;handler中方法被执行前被调用</span><br><span class="line">@Override</span><br><span class="line">public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)</span><br><span class="line">	throws Exception &#123;</span><br><span class="line">	return true;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;handler中方法被执行后被调用</span><br><span class="line">public void postHandle(</span><br><span class="line">		HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView)</span><br><span class="line">		throws Exception &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;handler方法被调用，渲染视图之后被调用</span><br><span class="line">@Override</span><br><span class="line">public void afterCompletion(</span><br><span class="line">		HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)</span><br><span class="line">		throws Exception &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">&#x2F;&#x2F;handler中方法被执行前被调用
+@Override
+public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+	throws Exception &#123;
+	return true;
+&#125;
+
+&#x2F;&#x2F;handler中方法被执行后被调用
+public void postHandle(
+		HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView)
+		throws Exception &#123;
+&#125;
+
+&#x2F;&#x2F;handler方法被调用，渲染视图之后被调用
+@Override
+public void afterCompletion(
+		HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
+		throws Exception &#123;
+&#125;</code></pre>
 
 <ul>
 <li><code>preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)</code>方法，该方法在请求处理之前进行调用。<code>SpringMVC</code>中的<code>Interceptor</code>是链式调用的，在一个应用中或者说是在一个请求中可以同时存在多个<code>Interceptor</code>。每个<code>Interceptor</code>的调用会依据它的声明顺序依次执行，而且最先执行的都是<code>Interceptor</code>中的<code>preHandle</code>方法，所以可以在这个方法中进行一些前置初始化操作或者是对当前请求做一个预处理，也可以在这个方法中进行一些判断来决定请求是否要继续进行下去。该方法的返回值是布尔（Boolean）类型的，当它返回为<code>false</code>时，表示请求结束，后续的<code>Interceptor</code>和控制器（Controller）都不会再执行；当返回值为<code>true</code>时，就会继续调用下一个<code>Interceptor</code>的<code>preHandle</code>方法，如果已经是最后一个Interceptor的时候，就会是调用当前请求的控制器中的方法。</li>
 <li><code>postHandle(HttpServletRequest request, HttpServletResponse response, Object handle, ModelAndView modelAndView)</code>方法，通过<code>preHandle</code>方法的解释，我们知道这个方法包括后面要说到的<code>afterCompletion</code>方法都只能在当前所属的<code>Interceptor</code>的<code>preHandle</code>方法的返回值为<code>true</code>的时候，才能被调用。<code>postHandle</code>方法在当前请求进行处理之后，也就是在控制器中的方法调用之后执行，但是它会在<code>DispatcherServlet</code>进行视图返回渲染之前被调用，所以我们可以在这个方法中对控制器处理之后的<code>ModelAndView</code>对象进行操作。<code>postHandle</code>方法被调用的方向跟<code>preHandle</code>是相反的，也就是说，先声明的<code>Interceptor</code>的<code>postHandle</code>方法反而会后执行。</li>
 <li>afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handle, Exception ex)方法，也是需要当前对应的Interceptor的preHandle方法的返回值为true时才会执行。因此，该方法将在整个请求结束之后，也就是在DispatcherServlet渲染了对应的视图之后执行，这个方法的主要作用是用于进行资源清理的工作。</li>
 </ul>
-<h3 id="配置方法"><a href="#配置方法" class="headerlink" title="配置方法"></a>配置方法</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;mvc:interceptors&gt;</span><br><span class="line">	&lt;mvc:interceptor&gt;</span><br><span class="line">		&lt;mvc:mapping path&#x3D;&quot;&#x2F;**&quot;&#x2F;&gt;</span><br><span class="line">		&lt;bean class&#x3D;&quot;crj.ssm.intercepter.MyIntercepter&quot;&gt;&lt;&#x2F;bean&gt;</span><br><span class="line">	&lt;&#x2F;mvc:interceptor&gt;</span><br><span class="line">&lt;&#x2F;mvc:interceptors&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="配置方法"><a href="#配置方法" class="headerlink" title="配置方法"></a>配置方法</h3><pre><code class="highlight plain">&lt;mvc:interceptors&gt;
+	&lt;mvc:interceptor&gt;
+		&lt;mvc:mapping path&#x3D;&quot;&#x2F;**&quot;&#x2F;&gt;
+		&lt;bean class&#x3D;&quot;crj.ssm.intercepter.MyIntercepter&quot;&gt;&lt;&#x2F;bean&gt;
+	&lt;&#x2F;mvc:interceptor&gt;
+&lt;&#x2F;mvc:interceptors&gt;</code></pre>
 
 <p>注意匹配所有不是使用/，而是/*<em>，/代表服务器根目录，/</em>代表一级目录，两个星号代表多级目录</p>
 
@@ -1731,43 +2365,157 @@
 <p>配置controller方式-&gt;获取对应HandlerMapping-&gt;得到HandlerExecutionChain(HandlerMapping决定了HandlerExecutionChain中handler实际变量类型)-&gt;根据HandlerExecutionChain中handler实际变量类型获取对应HandlerAdapter-&gt;执行HandlerAdapter中的handler方法</p>
 <p><code>mv = ha.handle(processedRequest, response, mappedHandler.getHandler());</code></p>
 <p>适配器的作用</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;RequestMappingHandlerApapter</span><br><span class="line">@Override</span><br><span class="line">public final ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)</span><br><span class="line">		throws Exception &#123;</span><br><span class="line"></span><br><span class="line">	return handleInternal(request, response, (HandlerMethod) handler);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;HttpRequestHandlerAdapter</span><br><span class="line">@Override</span><br><span class="line">public ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)</span><br><span class="line">		throws Exception &#123;</span><br><span class="line"></span><br><span class="line">	((HttpRequestHandler) handler).handleRequest(request, response);</span><br><span class="line">	return null;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;SimpleControllerHandlerAdapter</span><br><span class="line">@Override</span><br><span class="line">public ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)</span><br><span class="line">		throws Exception &#123;</span><br><span class="line"></span><br><span class="line">	return ((Controller) handler).handleRequest(request, response);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">&#x2F;&#x2F;RequestMappingHandlerApapter
+@Override
+public final ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)
+		throws Exception &#123;
+
+	return handleInternal(request, response, (HandlerMethod) handler);
+&#125;
+
+&#x2F;&#x2F;HttpRequestHandlerAdapter
+@Override
+public ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)
+		throws Exception &#123;
+
+	((HttpRequestHandler) handler).handleRequest(request, response);
+	return null;
+&#125;
+
+&#x2F;&#x2F;SimpleControllerHandlerAdapter
+@Override
+public ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)
+		throws Exception &#123;
+
+	return ((Controller) handler).handleRequest(request, response);
+&#125;</code></pre>
 
 <h3 id="HandlerExecutionChain"><a href="#HandlerExecutionChain" class="headerlink" title="HandlerExecutionChain"></a>HandlerExecutionChain</h3><h3 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h3><p><img src="http://wx4.sinaimg.cn/large/96b7c0f4ly1g2cfxsdnhfj20w20q878x.jpg" alt="springmvc流程"></p>
 <ol>
 <li>得到最高优先级HandlerMapping和由它获得的HandlerExecutionChain</li>
 </ol>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">protected HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception &#123;</span><br><span class="line">	for (HandlerMapping hm : this.handlerMappings) &#123;</span><br><span class="line">		if (logger.isTraceEnabled()) &#123;</span><br><span class="line">			logger.trace(</span><br><span class="line">					&quot;Testing handler map [&quot; + hm + &quot;] in DispatcherServlet with name &#39;&quot; + getServletName() + &quot;&#39;&quot;);</span><br><span class="line">		&#125;</span><br><span class="line">		&#x2F;&#x2F;handler</span><br><span class="line">		HandlerExecutionChain handler &#x3D; hm.getHandler(request);</span><br><span class="line">		</span><br><span class="line">		if (handler !&#x3D; null) &#123;</span><br><span class="line">			return handler;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	return null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">protected HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception &#123;
+	for (HandlerMapping hm : this.handlerMappings) &#123;
+		if (logger.isTraceEnabled()) &#123;
+			logger.trace(
+					&quot;Testing handler map [&quot; + hm + &quot;] in DispatcherServlet with name &#39;&quot; + getServletName() + &quot;&#39;&quot;);
+		&#125;
+		&#x2F;&#x2F;handler
+		HandlerExecutionChain handler &#x3D; hm.getHandler(request);
+		
+		if (handler !&#x3D; null) &#123;
+			return handler;
+		&#125;
+	&#125;
+	return null;
+&#125;</code></pre>
 
 <ol start="2">
 <li>HandlerExecutionChain中handler变量实际类型决定HandlerAdatper</li>
 </ol>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">protected HandlerAdapter getHandlerAdapter(Object handler) throws ServletException &#123;</span><br><span class="line">	for (HandlerAdapter ha : this.handlerAdapters) &#123;</span><br><span class="line">		if (logger.isTraceEnabled()) &#123;</span><br><span class="line">			logger.trace(&quot;Testing handler adapter [&quot; + ha + &quot;]&quot;);</span><br><span class="line">		&#125;</span><br><span class="line">		if (ha.supports(handler)) &#123;</span><br><span class="line">			return ha;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	throw new ServletException(&quot;No adapter for handler [&quot; + handler +</span><br><span class="line">			&quot;]: The DispatcherServlet configuration needs to include a HandlerAdapter that supports this handler&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">protected HandlerAdapter getHandlerAdapter(Object handler) throws ServletException &#123;
+	for (HandlerAdapter ha : this.handlerAdapters) &#123;
+		if (logger.isTraceEnabled()) &#123;
+			logger.trace(&quot;Testing handler adapter [&quot; + ha + &quot;]&quot;);
+		&#125;
+		if (ha.supports(handler)) &#123;
+			return ha;
+		&#125;
+	&#125;
+	throw new ServletException(&quot;No adapter for handler [&quot; + handler +
+			&quot;]: The DispatcherServlet configuration needs to include a HandlerAdapter that supports this handler&quot;);
+&#125;</code></pre>
 
 <ol start="3">
 <li>调用拦截器PreHandler方法</li>
 </ol>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">if (!mappedHandler.applyPreHandle(processedRequest, response)) &#123;</span><br><span class="line">	return;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">if (!mappedHandler.applyPreHandle(processedRequest, response)) &#123;
+	return;
+&#125;</code></pre>
 
 <ol start="4">
 <li>适配器调用controller目标方法返回ModelAndView对象</li>
 </ol>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mv &#x3D; ha.handle(processedRequest, response, mappedHandler.getHandler());</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">mv &#x3D; ha.handle(processedRequest, response, mappedHandler.getHandler());</code></pre>
 
 <ol start="5">
 <li>调用拦截器的postHandle方法</li>
 </ol>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mappedHandler.applyPostHandle(processedRequest, response, mv);</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;倒序调用</span><br><span class="line">void applyPostHandle(HttpServletRequest request, HttpServletResponse response, ModelAndView mv) throws Exception &#123;</span><br><span class="line">	HandlerInterceptor[] interceptors &#x3D; getInterceptors();</span><br><span class="line">	if (!ObjectUtils.isEmpty(interceptors)) &#123;</span><br><span class="line">		for (int i &#x3D; interceptors.length - 1; i &gt;&#x3D; 0; i--) &#123;</span><br><span class="line">			HandlerInterceptor interceptor &#x3D; interceptors[i];</span><br><span class="line">			interceptor.postHandle(request, response, this.handler, mv);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">mappedHandler.applyPostHandle(processedRequest, response, mv);
+
+&#x2F;&#x2F;倒序调用
+void applyPostHandle(HttpServletRequest request, HttpServletResponse response, ModelAndView mv) throws Exception &#123;
+	HandlerInterceptor[] interceptors &#x3D; getInterceptors();
+	if (!ObjectUtils.isEmpty(interceptors)) &#123;
+		for (int i &#x3D; interceptors.length - 1; i &gt;&#x3D; 0; i--) &#123;
+			HandlerInterceptor interceptor &#x3D; interceptors[i];
+			interceptor.postHandle(request, response, this.handler, mv);
+		&#125;
+	&#125;
+&#125;</code></pre>
 
 <ol start="6">
 <li>渲染视图</li>
 </ol>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">protected void render(ModelAndView mv, HttpServletRequest request, HttpServletResponse response) throws Exception &#123;</span><br><span class="line">	&#x2F;&#x2F; Determine locale for request and apply it to the response.</span><br><span class="line">	Locale locale &#x3D; this.localeResolver.resolveLocale(request);</span><br><span class="line">	response.setLocale(locale);</span><br><span class="line"></span><br><span class="line">	View view;</span><br><span class="line">	if (mv.isReference()) &#123;</span><br><span class="line">		&#x2F;&#x2F; 视图处理器处理得到视图</span><br><span class="line">		view &#x3D; resolveViewName(mv.getViewName(), mv.getModelInternal(), locale, request);</span><br><span class="line">		if (view &#x3D;&#x3D; null) &#123;</span><br><span class="line">			throw new ServletException(&quot;Could not resolve view with name &#39;&quot; + mv.getViewName() +</span><br><span class="line">					&quot;&#39; in servlet with name &#39;&quot; + getServletName() + &quot;&#39;&quot;);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	else &#123;</span><br><span class="line">		&#x2F;&#x2F; No need to lookup: the ModelAndView object contains the actual View object.</span><br><span class="line">		view &#x3D; mv.getView();</span><br><span class="line">		if (view &#x3D;&#x3D; null) &#123;</span><br><span class="line">			throw new ServletException(&quot;ModelAndView [&quot; + mv + &quot;] neither contains a view name nor a &quot; +</span><br><span class="line">					&quot;View object in servlet with name &#39;&quot; + getServletName() + &quot;&#39;&quot;);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F; Delegate to the View object for rendering.</span><br><span class="line">	if (logger.isDebugEnabled()) &#123;</span><br><span class="line">		logger.debug(&quot;Rendering view [&quot; + view + &quot;] in DispatcherServlet with name &#39;&quot; + getServletName() + &quot;&#39;&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">	try &#123;</span><br><span class="line">		&#x2F;&#x2F;开始渲染视图</span><br><span class="line">		view.render(mv.getModelInternal(), request, response);</span><br><span class="line">	&#125;</span><br><span class="line">	catch (Exception ex) &#123;</span><br><span class="line">		if (logger.isDebugEnabled()) &#123;</span><br><span class="line">			logger.debug(&quot;Error rendering view [&quot; + view + &quot;] in DispatcherServlet with name &#39;&quot; +</span><br><span class="line">					getServletName() + &quot;&#39;&quot;, ex);</span><br><span class="line">		&#125;</span><br><span class="line">		throw ex;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">protected void render(ModelAndView mv, HttpServletRequest request, HttpServletResponse response) throws Exception &#123;
+	&#x2F;&#x2F; Determine locale for request and apply it to the response.
+	Locale locale &#x3D; this.localeResolver.resolveLocale(request);
+	response.setLocale(locale);
+
+	View view;
+	if (mv.isReference()) &#123;
+		&#x2F;&#x2F; 视图处理器处理得到视图
+		view &#x3D; resolveViewName(mv.getViewName(), mv.getModelInternal(), locale, request);
+		if (view &#x3D;&#x3D; null) &#123;
+			throw new ServletException(&quot;Could not resolve view with name &#39;&quot; + mv.getViewName() +
+					&quot;&#39; in servlet with name &#39;&quot; + getServletName() + &quot;&#39;&quot;);
+		&#125;
+	&#125;
+	else &#123;
+		&#x2F;&#x2F; No need to lookup: the ModelAndView object contains the actual View object.
+		view &#x3D; mv.getView();
+		if (view &#x3D;&#x3D; null) &#123;
+			throw new ServletException(&quot;ModelAndView [&quot; + mv + &quot;] neither contains a view name nor a &quot; +
+					&quot;View object in servlet with name &#39;&quot; + getServletName() + &quot;&#39;&quot;);
+		&#125;
+	&#125;
+
+	&#x2F;&#x2F; Delegate to the View object for rendering.
+	if (logger.isDebugEnabled()) &#123;
+		logger.debug(&quot;Rendering view [&quot; + view + &quot;] in DispatcherServlet with name &#39;&quot; + getServletName() + &quot;&#39;&quot;);
+	&#125;
+	try &#123;
+		&#x2F;&#x2F;开始渲染视图
+		view.render(mv.getModelInternal(), request, response);
+	&#125;
+	catch (Exception ex) &#123;
+		if (logger.isDebugEnabled()) &#123;
+			logger.debug(&quot;Error rendering view [&quot; + view + &quot;] in DispatcherServlet with name &#39;&quot; +
+					getServletName() + &quot;&#39;&quot;, ex);
+		&#125;
+		throw ex;
+	&#125;
+&#125;</code></pre>
 
 <ol start="7">
 <li>调用拦截器的afterCompletion方法</li>
 </ol>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">void triggerAfterCompletion(HttpServletRequest request, HttpServletResponse response, Exception ex)</span><br><span class="line">		throws Exception &#123;</span><br><span class="line"></span><br><span class="line">	HandlerInterceptor[] interceptors &#x3D; getInterceptors();</span><br><span class="line">	if (!ObjectUtils.isEmpty(interceptors)) &#123;</span><br><span class="line">		for (int i &#x3D; this.interceptorIndex; i &gt;&#x3D; 0; i--) &#123;</span><br><span class="line">			HandlerInterceptor interceptor &#x3D; interceptors[i];</span><br><span class="line">			try &#123;</span><br><span class="line">				interceptor.afterCompletion(request, response, this.handler, ex);</span><br><span class="line">			&#125;</span><br><span class="line">			catch (Throwable ex2) &#123;</span><br><span class="line">				logger.error(&quot;HandlerInterceptor.afterCompletion threw exception&quot;, ex2);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">void triggerAfterCompletion(HttpServletRequest request, HttpServletResponse response, Exception ex)
+		throws Exception &#123;
+
+	HandlerInterceptor[] interceptors &#x3D; getInterceptors();
+	if (!ObjectUtils.isEmpty(interceptors)) &#123;
+		for (int i &#x3D; this.interceptorIndex; i &gt;&#x3D; 0; i--) &#123;
+			HandlerInterceptor interceptor &#x3D; interceptors[i];
+			try &#123;
+				interceptor.afterCompletion(request, response, this.handler, ex);
+			&#125;
+			catch (Throwable ex2) &#123;
+				logger.error(&quot;HandlerInterceptor.afterCompletion threw exception&quot;, ex2);
+			&#125;
+		&#125;
+	&#125;
+&#125;</code></pre>
 
 
           
@@ -1910,13 +2658,154 @@
       
         
           
-            <h3 id="导入包"><a href="#导入包" class="headerlink" title="导入包"></a>导入包</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!-- shiro核心包 --&gt;</span><br><span class="line">&lt;dependency&gt;  </span><br><span class="line">    &lt;groupId&gt;org.apache.shiro&lt;&#x2F;groupId&gt;  </span><br><span class="line">    &lt;artifactId&gt;shiro-core&lt;&#x2F;artifactId&gt;  </span><br><span class="line">    &lt;version&gt;1.3.2&lt;&#x2F;version&gt;  </span><br><span class="line">&lt;&#x2F;dependency&gt;  </span><br><span class="line">&lt;!-- 添加shiro web支持 --&gt;</span><br><span class="line">&lt;dependency&gt;  </span><br><span class="line">    &lt;groupId&gt;org.apache.shiro&lt;&#x2F;groupId&gt;  </span><br><span class="line">    &lt;artifactId&gt;shiro-web&lt;&#x2F;artifactId&gt;  </span><br><span class="line">    &lt;version&gt;1.3.2&lt;&#x2F;version&gt;  </span><br><span class="line">&lt;&#x2F;dependency&gt;  </span><br><span class="line">&lt;!-- 添加shiro spring整合 --&gt;</span><br><span class="line">&lt;dependency&gt;  </span><br><span class="line">    &lt;groupId&gt;org.apache.shiro&lt;&#x2F;groupId&gt;  </span><br><span class="line">    &lt;artifactId&gt;shiro-spring&lt;&#x2F;artifactId&gt;  </span><br><span class="line">    &lt;version&gt;1.3.2&lt;&#x2F;version&gt;  </span><br><span class="line">&lt;&#x2F;dependency&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">	&lt;groupId&gt;net.sf.ehcache&lt;&#x2F;groupId&gt;</span><br><span class="line">	&lt;artifactId&gt;ehcache-core&lt;&#x2F;artifactId&gt;</span><br><span class="line">	&lt;version&gt;2.4.3&lt;&#x2F;version&gt;</span><br><span class="line">&lt;&#x2F;dependency&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.apache.shiro&lt;&#x2F;groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;shiro-ehcache&lt;&#x2F;artifactId&gt;</span><br><span class="line">    &lt;version&gt;1.3.2&lt;&#x2F;version&gt;</span><br><span class="line">&lt;&#x2F;dependency&gt;</span><br></pre></td></tr></table></figure>
+            <h3 id="导入包"><a href="#导入包" class="headerlink" title="导入包"></a>导入包</h3><pre><code class="highlight plain">&lt;!-- shiro核心包 --&gt;
+&lt;dependency&gt;  
+    &lt;groupId&gt;org.apache.shiro&lt;&#x2F;groupId&gt;  
+    &lt;artifactId&gt;shiro-core&lt;&#x2F;artifactId&gt;  
+    &lt;version&gt;1.3.2&lt;&#x2F;version&gt;  
+&lt;&#x2F;dependency&gt;  
+&lt;!-- 添加shiro web支持 --&gt;
+&lt;dependency&gt;  
+    &lt;groupId&gt;org.apache.shiro&lt;&#x2F;groupId&gt;  
+    &lt;artifactId&gt;shiro-web&lt;&#x2F;artifactId&gt;  
+    &lt;version&gt;1.3.2&lt;&#x2F;version&gt;  
+&lt;&#x2F;dependency&gt;  
+&lt;!-- 添加shiro spring整合 --&gt;
+&lt;dependency&gt;  
+    &lt;groupId&gt;org.apache.shiro&lt;&#x2F;groupId&gt;  
+    &lt;artifactId&gt;shiro-spring&lt;&#x2F;artifactId&gt;  
+    &lt;version&gt;1.3.2&lt;&#x2F;version&gt;  
+&lt;&#x2F;dependency&gt;
+&lt;dependency&gt;
+	&lt;groupId&gt;net.sf.ehcache&lt;&#x2F;groupId&gt;
+	&lt;artifactId&gt;ehcache-core&lt;&#x2F;artifactId&gt;
+	&lt;version&gt;2.4.3&lt;&#x2F;version&gt;
+&lt;&#x2F;dependency&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.apache.shiro&lt;&#x2F;groupId&gt;
+    &lt;artifactId&gt;shiro-ehcache&lt;&#x2F;artifactId&gt;
+    &lt;version&gt;1.3.2&lt;&#x2F;version&gt;
+&lt;&#x2F;dependency&gt;</code></pre>
 
 <h3 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h3><p>在spring配置文件中需要配置</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--shiro 核心--&gt;</span><br><span class="line">&lt;bean id&#x3D;&quot;securityManager&quot; class&#x3D;&quot;org.apache.shiro.web.mgt.DefaultWebSecurityManager&quot;&gt;</span><br><span class="line">    &lt;property name&#x3D;&quot;cacheManager&quot; ref&#x3D;&quot;cacheManager&quot;&#x2F;&gt;</span><br><span class="line">    &lt;!-- Single realm app.  If you have multiple realms, use the &#39;realms&#39; property instead. --&gt;</span><br><span class="line">    &lt;property name&#x3D;&quot;sessionMode&quot; value&#x3D;&quot;native&quot;&#x2F;&gt;</span><br><span class="line">    &lt;property name&#x3D;&quot;realm&quot; ref&#x3D;&quot;ShiroRealm&quot;&gt;&lt;&#x2F;property&gt;</span><br><span class="line">	&lt;!--或者可以配置多个realm--&gt;</span><br><span class="line">    &lt;property name&#x3D;&quot;realms&quot;&gt;</span><br><span class="line">    	&lt;list&gt;</span><br><span class="line">			&lt;ref bean&#x3D;&quot;jdbcRealm&quot;&#x2F;&gt;</span><br><span class="line">			&lt;ref bean&#x3D;&quot;secondRealm&quot;&#x2F;&gt;</span><br><span class="line">		&lt;&#x2F;list&gt;</span><br><span class="line">    &lt;&#x2F;property&gt;</span><br><span class="line">	</span><br><span class="line">	&lt;!--可以设置多realm验证策略,realm可以在下面authenticator中注入，但使用到授权时--&gt;</span><br><span class="line">	&lt;!--只能在securityManager中注入--&gt;</span><br><span class="line">	&lt;property name&#x3D;&quot;authenticator&quot; ref&#x3D;&quot;authenticator&quot;&gt;&lt;&#x2F;property&gt;</span><br><span class="line">&lt;&#x2F;bean&gt;</span><br><span class="line"></span><br><span class="line">&lt;bean id&#x3D;&quot;authenticator&quot; </span><br><span class="line">	class&#x3D;&quot;org.apache.shiro.authc.pam.ModularRealmAuthenticator&quot;&gt;</span><br><span class="line">	&lt;property name&#x3D;&quot;authenticationStrategy&quot;&gt;</span><br><span class="line">		&lt;bean class&#x3D;&quot;org.apache.shiro.authc.pam.AtLeastOneSuccessfulStrategy&quot;&gt;&lt;&#x2F;bean&gt;</span><br><span class="line">	&lt;&#x2F;property&gt;</span><br><span class="line">&lt;&#x2F;bean&gt;</span><br><span class="line"></span><br><span class="line">&lt;!--缓存管理--&gt;</span><br><span class="line">&lt;bean id&#x3D;&quot;cacheManager&quot; class&#x3D;&quot;org.apache.shiro.cache.ehcache.EhCacheManager&quot;&gt;</span><br><span class="line">    &lt;!-- Set a net.sf.ehcache.CacheManager instance here if you already have one.  If not, a new one</span><br><span class="line">         will be creaed with a default config:</span><br><span class="line">         &lt;property name&#x3D;&quot;cacheManager&quot; ref&#x3D;&quot;ehCacheManager&quot;&#x2F;&gt; --&gt;</span><br><span class="line">    &lt;!-- If you don&#39;t have a pre-built net.sf.ehcache.CacheManager instance to inject, but you want</span><br><span class="line">         a specific Ehcache configuration to be used, specify that here.  If you don&#39;t, a default</span><br><span class="line">         will be used.: --&gt;</span><br><span class="line">    &lt;property name&#x3D;&quot;cacheManagerConfigFile&quot; value&#x3D;&quot;classpath:ehcache.xml&quot;&#x2F;&gt;</span><br><span class="line">&lt;&#x2F;bean&gt;</span><br><span class="line">&lt;!--注入自定义realm--&gt;</span><br><span class="line">&lt;bean id&#x3D;&quot;ShiroRealm&quot; class&#x3D;&quot;crj.mspro.realm.ShiroRealm&quot;&gt;</span><br><span class="line">	&lt;!--匹配器--&gt;</span><br><span class="line">	&lt;property name&#x3D;&quot;credentialsMatcher&quot;&gt;</span><br><span class="line">		&lt;bean class&#x3D;&quot;org.apache.shiro.authc.credential.HashedCredentialsMatcher&quot;&gt;</span><br><span class="line">			&lt;property name&#x3D;&quot;hashAlgorithmName&quot; value&#x3D;&quot;MD5&quot;&gt;&lt;&#x2F;property&gt;</span><br><span class="line">			&lt;property name&#x3D;&quot;hashIterations&quot; value&#x3D;&quot;1024&quot;&gt;&lt;&#x2F;property&gt;</span><br><span class="line">		&lt;&#x2F;bean&gt;</span><br><span class="line">	&lt;&#x2F;property&gt;</span><br><span class="line">&lt;&#x2F;bean&gt;</span><br><span class="line"></span><br><span class="line">&lt;!-- Shiro生命周期处理器--&gt;</span><br><span class="line">&lt;bean id&#x3D;&quot;lifecycleBeanPostProcessor&quot; class&#x3D;&quot;org.apache.shiro.spring.LifecycleBeanPostProcessor&quot;&#x2F;&gt;</span><br><span class="line"></span><br><span class="line">&lt;!--自定义LogoutFilter,退出--&gt;</span><br><span class="line">&lt;bean id&#x3D;&quot;logoutFilter&quot; class&#x3D;&quot;org.apache.shiro.web.filter.authc.LogoutFilter&quot;&gt;</span><br><span class="line">    &lt;property name&#x3D;&quot;redirectUrl&quot; value&#x3D;&quot;&#x2F;main.jsp&quot;&#x2F;&gt;</span><br><span class="line">&lt;&#x2F;bean&gt;</span><br><span class="line"></span><br><span class="line">&lt;!--配置 ShiroFilter--&gt;</span><br><span class="line">&lt;!--id 必须和 web.xml 文件中配置的 DelegatingFilterProxy 的 &lt;filter-name&gt; 一致.</span><br><span class="line">	若不一致, 则会抛出: NoSuchBeanDefinitionException. 因为 Shiro 会来 IOC 容器中查找和 &lt;filter-name&gt; 名字对应的 filter bean.--&gt;</span><br><span class="line">&lt;bean id&#x3D;&quot;shiroFilter&quot; class&#x3D;&quot;org.apache.shiro.spring.web.ShiroFilterFactoryBean&quot;&gt;</span><br><span class="line">    &lt;property name&#x3D;&quot;securityManager&quot; ref&#x3D;&quot;securityManager&quot;&#x2F;&gt;</span><br><span class="line">	&lt;!--进入需要验证页面时跳转--&gt;</span><br><span class="line">    &lt;property name&#x3D;&quot;loginUrl&quot; value&#x3D;&quot;&#x2F;main.jsp&quot;&#x2F;&gt;</span><br><span class="line">    &lt;property name&#x3D;&quot;successUrl&quot; value&#x3D;&quot;&#x2F;main.jsp&quot;&#x2F;&gt;</span><br><span class="line">    &lt;property name&#x3D;&quot;unauthorizedUrl&quot; value&#x3D;&quot;&#x2F;unauthorized.jsp&quot;&#x2F;&gt;</span><br><span class="line">    &lt;!-- The &#39;filters&#39; property is not necessary since any declared javax.servlet.Filter bean</span><br><span class="line">         defined will be automatically acquired and available via its beanName in chain</span><br><span class="line">         definitions, but you can perform overrides or parent&#x2F;child consolidated configuration</span><br><span class="line">         here if you like: --&gt;</span><br><span class="line">     &lt;property name&#x3D;&quot;filters&quot;&gt;</span><br><span class="line">        &lt;map&gt;</span><br><span class="line">			&lt;!--修改默认过滤器--&gt;</span><br><span class="line">            &lt;entry key&#x3D;&quot;logout&quot; value-ref&#x3D;&quot;logoutFilter&quot;&#x2F;&gt;</span><br><span class="line">        &lt;&#x2F;map&gt;</span><br><span class="line">    &lt;&#x2F;property&gt; </span><br><span class="line"></span><br><span class="line">    &lt;!--  </span><br><span class="line">    	配置哪些页面需要受保护. </span><br><span class="line">    	以及访问这些页面需要的权限. </span><br><span class="line">    	1). anon 可以被匿名访问</span><br><span class="line">    	2). authc 必须认证(即登录)后才可能访问的页面. </span><br><span class="line">    	3). logout 登出.</span><br><span class="line">    	4). roles 角色过滤器</span><br><span class="line">    --&gt;</span><br><span class="line">    &lt;property name&#x3D;&quot;filterChainDefinitions&quot;&gt;</span><br><span class="line">        &lt;value&gt;</span><br><span class="line">        	&#x2F;logout &#x3D; logout</span><br><span class="line">        	&#x2F;easyui-jquery&#x2F;** &#x3D; anon</span><br><span class="line">        	&#x2F;main.jsp &#x3D; anon</span><br><span class="line">        	&#x2F;js&#x2F;** &#x3D; anon</span><br><span class="line">            &#x2F;login &#x3D; anon</span><br><span class="line">            &#x2F;css&#x2F;** &#x3D; anon</span><br><span class="line">            &#x2F;** &#x3D; authc</span><br><span class="line">        &lt;&#x2F;value&gt;</span><br><span class="line">    &lt;&#x2F;property&gt;</span><br><span class="line">	&lt;!--此变量可以用实例工厂方法注入--&gt;</span><br><span class="line">	</span><br><span class="line">	</span><br><span class="line">&lt;&#x2F;bean&gt;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">&lt;!--shiro 核心--&gt;
+&lt;bean id&#x3D;&quot;securityManager&quot; class&#x3D;&quot;org.apache.shiro.web.mgt.DefaultWebSecurityManager&quot;&gt;
+    &lt;property name&#x3D;&quot;cacheManager&quot; ref&#x3D;&quot;cacheManager&quot;&#x2F;&gt;
+    &lt;!-- Single realm app.  If you have multiple realms, use the &#39;realms&#39; property instead. --&gt;
+    &lt;property name&#x3D;&quot;sessionMode&quot; value&#x3D;&quot;native&quot;&#x2F;&gt;
+    &lt;property name&#x3D;&quot;realm&quot; ref&#x3D;&quot;ShiroRealm&quot;&gt;&lt;&#x2F;property&gt;
+	&lt;!--或者可以配置多个realm--&gt;
+    &lt;property name&#x3D;&quot;realms&quot;&gt;
+    	&lt;list&gt;
+			&lt;ref bean&#x3D;&quot;jdbcRealm&quot;&#x2F;&gt;
+			&lt;ref bean&#x3D;&quot;secondRealm&quot;&#x2F;&gt;
+		&lt;&#x2F;list&gt;
+    &lt;&#x2F;property&gt;
+	
+	&lt;!--可以设置多realm验证策略,realm可以在下面authenticator中注入，但使用到授权时--&gt;
+	&lt;!--只能在securityManager中注入--&gt;
+	&lt;property name&#x3D;&quot;authenticator&quot; ref&#x3D;&quot;authenticator&quot;&gt;&lt;&#x2F;property&gt;
+&lt;&#x2F;bean&gt;
+
+&lt;bean id&#x3D;&quot;authenticator&quot; 
+	class&#x3D;&quot;org.apache.shiro.authc.pam.ModularRealmAuthenticator&quot;&gt;
+	&lt;property name&#x3D;&quot;authenticationStrategy&quot;&gt;
+		&lt;bean class&#x3D;&quot;org.apache.shiro.authc.pam.AtLeastOneSuccessfulStrategy&quot;&gt;&lt;&#x2F;bean&gt;
+	&lt;&#x2F;property&gt;
+&lt;&#x2F;bean&gt;
+
+&lt;!--缓存管理--&gt;
+&lt;bean id&#x3D;&quot;cacheManager&quot; class&#x3D;&quot;org.apache.shiro.cache.ehcache.EhCacheManager&quot;&gt;
+    &lt;!-- Set a net.sf.ehcache.CacheManager instance here if you already have one.  If not, a new one
+         will be creaed with a default config:
+         &lt;property name&#x3D;&quot;cacheManager&quot; ref&#x3D;&quot;ehCacheManager&quot;&#x2F;&gt; --&gt;
+    &lt;!-- If you don&#39;t have a pre-built net.sf.ehcache.CacheManager instance to inject, but you want
+         a specific Ehcache configuration to be used, specify that here.  If you don&#39;t, a default
+         will be used.: --&gt;
+    &lt;property name&#x3D;&quot;cacheManagerConfigFile&quot; value&#x3D;&quot;classpath:ehcache.xml&quot;&#x2F;&gt;
+&lt;&#x2F;bean&gt;
+&lt;!--注入自定义realm--&gt;
+&lt;bean id&#x3D;&quot;ShiroRealm&quot; class&#x3D;&quot;crj.mspro.realm.ShiroRealm&quot;&gt;
+	&lt;!--匹配器--&gt;
+	&lt;property name&#x3D;&quot;credentialsMatcher&quot;&gt;
+		&lt;bean class&#x3D;&quot;org.apache.shiro.authc.credential.HashedCredentialsMatcher&quot;&gt;
+			&lt;property name&#x3D;&quot;hashAlgorithmName&quot; value&#x3D;&quot;MD5&quot;&gt;&lt;&#x2F;property&gt;
+			&lt;property name&#x3D;&quot;hashIterations&quot; value&#x3D;&quot;1024&quot;&gt;&lt;&#x2F;property&gt;
+		&lt;&#x2F;bean&gt;
+	&lt;&#x2F;property&gt;
+&lt;&#x2F;bean&gt;
+
+&lt;!-- Shiro生命周期处理器--&gt;
+&lt;bean id&#x3D;&quot;lifecycleBeanPostProcessor&quot; class&#x3D;&quot;org.apache.shiro.spring.LifecycleBeanPostProcessor&quot;&#x2F;&gt;
+
+&lt;!--自定义LogoutFilter,退出--&gt;
+&lt;bean id&#x3D;&quot;logoutFilter&quot; class&#x3D;&quot;org.apache.shiro.web.filter.authc.LogoutFilter&quot;&gt;
+    &lt;property name&#x3D;&quot;redirectUrl&quot; value&#x3D;&quot;&#x2F;main.jsp&quot;&#x2F;&gt;
+&lt;&#x2F;bean&gt;
+
+&lt;!--配置 ShiroFilter--&gt;
+&lt;!--id 必须和 web.xml 文件中配置的 DelegatingFilterProxy 的 &lt;filter-name&gt; 一致.
+	若不一致, 则会抛出: NoSuchBeanDefinitionException. 因为 Shiro 会来 IOC 容器中查找和 &lt;filter-name&gt; 名字对应的 filter bean.--&gt;
+&lt;bean id&#x3D;&quot;shiroFilter&quot; class&#x3D;&quot;org.apache.shiro.spring.web.ShiroFilterFactoryBean&quot;&gt;
+    &lt;property name&#x3D;&quot;securityManager&quot; ref&#x3D;&quot;securityManager&quot;&#x2F;&gt;
+	&lt;!--进入需要验证页面时跳转--&gt;
+    &lt;property name&#x3D;&quot;loginUrl&quot; value&#x3D;&quot;&#x2F;main.jsp&quot;&#x2F;&gt;
+    &lt;property name&#x3D;&quot;successUrl&quot; value&#x3D;&quot;&#x2F;main.jsp&quot;&#x2F;&gt;
+    &lt;property name&#x3D;&quot;unauthorizedUrl&quot; value&#x3D;&quot;&#x2F;unauthorized.jsp&quot;&#x2F;&gt;
+    &lt;!-- The &#39;filters&#39; property is not necessary since any declared javax.servlet.Filter bean
+         defined will be automatically acquired and available via its beanName in chain
+         definitions, but you can perform overrides or parent&#x2F;child consolidated configuration
+         here if you like: --&gt;
+     &lt;property name&#x3D;&quot;filters&quot;&gt;
+        &lt;map&gt;
+			&lt;!--修改默认过滤器--&gt;
+            &lt;entry key&#x3D;&quot;logout&quot; value-ref&#x3D;&quot;logoutFilter&quot;&#x2F;&gt;
+        &lt;&#x2F;map&gt;
+    &lt;&#x2F;property&gt; 
+
+    &lt;!--  
+    	配置哪些页面需要受保护. 
+    	以及访问这些页面需要的权限. 
+    	1). anon 可以被匿名访问
+    	2). authc 必须认证(即登录)后才可能访问的页面. 
+    	3). logout 登出.
+    	4). roles 角色过滤器
+    --&gt;
+    &lt;property name&#x3D;&quot;filterChainDefinitions&quot;&gt;
+        &lt;value&gt;
+        	&#x2F;logout &#x3D; logout
+        	&#x2F;easyui-jquery&#x2F;** &#x3D; anon
+        	&#x2F;main.jsp &#x3D; anon
+        	&#x2F;js&#x2F;** &#x3D; anon
+            &#x2F;login &#x3D; anon
+            &#x2F;css&#x2F;** &#x3D; anon
+            &#x2F;** &#x3D; authc
+        &lt;&#x2F;value&gt;
+    &lt;&#x2F;property&gt;
+	&lt;!--此变量可以用实例工厂方法注入--&gt;
+	
+	
+&lt;&#x2F;bean&gt;</code></pre>
 
 <p>工厂类</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class FilterChainDefinitionMapBuilder &#123;</span><br><span class="line"></span><br><span class="line">	public LinkedHashMap&lt;String, String&gt; buildFilterChainDefinitionMap()&#123;</span><br><span class="line">		LinkedHashMap&lt;String, String&gt; map &#x3D; new LinkedHashMap&lt;&gt;();</span><br><span class="line">		</span><br><span class="line">		map.put(&quot;&#x2F;login.jsp&quot;, &quot;anon&quot;);</span><br><span class="line">		map.put(&quot;&#x2F;shiro&#x2F;login&quot;, &quot;anon&quot;);</span><br><span class="line">		map.put(&quot;&#x2F;shiro&#x2F;logout&quot;, &quot;logout&quot;);</span><br><span class="line">		map.put(&quot;&#x2F;user.jsp&quot;, &quot;authc,roles[user]&quot;);</span><br><span class="line">		map.put(&quot;&#x2F;admin.jsp&quot;, &quot;authc,roles[admin]&quot;);</span><br><span class="line">		map.put(&quot;&#x2F;list.jsp&quot;, &quot;user&quot;);</span><br><span class="line">		</span><br><span class="line">		map.put(&quot;&#x2F;**&quot;, &quot;authc&quot;);</span><br><span class="line">		</span><br><span class="line">		return map;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public class FilterChainDefinitionMapBuilder &#123;
+
+	public LinkedHashMap&lt;String, String&gt; buildFilterChainDefinitionMap()&#123;
+		LinkedHashMap&lt;String, String&gt; map &#x3D; new LinkedHashMap&lt;&gt;();
+		
+		map.put(&quot;&#x2F;login.jsp&quot;, &quot;anon&quot;);
+		map.put(&quot;&#x2F;shiro&#x2F;login&quot;, &quot;anon&quot;);
+		map.put(&quot;&#x2F;shiro&#x2F;logout&quot;, &quot;logout&quot;);
+		map.put(&quot;&#x2F;user.jsp&quot;, &quot;authc,roles[user]&quot;);
+		map.put(&quot;&#x2F;admin.jsp&quot;, &quot;authc,roles[admin]&quot;);
+		map.put(&quot;&#x2F;list.jsp&quot;, &quot;user&quot;);
+		
+		map.put(&quot;&#x2F;**&quot;, &quot;authc&quot;);
+		
+		return map;
+	&#125;
+	
+&#125;</code></pre>
 
 
           
@@ -2243,7 +3132,7 @@
 
   
 
-  <link rel="stylesheet" href="/lib/prettify/skins/desert.css" type="text/css">
+  <link rel="stylesheet" href="/lib/prettify/skins/sunburst.css" type="text/css">
 <script src="/lib/prettify/prettify.js" type="text/javascript"></script>
 <script type="text/javascript">
   $(document).ready(function() {

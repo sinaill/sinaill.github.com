@@ -348,7 +348,29 @@
 <li>当前Subject必须拥有所有指定的角色时，才能访问被该注解标注的方法。如果当天Subject不同时拥有所有指定角色，则方法不会执行还会抛出AuthorizationException异常。<br>RequiresUser</li>
 <li>表示当前Subject已经进行身份验证或者通过“记住我”登录。</li>
 </ul>
-<h4 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;属于user角色</span><br><span class="line">@RequiresRoles(&quot;user&quot;)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;必须同时属于user和admin角色</span><br><span class="line">@RequiresRoles(&#123;&quot;user&quot;,&quot;admin&quot;&#125;)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;属于user或者admin之一;修改logical为OR 即可</span><br><span class="line">@RequiresRoles(value&#x3D;&#123;&quot;user&quot;,&quot;admin&quot;&#125;,logical&#x3D;Logical.OR)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;符合index:hello权限要求</span><br><span class="line">@RequiresPermissions(&quot;index:hello&quot;)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;必须同时复核index:hello和index:world权限要求</span><br><span class="line">@RequiresPermissions(&#123;&quot;index:hello&quot;,&quot;index:world&quot;&#125;)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;符合index:hello或index:world权限要求即可</span><br><span class="line">@RequiresPermissions(value&#x3D;&#123;&quot;index:hello&quot;,&quot;index:world&quot;&#125;,logical&#x3D;Logical.OR)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@RequiresAuthentication</span><br><span class="line">@RequiresUser</span><br><span class="line">@RequiresGusst</span><br></pre></td></tr></table></figure>
+<h4 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h4><pre><code class="highlight plain">&#x2F;&#x2F;属于user角色
+@RequiresRoles(&quot;user&quot;)
+
+&#x2F;&#x2F;必须同时属于user和admin角色
+@RequiresRoles(&#123;&quot;user&quot;,&quot;admin&quot;&#125;)
+
+&#x2F;&#x2F;属于user或者admin之一;修改logical为OR 即可
+@RequiresRoles(value&#x3D;&#123;&quot;user&quot;,&quot;admin&quot;&#125;,logical&#x3D;Logical.OR)
+
+
+&#x2F;&#x2F;符合index:hello权限要求
+@RequiresPermissions(&quot;index:hello&quot;)
+
+&#x2F;&#x2F;必须同时复核index:hello和index:world权限要求
+@RequiresPermissions(&#123;&quot;index:hello&quot;,&quot;index:world&quot;&#125;)
+
+&#x2F;&#x2F;符合index:hello或index:world权限要求即可
+@RequiresPermissions(value&#x3D;&#123;&quot;index:hello&quot;,&quot;index:world&quot;&#125;,logical&#x3D;Logical.OR)
+
+
+@RequiresAuthentication
+@RequiresUser
+@RequiresGusst</code></pre>
 
 <h3 id="api"><a href="#api" class="headerlink" title="api"></a>api</h3><h4 id="Role-Based-Authorization-角色验证"><a href="#Role-Based-Authorization-角色验证" class="headerlink" title="Role-Based Authorization(角色验证)"></a>Role-Based Authorization(角色验证)</h4><table>
 <thead>
@@ -371,7 +393,13 @@
 </tr>
 </tbody></table>
 <p>例子</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Subject currentUser &#x3D; SecurityUtils.getSubject();</span><br><span class="line"></span><br><span class="line">if (currentUser.hasRole(&quot;administrator&quot;)) &#123;</span><br><span class="line">    &#x2F;&#x2F;有权限处理业务逻辑</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    &#x2F;&#x2F;没权限处理业务逻辑</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">Subject currentUser &#x3D; SecurityUtils.getSubject();
+
+if (currentUser.hasRole(&quot;administrator&quot;)) &#123;
+    &#x2F;&#x2F;有权限处理业务逻辑
+&#125; else &#123;
+    &#x2F;&#x2F;没权限处理业务逻辑
+&#125;</code></pre>
 
 <h4 id="Role-Assertions-角色检查"><a href="#Role-Assertions-角色检查" class="headerlink" title="Role Assertions(角色检查)"></a>Role Assertions(角色检查)</h4><table>
 <thead>
@@ -394,7 +422,10 @@
 </tr>
 </tbody></table>
 <p>例子</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Subject currentUser &#x3D; SecurityUtils.getSubject();</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;检查是否有该bankTeller权限，若没有抛出异常，继续往下执行</span><br><span class="line">currentUser.checkRole(&quot;bankTeller&quot;);</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">Subject currentUser &#x3D; SecurityUtils.getSubject();
+
+&#x2F;&#x2F;检查是否有该bankTeller权限，若没有抛出异常，继续往下执行
+currentUser.checkRole(&quot;bankTeller&quot;);</code></pre>
 
 <h4 id="Permission-Based-Authorization-权限校验"><a href="#Permission-Based-Authorization-权限校验" class="headerlink" title="Permission-Based Authorization(权限校验)"></a>Permission-Based Authorization(权限校验)</h4><table>
 <thead>
@@ -417,7 +448,13 @@
 </tr>
 </tbody></table>
 <p>例子</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Subject currentUser &#x3D; SecurityUtils.getSubject();</span><br><span class="line"></span><br><span class="line">if (currentUser.isPermitted(&quot;printer:print:laserjet4400n&quot;)) &#123;</span><br><span class="line">    &#x2F;&#x2F;做有权限操作</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    &#x2F;&#x2F;做无权限操作</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">Subject currentUser &#x3D; SecurityUtils.getSubject();
+
+if (currentUser.isPermitted(&quot;printer:print:laserjet4400n&quot;)) &#123;
+    &#x2F;&#x2F;做有权限操作
+&#125; else &#123;
+    &#x2F;&#x2F;做无权限操作
+&#125;</code></pre>
 
 <h4 id="Permission-Assertions-权限检查"><a href="#Permission-Assertions-权限检查" class="headerlink" title="Permission Assertions(权限检查)"></a>Permission Assertions(权限检查)</h4><table>
 <thead>
@@ -444,7 +481,29 @@
 </tr>
 </tbody></table>
 <h3 id="jstl标签"><a href="#jstl标签" class="headerlink" title="jstl标签"></a>jstl标签</h3><p>导入标签库</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;%@taglib prefix&#x3D;&quot;shiro&quot; uri&#x3D;&quot;http:&#x2F;&#x2F;shiro.apache.org&#x2F;tags&quot; %&gt;</span><br><span class="line"></span><br><span class="line">&lt;shiro:guest&gt;&lt;&#x2F;shiro:guest&gt;   &#96;</span><br><span class="line"></span><br><span class="line">&lt;shiro:user&gt;&lt;&#x2F;shiro:user&gt;</span><br><span class="line"></span><br><span class="line">&lt;shiro:authenticated&gt;&lt;&#x2F;shiro:authenticated&gt;</span><br><span class="line"></span><br><span class="line">&lt;shiro:notAuthenticated&gt;未身份验证（包括记住我）&lt;&#x2F;shiro:notAuthenticated&gt;</span><br><span class="line"></span><br><span class="line">&lt;shiro: principal&#x2F;&gt;</span><br><span class="line"></span><br><span class="line">显示用户身份信息，默认调用Subject.getPrincipal()获取，即Primary Principal，获取的值为对象时，可以使用property属性指定</span><br><span class="line"></span><br><span class="line">&lt;shiro:hasRole name&#x3D;&quot;role&quot;&gt;&lt;&#x2F;shiro:hasRole&gt;</span><br><span class="line"></span><br><span class="line">&lt;shiro:hasAnyRoles name&#x3D;&quot;admin,user&quot;&gt;&lt;&#x2F;shiro:hasAnyRoles&gt;</span><br><span class="line"></span><br><span class="line">&lt;shiro:lacksRole name&#x3D;&quot;abc&quot;&gt;&lt;&#x2F;shiro:lacksRole&gt;</span><br><span class="line"></span><br><span class="line">&lt;shiro:hasPermission name&#x3D;&quot;user:create&quot;&gt;&lt;&#x2F;shiro:hasPermission&gt;</span><br><span class="line"></span><br><span class="line">&lt;shiro:lacksPermission name&#x3D;&quot;org:create&quot;&gt;&lt;&#x2F;shiro:lacksPermission&gt;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">&lt;%@taglib prefix&#x3D;&quot;shiro&quot; uri&#x3D;&quot;http:&#x2F;&#x2F;shiro.apache.org&#x2F;tags&quot; %&gt;
+
+&lt;shiro:guest&gt;&lt;&#x2F;shiro:guest&gt;   &#96;
+
+&lt;shiro:user&gt;&lt;&#x2F;shiro:user&gt;
+
+&lt;shiro:authenticated&gt;&lt;&#x2F;shiro:authenticated&gt;
+
+&lt;shiro:notAuthenticated&gt;未身份验证（包括记住我）&lt;&#x2F;shiro:notAuthenticated&gt;
+
+&lt;shiro: principal&#x2F;&gt;
+
+显示用户身份信息，默认调用Subject.getPrincipal()获取，即Primary Principal，获取的值为对象时，可以使用property属性指定
+
+&lt;shiro:hasRole name&#x3D;&quot;role&quot;&gt;&lt;&#x2F;shiro:hasRole&gt;
+
+&lt;shiro:hasAnyRoles name&#x3D;&quot;admin,user&quot;&gt;&lt;&#x2F;shiro:hasAnyRoles&gt;
+
+&lt;shiro:lacksRole name&#x3D;&quot;abc&quot;&gt;&lt;&#x2F;shiro:lacksRole&gt;
+
+&lt;shiro:hasPermission name&#x3D;&quot;user:create&quot;&gt;&lt;&#x2F;shiro:hasPermission&gt;
+
+&lt;shiro:lacksPermission name&#x3D;&quot;org:create&quot;&gt;&lt;&#x2F;shiro:lacksPermission&gt;</code></pre>
       
     </div>
     
@@ -468,8 +527,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/06/17/%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/" rel="next" title="工厂模式">
-                <i class="fa fa-chevron-left"></i> 工厂模式
+              <a href="/2020/06/17/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" rel="next" title="排序算法">
+                <i class="fa fa-chevron-left"></i> 排序算法
               </a>
             
           </div>
@@ -478,8 +537,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2020/06/17/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" rel="prev" title="排序算法">
-                排序算法 <i class="fa fa-chevron-right"></i>
+              <a href="/2020/06/17/%E6%9E%9A%E4%B8%BE/" rel="prev" title="枚举">
+                枚举 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -817,7 +876,7 @@
 
   
 
-  <link rel="stylesheet" href="/lib/prettify/skins/desert.css" type="text/css">
+  <link rel="stylesheet" href="/lib/prettify/skins/sunburst.css" type="text/css">
 <script src="/lib/prettify/prettify.js" type="text/javascript"></script>
 <script type="text/javascript">
   $(document).ready(function() {

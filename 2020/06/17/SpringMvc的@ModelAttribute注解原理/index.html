@@ -79,12 +79,12 @@
 
 
 
-<meta name="description" content="@ModelAttribute注解的方法给模型中添加数据private ModelAndView invokeHandleMethod(HttpServletRequest request,		HttpServletResponse response, HandlerMethod handlerMethod) throws Exception &amp;#123;	ServletWebRequest we">
+<meta name="description" content="@ModelAttribute注解的方法给模型中添加数据private ModelAndView invokeHandleMethod(HttpServletRequest request, 		HttpServletResponse response, HandlerMethod handlerMethod) throws Exception &amp;#123;  	ServletWebRequest">
 <meta property="og:type" content="article">
 <meta property="og:title" content="SpringMVC的@ModelAttribute注解原理">
 <meta property="og:url" content="http://yoursite.com/2020/06/17/SpringMvc%E7%9A%84@ModelAttribute%E6%B3%A8%E8%A7%A3%E5%8E%9F%E7%90%86/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="@ModelAttribute注解的方法给模型中添加数据private ModelAndView invokeHandleMethod(HttpServletRequest request,		HttpServletResponse response, HandlerMethod handlerMethod) throws Exception &amp;#123;	ServletWebRequest we">
+<meta property="og:description" content="@ModelAttribute注解的方法给模型中添加数据private ModelAndView invokeHandleMethod(HttpServletRequest request, 		HttpServletResponse response, HandlerMethod handlerMethod) throws Exception &amp;#123;  	ServletWebRequest">
 <meta property="article:published_time" content="2020-06-16T17:43:37.231Z">
 <meta property="article:modified_time" content="2020-06-16T17:43:37.231Z">
 <meta property="article:author" content="sinaill">
@@ -341,23 +341,164 @@
       
 
       
-        <h3 id="ModelAttribute注解的方法给模型中添加数据"><a href="#ModelAttribute注解的方法给模型中添加数据" class="headerlink" title="@ModelAttribute注解的方法给模型中添加数据"></a>@ModelAttribute注解的方法给模型中添加数据</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">private ModelAndView invokeHandleMethod(HttpServletRequest request,</span><br><span class="line">		HttpServletResponse response, HandlerMethod handlerMethod) throws Exception &#123;</span><br><span class="line"></span><br><span class="line">	ServletWebRequest webRequest &#x3D; new ServletWebRequest(request, response);</span><br><span class="line"></span><br><span class="line">	WebDataBinderFactory binderFactory &#x3D; getDataBinderFactory(handlerMethod);</span><br><span class="line">	ModelFactory modelFactory &#x3D; getModelFactory(handlerMethod, binderFactory);</span><br><span class="line">	ServletInvocableHandlerMethod requestMappingMethod &#x3D; createRequestMappingMethod(handlerMethod, binderFactory);</span><br><span class="line"></span><br><span class="line">	ModelAndViewContainer mavContainer &#x3D; new ModelAndViewContainer();</span><br><span class="line">	mavContainer.addAllAttributes(RequestContextUtils.getInputFlashMap(request));</span><br><span class="line">	modelFactory.initModel(webRequest, mavContainer, requestMappingMethod);</span><br><span class="line">	mavContainer.setIgnoreDefaultModelOnRedirect(this.ignoreDefaultModelOnRedirect);</span><br><span class="line"></span><br><span class="line">	AsyncWebRequest asyncWebRequest &#x3D; WebAsyncUtils.createAsyncWebRequest(request, response);</span><br><span class="line">	asyncWebRequest.setTimeout(this.asyncRequestTimeout);</span><br><span class="line"></span><br><span class="line">	final WebAsyncManager asyncManager &#x3D; WebAsyncUtils.getAsyncManager(request);</span><br><span class="line">	asyncManager.setTaskExecutor(this.taskExecutor);</span><br><span class="line">	asyncManager.setAsyncWebRequest(asyncWebRequest);</span><br><span class="line">	asyncManager.registerCallableInterceptors(this.callableInterceptors);</span><br><span class="line">	asyncManager.registerDeferredResultInterceptors(this.deferredResultInterceptors);</span><br><span class="line"></span><br><span class="line">	if (asyncManager.hasConcurrentResult()) &#123;</span><br><span class="line">		Object result &#x3D; asyncManager.getConcurrentResult();</span><br><span class="line">		mavContainer &#x3D; (ModelAndViewContainer) asyncManager.getConcurrentResultContext()[0];</span><br><span class="line">		asyncManager.clearConcurrentResult();</span><br><span class="line"></span><br><span class="line">		if (logger.isDebugEnabled()) &#123;</span><br><span class="line">			logger.debug(&quot;Found concurrent result value [&quot; + result + &quot;]&quot;);</span><br><span class="line">		&#125;</span><br><span class="line">		requestMappingMethod &#x3D; requestMappingMethod.wrapConcurrentResult(result);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	requestMappingMethod.invokeAndHandle(webRequest, mavContainer);</span><br><span class="line"></span><br><span class="line">	if (asyncManager.isConcurrentHandlingStarted()) &#123;</span><br><span class="line">		return null;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return getModelAndView(mavContainer, modelFactory, webRequest);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        <h3 id="ModelAttribute注解的方法给模型中添加数据"><a href="#ModelAttribute注解的方法给模型中添加数据" class="headerlink" title="@ModelAttribute注解的方法给模型中添加数据"></a>@ModelAttribute注解的方法给模型中添加数据</h3><pre><code class="highlight plain">private ModelAndView invokeHandleMethod(HttpServletRequest request,
+		HttpServletResponse response, HandlerMethod handlerMethod) throws Exception &#123;
+
+	ServletWebRequest webRequest &#x3D; new ServletWebRequest(request, response);
+
+	WebDataBinderFactory binderFactory &#x3D; getDataBinderFactory(handlerMethod);
+	ModelFactory modelFactory &#x3D; getModelFactory(handlerMethod, binderFactory);
+	ServletInvocableHandlerMethod requestMappingMethod &#x3D; createRequestMappingMethod(handlerMethod, binderFactory);
+
+	ModelAndViewContainer mavContainer &#x3D; new ModelAndViewContainer();
+	mavContainer.addAllAttributes(RequestContextUtils.getInputFlashMap(request));
+	modelFactory.initModel(webRequest, mavContainer, requestMappingMethod);
+	mavContainer.setIgnoreDefaultModelOnRedirect(this.ignoreDefaultModelOnRedirect);
+
+	AsyncWebRequest asyncWebRequest &#x3D; WebAsyncUtils.createAsyncWebRequest(request, response);
+	asyncWebRequest.setTimeout(this.asyncRequestTimeout);
+
+	final WebAsyncManager asyncManager &#x3D; WebAsyncUtils.getAsyncManager(request);
+	asyncManager.setTaskExecutor(this.taskExecutor);
+	asyncManager.setAsyncWebRequest(asyncWebRequest);
+	asyncManager.registerCallableInterceptors(this.callableInterceptors);
+	asyncManager.registerDeferredResultInterceptors(this.deferredResultInterceptors);
+
+	if (asyncManager.hasConcurrentResult()) &#123;
+		Object result &#x3D; asyncManager.getConcurrentResult();
+		mavContainer &#x3D; (ModelAndViewContainer) asyncManager.getConcurrentResultContext()[0];
+		asyncManager.clearConcurrentResult();
+
+		if (logger.isDebugEnabled()) &#123;
+			logger.debug(&quot;Found concurrent result value [&quot; + result + &quot;]&quot;);
+		&#125;
+		requestMappingMethod &#x3D; requestMappingMethod.wrapConcurrentResult(result);
+	&#125;
+
+	requestMappingMethod.invokeAndHandle(webRequest, mavContainer);
+
+	if (asyncManager.isConcurrentHandlingStarted()) &#123;
+		return null;
+	&#125;
+
+	return getModelAndView(mavContainer, modelFactory, webRequest);
+&#125;</code></pre>
 
 <p>这是在<code>RequestMappingHandlerAdapter</code>执行目标<code>Controller</code>的方法的主要流程</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ModelFactory modelFactory &#x3D; getModelFactory(handlerMethod, binderFactory);</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">ModelFactory modelFactory &#x3D; getModelFactory(handlerMethod, binderFactory);</code></pre>
 
 <p>这里创建了<code>ModelFactory</code>，里面有注入<code>@ModelAttribute</code>注解了的方法</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">modelFactory.initModel(webRequest, mavContainer, requestMappingMethod);</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">modelFactory.initModel(webRequest, mavContainer, requestMappingMethod);</code></pre>
 
 <p>后面用这个来初始化<code>Model</code></p>
 <p>可以看源码，是怎么初始化的</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void initModel(NativeWebRequest request, ModelAndViewContainer mavContainer, HandlerMethod handlerMethod)</span><br><span class="line">		throws Exception &#123;</span><br><span class="line"></span><br><span class="line">	Map&lt;String, ?&gt; sessionAttributes &#x3D; this.sessionAttributesHandler.retrieveAttributes(request);</span><br><span class="line">	mavContainer.mergeAttributes(sessionAttributes);</span><br><span class="line">	&#x2F;&#x2F;</span><br><span class="line">	invokeModelAttributeMethods(request, mavContainer);</span><br><span class="line"></span><br><span class="line">	for (String name : findSessionAttributeArguments(handlerMethod)) &#123;</span><br><span class="line">		if (!mavContainer.containsAttribute(name)) &#123;</span><br><span class="line">			Object value &#x3D; this.sessionAttributesHandler.retrieveAttribute(request, name);</span><br><span class="line">			if (value &#x3D;&#x3D; null) &#123;</span><br><span class="line">				throw new HttpSessionRequiredException(&quot;Expected session attribute &#39;&quot; + name + &quot;&#39;&quot;);</span><br><span class="line">			&#125;</span><br><span class="line">			mavContainer.addAttribute(name, value);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public void initModel(NativeWebRequest request, ModelAndViewContainer mavContainer, HandlerMethod handlerMethod)
+		throws Exception &#123;
+
+	Map&lt;String, ?&gt; sessionAttributes &#x3D; this.sessionAttributesHandler.retrieveAttributes(request);
+	mavContainer.mergeAttributes(sessionAttributes);
+	&#x2F;&#x2F;
+	invokeModelAttributeMethods(request, mavContainer);
+
+	for (String name : findSessionAttributeArguments(handlerMethod)) &#123;
+		if (!mavContainer.containsAttribute(name)) &#123;
+			Object value &#x3D; this.sessionAttributesHandler.retrieveAttribute(request, name);
+			if (value &#x3D;&#x3D; null) &#123;
+				throw new HttpSessionRequiredException(&quot;Expected session attribute &#39;&quot; + name + &quot;&#39;&quot;);
+			&#125;
+			mavContainer.addAttribute(name, value);
+		&#125;
+	&#125;
+&#125;</code></pre>
 
 <p>进入<code>invokeModelAttributeMethods</code>，这里是调用<code>@ModelAttribute</code>注解的方法</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">private void invokeModelAttributeMethods(NativeWebRequest request, ModelAndViewContainer mavContainer)</span><br><span class="line">		throws Exception &#123;</span><br><span class="line"></span><br><span class="line">	while (!this.modelMethods.isEmpty()) &#123;</span><br><span class="line">		InvocableHandlerMethod attrMethod &#x3D; getNextModelMethod(mavContainer).getHandlerMethod();</span><br><span class="line">		String modelName &#x3D; attrMethod.getMethodAnnotation(ModelAttribute.class).value();</span><br><span class="line">		if (mavContainer.containsAttribute(modelName)) &#123;</span><br><span class="line">			continue;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		Object returnValue &#x3D; attrMethod.invokeForRequest(request, mavContainer);</span><br><span class="line"></span><br><span class="line">		if (!attrMethod.isVoid())&#123;</span><br><span class="line">			String returnValueName &#x3D; getNameForReturnValue(returnValue, attrMethod.getReturnType());</span><br><span class="line">			if (!mavContainer.containsAttribute(returnValueName)) &#123;</span><br><span class="line">				mavContainer.addAttribute(returnValueName, returnValue);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">private void invokeModelAttributeMethods(NativeWebRequest request, ModelAndViewContainer mavContainer)
+		throws Exception &#123;
+
+	while (!this.modelMethods.isEmpty()) &#123;
+		InvocableHandlerMethod attrMethod &#x3D; getNextModelMethod(mavContainer).getHandlerMethod();
+		String modelName &#x3D; attrMethod.getMethodAnnotation(ModelAttribute.class).value();
+		if (mavContainer.containsAttribute(modelName)) &#123;
+			continue;
+		&#125;
+
+		Object returnValue &#x3D; attrMethod.invokeForRequest(request, mavContainer);
+
+		if (!attrMethod.isVoid())&#123;
+			String returnValueName &#x3D; getNameForReturnValue(returnValue, attrMethod.getReturnType());
+			if (!mavContainer.containsAttribute(returnValueName)) &#123;
+				mavContainer.addAttribute(returnValueName, returnValue);
+			&#125;
+		&#125;
+	&#125;
+&#125;</code></pre>
 
 <h4 id="有返回值时"><a href="#有返回值时" class="headerlink" title="有返回值时"></a>有返回值时</h4><p>当<code>@ModelAttribute</code>注解的方法的返回值类型不为<code>void</code>时，也就是有返回值时，这里的<code>returnValueName</code>的命名规则可以看<code>getNameForReturnValue</code>方法</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * Derive the model attribute name for the given return value using one of:</span><br><span class="line"> * &lt;ol&gt;</span><br><span class="line"> * 	&lt;li&gt;The method &#123;@code ModelAttribute&#125; annotation value</span><br><span class="line"> * 	&lt;li&gt;The declared return type if it is more specific than &#123;@code Object&#125;</span><br><span class="line"> * 	&lt;li&gt;The actual return value type</span><br><span class="line"> * &lt;&#x2F;ol&gt;</span><br><span class="line"> * @param returnValue the value returned from a method invocation</span><br><span class="line"> * @param returnType the return type of the method</span><br><span class="line"> * @return the model name, never &#123;@code null&#125; nor empty</span><br><span class="line"> *&#x2F;</span><br><span class="line">public static String getNameForReturnValue(Object returnValue, MethodParameter returnType) &#123;</span><br><span class="line">	ModelAttribute annotation &#x3D; returnType.getMethodAnnotation(ModelAttribute.class);</span><br><span class="line">	if (annotation !&#x3D; null &amp;&amp; StringUtils.hasText(annotation.value())) &#123;</span><br><span class="line">		return annotation.value();</span><br><span class="line">	&#125;</span><br><span class="line">	else &#123;</span><br><span class="line">		Method method &#x3D; returnType.getMethod();</span><br><span class="line">		Class&lt;?&gt; resolvedType &#x3D; GenericTypeResolver.resolveReturnType(method, returnType.getContainingClass());</span><br><span class="line">		return Conventions.getVariableNameForReturnType(method, resolvedType, returnValue);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">public static String getVariableNameForReturnType(Method method, Class&lt;?&gt; resolvedType, Object value) &#123;</span><br><span class="line">	Assert.notNull(method, &quot;Method must not be null&quot;);</span><br><span class="line"></span><br><span class="line">	if (Object.class.equals(resolvedType)) &#123;</span><br><span class="line">		if (value &#x3D;&#x3D; null) &#123;</span><br><span class="line">			throw new IllegalArgumentException(&quot;Cannot generate variable name for an Object return type with null value&quot;);</span><br><span class="line">		&#125;</span><br><span class="line">		return getVariableName(value);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	Class&lt;?&gt; valueClass;</span><br><span class="line">	boolean pluralize &#x3D; false;</span><br><span class="line"></span><br><span class="line">	if (resolvedType.isArray()) &#123;</span><br><span class="line">		valueClass &#x3D; resolvedType.getComponentType();</span><br><span class="line">		pluralize &#x3D; true;</span><br><span class="line">	&#125;</span><br><span class="line">	else if (Collection.class.isAssignableFrom(resolvedType)) &#123;</span><br><span class="line">		valueClass &#x3D; GenericCollectionTypeResolver.getCollectionReturnType(method);</span><br><span class="line">		if (valueClass &#x3D;&#x3D; null) &#123;</span><br><span class="line">			if (!(value instanceof Collection)) &#123;</span><br><span class="line">				throw new IllegalArgumentException(</span><br><span class="line">						&quot;Cannot generate variable name for non-typed Collection return type and a non-Collection value&quot;);</span><br><span class="line">			&#125;</span><br><span class="line">			Collection&lt;?&gt; collection &#x3D; (Collection&lt;?&gt;) value;</span><br><span class="line">			if (collection.isEmpty()) &#123;</span><br><span class="line">				throw new IllegalArgumentException(</span><br><span class="line">						&quot;Cannot generate variable name for non-typed Collection return type and an empty Collection value&quot;);</span><br><span class="line">			&#125;</span><br><span class="line">			Object valueToCheck &#x3D; peekAhead(collection);</span><br><span class="line">			valueClass &#x3D; getClassForValue(valueToCheck);</span><br><span class="line">		&#125;</span><br><span class="line">		pluralize &#x3D; true;</span><br><span class="line">	&#125;</span><br><span class="line">	else &#123;</span><br><span class="line">		valueClass &#x3D; resolvedType;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	String name &#x3D; ClassUtils.getShortNameAsProperty(valueClass);</span><br><span class="line">	return (pluralize ? pluralize(name) : name);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">&#x2F;**
+ * Derive the model attribute name for the given return value using one of:
+ * &lt;ol&gt;
+ * 	&lt;li&gt;The method &#123;@code ModelAttribute&#125; annotation value
+ * 	&lt;li&gt;The declared return type if it is more specific than &#123;@code Object&#125;
+ * 	&lt;li&gt;The actual return value type
+ * &lt;&#x2F;ol&gt;
+ * @param returnValue the value returned from a method invocation
+ * @param returnType the return type of the method
+ * @return the model name, never &#123;@code null&#125; nor empty
+ *&#x2F;
+public static String getNameForReturnValue(Object returnValue, MethodParameter returnType) &#123;
+	ModelAttribute annotation &#x3D; returnType.getMethodAnnotation(ModelAttribute.class);
+	if (annotation !&#x3D; null &amp;&amp; StringUtils.hasText(annotation.value())) &#123;
+		return annotation.value();
+	&#125;
+	else &#123;
+		Method method &#x3D; returnType.getMethod();
+		Class&lt;?&gt; resolvedType &#x3D; GenericTypeResolver.resolveReturnType(method, returnType.getContainingClass());
+		return Conventions.getVariableNameForReturnType(method, resolvedType, returnValue);
+	&#125;
+&#125;
+
+
+public static String getVariableNameForReturnType(Method method, Class&lt;?&gt; resolvedType, Object value) &#123;
+	Assert.notNull(method, &quot;Method must not be null&quot;);
+
+	if (Object.class.equals(resolvedType)) &#123;
+		if (value &#x3D;&#x3D; null) &#123;
+			throw new IllegalArgumentException(&quot;Cannot generate variable name for an Object return type with null value&quot;);
+		&#125;
+		return getVariableName(value);
+	&#125;
+
+	Class&lt;?&gt; valueClass;
+	boolean pluralize &#x3D; false;
+
+	if (resolvedType.isArray()) &#123;
+		valueClass &#x3D; resolvedType.getComponentType();
+		pluralize &#x3D; true;
+	&#125;
+	else if (Collection.class.isAssignableFrom(resolvedType)) &#123;
+		valueClass &#x3D; GenericCollectionTypeResolver.getCollectionReturnType(method);
+		if (valueClass &#x3D;&#x3D; null) &#123;
+			if (!(value instanceof Collection)) &#123;
+				throw new IllegalArgumentException(
+						&quot;Cannot generate variable name for non-typed Collection return type and a non-Collection value&quot;);
+			&#125;
+			Collection&lt;?&gt; collection &#x3D; (Collection&lt;?&gt;) value;
+			if (collection.isEmpty()) &#123;
+				throw new IllegalArgumentException(
+						&quot;Cannot generate variable name for non-typed Collection return type and an empty Collection value&quot;);
+			&#125;
+			Object valueToCheck &#x3D; peekAhead(collection);
+			valueClass &#x3D; getClassForValue(valueToCheck);
+		&#125;
+		pluralize &#x3D; true;
+	&#125;
+	else &#123;
+		valueClass &#x3D; resolvedType;
+	&#125;
+
+	String name &#x3D; ClassUtils.getShortNameAsProperty(valueClass);
+	return (pluralize ? pluralize(name) : name);
+&#125;</code></pre>
 
 <p>看到命名规则为</p>
 <ul>
@@ -367,37 +508,158 @@
 </ul>
 <p>然后看<code>mavContainer</code>中是否已经含有该属性名称的属性，如果没有的话，将该属性添加进去，否则则什么都不做</p>
 <h4 id="没有返回值"><a href="#没有返回值" class="headerlink" title="没有返回值"></a>没有返回值</h4><p><code>@ModelAttribute</code>注解的方法不用返回值往模型<code>mavContainer</code>中添加数据的方法是在入参中定义一个<code>java.util.Map</code>类型的入参</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@ModelAttribute</span><br><span class="line">public void test(Map map)&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">@ModelAttribute
+public void test(Map map)&#123;
+
+&#125;</code></pre>
 
 <p>然后我们在目标方法也定义一个入参<code>java.util.Map</code>，就能在方法中在这个入参里获取到我们之前在<code>@ModelAttribute</code>方法中添加的属性</p>
 <p>从什么地方入手，我们看反射调用<code>@ModelAttribute</code>注解的方法的入参是什么</p>
 <p>首先查看对入参类型为<code>java.util.Map</code>时选择的参数解析器<code>ArgumentResolver</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">if (this.argumentResolvers.supportsParameter(parameter)) &#123;</span><br><span class="line">	try &#123;</span><br><span class="line">		args[i] &#x3D; this.argumentResolvers.resolveArgument(</span><br><span class="line">				parameter, mavContainer, request, this.dataBinderFactory);</span><br><span class="line">		continue;</span><br><span class="line">	&#125;</span><br><span class="line">	catch (Exception ex) &#123;</span><br><span class="line">		if (logger.isDebugEnabled()) &#123;</span><br><span class="line">			logger.debug(getArgumentResolutionErrorMessage(&quot;Error resolving argument&quot;, i), ex);</span><br><span class="line">		&#125;</span><br><span class="line">		throw ex;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">if (this.argumentResolvers.supportsParameter(parameter)) &#123;
+	try &#123;
+		args[i] &#x3D; this.argumentResolvers.resolveArgument(
+				parameter, mavContainer, request, this.dataBinderFactory);
+		continue;
+	&#125;
+	catch (Exception ex) &#123;
+		if (logger.isDebugEnabled()) &#123;
+			logger.debug(getArgumentResolutionErrorMessage(&quot;Error resolving argument&quot;, i), ex);
+		&#125;
+		throw ex;
+	&#125;
+&#125;</code></pre>
 
 <p>选择的参数解析器<code>ArgumentResolver</code>为<code>MapMethodProcessor</code></p>
 <p>我们查看它的<code>supportsParameter</code>方法和<code>resolveArgument</code>方法</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Override</span><br><span class="line">public boolean supportsParameter(MethodParameter parameter) &#123;</span><br><span class="line">	return Map.class.isAssignableFrom(parameter.getParameterType());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@Override</span><br><span class="line">public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,</span><br><span class="line">		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception &#123;</span><br><span class="line"></span><br><span class="line">	return mavContainer.getModel();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">@Override
+public boolean supportsParameter(MethodParameter parameter) &#123;
+	return Map.class.isAssignableFrom(parameter.getParameterType());
+&#125;
+
+@Override
+public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception &#123;
+
+	return mavContainer.getModel();
+&#125;</code></pre>
 
 <p>可以看到适用于入参为<code>Java.util.Map</code>的时候，所以<code>ModelMap</code>和<code>Model</code>也行</p>
 <p>我们看它是怎么解析的，直接返回了<code>mavContainer</code>中的<code>BindingAwareModelMap</code>对象，也就是说我们在执行<code>Controller</code>中的方法的时候，入参为<code>java.util.Map</code>的时候，都回被解析成<code>mavContainer</code>中的<code>BindingAwareModelMap</code>，所以我们能在不同方法中使用同一个<code>java.util.Map</code>入参来共享变量，估计<code>@InitBinder</code>方法也可以这样</p>
 <h3 id="与-SessionAttributes合用"><a href="#与-SessionAttributes合用" class="headerlink" title="与@SessionAttributes合用"></a>与@SessionAttributes合用</h3><p>在执行<code>@ModelAttribute</code>的方法之前，还有对<code>@SessionAttributes</code>注解属性的行为</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void initModel(NativeWebRequest request, ModelAndViewContainer mavContainer, HandlerMethod handlerMethod)</span><br><span class="line">		throws Exception &#123;</span><br><span class="line"></span><br><span class="line">	Map&lt;String, ?&gt; sessionAttributes &#x3D; this.sessionAttributesHandler.retrieveAttributes(request);</span><br><span class="line">	mavContainer.mergeAttributes(sessionAttributes);</span><br><span class="line">	&#x2F;&#x2F;</span><br><span class="line">	invokeModelAttributeMethods(request, mavContainer);</span><br><span class="line"></span><br><span class="line">	for (String name : findSessionAttributeArguments(handlerMethod)) &#123;</span><br><span class="line">		if (!mavContainer.containsAttribute(name)) &#123;</span><br><span class="line">			Object value &#x3D; this.sessionAttributesHandler.retrieveAttribute(request, name);</span><br><span class="line">			if (value &#x3D;&#x3D; null) &#123;</span><br><span class="line">				throw new HttpSessionRequiredException(&quot;Expected session attribute &#39;&quot; + name + &quot;&#39;&quot;);</span><br><span class="line">			&#125;</span><br><span class="line">			mavContainer.addAttribute(name, value);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public void initModel(NativeWebRequest request, ModelAndViewContainer mavContainer, HandlerMethod handlerMethod)
+		throws Exception &#123;
+
+	Map&lt;String, ?&gt; sessionAttributes &#x3D; this.sessionAttributesHandler.retrieveAttributes(request);
+	mavContainer.mergeAttributes(sessionAttributes);
+	&#x2F;&#x2F;
+	invokeModelAttributeMethods(request, mavContainer);
+
+	for (String name : findSessionAttributeArguments(handlerMethod)) &#123;
+		if (!mavContainer.containsAttribute(name)) &#123;
+			Object value &#x3D; this.sessionAttributesHandler.retrieveAttribute(request, name);
+			if (value &#x3D;&#x3D; null) &#123;
+				throw new HttpSessionRequiredException(&quot;Expected session attribute &#39;&quot; + name + &quot;&#39;&quot;);
+			&#125;
+			mavContainer.addAttribute(name, value);
+		&#125;
+	&#125;
+&#125;</code></pre>
 
 <p>首先，<code>Controller</code>类上的注解<code>@SessionAttributes</code>的<code>value</code>值，当往<code>Model</code>中添加属性时，属性名与这个<code>value</code>值相同时，会被放入<code>Session</code>中，然后这里会以<code>@SessionAttributes</code>注解的值为<code>key</code>，从<code>Session</code>中取出，合并到<code>mavContainer</code>的<code>BindingAwareModelMap</code>中</p>
 <p>然后看调用<code>@ModelAttribute</code>方法之前</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">private void invokeModelAttributeMethods(NativeWebRequest request, ModelAndViewContainer mavContainer)</span><br><span class="line">		throws Exception &#123;</span><br><span class="line"></span><br><span class="line">	while (!this.modelMethods.isEmpty()) &#123;</span><br><span class="line">		InvocableHandlerMethod attrMethod &#x3D; getNextModelMethod(mavContainer).getHandlerMethod();</span><br><span class="line">		String modelName &#x3D; attrMethod.getMethodAnnotation(ModelAttribute.class).value();</span><br><span class="line">		if (mavContainer.containsAttribute(modelName)) &#123;</span><br><span class="line">			continue;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		Object returnValue &#x3D; attrMethod.invokeForRequest(request, mavContainer);</span><br><span class="line"></span><br><span class="line">		if (!attrMethod.isVoid())&#123;</span><br><span class="line">			String returnValueName &#x3D; getNameForReturnValue(returnValue, attrMethod.getReturnType());</span><br><span class="line">			if (!mavContainer.containsAttribute(returnValueName)) &#123;</span><br><span class="line">				mavContainer.addAttribute(returnValueName, returnValue);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">private void invokeModelAttributeMethods(NativeWebRequest request, ModelAndViewContainer mavContainer)
+		throws Exception &#123;
+
+	while (!this.modelMethods.isEmpty()) &#123;
+		InvocableHandlerMethod attrMethod &#x3D; getNextModelMethod(mavContainer).getHandlerMethod();
+		String modelName &#x3D; attrMethod.getMethodAnnotation(ModelAttribute.class).value();
+		if (mavContainer.containsAttribute(modelName)) &#123;
+			continue;
+		&#125;
+
+		Object returnValue &#x3D; attrMethod.invokeForRequest(request, mavContainer);
+
+		if (!attrMethod.isVoid())&#123;
+			String returnValueName &#x3D; getNameForReturnValue(returnValue, attrMethod.getReturnType());
+			if (!mavContainer.containsAttribute(returnValueName)) &#123;
+				mavContainer.addAttribute(returnValueName, returnValue);
+			&#125;
+		&#125;
+	&#125;
+&#125;</code></pre>
 
 <p>这里先获取了<code>@ModelAttribute</code>的<code>value</code>，如果<code>BindingAwareModelMap</code>中已经有与<code>value</code>相同的<code>key</code>，则跳过这个<code>@ModelAttribute</code>方法的调用</p>
 <p>还有一个特殊的用法，可以在<code>Controller</code>方法中使用<code>@ModelAttribute</code>注解入参，它的<code>value</code>与<code>SessionAttribute</code>的<code>value</code>相同时，这个入参也可以接收到<code>Session</code>中的属性</p>
 <p>它的原理在于，我们看处理<code>@ModelAttribute</code>注解参数的处理解析器<code>ModelAttributeMethodProcessor</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public final Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,</span><br><span class="line">		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception &#123;</span><br><span class="line"></span><br><span class="line">	String name &#x3D; ModelFactory.getNameForParameter(parameter);</span><br><span class="line">	Object attribute &#x3D; (mavContainer.containsAttribute(name) ?</span><br><span class="line">			mavContainer.getModel().get(name) : createAttribute(name, parameter, binderFactory, webRequest));</span><br><span class="line"></span><br><span class="line">	WebDataBinder binder &#x3D; binderFactory.createBinder(webRequest, attribute, name);</span><br><span class="line">	if (binder.getTarget() !&#x3D; null) &#123;</span><br><span class="line">		bindRequestParameters(binder, webRequest);</span><br><span class="line">		validateIfApplicable(binder, parameter);</span><br><span class="line">		if (binder.getBindingResult().hasErrors() &amp;&amp; isBindExceptionRequired(binder, parameter)) &#123;</span><br><span class="line">			throw new BindException(binder.getBindingResult());</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F; Add resolved attribute and BindingResult at the end of the model</span><br><span class="line">	Map&lt;String, Object&gt; bindingResultModel &#x3D; binder.getBindingResult().getModel();</span><br><span class="line">	mavContainer.removeAttributes(bindingResultModel);</span><br><span class="line">	mavContainer.addAllAttributes(bindingResultModel);</span><br><span class="line"></span><br><span class="line">	return binder.convertIfNecessary(binder.getTarget(), parameter.getParameterType(), parameter);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public final Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception &#123;
+
+	String name &#x3D; ModelFactory.getNameForParameter(parameter);
+	Object attribute &#x3D; (mavContainer.containsAttribute(name) ?
+			mavContainer.getModel().get(name) : createAttribute(name, parameter, binderFactory, webRequest));
+
+	WebDataBinder binder &#x3D; binderFactory.createBinder(webRequest, attribute, name);
+	if (binder.getTarget() !&#x3D; null) &#123;
+		bindRequestParameters(binder, webRequest);
+		validateIfApplicable(binder, parameter);
+		if (binder.getBindingResult().hasErrors() &amp;&amp; isBindExceptionRequired(binder, parameter)) &#123;
+			throw new BindException(binder.getBindingResult());
+		&#125;
+	&#125;
+
+	&#x2F;&#x2F; Add resolved attribute and BindingResult at the end of the model
+	Map&lt;String, Object&gt; bindingResultModel &#x3D; binder.getBindingResult().getModel();
+	mavContainer.removeAttributes(bindingResultModel);
+	mavContainer.addAllAttributes(bindingResultModel);
+
+	return binder.convertIfNecessary(binder.getTarget(), parameter.getParameterType(), parameter);
+&#125;</code></pre>
 
 <p>它先获取了入参<code>@ModelAttribute</code>的<code>value</code>，然后如果<code>BindingAwareModelMap</code>有与该值相同的<code>key</code>，取出该属性<code>attribute</code>，后面就是将<code>request</code>请求中的属性绑定到这个<code>attribute</code>了，然后这个<code>attribute</code>就作为调用该<code>Controller</code>方法的参数来反射调用</p>
 <p>此时在整个流程中，在完成以上动作前，<code>@ModelAttribute</code>方法已经执行完了，所以已经完成了将<code>Session</code>中属性合并到<code>BindingAwareModelMap</code>中</p>
 <p>其实一般入参分两种情况，属于简单类的，例如<code>CharSequence</code>、<code>Number</code>、<code>Date</code>、<code>Class</code>，是由<code>RequestParamMethodArgumentResolver</code>这个类负责解析，其他复杂类，例如我们自定义的类，和用<code>@ModelAttribute</code>注解的入参都是由<code>ServletModelAttributeMethodProcessor</code>负责处理</p>
 <p>所以复杂类入参没有<code>@ModelAttribute</code>注解也可以接收到<code>Session</code>中属性</p>
 <p>但是如果我们要这样使用<code>@SessionAttributes</code>和<code>@ModelAttribute</code>的话，注意以下</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void initModel(NativeWebRequest request, ModelAndViewContainer mavContainer, HandlerMethod handlerMethod)</span><br><span class="line">		throws Exception &#123;</span><br><span class="line"></span><br><span class="line">	Map&lt;String, ?&gt; sessionAttributes &#x3D; this.sessionAttributesHandler.retrieveAttributes(request);</span><br><span class="line">	mavContainer.mergeAttributes(sessionAttributes);</span><br><span class="line"></span><br><span class="line">	invokeModelAttributeMethods(request, mavContainer);</span><br><span class="line"></span><br><span class="line">	for (String name : findSessionAttributeArguments(handlerMethod)) &#123;</span><br><span class="line">		if (!mavContainer.containsAttribute(name)) &#123;</span><br><span class="line">			Object value &#x3D; this.sessionAttributesHandler.retrieveAttribute(request, name);</span><br><span class="line">			if (value &#x3D;&#x3D; null) &#123;</span><br><span class="line">				throw new HttpSessionRequiredException(&quot;Expected session attribute &#39;&quot; + name + &quot;&#39;&quot;);</span><br><span class="line">			&#125;</span><br><span class="line">			mavContainer.addAttribute(name, value);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">private List&lt;String&gt; findSessionAttributeArguments(HandlerMethod handlerMethod) &#123;</span><br><span class="line">	List&lt;String&gt; result &#x3D; new ArrayList&lt;String&gt;();</span><br><span class="line">	for (MethodParameter parameter : handlerMethod.getMethodParameters()) &#123;</span><br><span class="line">		if (parameter.hasParameterAnnotation(ModelAttribute.class)) &#123;</span><br><span class="line">			String name &#x3D; getNameForParameter(parameter);</span><br><span class="line">			if (this.sessionAttributesHandler.isHandlerSessionAttribute(name, parameter.getParameterType())) &#123;</span><br><span class="line">				result.add(name);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	return result;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">public static String getNameForParameter(MethodParameter parameter) &#123;</span><br><span class="line">	ModelAttribute annot &#x3D; parameter.getParameterAnnotation(ModelAttribute.class);</span><br><span class="line">	String attrName &#x3D; (annot !&#x3D; null) ? annot.value() : null;</span><br><span class="line">	return StringUtils.hasText(attrName) ? attrName :  Conventions.getVariableNameForParameter(parameter);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public void initModel(NativeWebRequest request, ModelAndViewContainer mavContainer, HandlerMethod handlerMethod)
+		throws Exception &#123;
+
+	Map&lt;String, ?&gt; sessionAttributes &#x3D; this.sessionAttributesHandler.retrieveAttributes(request);
+	mavContainer.mergeAttributes(sessionAttributes);
+
+	invokeModelAttributeMethods(request, mavContainer);
+
+	for (String name : findSessionAttributeArguments(handlerMethod)) &#123;
+		if (!mavContainer.containsAttribute(name)) &#123;
+			Object value &#x3D; this.sessionAttributesHandler.retrieveAttribute(request, name);
+			if (value &#x3D;&#x3D; null) &#123;
+				throw new HttpSessionRequiredException(&quot;Expected session attribute &#39;&quot; + name + &quot;&#39;&quot;);
+			&#125;
+			mavContainer.addAttribute(name, value);
+		&#125;
+	&#125;
+&#125;
+
+
+private List&lt;String&gt; findSessionAttributeArguments(HandlerMethod handlerMethod) &#123;
+	List&lt;String&gt; result &#x3D; new ArrayList&lt;String&gt;();
+	for (MethodParameter parameter : handlerMethod.getMethodParameters()) &#123;
+		if (parameter.hasParameterAnnotation(ModelAttribute.class)) &#123;
+			String name &#x3D; getNameForParameter(parameter);
+			if (this.sessionAttributesHandler.isHandlerSessionAttribute(name, parameter.getParameterType())) &#123;
+				result.add(name);
+			&#125;
+		&#125;
+	&#125;
+	return result;
+&#125;
+
+
+public static String getNameForParameter(MethodParameter parameter) &#123;
+	ModelAttribute annot &#x3D; parameter.getParameterAnnotation(ModelAttribute.class);
+	String attrName &#x3D; (annot !&#x3D; null) ? annot.value() : null;
+	return StringUtils.hasText(attrName) ? attrName :  Conventions.getVariableNameForParameter(parameter);
+&#125;</code></pre>
 
 <p>可以看到执行完<code>@ModelAttribute</code>方法之后，在执行<code>Controller</code>目标方法之前，它要判断<code>BindingAwareModelMap</code>中对应的那个属性是否为空，空的话会抛出异常</p>
 <p>也就是说要这样用的话，要保证在<code>@ModelAttribute</code>方法中就将要传递的属性和与<code>@SessionAttributes</code>和入参<code>@ModelAttribute</code>对应的属性名放入<code>BindingAwareModelMap</code>中，或者已经在<code>Session</code>中含有该属性和对应属性名，然后会在调用<code>@ModelAttribute</code>方法前被合并到<code>BindingAwareModelMap</code>中，否则会抛出异常</p>
@@ -780,7 +1042,7 @@
 
   
 
-  <link rel="stylesheet" href="/lib/prettify/skins/desert.css" type="text/css">
+  <link rel="stylesheet" href="/lib/prettify/skins/sunburst.css" type="text/css">
 <script src="/lib/prettify/prettify.js" type="text/javascript"></script>
 <script type="text/javascript">
   $(document).ready(function() {

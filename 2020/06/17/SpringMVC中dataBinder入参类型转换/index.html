@@ -79,12 +79,12 @@
 
 
 
-<meta name="description" content="DataBinderDataBinder在SpringMVC中起的作用主要是为Request中参数转化为对应的入参类型 注册自己的PropertyEditor由于DataBinder实现了PropertyEditorRegistry接口，所以有了注册属性编辑器的方法，我们可以手动添加我们需要的PropertyEditor，如下 @InitBinderpublic void initBinder(W">
+<meta name="description" content="DataBinderDataBinder在SpringMVC中起的作用主要是为Request中参数转化为对应的入参类型 注册自己的PropertyEditor由于DataBinder实现了PropertyEditorRegistry接口，所以有了注册属性编辑器的方法，我们可以手动添加我们需要的PropertyEditor，如下 @InitBinder public void initBinder(">
 <meta property="og:type" content="article">
 <meta property="og:title" content="SpringMVC中DataBinder对入参类型转换">
 <meta property="og:url" content="http://yoursite.com/2020/06/17/SpringMVC%E4%B8%ADdataBinder%E5%85%A5%E5%8F%82%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="DataBinderDataBinder在SpringMVC中起的作用主要是为Request中参数转化为对应的入参类型 注册自己的PropertyEditor由于DataBinder实现了PropertyEditorRegistry接口，所以有了注册属性编辑器的方法，我们可以手动添加我们需要的PropertyEditor，如下 @InitBinderpublic void initBinder(W">
+<meta property="og:description" content="DataBinderDataBinder在SpringMVC中起的作用主要是为Request中参数转化为对应的入参类型 注册自己的PropertyEditor由于DataBinder实现了PropertyEditorRegistry接口，所以有了注册属性编辑器的方法，我们可以手动添加我们需要的PropertyEditor，如下 @InitBinder public void initBinder(">
 <meta property="article:published_time" content="2020-06-16T17:43:37.226Z">
 <meta property="article:modified_time" content="2020-06-16T17:43:37.226Z">
 <meta property="article:author" content="sinaill">
@@ -343,37 +343,317 @@
       
         <h3 id="DataBinder"><a href="#DataBinder" class="headerlink" title="DataBinder"></a>DataBinder</h3><p><code>DataBinder</code>在<code>SpringMVC</code>中起的作用主要是为<code>Request</code>中参数转化为对应的入参类型</p>
 <h3 id="注册自己的PropertyEditor"><a href="#注册自己的PropertyEditor" class="headerlink" title="注册自己的PropertyEditor"></a>注册自己的PropertyEditor</h3><p>由于<code>DataBinder</code>实现了<code>PropertyEditorRegistry</code>接口，所以有了注册属性编辑器的方法，我们可以手动添加我们需要的<code>PropertyEditor</code>，如下</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@InitBinder</span><br><span class="line">public void initBinder(WebDataBinder binder) &#123;</span><br><span class="line">	SimpleDateFormat sdf &#x3D; new SimpleDateFormat(&quot;yyyy-MM-dd&quot;);</span><br><span class="line">	sdf.setLenient(false);</span><br><span class="line">	binder.registerCustomEditor(Date.class, new CustomDateEditor(sdf, true));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">@InitBinder
+public void initBinder(WebDataBinder binder) &#123;
+	SimpleDateFormat sdf &#x3D; new SimpleDateFormat(&quot;yyyy-MM-dd&quot;);
+	sdf.setLenient(false);
+	binder.registerCustomEditor(Date.class, new CustomDateEditor(sdf, true));
+&#125;</code></pre>
 
 <p>这个方法会被收录在<code>WebDataBinderFactory</code>中，然后在创建和初始化<code>DataBinder</code>对象时，将<code>DataBinder</code>作为入参调用这个方法来注入<code>PropertyEditor</code></p>
-<h3 id="conversionservice"><a href="#conversionservice" class="headerlink" title="conversionservice"></a>conversionservice</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;mvc:annotation-driven &#x2F;&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="conversionservice"><a href="#conversionservice" class="headerlink" title="conversionservice"></a>conversionservice</h3><pre><code class="highlight plain">&lt;mvc:annotation-driven &#x2F;&gt;</code></pre>
 
 <p>这个配置默认注册了<code>FormattingConversionServiceFactoryBean</code>来创将一个<code>DefaultFormattingConversionService</code>，其中注册了许多<code>converter</code>用来进行类型转换</p>
 <h3 id="转化过程"><a href="#转化过程" class="headerlink" title="转化过程"></a>转化过程</h3><p>既然是将参数转化为入参需要的类型，那应该发生在参数解析的时候，先看简单的例如<code>int</code>类型的转化</p>
 <p>解析它的参数解析器为<code>RequestParamMethodArgumentResolver</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Override</span><br><span class="line">public final Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,</span><br><span class="line">		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception &#123;</span><br><span class="line">	&#x2F;&#x2F;获取这个入参的参数类型</span><br><span class="line">	Class&lt;?&gt; paramType &#x3D; parameter.getParameterType();</span><br><span class="line">	&#x2F;&#x2F;获取@RequestParam的值</span><br><span class="line">	NamedValueInfo namedValueInfo &#x3D; getNamedValueInfo(parameter);</span><br><span class="line">	&#x2F;&#x2F;根据@RequestParam从request获取该参数的值</span><br><span class="line">	Object arg &#x3D; resolveName(namedValueInfo.name, parameter, webRequest);</span><br><span class="line">	if (arg &#x3D;&#x3D; null) &#123;</span><br><span class="line">		if (namedValueInfo.defaultValue !&#x3D; null) &#123;</span><br><span class="line">			arg &#x3D; resolveDefaultValue(namedValueInfo.defaultValue);</span><br><span class="line">		&#125;</span><br><span class="line">		else if (namedValueInfo.required &amp;&amp; !parameter.getParameterType().getName().equals(&quot;java.util.Optional&quot;)) &#123;</span><br><span class="line">			handleMissingValue(namedValueInfo.name, parameter);</span><br><span class="line">		&#125;</span><br><span class="line">		arg &#x3D; handleNullValue(namedValueInfo.name, arg, paramType);</span><br><span class="line">	&#125;</span><br><span class="line">	else if (&quot;&quot;.equals(arg) &amp;&amp; namedValueInfo.defaultValue !&#x3D; null) &#123;</span><br><span class="line">		arg &#x3D; resolveDefaultValue(namedValueInfo.defaultValue);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	if (binderFactory !&#x3D; null) &#123;</span><br><span class="line">		&#x2F;&#x2F;创建DataBinder</span><br><span class="line">		WebDataBinder binder &#x3D; binderFactory.createBinder(webRequest, null, namedValueInfo.name);</span><br><span class="line">		&#x2F;&#x2F;将从Request中获取的参数值转化为入参需要的类型paramType</span><br><span class="line">		arg &#x3D; binder.convertIfNecessary(arg, paramType, parameter);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	handleResolvedValue(arg, namedValueInfo.name, parameter, mavContainer, webRequest);</span><br><span class="line"></span><br><span class="line">	return arg;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">@Override
+public final Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception &#123;
+	&#x2F;&#x2F;获取这个入参的参数类型
+	Class&lt;?&gt; paramType &#x3D; parameter.getParameterType();
+	&#x2F;&#x2F;获取@RequestParam的值
+	NamedValueInfo namedValueInfo &#x3D; getNamedValueInfo(parameter);
+	&#x2F;&#x2F;根据@RequestParam从request获取该参数的值
+	Object arg &#x3D; resolveName(namedValueInfo.name, parameter, webRequest);
+	if (arg &#x3D;&#x3D; null) &#123;
+		if (namedValueInfo.defaultValue !&#x3D; null) &#123;
+			arg &#x3D; resolveDefaultValue(namedValueInfo.defaultValue);
+		&#125;
+		else if (namedValueInfo.required &amp;&amp; !parameter.getParameterType().getName().equals(&quot;java.util.Optional&quot;)) &#123;
+			handleMissingValue(namedValueInfo.name, parameter);
+		&#125;
+		arg &#x3D; handleNullValue(namedValueInfo.name, arg, paramType);
+	&#125;
+	else if (&quot;&quot;.equals(arg) &amp;&amp; namedValueInfo.defaultValue !&#x3D; null) &#123;
+		arg &#x3D; resolveDefaultValue(namedValueInfo.defaultValue);
+	&#125;
+
+	if (binderFactory !&#x3D; null) &#123;
+		&#x2F;&#x2F;创建DataBinder
+		WebDataBinder binder &#x3D; binderFactory.createBinder(webRequest, null, namedValueInfo.name);
+		&#x2F;&#x2F;将从Request中获取的参数值转化为入参需要的类型paramType
+		arg &#x3D; binder.convertIfNecessary(arg, paramType, parameter);
+	&#125;
+
+	handleResolvedValue(arg, namedValueInfo.name, parameter, mavContainer, webRequest);
+
+	return arg;
+&#125;</code></pre>
 
 <p>转化过程发生在<code>arg = binder.convertIfNecessary(arg, paramType, parameter);</code></p>
 <p>先看<code>DataBinder</code>初始化</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Override</span><br><span class="line">public final WebDataBinder createBinder(NativeWebRequest webRequest, Object target, String objectName)</span><br><span class="line">		throws Exception &#123;</span><br><span class="line">	WebDataBinder dataBinder &#x3D; createBinderInstance(target, objectName, webRequest);</span><br><span class="line">	if (this.initializer !&#x3D; null) &#123;</span><br><span class="line">		&#x2F;&#x2F;target为null的话，只将conversionservice注入到DataBinder</span><br><span class="line">		&#x2F;&#x2F;否则也一并注入到DataBinder内部变量BindingResult和它的</span><br><span class="line">		&#x2F;&#x2F;内部变量BeanWrapperImpl中</span><br><span class="line">		this.initializer.initBinder(dataBinder, webRequest);</span><br><span class="line">	&#125;</span><br><span class="line">	&#x2F;&#x2F;调用@InitBinder方法</span><br><span class="line">	initBinder(dataBinder, webRequest);</span><br><span class="line">	return dataBinder;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;调用的构造函数</span><br><span class="line">public DataBinder(Object target, String objectName) &#123;</span><br><span class="line">	if (target !&#x3D; null &amp;&amp; target.getClass().equals(javaUtilOptionalClass)) &#123;</span><br><span class="line">		this.target &#x3D; OptionalUnwrapper.unwrap(target);</span><br><span class="line">	&#125;</span><br><span class="line">	else &#123;</span><br><span class="line">		this.target &#x3D; target;</span><br><span class="line">	&#125;</span><br><span class="line">	this.objectName &#x3D; objectName;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">@Override
+public final WebDataBinder createBinder(NativeWebRequest webRequest, Object target, String objectName)
+		throws Exception &#123;
+	WebDataBinder dataBinder &#x3D; createBinderInstance(target, objectName, webRequest);
+	if (this.initializer !&#x3D; null) &#123;
+		&#x2F;&#x2F;target为null的话，只将conversionservice注入到DataBinder
+		&#x2F;&#x2F;否则也一并注入到DataBinder内部变量BindingResult和它的
+		&#x2F;&#x2F;内部变量BeanWrapperImpl中
+		this.initializer.initBinder(dataBinder, webRequest);
+	&#125;
+	&#x2F;&#x2F;调用@InitBinder方法
+	initBinder(dataBinder, webRequest);
+	return dataBinder;
+&#125;
+
+&#x2F;&#x2F;调用的构造函数
+public DataBinder(Object target, String objectName) &#123;
+	if (target !&#x3D; null &amp;&amp; target.getClass().equals(javaUtilOptionalClass)) &#123;
+		this.target &#x3D; OptionalUnwrapper.unwrap(target);
+	&#125;
+	else &#123;
+		this.target &#x3D; target;
+	&#125;
+	this.objectName &#x3D; objectName;
+&#125;</code></pre>
 
 <p>在这里<code>target</code>为<code>null</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Override</span><br><span class="line">public &lt;T&gt; T convertIfNecessary(Object value, Class&lt;T&gt; requiredType, MethodParameter methodParam)</span><br><span class="line">		throws TypeMismatchException &#123;</span><br><span class="line"></span><br><span class="line">	return getTypeConverter().convertIfNecessary(value, requiredType, methodParam);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">@Override
+public &lt;T&gt; T convertIfNecessary(Object value, Class&lt;T&gt; requiredType, MethodParameter methodParam)
+		throws TypeMismatchException &#123;
+
+	return getTypeConverter().convertIfNecessary(value, requiredType, methodParam);
+&#125;</code></pre>
 
 <p><code>getTypeConverter()</code>获取转换器</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">protected TypeConverter getTypeConverter() &#123;</span><br><span class="line">	if (getTarget() !&#x3D; null) &#123;</span><br><span class="line">		return getInternalBindingResult().getPropertyAccessor();</span><br><span class="line">	&#125;</span><br><span class="line">	else &#123;</span><br><span class="line">		return getSimpleTypeConverter();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">protected TypeConverter getTypeConverter() &#123;
+	if (getTarget() !&#x3D; null) &#123;
+		return getInternalBindingResult().getPropertyAccessor();
+	&#125;
+	else &#123;
+		return getSimpleTypeConverter();
+	&#125;
+&#125;</code></pre>
 
 <p>因为<code>target</code>为<code>null</code>，使用简单转换器</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">protected SimpleTypeConverter getSimpleTypeConverter() &#123;</span><br><span class="line">	if (this.typeConverter &#x3D;&#x3D; null) &#123;</span><br><span class="line">		&#x2F;&#x2F;创建typeConverter</span><br><span class="line">		this.typeConverter &#x3D; new SimpleTypeConverter();</span><br><span class="line">		if (this.conversionService !&#x3D; null) &#123;</span><br><span class="line">			&#x2F;&#x2F;注入conversionservice</span><br><span class="line">			this.typeConverter.setConversionService(this.conversionService);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	return this.typeConverter;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;构造函数</span><br><span class="line">public SimpleTypeConverter() &#123;</span><br><span class="line">	this.typeConverterDelegate &#x3D; new TypeConverterDelegate(this);</span><br><span class="line">	&#x2F;&#x2F;注册默认PropertyEditor</span><br><span class="line">	registerDefaultEditors();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">protected SimpleTypeConverter getSimpleTypeConverter() &#123;
+	if (this.typeConverter &#x3D;&#x3D; null) &#123;
+		&#x2F;&#x2F;创建typeConverter
+		this.typeConverter &#x3D; new SimpleTypeConverter();
+		if (this.conversionService !&#x3D; null) &#123;
+			&#x2F;&#x2F;注入conversionservice
+			this.typeConverter.setConversionService(this.conversionService);
+		&#125;
+	&#125;
+	return this.typeConverter;
+&#125;
+
+&#x2F;&#x2F;构造函数
+public SimpleTypeConverter() &#123;
+	this.typeConverterDelegate &#x3D; new TypeConverterDelegate(this);
+	&#x2F;&#x2F;注册默认PropertyEditor
+	registerDefaultEditors();
+&#125;</code></pre>
 
 <p>使用简单转换器进行类型转化</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Override</span><br><span class="line">public &lt;T&gt; T convertIfNecessary(Object value, Class&lt;T&gt; requiredType, MethodParameter methodParam)</span><br><span class="line">		throws TypeMismatchException &#123;</span><br><span class="line"></span><br><span class="line">	return doConvert(value, requiredType, methodParam, null);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">private &lt;T&gt; T doConvert(Object value, Class&lt;T&gt; requiredType, MethodParameter methodParam, Field field)</span><br><span class="line">		throws TypeMismatchException &#123;</span><br><span class="line">	try &#123;</span><br><span class="line">		if (field !&#x3D; null) &#123;</span><br><span class="line">			return this.typeConverterDelegate.convertIfNecessary(value, requiredType, field);</span><br><span class="line">		&#125;</span><br><span class="line">		else &#123;</span><br><span class="line">			return this.typeConverterDelegate.convertIfNecessary(value, requiredType, methodParam);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	catch (ConverterNotFoundException ex) &#123;</span><br><span class="line">		throw new ConversionNotSupportedException(value, requiredType, ex);</span><br><span class="line">	&#125;</span><br><span class="line">	catch (ConversionException ex) &#123;</span><br><span class="line">		throw new TypeMismatchException(value, requiredType, ex);</span><br><span class="line">	&#125;</span><br><span class="line">	catch (IllegalStateException ex) &#123;</span><br><span class="line">		throw new ConversionNotSupportedException(value, requiredType, ex);</span><br><span class="line">	&#125;</span><br><span class="line">	catch (IllegalArgumentException ex) &#123;</span><br><span class="line">		throw new TypeMismatchException(value, requiredType, ex);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">@Override
+public &lt;T&gt; T convertIfNecessary(Object value, Class&lt;T&gt; requiredType, MethodParameter methodParam)
+		throws TypeMismatchException &#123;
+
+	return doConvert(value, requiredType, methodParam, null);
+&#125;
+
+
+
+private &lt;T&gt; T doConvert(Object value, Class&lt;T&gt; requiredType, MethodParameter methodParam, Field field)
+		throws TypeMismatchException &#123;
+	try &#123;
+		if (field !&#x3D; null) &#123;
+			return this.typeConverterDelegate.convertIfNecessary(value, requiredType, field);
+		&#125;
+		else &#123;
+			return this.typeConverterDelegate.convertIfNecessary(value, requiredType, methodParam);
+		&#125;
+	&#125;
+	catch (ConverterNotFoundException ex) &#123;
+		throw new ConversionNotSupportedException(value, requiredType, ex);
+	&#125;
+	catch (ConversionException ex) &#123;
+		throw new TypeMismatchException(value, requiredType, ex);
+	&#125;
+	catch (IllegalStateException ex) &#123;
+		throw new ConversionNotSupportedException(value, requiredType, ex);
+	&#125;
+	catch (IllegalArgumentException ex) &#123;
+		throw new TypeMismatchException(value, requiredType, ex);
+	&#125;
+&#125;</code></pre>
 
 <p>调用<code>simpleTypeConverter</code>的成员变量<code>typeConverterDelegate</code>转换</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public &lt;T&gt; T convertIfNecessary(Object newValue, Class&lt;T&gt; requiredType, MethodParameter methodParam)</span><br><span class="line">		throws IllegalArgumentException &#123;</span><br><span class="line"></span><br><span class="line">	return convertIfNecessary(null, null, newValue, requiredType,</span><br><span class="line">			(methodParam !&#x3D; null ? new TypeDescriptor(methodParam) : TypeDescriptor.valueOf(requiredType)));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public &lt;T&gt; T convertIfNecessary(Object newValue, Class&lt;T&gt; requiredType, MethodParameter methodParam)
+		throws IllegalArgumentException &#123;
+
+	return convertIfNecessary(null, null, newValue, requiredType,
+			(methodParam !&#x3D; null ? new TypeDescriptor(methodParam) : TypeDescriptor.valueOf(requiredType)));
+&#125;</code></pre>
 
 <p>然后到关键代码，这里的<code>propertyEditorRegistry</code>指向的就是之前的<code>simpleTypeConverter</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public &lt;T&gt; T convertIfNecessary(String propertyName, Object oldValue, Object newValue,</span><br><span class="line">		Class&lt;T&gt; requiredType, TypeDescriptor typeDescriptor) throws IllegalArgumentException &#123;</span><br><span class="line"></span><br><span class="line">	Object convertedValue &#x3D; newValue;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F; Custom editor for this type?</span><br><span class="line">	&#x2F;&#x2F;查找我们通过@InitBinder注入的PropertyEditor适用吗</span><br><span class="line">	PropertyEditor editor &#x3D; this.propertyEditorRegistry.findCustomEditor(requiredType, propertyName);</span><br><span class="line"></span><br><span class="line">	ConversionFailedException firstAttemptEx &#x3D; null;</span><br><span class="line">	</span><br><span class="line">	&#x2F;&#x2F; No custom editor but custom ConversionService specified?</span><br><span class="line">	&#x2F;&#x2F;找不到则从conversionService中查找适用的&#96;Converter&#96;</span><br><span class="line">	ConversionService conversionService &#x3D; this.propertyEditorRegistry.getConversionService();</span><br><span class="line">	&#x2F;&#x2F;没有找到自定义的PropertyEditor时且conversionservice中有适用的converter</span><br><span class="line">	&#x2F;&#x2F;使用它来进行类型转换</span><br><span class="line">	if (editor &#x3D;&#x3D; null &amp;&amp; conversionService !&#x3D; null &amp;&amp; convertedValue !&#x3D; null &amp;&amp; typeDescriptor !&#x3D; null) &#123;</span><br><span class="line">		TypeDescriptor sourceTypeDesc &#x3D; TypeDescriptor.forObject(newValue);</span><br><span class="line">		TypeDescriptor targetTypeDesc &#x3D; typeDescriptor;</span><br><span class="line">		if (conversionService.canConvert(sourceTypeDesc, targetTypeDesc)) &#123;</span><br><span class="line">			try &#123;</span><br><span class="line">				return (T) conversionService.convert(convertedValue, sourceTypeDesc, targetTypeDesc);</span><br><span class="line">			&#125;</span><br><span class="line">			catch (ConversionFailedException ex) &#123;</span><br><span class="line">				&#x2F;&#x2F; fallback to default conversion logic below</span><br><span class="line">				firstAttemptEx &#x3D; ex;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F; Value not of required type?</span><br><span class="line">	&#x2F;&#x2F;自定义的PropertyEditor适用时或者值的类型不属于要转换的那个类型</span><br><span class="line">	if (editor !&#x3D; null || (requiredType !&#x3D; null &amp;&amp; !ClassUtils.isAssignableValue(requiredType, convertedValue))) &#123;</span><br><span class="line">		&#x2F;&#x2F;String转集合</span><br><span class="line">		if (requiredType !&#x3D; null &amp;&amp; Collection.class.isAssignableFrom(requiredType) &amp;&amp; convertedValue instanceof String) &#123;</span><br><span class="line">			TypeDescriptor elementType &#x3D; typeDescriptor.getElementTypeDescriptor();</span><br><span class="line">			if (elementType !&#x3D; null &amp;&amp; Enum.class.isAssignableFrom(elementType.getType())) &#123;</span><br><span class="line">				convertedValue &#x3D; StringUtils.commaDelimitedListToStringArray((String) convertedValue);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		&#x2F;&#x2F;自定义PropertyEditor和conversionservice中都没有适用的</span><br><span class="line">		&#x2F;&#x2F;从默认注册的PropertyEditor中查找</span><br><span class="line">		if (editor &#x3D;&#x3D; null) &#123;</span><br><span class="line">			editor &#x3D; findDefaultEditor(requiredType);</span><br><span class="line">		&#125;</span><br><span class="line">		&#x2F;&#x2F;进行转换，如果要转换的值convertedValue不属于String，转换用的是setValue方法</span><br><span class="line">		convertedValue &#x3D; doConvertValue(oldValue, convertedValue, requiredType, editor);</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	&#x2F;&#x2F;以上对值的转换完成，由Object类型的convertedValue接收转换好的值</span><br><span class="line">	boolean standardConversion &#x3D; false;</span><br><span class="line">	</span><br><span class="line">	&#x2F;&#x2F;以下应该是根据requiredType对转换好的值convertedValue进行再处理</span><br><span class="line">	if (requiredType !&#x3D; null) &#123;</span><br><span class="line">		&#x2F;&#x2F; Try to apply some standard type conversion rules if appropriate.</span><br><span class="line"></span><br><span class="line">		if (convertedValue !&#x3D; null) &#123;</span><br><span class="line">			if (Object.class.equals(requiredType)) &#123;</span><br><span class="line">				return (T) convertedValue;</span><br><span class="line">			&#125;</span><br><span class="line">			else if (requiredType.isArray()) &#123;</span><br><span class="line">				&#x2F;&#x2F; Array required -&gt; apply appropriate conversion of elements.</span><br><span class="line">				if (convertedValue instanceof String &amp;&amp; Enum.class.isAssignableFrom(requiredType.getComponentType())) &#123;</span><br><span class="line">					convertedValue &#x3D; StringUtils.commaDelimitedListToStringArray((String) convertedValue);</span><br><span class="line">				&#125;</span><br><span class="line">				return (T) convertToTypedArray(convertedValue, propertyName, requiredType.getComponentType());</span><br><span class="line">			&#125;</span><br><span class="line">			else if (convertedValue instanceof Collection) &#123;</span><br><span class="line">				&#x2F;&#x2F; Convert elements to target type, if determined.</span><br><span class="line">				convertedValue &#x3D; convertToTypedCollection(</span><br><span class="line">						(Collection&lt;?&gt;) convertedValue, propertyName, requiredType, typeDescriptor);</span><br><span class="line">				standardConversion &#x3D; true;</span><br><span class="line">			&#125;</span><br><span class="line">			else if (convertedValue instanceof Map) &#123;</span><br><span class="line">				&#x2F;&#x2F; Convert keys and values to respective target type, if determined.</span><br><span class="line">				convertedValue &#x3D; convertToTypedMap(</span><br><span class="line">						(Map&lt;?, ?&gt;) convertedValue, propertyName, requiredType, typeDescriptor);</span><br><span class="line">				standardConversion &#x3D; true;</span><br><span class="line">			&#125;</span><br><span class="line">			if (convertedValue.getClass().isArray() &amp;&amp; Array.getLength(convertedValue) &#x3D;&#x3D; 1) &#123;</span><br><span class="line">				convertedValue &#x3D; Array.get(convertedValue, 0);</span><br><span class="line">				standardConversion &#x3D; true;</span><br><span class="line">			&#125;</span><br><span class="line">			if (String.class.equals(requiredType) &amp;&amp; ClassUtils.isPrimitiveOrWrapper(convertedValue.getClass())) &#123;</span><br><span class="line">				&#x2F;&#x2F; We can stringify any primitive value...</span><br><span class="line">				return (T) convertedValue.toString();</span><br><span class="line">			&#125;</span><br><span class="line">			else if (convertedValue instanceof String &amp;&amp; !requiredType.isInstance(convertedValue)) &#123;</span><br><span class="line">				if (firstAttemptEx &#x3D;&#x3D; null &amp;&amp; !requiredType.isInterface() &amp;&amp; !requiredType.isEnum()) &#123;</span><br><span class="line">					try &#123;</span><br><span class="line">						Constructor&lt;T&gt; strCtor &#x3D; requiredType.getConstructor(String.class);</span><br><span class="line">						return BeanUtils.instantiateClass(strCtor, convertedValue);</span><br><span class="line">					&#125;</span><br><span class="line">					catch (NoSuchMethodException ex) &#123;</span><br><span class="line">						&#x2F;&#x2F; proceed with field lookup</span><br><span class="line">						if (logger.isTraceEnabled()) &#123;</span><br><span class="line">							logger.trace(&quot;No String constructor found on type [&quot; + requiredType.getName() + &quot;]&quot;, ex);</span><br><span class="line">						&#125;</span><br><span class="line">					&#125;</span><br><span class="line">					catch (Exception ex) &#123;</span><br><span class="line">						if (logger.isDebugEnabled()) &#123;</span><br><span class="line">							logger.debug(&quot;Construction via String failed for type [&quot; + requiredType.getName() + &quot;]&quot;, ex);</span><br><span class="line">						&#125;</span><br><span class="line">					&#125;</span><br><span class="line">				&#125;</span><br><span class="line">				String trimmedValue &#x3D; ((String) convertedValue).trim();</span><br><span class="line">				if (requiredType.isEnum() &amp;&amp; &quot;&quot;.equals(trimmedValue)) &#123;</span><br><span class="line">					&#x2F;&#x2F; It&#39;s an empty enum identifier: reset the enum value to null.</span><br><span class="line">					return null;</span><br><span class="line">				&#125;</span><br><span class="line">				convertedValue &#x3D; attemptToConvertStringToEnum(requiredType, trimmedValue, convertedValue);</span><br><span class="line">				standardConversion &#x3D; true;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		else &#123;</span><br><span class="line">			&#x2F;&#x2F; convertedValue &#x3D;&#x3D; null</span><br><span class="line">			if (javaUtilOptionalEmpty !&#x3D; null &amp;&amp; requiredType.equals(javaUtilOptionalEmpty.getClass())) &#123;</span><br><span class="line">				convertedValue &#x3D; javaUtilOptionalEmpty;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		if (!ClassUtils.isAssignableValue(requiredType, convertedValue)) &#123;</span><br><span class="line">			if (firstAttemptEx !&#x3D; null) &#123;</span><br><span class="line">				throw firstAttemptEx;</span><br><span class="line">			&#125;</span><br><span class="line">			&#x2F;&#x2F; Definitely doesn&#39;t match: throw IllegalArgumentException&#x2F;IllegalStateException</span><br><span class="line">			StringBuilder msg &#x3D; new StringBuilder();</span><br><span class="line">			msg.append(&quot;Cannot convert value of type [&quot;).append(ClassUtils.getDescriptiveType(newValue));</span><br><span class="line">			msg.append(&quot;] to required type [&quot;).append(ClassUtils.getQualifiedName(requiredType)).append(&quot;]&quot;);</span><br><span class="line">			if (propertyName !&#x3D; null) &#123;</span><br><span class="line">				msg.append(&quot; for property &#39;&quot;).append(propertyName).append(&quot;&#39;&quot;);</span><br><span class="line">			&#125;</span><br><span class="line">			if (editor !&#x3D; null) &#123;</span><br><span class="line">				msg.append(&quot;: PropertyEditor [&quot;).append(editor.getClass().getName()).append(</span><br><span class="line">						&quot;] returned inappropriate value of type [&quot;).append(</span><br><span class="line">						ClassUtils.getDescriptiveType(convertedValue)).append(&quot;]&quot;);</span><br><span class="line">				throw new IllegalArgumentException(msg.toString());</span><br><span class="line">			&#125;</span><br><span class="line">			else &#123;</span><br><span class="line">				msg.append(&quot;: no matching editors or conversion strategy found&quot;);</span><br><span class="line">				throw new IllegalStateException(msg.toString());</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	if (firstAttemptEx !&#x3D; null) &#123;</span><br><span class="line">		if (editor &#x3D;&#x3D; null &amp;&amp; !standardConversion &amp;&amp; requiredType !&#x3D; null &amp;&amp; !Object.class.equals(requiredType)) &#123;</span><br><span class="line">			throw firstAttemptEx;</span><br><span class="line">		&#125;</span><br><span class="line">		logger.debug(&quot;Original ConversionService attempt failed - ignored since &quot; +</span><br><span class="line">				&quot;PropertyEditor based conversion eventually succeeded&quot;, firstAttemptEx);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return (T) convertedValue;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public &lt;T&gt; T convertIfNecessary(String propertyName, Object oldValue, Object newValue,
+		Class&lt;T&gt; requiredType, TypeDescriptor typeDescriptor) throws IllegalArgumentException &#123;
+
+	Object convertedValue &#x3D; newValue;
+
+	&#x2F;&#x2F; Custom editor for this type?
+	&#x2F;&#x2F;查找我们通过@InitBinder注入的PropertyEditor适用吗
+	PropertyEditor editor &#x3D; this.propertyEditorRegistry.findCustomEditor(requiredType, propertyName);
+
+	ConversionFailedException firstAttemptEx &#x3D; null;
+	
+	&#x2F;&#x2F; No custom editor but custom ConversionService specified?
+	&#x2F;&#x2F;找不到则从conversionService中查找适用的&#96;Converter&#96;
+	ConversionService conversionService &#x3D; this.propertyEditorRegistry.getConversionService();
+	&#x2F;&#x2F;没有找到自定义的PropertyEditor时且conversionservice中有适用的converter
+	&#x2F;&#x2F;使用它来进行类型转换
+	if (editor &#x3D;&#x3D; null &amp;&amp; conversionService !&#x3D; null &amp;&amp; convertedValue !&#x3D; null &amp;&amp; typeDescriptor !&#x3D; null) &#123;
+		TypeDescriptor sourceTypeDesc &#x3D; TypeDescriptor.forObject(newValue);
+		TypeDescriptor targetTypeDesc &#x3D; typeDescriptor;
+		if (conversionService.canConvert(sourceTypeDesc, targetTypeDesc)) &#123;
+			try &#123;
+				return (T) conversionService.convert(convertedValue, sourceTypeDesc, targetTypeDesc);
+			&#125;
+			catch (ConversionFailedException ex) &#123;
+				&#x2F;&#x2F; fallback to default conversion logic below
+				firstAttemptEx &#x3D; ex;
+			&#125;
+		&#125;
+	&#125;
+
+	&#x2F;&#x2F; Value not of required type?
+	&#x2F;&#x2F;自定义的PropertyEditor适用时或者值的类型不属于要转换的那个类型
+	if (editor !&#x3D; null || (requiredType !&#x3D; null &amp;&amp; !ClassUtils.isAssignableValue(requiredType, convertedValue))) &#123;
+		&#x2F;&#x2F;String转集合
+		if (requiredType !&#x3D; null &amp;&amp; Collection.class.isAssignableFrom(requiredType) &amp;&amp; convertedValue instanceof String) &#123;
+			TypeDescriptor elementType &#x3D; typeDescriptor.getElementTypeDescriptor();
+			if (elementType !&#x3D; null &amp;&amp; Enum.class.isAssignableFrom(elementType.getType())) &#123;
+				convertedValue &#x3D; StringUtils.commaDelimitedListToStringArray((String) convertedValue);
+			&#125;
+		&#125;
+		&#x2F;&#x2F;自定义PropertyEditor和conversionservice中都没有适用的
+		&#x2F;&#x2F;从默认注册的PropertyEditor中查找
+		if (editor &#x3D;&#x3D; null) &#123;
+			editor &#x3D; findDefaultEditor(requiredType);
+		&#125;
+		&#x2F;&#x2F;进行转换，如果要转换的值convertedValue不属于String，转换用的是setValue方法
+		convertedValue &#x3D; doConvertValue(oldValue, convertedValue, requiredType, editor);
+	&#125;
+	
+	&#x2F;&#x2F;以上对值的转换完成，由Object类型的convertedValue接收转换好的值
+	boolean standardConversion &#x3D; false;
+	
+	&#x2F;&#x2F;以下应该是根据requiredType对转换好的值convertedValue进行再处理
+	if (requiredType !&#x3D; null) &#123;
+		&#x2F;&#x2F; Try to apply some standard type conversion rules if appropriate.
+
+		if (convertedValue !&#x3D; null) &#123;
+			if (Object.class.equals(requiredType)) &#123;
+				return (T) convertedValue;
+			&#125;
+			else if (requiredType.isArray()) &#123;
+				&#x2F;&#x2F; Array required -&gt; apply appropriate conversion of elements.
+				if (convertedValue instanceof String &amp;&amp; Enum.class.isAssignableFrom(requiredType.getComponentType())) &#123;
+					convertedValue &#x3D; StringUtils.commaDelimitedListToStringArray((String) convertedValue);
+				&#125;
+				return (T) convertToTypedArray(convertedValue, propertyName, requiredType.getComponentType());
+			&#125;
+			else if (convertedValue instanceof Collection) &#123;
+				&#x2F;&#x2F; Convert elements to target type, if determined.
+				convertedValue &#x3D; convertToTypedCollection(
+						(Collection&lt;?&gt;) convertedValue, propertyName, requiredType, typeDescriptor);
+				standardConversion &#x3D; true;
+			&#125;
+			else if (convertedValue instanceof Map) &#123;
+				&#x2F;&#x2F; Convert keys and values to respective target type, if determined.
+				convertedValue &#x3D; convertToTypedMap(
+						(Map&lt;?, ?&gt;) convertedValue, propertyName, requiredType, typeDescriptor);
+				standardConversion &#x3D; true;
+			&#125;
+			if (convertedValue.getClass().isArray() &amp;&amp; Array.getLength(convertedValue) &#x3D;&#x3D; 1) &#123;
+				convertedValue &#x3D; Array.get(convertedValue, 0);
+				standardConversion &#x3D; true;
+			&#125;
+			if (String.class.equals(requiredType) &amp;&amp; ClassUtils.isPrimitiveOrWrapper(convertedValue.getClass())) &#123;
+				&#x2F;&#x2F; We can stringify any primitive value...
+				return (T) convertedValue.toString();
+			&#125;
+			else if (convertedValue instanceof String &amp;&amp; !requiredType.isInstance(convertedValue)) &#123;
+				if (firstAttemptEx &#x3D;&#x3D; null &amp;&amp; !requiredType.isInterface() &amp;&amp; !requiredType.isEnum()) &#123;
+					try &#123;
+						Constructor&lt;T&gt; strCtor &#x3D; requiredType.getConstructor(String.class);
+						return BeanUtils.instantiateClass(strCtor, convertedValue);
+					&#125;
+					catch (NoSuchMethodException ex) &#123;
+						&#x2F;&#x2F; proceed with field lookup
+						if (logger.isTraceEnabled()) &#123;
+							logger.trace(&quot;No String constructor found on type [&quot; + requiredType.getName() + &quot;]&quot;, ex);
+						&#125;
+					&#125;
+					catch (Exception ex) &#123;
+						if (logger.isDebugEnabled()) &#123;
+							logger.debug(&quot;Construction via String failed for type [&quot; + requiredType.getName() + &quot;]&quot;, ex);
+						&#125;
+					&#125;
+				&#125;
+				String trimmedValue &#x3D; ((String) convertedValue).trim();
+				if (requiredType.isEnum() &amp;&amp; &quot;&quot;.equals(trimmedValue)) &#123;
+					&#x2F;&#x2F; It&#39;s an empty enum identifier: reset the enum value to null.
+					return null;
+				&#125;
+				convertedValue &#x3D; attemptToConvertStringToEnum(requiredType, trimmedValue, convertedValue);
+				standardConversion &#x3D; true;
+			&#125;
+		&#125;
+		else &#123;
+			&#x2F;&#x2F; convertedValue &#x3D;&#x3D; null
+			if (javaUtilOptionalEmpty !&#x3D; null &amp;&amp; requiredType.equals(javaUtilOptionalEmpty.getClass())) &#123;
+				convertedValue &#x3D; javaUtilOptionalEmpty;
+			&#125;
+		&#125;
+
+		if (!ClassUtils.isAssignableValue(requiredType, convertedValue)) &#123;
+			if (firstAttemptEx !&#x3D; null) &#123;
+				throw firstAttemptEx;
+			&#125;
+			&#x2F;&#x2F; Definitely doesn&#39;t match: throw IllegalArgumentException&#x2F;IllegalStateException
+			StringBuilder msg &#x3D; new StringBuilder();
+			msg.append(&quot;Cannot convert value of type [&quot;).append(ClassUtils.getDescriptiveType(newValue));
+			msg.append(&quot;] to required type [&quot;).append(ClassUtils.getQualifiedName(requiredType)).append(&quot;]&quot;);
+			if (propertyName !&#x3D; null) &#123;
+				msg.append(&quot; for property &#39;&quot;).append(propertyName).append(&quot;&#39;&quot;);
+			&#125;
+			if (editor !&#x3D; null) &#123;
+				msg.append(&quot;: PropertyEditor [&quot;).append(editor.getClass().getName()).append(
+						&quot;] returned inappropriate value of type [&quot;).append(
+						ClassUtils.getDescriptiveType(convertedValue)).append(&quot;]&quot;);
+				throw new IllegalArgumentException(msg.toString());
+			&#125;
+			else &#123;
+				msg.append(&quot;: no matching editors or conversion strategy found&quot;);
+				throw new IllegalStateException(msg.toString());
+			&#125;
+		&#125;
+	&#125;
+
+	if (firstAttemptEx !&#x3D; null) &#123;
+		if (editor &#x3D;&#x3D; null &amp;&amp; !standardConversion &amp;&amp; requiredType !&#x3D; null &amp;&amp; !Object.class.equals(requiredType)) &#123;
+			throw firstAttemptEx;
+		&#125;
+		logger.debug(&quot;Original ConversionService attempt failed - ignored since &quot; +
+				&quot;PropertyEditor based conversion eventually succeeded&quot;, firstAttemptEx);
+	&#125;
+
+	return (T) convertedValue;
+&#125;</code></pre>
 
 <p>至此，参数解析器中对参数进行类型转化完成，接着后面会用反射调用方法，将这个作为转化后的值作为入参</p>
 <p>当然这个属于单个属性的转换，我们经常会用到使用一个类来接收我们需要的多个属性参数，这种情况就使用到了<code>BeanWrapperImpl</code>这个类了，它继承了<code>AbstractPropertyAccessor</code>，可以对类中属性进行操作，同时它也有个形参<code>conversionservice</code>，和实现了接口<code>PropertyEditorRegistry</code>接口，有了给我们注入自定义<code>PropertyEditor</code>的功能</p>
@@ -411,8 +691,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/06/17/ReentrantReadWriteLock%E7%9A%84%E5%85%B1%E4%BA%AB%E9%94%81%E5%92%8C%E7%8B%AC%E4%BA%AB%E9%94%81/" rel="next" title="ReentrantReadWriteLock的共享锁和独享锁">
-                <i class="fa fa-chevron-left"></i> ReentrantReadWriteLock的共享锁和独享锁
+              <a href="/2020/06/17/ReentrantLock%E8%8E%B7%E5%8F%96%E9%94%81%E9%87%8A%E6%94%BE%E9%94%81%E6%BA%90%E7%A0%81/" rel="next" title="ReentrantLock获取锁释放锁源码">
+                <i class="fa fa-chevron-left"></i> ReentrantLock获取锁释放锁源码
               </a>
             
           </div>
@@ -421,8 +701,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2020/06/17/SpringMvc%E4%B8%ADHandler%E6%96%B9%E6%B3%95%E7%9A%84%E6%89%A7%E8%A1%8C/" rel="prev" title="SpringMVC中Handler方法的执行">
-                SpringMVC中Handler方法的执行 <i class="fa fa-chevron-right"></i>
+              <a href="/2020/06/17/ReentrantReadWriteLock%E7%9A%84%E5%85%B1%E4%BA%AB%E9%94%81%E5%92%8C%E7%8B%AC%E4%BA%AB%E9%94%81/" rel="prev" title="ReentrantReadWriteLock的共享锁和独享锁">
+                ReentrantReadWriteLock的共享锁和独享锁 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -760,7 +1040,7 @@
 
   
 
-  <link rel="stylesheet" href="/lib/prettify/skins/desert.css" type="text/css">
+  <link rel="stylesheet" href="/lib/prettify/skins/sunburst.css" type="text/css">
 <script src="/lib/prettify/prettify.js" type="text/javascript"></script>
 <script type="text/javascript">
   $(document).ready(function() {

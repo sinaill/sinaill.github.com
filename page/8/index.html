@@ -344,7 +344,10 @@
             <h3 id="运行环境"><a href="#运行环境" class="headerlink" title="运行环境"></a>运行环境</h3><p>系统：win10 1803 mysql版本：5.7.24 可视化管理工具：Navicat Premium</p>
 <h3 id="基本语句"><a href="#基本语句" class="headerlink" title="基本语句"></a>基本语句</h3><h4 id="建库，删库"><a href="#建库，删库" class="headerlink" title="建库，删库"></a>建库，删库</h4><p><code>CREATE DATABASE database-name</code></p>
 <p><code>drop database database-name</code></p>
-<h4 id="建表，删表"><a href="#建表，删表" class="headerlink" title="建表，删表"></a>建表，删表</h4><h5 id="建表模板"><a href="#建表模板" class="headerlink" title="建表模板"></a>建表模板</h5><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">create table 库名.表名(</span><br><span class="line">	字段名1 类型[(宽度) 约束条件],</span><br><span class="line">	···</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<h4 id="建表，删表"><a href="#建表，删表" class="headerlink" title="建表，删表"></a>建表，删表</h4><h5 id="建表模板"><a href="#建表模板" class="headerlink" title="建表模板"></a>建表模板</h5><pre><code class="highlight plain">create table 库名.表名(
+	字段名1 类型[(宽度) 约束条件],
+	···
+)</code></pre>
 
 <p><code>create table table_new like table_old</code></p>
 <h5 id="常用约束条件"><a href="#常用约束条件" class="headerlink" title="常用约束条件"></a>常用约束条件</h5><p><code>primary key (PK)</code> #标识该字段为该表的主键，可以唯一的标识记录，主键就是不为空且唯一当然其还有加速查询的作用<br><code>foreign key (FK)</code> #标识该字段为该表的外键，用来建立表与表的关联关系<br><code>not null</code> #标识该字段不能为空<br><code>unique key (UK)</code> #标识该字段的值是唯一的<br><code>auto_increment</code> #标识该字段的值自动增长（整数类型，而且为主键）<br><code>default</code> #为该字段设置默认值<br><code>unsigned</code> #将整型设置为无符号即正数<br><code>zerofill</code> #不够使用0进行填充</p>
@@ -753,7 +756,13 @@
       
         
           
-            <h3 id="获取链接Connection"><a href="#获取链接Connection" class="headerlink" title="获取链接Connection"></a>获取链接Connection</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">String driver &#x3D; &quot;com.mysql.jdbc.Driver&quot;;</span><br><span class="line">String url &#x3D; &quot;jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;test?useSSL&#x3D;false&amp;useUnicode&#x3D;true&amp;characterEncoding&#x3D;UTF-8&quot;;&#x2F;&#x2F;防止中文乱码</span><br><span class="line">String userName &#x3D; &quot;root&quot;;</span><br><span class="line">String passWord &#x3D; &quot;password&quot;;</span><br><span class="line">Connection con &#x3D; null;</span><br><span class="line">Class.forName(driver);&#x2F;&#x2F;加载驱动</span><br><span class="line">con &#x3D; (Connection) DriverManager.getConnection(url, userName, passWord);&#x2F;&#x2F;获取链接</span><br></pre></td></tr></table></figure>
+            <h3 id="获取链接Connection"><a href="#获取链接Connection" class="headerlink" title="获取链接Connection"></a>获取链接Connection</h3><pre><code class="highlight plain">String driver &#x3D; &quot;com.mysql.jdbc.Driver&quot;;
+String url &#x3D; &quot;jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;test?useSSL&#x3D;false&amp;useUnicode&#x3D;true&amp;characterEncoding&#x3D;UTF-8&quot;;&#x2F;&#x2F;防止中文乱码
+String userName &#x3D; &quot;root&quot;;
+String passWord &#x3D; &quot;password&quot;;
+Connection con &#x3D; null;
+Class.forName(driver);&#x2F;&#x2F;加载驱动
+con &#x3D; (Connection) DriverManager.getConnection(url, userName, passWord);&#x2F;&#x2F;获取链接</code></pre>
 
 <h3 id="preparestatement和statement"><a href="#preparestatement和statement" class="headerlink" title="preparestatement和statement"></a>preparestatement和statement</h3><p>使用preparestatement的优点：</p>
 <ol>
@@ -762,174 +771,105 @@
 <li>防止恶意sql语法传入非法参数</li>
 </ol>
 <h3 id="增删改查"><a href="#增删改查" class="headerlink" title="增删改查"></a>增删改查</h3><p>创建数据库如下：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">create table person(</span><br><span class="line">	id int auto_increment primary key,</span><br><span class="line">	name varchar(255),</span><br><span class="line">	age int)default charset&#x3D;utf8;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">create table person(
+	id int auto_increment primary key,
+	name varchar(255),
+	age int)default charset&#x3D;utf8;</code></pre>
 <p>新增数据：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Connection con &#x3D; getCon();</span><br><span class="line">PreparedStatement psmt &#x3D; null;</span><br><span class="line"></span><br><span class="line">String sql &#x3D; &quot;insert into person(name,age) values(?,?)&quot;;</span><br><span class="line"></span><br><span class="line">try &#123;</span><br><span class="line">	psmt &#x3D; con.prepareStatement(sql);</span><br><span class="line">	psmt.setString(1, &quot;小张&quot;);</span><br><span class="line">	psmt.setInt(2, 10);</span><br><span class="line">	psmt.executeUpdate();</span><br><span class="line">	psmt.close();</span><br><span class="line">	con.close();</span><br><span class="line">&#125; catch (SQLException e) &#123;</span><br><span class="line">	&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">	e.printStackTrace();</span><br><span class="line">&#125;</span><br><span class="line">System.out.println(&quot;插入成功&quot;);</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">Connection con &#x3D; getCon();
+PreparedStatement psmt &#x3D; null;
+
+String sql &#x3D; &quot;insert into person(name,age) values(?,?)&quot;;
+
+try &#123;
+	psmt &#x3D; con.prepareStatement(sql);
+	psmt.setString(1, &quot;小张&quot;);
+	psmt.setInt(2, 10);
+	psmt.executeUpdate();
+	psmt.close();
+	con.close();
+&#125; catch (SQLException e) &#123;
+	&#x2F;&#x2F; TODO Auto-generated catch block
+	e.printStackTrace();
+&#125;
+System.out.println(&quot;插入成功&quot;);</code></pre>
 
 <p>删除数据：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">String sql &#x3D; &quot;delete from person where id &#x3D; ?&quot;;</span><br><span class="line">try &#123;</span><br><span class="line">	psmt &#x3D; con.prepareStatement(sql);</span><br><span class="line">	psmt.setInt(1, 1);</span><br><span class="line">	psmt.executeUpdate();</span><br><span class="line">	psmt.close();</span><br><span class="line">	con.close();</span><br><span class="line">&#125; catch (SQLException e) &#123;</span><br><span class="line">	&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">	e.printStackTrace();</span><br><span class="line">&#125;</span><br><span class="line">System.out.println(&quot;删除成功&quot;);</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">String sql &#x3D; &quot;delete from person where id &#x3D; ?&quot;;
+try &#123;
+	psmt &#x3D; con.prepareStatement(sql);
+	psmt.setInt(1, 1);
+	psmt.executeUpdate();
+	psmt.close();
+	con.close();
+&#125; catch (SQLException e) &#123;
+	&#x2F;&#x2F; TODO Auto-generated catch block
+	e.printStackTrace();
+&#125;
+System.out.println(&quot;删除成功&quot;);</code></pre>
 
 <p>修改数据：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">String sql &#x3D; &quot;update person set age&#x3D;? where id&#x3D;2&quot;;</span><br><span class="line">try &#123;</span><br><span class="line">	psmt &#x3D; con.prepareStatement(sql);</span><br><span class="line">	psmt.setInt(1, 20);</span><br><span class="line">	psmt.executeUpdate();</span><br><span class="line">	psmt.close();</span><br><span class="line">	con.close();</span><br><span class="line">&#125; catch (SQLException e) &#123;</span><br><span class="line">	&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">	e.printStackTrace();</span><br><span class="line">&#125;</span><br><span class="line">System.out.println(&quot;修改成功&quot;);</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">String sql &#x3D; &quot;update person set age&#x3D;? where id&#x3D;2&quot;;
+try &#123;
+	psmt &#x3D; con.prepareStatement(sql);
+	psmt.setInt(1, 20);
+	psmt.executeUpdate();
+	psmt.close();
+	con.close();
+&#125; catch (SQLException e) &#123;
+	&#x2F;&#x2F; TODO Auto-generated catch block
+	e.printStackTrace();
+&#125;
+System.out.println(&quot;修改成功&quot;);</code></pre>
 
 <p>查找数据：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">String sql &#x3D; &quot;select * from person where id &#x3D; 2&quot;;</span><br><span class="line">try &#123;</span><br><span class="line">	psmt &#x3D; con.prepareStatement(sql);</span><br><span class="line">	ResultSet rs &#x3D; psmt.executeQuery();</span><br><span class="line">	while (rs.next()) &#123;</span><br><span class="line">		int id &#x3D; rs.getInt(&quot;id&quot;);</span><br><span class="line">		String name &#x3D; rs.getString(&quot;name&quot;);</span><br><span class="line">		int age &#x3D; rs.getInt(&quot;age&quot;);</span><br><span class="line">		System.out.println(&quot;id:&quot;+id+&quot; name:&quot;+name+&quot; age:&quot;+age);</span><br><span class="line">	&#125;</span><br><span class="line">&#125; catch (SQLException e) &#123;</span><br><span class="line">	&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">	e.printStackTrace();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">String sql &#x3D; &quot;select * from person where id &#x3D; 2&quot;;
+try &#123;
+	psmt &#x3D; con.prepareStatement(sql);
+	ResultSet rs &#x3D; psmt.executeQuery();
+	while (rs.next()) &#123;
+		int id &#x3D; rs.getInt(&quot;id&quot;);
+		String name &#x3D; rs.getString(&quot;name&quot;);
+		int age &#x3D; rs.getInt(&quot;age&quot;);
+		System.out.println(&quot;id:&quot;+id+&quot; name:&quot;+name+&quot; age:&quot;+age);
+	&#125;
+&#125; catch (SQLException e) &#123;
+	&#x2F;&#x2F; TODO Auto-generated catch block
+	e.printStackTrace();
+&#125;</code></pre>
 
 <h3 id="批量处理"><a href="#批量处理" class="headerlink" title="批量处理"></a>批量处理</h3><h4 id="preparestatement"><a href="#preparestatement" class="headerlink" title="preparestatement"></a>preparestatement</h4><p>只能批量进行相同操作，批量插入：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">String sql &#x3D; &quot;insert into person(name,age) values(?,?)&quot;;</span><br><span class="line">try &#123;</span><br><span class="line">	psmt &#x3D; con.prepareStatement(sql);</span><br><span class="line">	for (int i &#x3D; 0; i &lt; 100; i++) &#123;</span><br><span class="line">		psmt.setString(1, &quot;李&quot;+i);</span><br><span class="line">		psmt.setInt(2, i);</span><br><span class="line">		psmt.addBatch();</span><br><span class="line">	&#125;</span><br><span class="line">	psmt.executeBatch();</span><br><span class="line">	psmt.close();</span><br><span class="line">	con.close();</span><br><span class="line">&#125; catch (SQLException e) &#123;</span><br><span class="line">	&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">	e.printStackTrace();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">String sql &#x3D; &quot;insert into person(name,age) values(?,?)&quot;;
+try &#123;
+	psmt &#x3D; con.prepareStatement(sql);
+	for (int i &#x3D; 0; i &lt; 100; i++) &#123;
+		psmt.setString(1, &quot;李&quot;+i);
+		psmt.setInt(2, i);
+		psmt.addBatch();
+	&#125;
+	psmt.executeBatch();
+	psmt.close();
+	con.close();
+&#125; catch (SQLException e) &#123;
+	&#x2F;&#x2F; TODO Auto-generated catch block
+	e.printStackTrace();
+&#125;</code></pre>
 
 <h4 id="statement"><a href="#statement" class="headerlink" title="statement"></a>statement</h4><p>可以批量执行不同类型操作，批量操作：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Statement st &#x3D; null;</span><br><span class="line">try &#123;</span><br><span class="line">	st &#x3D; con.createStatement();</span><br><span class="line">	String sql1 &#x3D; &quot;delete from person where id&gt;2 and id&lt;103&quot;;</span><br><span class="line">	String sql2 &#x3D; &quot;insert into person(name,age) values(&#39;小李	&#39;,&#39;50&#39;)&quot;;</span><br><span class="line">	st.addBatch(sql1);</span><br><span class="line">	st.addBatch(sql2);</span><br><span class="line">	st.executeBatch();</span><br><span class="line">	st.close();</span><br><span class="line">	con.close();</span><br><span class="line">&#125; catch (SQLException e) &#123;</span><br><span class="line">	&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">	e.printStackTrace();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/ModelAttribute%E6%B3%A8%E8%A7%A3%E7%AC%94%E8%AE%B0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/ModelAttribute%E6%B3%A8%E8%A7%A3%E7%AC%94%E8%AE%B0/" itemprop="url">ModelAttribute注解笔记</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
-                    <span itemprop="name">框架</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><p>@ModelAttribute.这个注解可以用在方法参数上，或是方法声明上。这个注解的主要作用是绑定request或是form参数到模型对象。可以使用保存在request或session中的对象来组装模型对象。注意，被@ModelAttribute注解的方法会在controller方法（@RequestMapping注解的）之前执行。因为模型对象要先于controller方法之前创建。</p>
-<h3 id="笔记"><a href="#笔记" class="headerlink" title="笔记"></a>笔记</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">	@ModelAttribute</span><br><span class="line">	public Person mda() &#123;</span><br><span class="line">		return new Person(&quot;zh&quot;, 14);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@RequestMapping(&quot;&#x2F;test&quot;)</span><br><span class="line">	public ModelAndView test(@ModelAttribute Person person,Model model) &#123;</span><br><span class="line">		ModelAndView mov &#x3D; new ModelAndView(&quot;param&quot;);</span><br><span class="line">		System.out.println(model.containsAttribute(&quot;person&quot;));</span><br><span class="line">		mov.addObject(&quot;person&quot;, person);</span><br><span class="line">		return mov;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F;或者</span><br><span class="line"></span><br><span class="line">	@ModelAttribute(&quot;attr&quot;)</span><br><span class="line">	public void mda(Map map) &#123;</span><br><span class="line">&#x2F;&#x2F;		Person person &#x3D; new Person(&quot;li&quot;, 12);</span><br><span class="line">		map.put(&quot;person&quot;, new Person(&quot;zh&quot;, 14));</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
-
-<ol>
-<li>注解可以指定名称，如果没有指定，则以类名首字母小写为名字，若注解指定了名字，则在形参前面的ModelAttribute也要带上已指定的名字</li>
-<li>在ModelAttribute中使用Map,Model保存的数据，可以在controller中的Map或Model获取</li>
-<li>主要用来填充表格，当jsp页面表单项不包含该类所有属性时，可以先在ModelAttribute中根据相应变量先从数据库取出数据，然后表单数据提交到controller中对应方法时，覆盖用ModelAttribute注解修饰的形参，达到自动填充形参所有数据</li>
-<li><a href="https://blog.csdn.net/m0_37893932/article/details/78327972" target="_blank" rel="noopener">关于SessionAttribute,当Model中找不到时转到Session中查找</a></li>
-</ol>
-
+<pre><code class="highlight plain">Statement st &#x3D; null;
+try &#123;
+	st &#x3D; con.createStatement();
+	String sql1 &#x3D; &quot;delete from person where id&gt;2 and id&lt;103&quot;;
+	String sql2 &#x3D; &quot;insert into person(name,age) values(&#39;小李	&#39;,&#39;50&#39;)&quot;;
+	st.addBatch(sql1);
+	st.addBatch(sql2);
+	st.executeBatch();
+	st.close();
+	con.close();
+&#125; catch (SQLException e) &#123;
+	&#x2F;&#x2F; TODO Auto-generated catch block
+	e.printStackTrace();
+&#125;</code></pre>
           
         
       
@@ -1071,30 +1011,126 @@
         
           
             <p>使用LRU时，我们要用到这个构造函数</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * Constructs an empty &lt;tt&gt;LinkedHashMap&lt;&#x2F;tt&gt; instance with the</span><br><span class="line"> * specified initial capacity, load factor and ordering mode.</span><br><span class="line"> *</span><br><span class="line"> * @param  initialCapacity the initial capacity</span><br><span class="line"> * @param  loadFactor      the load factor</span><br><span class="line"> * @param  accessOrder     the ordering mode - &lt;tt&gt;true&lt;&#x2F;tt&gt; for</span><br><span class="line"> *         access-order, &lt;tt&gt;false&lt;&#x2F;tt&gt; for insertion-order</span><br><span class="line"> * @throws IllegalArgumentException if the initial capacity is negative</span><br><span class="line"> *         or the load factor is nonpositive</span><br><span class="line"> *&#x2F;</span><br><span class="line">public LinkedHashMap(int initialCapacity,</span><br><span class="line">                     float loadFactor,</span><br><span class="line">                     boolean accessOrder) &#123;</span><br><span class="line">    super(initialCapacity, loadFactor);</span><br><span class="line">    this.accessOrder &#x3D; accessOrder;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">&#x2F;**
+ * Constructs an empty &lt;tt&gt;LinkedHashMap&lt;&#x2F;tt&gt; instance with the
+ * specified initial capacity, load factor and ordering mode.
+ *
+ * @param  initialCapacity the initial capacity
+ * @param  loadFactor      the load factor
+ * @param  accessOrder     the ordering mode - &lt;tt&gt;true&lt;&#x2F;tt&gt; for
+ *         access-order, &lt;tt&gt;false&lt;&#x2F;tt&gt; for insertion-order
+ * @throws IllegalArgumentException if the initial capacity is negative
+ *         or the load factor is nonpositive
+ *&#x2F;
+public LinkedHashMap(int initialCapacity,
+                     float loadFactor,
+                     boolean accessOrder) &#123;
+    super(initialCapacity, loadFactor);
+    this.accessOrder &#x3D; accessOrder;
+&#125;</code></pre>
 
 <p>对于变量accessOrder，传入false时，集合中元素顺序基于插入顺序，传入true是，集合中元素基于访问顺序</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">LinkedHashMap&lt;Integer, String&gt; lhm &#x3D; new LinkedHashMap&lt;Integer,String&gt;(8, 0.75f, true);</span><br><span class="line">lhm.put(3, &quot;3&quot;);</span><br><span class="line">lhm.put(2, &quot;2&quot;);</span><br><span class="line">lhm.put(1, &quot;1&quot;);</span><br><span class="line">lhm.put(6, &quot;6&quot;);</span><br><span class="line">lhm.put(5, &quot;5&quot;);</span><br><span class="line">lhm.put(4, &quot;4&quot;);</span><br><span class="line">lhm.get(2);</span><br><span class="line">lhm.forEach((a,b)-&gt;System.out.println(a));</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">LinkedHashMap&lt;Integer, String&gt; lhm &#x3D; new LinkedHashMap&lt;Integer,String&gt;(8, 0.75f, true);
+lhm.put(3, &quot;3&quot;);
+lhm.put(2, &quot;2&quot;);
+lhm.put(1, &quot;1&quot;);
+lhm.put(6, &quot;6&quot;);
+lhm.put(5, &quot;5&quot;);
+lhm.put(4, &quot;4&quot;);
+lhm.get(2);
+lhm.forEach((a,b)-&gt;System.out.println(a));</code></pre>
 
 <p>得到输出</p>
 <p><code>3 1 6 5 4 2</code></p>
 <p>查看get方法</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public V get(Object key) &#123;</span><br><span class="line">    Node&lt;K,V&gt; e;</span><br><span class="line">    if ((e &#x3D; getNode(hash(key), key)) &#x3D;&#x3D; null)</span><br><span class="line">        return null;</span><br><span class="line">    if (accessOrder)&#x2F;&#x2F;access为true时，将访问元素放到尾部</span><br><span class="line">        afterNodeAccess(e);</span><br><span class="line">    return e.value;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"> void afterNodeAccess(Node&lt;K,V&gt; e) &#123; &#x2F;&#x2F; move node to last</span><br><span class="line">    LinkedHashMap.Entry&lt;K,V&gt; last;</span><br><span class="line">    if (accessOrder &amp;&amp; (last &#x3D; tail) !&#x3D; e) &#123;</span><br><span class="line">        LinkedHashMap.Entry&lt;K,V&gt; p &#x3D;</span><br><span class="line">            (LinkedHashMap.Entry&lt;K,V&gt;)e, b &#x3D; p.before, a &#x3D; p.after;</span><br><span class="line">        p.after &#x3D; null;</span><br><span class="line">        if (b &#x3D;&#x3D; null)</span><br><span class="line">            head &#x3D; a;</span><br><span class="line">        else</span><br><span class="line">            b.after &#x3D; a;</span><br><span class="line">        if (a !&#x3D; null)</span><br><span class="line">            a.before &#x3D; b;</span><br><span class="line">        else</span><br><span class="line">            last &#x3D; b;</span><br><span class="line">        if (last &#x3D;&#x3D; null)</span><br><span class="line">            head &#x3D; p;</span><br><span class="line">        else &#123;</span><br><span class="line">            p.before &#x3D; last;</span><br><span class="line">            last.after &#x3D; p;</span><br><span class="line">        &#125;</span><br><span class="line">        tail &#x3D; p;</span><br><span class="line">        ++modCount;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public V get(Object key) &#123;
+    Node&lt;K,V&gt; e;
+    if ((e &#x3D; getNode(hash(key), key)) &#x3D;&#x3D; null)
+        return null;
+    if (accessOrder)&#x2F;&#x2F;access为true时，将访问元素放到尾部
+        afterNodeAccess(e);
+    return e.value;
+&#125;
+
+ void afterNodeAccess(Node&lt;K,V&gt; e) &#123; &#x2F;&#x2F; move node to last
+    LinkedHashMap.Entry&lt;K,V&gt; last;
+    if (accessOrder &amp;&amp; (last &#x3D; tail) !&#x3D; e) &#123;
+        LinkedHashMap.Entry&lt;K,V&gt; p &#x3D;
+            (LinkedHashMap.Entry&lt;K,V&gt;)e, b &#x3D; p.before, a &#x3D; p.after;
+        p.after &#x3D; null;
+        if (b &#x3D;&#x3D; null)
+            head &#x3D; a;
+        else
+            b.after &#x3D; a;
+        if (a !&#x3D; null)
+            a.before &#x3D; b;
+        else
+            last &#x3D; b;
+        if (last &#x3D;&#x3D; null)
+            head &#x3D; p;
+        else &#123;
+            p.before &#x3D; last;
+            last.after &#x3D; p;
+        &#125;
+        tail &#x3D; p;
+        ++modCount;
+    &#125;
+&#125;</code></pre>
 
 <p>调用get节点访问元素后，会继续调用afterNodeAccess将元素移动到尾部，要实现LinkedHashMap中元素个数大于容量*负载因子时，删除头部，即最近最少被访问的元素,先查看put方法，找到关键代码</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">if (++size &gt; threshold)</span><br><span class="line">    resize();</span><br><span class="line">afterNodeInsertion(evict);</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">if (++size &gt; threshold)
+    resize();
+afterNodeInsertion(evict);</code></pre>
 
 <p>进入该方法：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">void afterNodeInsertion(boolean evict) &#123; &#x2F;&#x2F; possibly remove eldest</span><br><span class="line">    LinkedHashMap.Entry&lt;K,V&gt; first;</span><br><span class="line">    if (evict &amp;&amp; (first &#x3D; head) !&#x3D; null &amp;&amp; removeEldestEntry(first)) &#123;</span><br><span class="line">        K key &#x3D; first.key;</span><br><span class="line">        removeNode(hash(key), key, null, false, true);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">void afterNodeInsertion(boolean evict) &#123; &#x2F;&#x2F; possibly remove eldest
+    LinkedHashMap.Entry&lt;K,V&gt; first;
+    if (evict &amp;&amp; (first &#x3D; head) !&#x3D; null &amp;&amp; removeEldestEntry(first)) &#123;
+        K key &#x3D; first.key;
+        removeNode(hash(key), key, null, false, true);
+    &#125;
+&#125;</code></pre>
 
 <p>发现removeEldestEntry(first)，接着查看removeEldestEntry(first)</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">protected boolean removeEldestEntry(Map.Entry&lt;K,V&gt; eldest) &#123;</span><br><span class="line">    return false;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">protected boolean removeEldestEntry(Map.Entry&lt;K,V&gt; eldest) &#123;
+    return false;
+&#125;</code></pre>
 
 <p>方法总是放回一个false，所以要实现移除头部，需要覆写本方法，我们新定义一个类继承LinkedHashMap</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class MyLinkedHashMap&lt;K,V&gt; extends LinkedHashMap&lt;K, V&gt;&#123;</span><br><span class="line">	&#x2F;**</span><br><span class="line">	 * </span><br><span class="line">	 *&#x2F;</span><br><span class="line">	private static final long serialVersionUID &#x3D; 1L;</span><br><span class="line">	private int MaxSize;</span><br><span class="line"></span><br><span class="line">	public MyLinkedHashMap(int capacity,float factor,boolean accessOrder,int MaxSize)&#123;</span><br><span class="line">		super(capacity,factor,accessOrder);</span><br><span class="line">		this.MaxSize &#x3D; MaxSize;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	&#x2F;* (non-Javadoc)</span><br><span class="line">	 * @see java.util.LinkedHashMap#removeEldestEntry(java.util.Map.Entry)</span><br><span class="line">	 *&#x2F;</span><br><span class="line">	@Override</span><br><span class="line">	protected boolean removeEldestEntry(Entry&lt;K, V&gt; eldest) &#123;</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated method stub</span><br><span class="line">		return this.size()&gt;MaxSize;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">class MyLinkedHashMap&lt;K,V&gt; extends LinkedHashMap&lt;K, V&gt;&#123;
+	&#x2F;**
+	 * 
+	 *&#x2F;
+	private static final long serialVersionUID &#x3D; 1L;
+	private int MaxSize;
+
+	public MyLinkedHashMap(int capacity,float factor,boolean accessOrder,int MaxSize)&#123;
+		super(capacity,factor,accessOrder);
+		this.MaxSize &#x3D; MaxSize;
+	&#125;
+
+	&#x2F;* (non-Javadoc)
+	 * @see java.util.LinkedHashMap#removeEldestEntry(java.util.Map.Entry)
+	 *&#x2F;
+	@Override
+	protected boolean removeEldestEntry(Entry&lt;K, V&gt; eldest) &#123;
+		&#x2F;&#x2F; TODO Auto-generated method stub
+		return this.size()&gt;MaxSize;
+	&#125;
+	
+	
+&#125;</code></pre>
 
 <p>构造方法调用父类上文提到那个，再加一个MaxSize表示集合元素最大个数，在removeEldestEntry方法中比较size和MaxSize大小，这样当集合中元素个数size超过设定最大个数MaxSize时，就会触发removeNode，移除头结点即最近最少使用的元素</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">LinkedHashMap&lt;Integer, String&gt; lhm &#x3D; new MyLinkedHashMap&lt;Integer,String&gt;(8, 0.75f, true,6);</span><br><span class="line">lhm.put(3, &quot;3&quot;);</span><br><span class="line">lhm.put(2, &quot;2&quot;);</span><br><span class="line">lhm.put(1, &quot;1&quot;);</span><br><span class="line">lhm.put(6, &quot;6&quot;);</span><br><span class="line">lhm.put(5, &quot;5&quot;);</span><br><span class="line">lhm.put(4, &quot;4&quot;);</span><br><span class="line">lhm.put(7,&quot;7&quot;);</span><br><span class="line">lhm.forEach((a,b)-&gt;System.out.println(a+&quot; &quot;+b));</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">LinkedHashMap&lt;Integer, String&gt; lhm &#x3D; new MyLinkedHashMap&lt;Integer,String&gt;(8, 0.75f, true,6);
+lhm.put(3, &quot;3&quot;);
+lhm.put(2, &quot;2&quot;);
+lhm.put(1, &quot;1&quot;);
+lhm.put(6, &quot;6&quot;);
+lhm.put(5, &quot;5&quot;);
+lhm.put(4, &quot;4&quot;);
+lhm.put(7,&quot;7&quot;);
+lhm.forEach((a,b)-&gt;System.out.println(a+&quot; &quot;+b));</code></pre>
 
 <p>输出</p>
 <p><code>2 1 6 5 4 7</code></p>
@@ -1147,7 +1183,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/InnerClass/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/ModelAttribute%E6%B3%A8%E8%A7%A3%E7%AC%94%E8%AE%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="sinaill">
@@ -1166,7 +1202,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/06/17/InnerClass/" itemprop="url">内部类</a></h1>
+                <a class="post-title-link" href="/2020/06/17/ModelAttribute%E6%B3%A8%E8%A7%A3%E7%AC%94%E8%AE%B0/" itemprop="url">ModelAttribute注解笔记</a></h1>
         
 
         <div class="post-meta">
@@ -1201,8 +1237,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
+                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">框架</span>
                   </a>
                 </span>
 
@@ -1240,42 +1276,34 @@
       
         
           
-            <h3 id="成员内部类"><a href="#成员内部类" class="headerlink" title="成员内部类"></a>成员内部类</h3><p>成员内部类是最普通的内部类，它在另一个类内部被定义，结构为</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Outter&#123;</span><br><span class="line"></span><br><span class="line">	class Inner&#123;</span><br><span class="line">	</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+            <h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><p>@ModelAttribute.这个注解可以用在方法参数上，或是方法声明上。这个注解的主要作用是绑定request或是form参数到模型对象。可以使用保存在request或session中的对象来组装模型对象。注意，被@ModelAttribute注解的方法会在controller方法（@RequestMapping注解的）之前执行。因为模型对象要先于controller方法之前创建。</p>
+<h3 id="笔记"><a href="#笔记" class="headerlink" title="笔记"></a>笔记</h3><pre><code class="highlight plain">	@ModelAttribute
+	public Person mda() &#123;
+		return new Person(&quot;zh&quot;, 14);
+	&#125;
 
-<p>实例化内部类的方法为:</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Outter.Inner inner &#x3D; new Outter().new Inner();</span><br></pre></td></tr></table></figure>
+	@RequestMapping(&quot;&#x2F;test&quot;)
+	public ModelAndView test(@ModelAttribute Person person,Model model) &#123;
+		ModelAndView mov &#x3D; new ModelAndView(&quot;param&quot;);
+		System.out.println(model.containsAttribute(&quot;person&quot;));
+		mov.addObject(&quot;person&quot;, person);
+		return mov;
+	&#125;
+
+	&#x2F;&#x2F;或者
+
+	@ModelAttribute(&quot;attr&quot;)
+	public void mda(Map map) &#123;
+&#x2F;&#x2F;		Person person &#x3D; new Person(&quot;li&quot;, 12);
+		map.put(&quot;person&quot;, new Person(&quot;zh&quot;, 14));
+	&#125;</code></pre>
 
 <ol>
-<li><p>内部类中可以访问到外部类中所有方法和成员变量，即使是private或者static，同理外部类也可以访问私有内部类的成员变量</p>
-</li>
-<li><p><strong>普通内部类中不能定义static变量和方法，但可以定义静态常量</strong></p>
-</li>
-<li><p>外部类要访问内部类变量，必须先实例化一个内部类</p>
-</li>
-<li><p>静态内部类的访问可以直接用Outter.Inner(初始化时new Outter.Inner())，访问内部类静态成员变量Outter.Inner.valueName</p>
-</li>
-<li><p>静态内部类不能访问外部类的属性方法</p>
-</li>
+<li>注解可以指定名称，如果没有指定，则以类名首字母小写为名字，若注解指定了名字，则在形参前面的ModelAttribute也要带上已指定的名字</li>
+<li>在ModelAttribute中使用Map,Model保存的数据，可以在controller中的Map或Model获取</li>
+<li>主要用来填充表格，当jsp页面表单项不包含该类所有属性时，可以先在ModelAttribute中根据相应变量先从数据库取出数据，然后表单数据提交到controller中对应方法时，覆盖用ModelAttribute注解修饰的形参，达到自动填充形参所有数据</li>
+<li><a href="https://blog.csdn.net/m0_37893932/article/details/78327972" target="_blank" rel="noopener">关于SessionAttribute,当Model中找不到时转到Session中查找</a></li>
 </ol>
-<h3 id="局部内部类"><a href="#局部内部类" class="headerlink" title="局部内部类"></a>局部内部类</h3><p>局部内部类是定义在一个方法或者一个作用域里面的类，它和成员内部类的区别在于局部内部类的访问仅限于方法内或者该作用域内，结构为</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Outter&#123;</span><br><span class="line">	public void print(final int a)&#123;</span><br><span class="line">		class Inner&#123;</span><br><span class="line">			public void say()&#123;</span><br><span class="line">				System.out.println(a);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		new Inner().say();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>1.拥有普通内部类特性</p>
-<p>2.内部类的modifier只能为default</p>
-<p>3.在内部类和方法传入的参数必须是final类型</p>
-<h3 id="匿名内部类"><a href="#匿名内部类" class="headerlink" title="匿名内部类"></a>匿名内部类</h3><p>1.一个类用于继承其他类或是实现接口，并不需要增加额外的方法，只是对继承方法的事先或是覆盖。</p>
-<p>2.只是为了获得一个对象实例，不需要知道其实际类型。</p>
-<p>3.类名没有意义，也就是不需要使用到。</p>
-<p>例如在创建线程时</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Thread thread &#x3D; new Thread(new Runnable()&#123;</span><br><span class="line">       public void run()&#123;</span><br><span class="line">				</span><br><span class="line">	&#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-
-<p>java8我们可以使用lambda来简化匿名内部类创建，以上代码可简化为</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Thread thread &#x3D; new Thread(()-&gt;&#123;&#125;);&#x2F;&#x2F;Runnable为函数式接口</span><br></pre></td></tr></table></figure>
-
-<h3 id="理解"><a href="#理解" class="headerlink" title="理解"></a>理解</h3><p>关于匿名内部类和局部内部类访问局部变量或者形参时，这是因为局部变量或形参与内部类的生存周期不同，当局部变量或形参被回收后，内部类的实例仍在，若此时访问它们，将会出错，所以局部变量和形参都是以构造函数的参数形式传入到匿名内部类中，相当于是复制了一份放到匿名内部类中，为了保持原始数据和复制后的数据相同，所以要使用final。<a href="http://blog.csdn.net/u014805893/article/details/53310521?locationNum=5&fps=1" target="_blank" rel="noopener">查看原理</a></p>
-<h3 id="java8新修改"><a href="#java8新修改" class="headerlink" title="java8新修改"></a>java8新修改</h3><p><strong>java8开始匿名内部类使用的外部变量不再被强制用final修饰。外部变量要么是final的，要么自初始化后值不会被改变，这两种都是可以在匿名内部类中使用且编译通过。</strong></p>
-<p><strong>Local variable br defined in an enclosing scope must be final or effectively final</strong></p>
 
           
         
@@ -1418,7 +1446,10 @@
         
           
             <p>底层结构为数组加链表，插入元素是无序的，维护插入顺序时使用LinkedHashMap，它维护着一个双向循环链表，保证了我们遍历得到元素的顺序和我们插入的顺序一致</p>
-<h3 id="成员变量"><a href="#成员变量" class="headerlink" title="成员变量"></a>成员变量</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line">    * The default initial capacity - MUST be a power of two.</span><br><span class="line">    *&#x2F;</span><br><span class="line">   static final int DEFAULT_INITIAL_CAPACITY &#x3D; 1 &lt;&lt; 4; &#x2F;&#x2F; aka 16</span><br></pre></td></tr></table></figure>
+<h3 id="成员变量"><a href="#成员变量" class="headerlink" title="成员变量"></a>成员变量</h3><pre><code class="highlight plain">&#x2F;**
+    * The default initial capacity - MUST be a power of two.
+    *&#x2F;
+   static final int DEFAULT_INITIAL_CAPACITY &#x3D; 1 &lt;&lt; 4; &#x2F;&#x2F; aka 16</code></pre>
 
 <p>初始化默认容量为16，且容量必须为2的幂</p>
 <p><code>static final int MAXIMUM_CAPACITY = 1 &lt;&lt; 30;</code></p>
@@ -1433,23 +1464,36 @@
 <p>HashMap中的键值对Entry组成的集合</p>
 <h3 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h3><p><code>public HashMap(int initialCapacity, float loadFactor)</code></p>
 <p>由容量和负载因子作为参数来初始化HashMap</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public HashMap(int initialCapacity) &#123;</span><br><span class="line">    this(initialCapacity, DEFAULT_LOAD_FACTOR);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public HashMap(int initialCapacity) &#123;
+    this(initialCapacity, DEFAULT_LOAD_FACTOR);
+&#125;</code></pre>
 
 <p>由容量作为参数，负载因子使用默认值来初始化HashMap</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public HashMap() &#123;</span><br><span class="line">    this.loadFactor &#x3D; DEFAULT_LOAD_FACTOR; &#x2F;&#x2F; all other fields defaulted</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public HashMap() &#123;
+    this.loadFactor &#x3D; DEFAULT_LOAD_FACTOR; &#x2F;&#x2F; all other fields defaulted
+&#125;</code></pre>
 
 <p>无参数时，负载因子为默认值，size为0</p>
 <h3 id="遍历方法"><a href="#遍历方法" class="headerlink" title="遍历方法"></a>遍历方法</h3><p>(1) foreach map.entrySet()</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Map&lt;String, String&gt; map &#x3D; new HashMap&lt;String, String&gt;();</span><br><span class="line">map.entrySet().forEach(e-&gt;System.out.println(e.getValue()+e.getKey()));</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">Map&lt;String, String&gt; map &#x3D; new HashMap&lt;String, String&gt;();
+map.entrySet().forEach(e-&gt;System.out.println(e.getValue()+e.getKey()));</code></pre>
 
 <p>(2) 显示调用map.entrySet()的集合迭代器</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Iterator&lt;Map.Entry&lt;String, String&gt;&gt; iterator &#x3D; map.entrySet().iterator();</span><br><span class="line">while (iterator.hasNext()) &#123;</span><br><span class="line">	Map.Entry&lt;String, String&gt; entry &#x3D; iterator.next();</span><br><span class="line">	entry.getKey();</span><br><span class="line">	entry.getValue();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">Iterator&lt;Map.Entry&lt;String, String&gt;&gt; iterator &#x3D; map.entrySet().iterator();
+while (iterator.hasNext()) &#123;
+	Map.Entry&lt;String, String&gt; entry &#x3D; iterator.next();
+	entry.getKey();
+	entry.getValue();
+&#125;</code></pre>
 
 <p>(3) for each map.keySet()，再调用get获取</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Map&lt;String, String&gt; map &#x3D; new HashMap&lt;String, String&gt;();</span><br><span class="line">for (String key : map.keySet()) &#123;</span><br><span class="line">	map.get(key);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">Map&lt;String, String&gt; map &#x3D; new HashMap&lt;String, String&gt;();
+for (String key : map.keySet()) &#123;
+	map.get(key);
+&#125;</code></pre>
 
 <p>(4) map.forEach java8新增方法</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">map.forEach((k,v)-&gt;System.out.println(k+v))</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">map.forEach((k,v)-&gt;System.out.println(k+v))</code></pre>
 <h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>当我们使用put方法向HashMap中添加元素时，我们先对键调用hashCode()方法，返回的hashCode用于找到table中位置来储存Entry对象，当key的hashcode相同且equals不相等时，<strong>它们将在同一位置迭代成链表</strong>。此时调用get方法获取值对象时，先通过key的hashcode查找到位置，再通过key的equals方法在链表中查找目标Entry对象。</p>
 <p>元素达到负载因子限制的容量时，自动扩容会重新分配Entry在table中的位置</p>
 
@@ -1500,7 +1544,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/HashMap%20and%20HashTable/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/InnerClass/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="sinaill">
@@ -1519,7 +1563,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/06/17/HashMap%20and%20HashTable/" itemprop="url">HashMap与HashTable</a></h1>
+                <a class="post-title-link" href="/2020/06/17/InnerClass/" itemprop="url">内部类</a></h1>
         
 
         <div class="post-meta">
@@ -1593,26 +1637,61 @@
       
         
           
-            <p>1.HashTable继承自Dictionary,而HashMap继承自AbstractMap</p>
-<p>2.HashTable方法带有synchronized关键字，意味着HashTable是同步的，而HashMap是非同步的</p>
-<p>3.HashTable中提供了一个类似Iterator的Enumeration(fail-safe),用来遍历自身，而HashMap中无迭代器</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">   public synchronized Enumeration&lt;K&gt; keys() &#123;</span><br><span class="line">       return this.&lt;K&gt;getEnumeration(KEYS);</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">public synchronized Enumeration&lt;V&gt; elements() &#123;</span><br><span class="line">       return this.&lt;V&gt;getEnumeration(VALUES);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+            <h3 id="成员内部类"><a href="#成员内部类" class="headerlink" title="成员内部类"></a>成员内部类</h3><p>成员内部类是最普通的内部类，它在另一个类内部被定义，结构为</p>
+<pre><code class="highlight plain">class Outter&#123;
 
-<p>以keys为例</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Hashtable&lt;String,String&gt; a &#x3D; new Hashtable&lt;String,String&gt;();</span><br><span class="line">a.put(&quot;1&quot;, &quot;1&quot;);</span><br><span class="line">a.put(&quot;2&quot;, &quot;2&quot;);</span><br><span class="line">a.put(&quot;3&quot;, &quot;3&quot;);</span><br><span class="line">Enumeration&lt;String&gt; e &#x3D; a.keys();</span><br><span class="line">while(e.hasMoreElements())&#123;</span><br><span class="line">	System.out.println(e.nextElement());</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+	class Inner&#123;
+	
+	&#125;
 
-<p><code>3 2 1</code></p>
-<p>结果是倒序的，我们看下源码</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public T nextElement() &#123;</span><br><span class="line">          Entry&lt;?,?&gt; et &#x3D; entry;</span><br><span class="line">          int i &#x3D; index;&#x2F;&#x2F;index&#x3D;table.length</span><br><span class="line">          Entry&lt;?,?&gt;[] t &#x3D; table;</span><br><span class="line">          &#x2F;* Use locals for faster loop iteration *&#x2F;</span><br><span class="line">          while (et &#x3D;&#x3D; null &amp;&amp; i &gt; 0) &#123;</span><br><span class="line">              et &#x3D; t[--i];</span><br><span class="line">          &#125;</span><br><span class="line">          entry &#x3D; et;</span><br><span class="line">          index &#x3D; i;</span><br><span class="line">          if (et !&#x3D; null) &#123;</span><br><span class="line">              Entry&lt;?,?&gt; e &#x3D; lastReturned &#x3D; entry;</span><br><span class="line">              entry &#x3D; e.next;</span><br><span class="line">              return type &#x3D;&#x3D; KEYS ? (T)e.key : (type &#x3D;&#x3D; VALUES ? (T)e.value : (T)e);</span><br><span class="line">          &#125;</span><br><span class="line">          throw new NoSuchElementException(&quot;Hashtable Enumerator&quot;);</span><br><span class="line">      &#125;</span><br></pre></td></tr></table></figure>
+&#125;</code></pre>
 
-<p>et = t[–i];所以结果是倒序的，但是我们还可以发现，与其他集合的Iterator不同，Enumerator的nextElement方法中没有检测modCount==expectedModCount，而HashMap中EntrySet的Iterator有检测这个。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Hashtable&lt;String,String&gt; a &#x3D; new Hashtable&lt;String,String&gt;();</span><br><span class="line">a.put(&quot;1&quot;, &quot;1&quot;);</span><br><span class="line">a.put(&quot;2&quot;, &quot;2&quot;);</span><br><span class="line">a.put(&quot;3&quot;, &quot;3&quot;);</span><br><span class="line">a.put(&quot;4&quot;, &quot;4&quot;);</span><br><span class="line">a.put(&quot;5&quot;, &quot;5&quot;);</span><br><span class="line">a.put(&quot;6&quot;, &quot;6&quot;);</span><br><span class="line">Enumeration&lt;String&gt; e &#x3D; a.keys();</span><br><span class="line">String b &#x3D; null;</span><br><span class="line">while(e.hasMoreElements())&#123;</span><br><span class="line">	b &#x3D; e.nextElement();</span><br><span class="line">	if(b.equals(&quot;3&quot;))&#123;</span><br><span class="line">		a.remove(b);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">a.forEach((c,d)-&gt;System.out.println(c+&quot; &quot;+d));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>实例化内部类的方法为:</p>
+<pre><code class="highlight plain">Outter.Inner inner &#x3D; new Outter().new Inner();</code></pre>
 
-<p>输出</p>
-<p><code>1 1 2 2 4 4 5 5 6 6</code></p>
-<p>确实没有抛出ConcurrentModificationException，Enumerator是一个fail-safe迭代器</p>
-<p>4.HashMap允许null作为key或value</p>
-<p>5.HashMap默认容量16，Hashtable默认容量11</p>
+<ol>
+<li><p>内部类中可以访问到外部类中所有方法和成员变量，即使是private或者static，同理外部类也可以访问私有内部类的成员变量</p>
+</li>
+<li><p><strong>普通内部类中不能定义static变量和方法，但可以定义静态常量</strong></p>
+</li>
+<li><p>外部类要访问内部类变量，必须先实例化一个内部类</p>
+</li>
+<li><p>静态内部类的访问可以直接用Outter.Inner(初始化时new Outter.Inner())，访问内部类静态成员变量Outter.Inner.valueName</p>
+</li>
+<li><p>静态内部类不能访问外部类的属性方法</p>
+</li>
+</ol>
+<h3 id="局部内部类"><a href="#局部内部类" class="headerlink" title="局部内部类"></a>局部内部类</h3><p>局部内部类是定义在一个方法或者一个作用域里面的类，它和成员内部类的区别在于局部内部类的访问仅限于方法内或者该作用域内，结构为</p>
+<pre><code class="highlight plain">class Outter&#123;
+	public void print(final int a)&#123;
+		class Inner&#123;
+			public void say()&#123;
+				System.out.println(a);
+			&#125;
+		&#125;
+		new Inner().say();
+	&#125;
+&#125;</code></pre>
+
+<p>1.拥有普通内部类特性</p>
+<p>2.内部类的modifier只能为default</p>
+<p>3.在内部类和方法传入的参数必须是final类型</p>
+<h3 id="匿名内部类"><a href="#匿名内部类" class="headerlink" title="匿名内部类"></a>匿名内部类</h3><p>1.一个类用于继承其他类或是实现接口，并不需要增加额外的方法，只是对继承方法的事先或是覆盖。</p>
+<p>2.只是为了获得一个对象实例，不需要知道其实际类型。</p>
+<p>3.类名没有意义，也就是不需要使用到。</p>
+<p>例如在创建线程时</p>
+<pre><code class="highlight plain">Thread thread &#x3D; new Thread(new Runnable()&#123;
+       public void run()&#123;
+				
+	&#125;
+&#125;);</code></pre>
+
+<p>java8我们可以使用lambda来简化匿名内部类创建，以上代码可简化为</p>
+<pre><code class="highlight plain">Thread thread &#x3D; new Thread(()-&gt;&#123;&#125;);&#x2F;&#x2F;Runnable为函数式接口</code></pre>
+
+<h3 id="理解"><a href="#理解" class="headerlink" title="理解"></a>理解</h3><p>关于匿名内部类和局部内部类访问局部变量或者形参时，这是因为局部变量或形参与内部类的生存周期不同，当局部变量或形参被回收后，内部类的实例仍在，若此时访问它们，将会出错，所以局部变量和形参都是以构造函数的参数形式传入到匿名内部类中，相当于是复制了一份放到匿名内部类中，为了保持原始数据和复制后的数据相同，所以要使用final。<a href="http://blog.csdn.net/u014805893/article/details/53310521?locationNum=5&fps=1" target="_blank" rel="noopener">查看原理</a></p>
+<h3 id="java8新修改"><a href="#java8新修改" class="headerlink" title="java8新修改"></a>java8新修改</h3><p><strong>java8开始匿名内部类使用的外部变量不再被强制用final修饰。外部变量要么是final的，要么自初始化后值不会被改变，这两种都是可以在匿名内部类中使用且编译通过。</strong></p>
+<p><strong>Local variable br defined in an enclosing scope must be final or effectively final</strong></p>
 
           
         
@@ -1755,14 +1834,81 @@
         
           
             <h3 id="Integer"><a href="#Integer" class="headerlink" title="Integer"></a>Integer</h3><p>不使用new方法创建Integer而是直接用Integer a = 3的方式的话，会自动使用Integer.valueOf(int i)进行封装操作</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Integer a &#x3D; 2;</span><br><span class="line">Integer b &#x3D; 2;</span><br><span class="line">System.out.println(a&#x3D;&#x3D;b);</span><br><span class="line">Integer c &#x3D; 1000;</span><br><span class="line">Integer d &#x3D; 1000;</span><br><span class="line">System.out.println(c&#x3D;&#x3D;d);</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">Integer a &#x3D; 2;
+Integer b &#x3D; 2;
+System.out.println(a&#x3D;&#x3D;b);
+Integer c &#x3D; 1000;
+Integer d &#x3D; 1000;
+System.out.println(c&#x3D;&#x3D;d);</code></pre>
 
 <p><code>true false</code></p>
 <p>这是因为Integer中的静态内部类IntegerCache对-128到127中的数据进行了缓存</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line">     * Cache to support the object identity semantics of autoboxing for values between</span><br><span class="line">     * -128 and 127 (inclusive) as required by JLS.</span><br><span class="line">     *</span><br><span class="line">     * The cache is initialized on first usage.  The size of the cache</span><br><span class="line">     * may be controlled by the &#123;@code -XX:AutoBoxCacheMax&#x3D;&lt;size&gt;&#125; option.</span><br><span class="line">     * During VM initialization, java.lang.Integer.IntegerCache.high property</span><br><span class="line">     * may be set and saved in the private system properties in the</span><br><span class="line">     * sun.misc.VM class.</span><br><span class="line">     *&#x2F;</span><br><span class="line"></span><br><span class="line">    private static class IntegerCache &#123;</span><br><span class="line">        static final int low &#x3D; -128;</span><br><span class="line">        static final int high;</span><br><span class="line">        static final Integer cache[];</span><br><span class="line"></span><br><span class="line">        static &#123;</span><br><span class="line">            &#x2F;&#x2F; high value may be configured by property</span><br><span class="line">            int h &#x3D; 127;</span><br><span class="line">            String integerCacheHighPropValue &#x3D;</span><br><span class="line">                sun.misc.VM.getSavedProperty(&quot;java.lang.Integer.IntegerCache.high&quot;);</span><br><span class="line">            if (integerCacheHighPropValue !&#x3D; null) &#123;</span><br><span class="line">                try &#123;</span><br><span class="line">                    int i &#x3D; parseInt(integerCacheHighPropValue);</span><br><span class="line">                    i &#x3D; Math.max(i, 127);</span><br><span class="line">                    &#x2F;&#x2F; Maximum array size is Integer.MAX_VALUE</span><br><span class="line">                    h &#x3D; Math.min(i, Integer.MAX_VALUE - (-low) -1);</span><br><span class="line">                &#125; catch( NumberFormatException nfe) &#123;</span><br><span class="line">                    &#x2F;&#x2F; If the property cannot be parsed into an int, ignore it.</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            high &#x3D; h;</span><br><span class="line"></span><br><span class="line">            cache &#x3D; new Integer[(high - low) + 1];</span><br><span class="line">            int j &#x3D; low;</span><br><span class="line">            for(int k &#x3D; 0; k &lt; cache.length; k++)</span><br><span class="line">                cache[k] &#x3D; new Integer(j++);</span><br><span class="line"></span><br><span class="line">            &#x2F;&#x2F; range [-128, 127] must be interned (JLS7 5.1.7)</span><br><span class="line">            assert IntegerCache.high &gt;&#x3D; 127;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        private IntegerCache() &#123;&#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">&#x2F;**
+     * Cache to support the object identity semantics of autoboxing for values between
+     * -128 and 127 (inclusive) as required by JLS.
+     *
+     * The cache is initialized on first usage.  The size of the cache
+     * may be controlled by the &#123;@code -XX:AutoBoxCacheMax&#x3D;&lt;size&gt;&#125; option.
+     * During VM initialization, java.lang.Integer.IntegerCache.high property
+     * may be set and saved in the private system properties in the
+     * sun.misc.VM class.
+     *&#x2F;
+
+    private static class IntegerCache &#123;
+        static final int low &#x3D; -128;
+        static final int high;
+        static final Integer cache[];
+
+        static &#123;
+            &#x2F;&#x2F; high value may be configured by property
+            int h &#x3D; 127;
+            String integerCacheHighPropValue &#x3D;
+                sun.misc.VM.getSavedProperty(&quot;java.lang.Integer.IntegerCache.high&quot;);
+            if (integerCacheHighPropValue !&#x3D; null) &#123;
+                try &#123;
+                    int i &#x3D; parseInt(integerCacheHighPropValue);
+                    i &#x3D; Math.max(i, 127);
+                    &#x2F;&#x2F; Maximum array size is Integer.MAX_VALUE
+                    h &#x3D; Math.min(i, Integer.MAX_VALUE - (-low) -1);
+                &#125; catch( NumberFormatException nfe) &#123;
+                    &#x2F;&#x2F; If the property cannot be parsed into an int, ignore it.
+                &#125;
+            &#125;
+            high &#x3D; h;
+
+            cache &#x3D; new Integer[(high - low) + 1];
+            int j &#x3D; low;
+            for(int k &#x3D; 0; k &lt; cache.length; k++)
+                cache[k] &#x3D; new Integer(j++);
+
+            &#x2F;&#x2F; range [-128, 127] must be interned (JLS7 5.1.7)
+            assert IntegerCache.high &gt;&#x3D; 127;
+        &#125;
+
+        private IntegerCache() &#123;&#125;
+    &#125;</code></pre>
 
 <p>而自动装箱操作时调用的Integer.valueOf(int i)</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line">     * Returns an &#123;@code Integer&#125; instance representing the specified</span><br><span class="line">     * &#123;@code int&#125; value.  If a new &#123;@code Integer&#125; instance is not</span><br><span class="line">     * required, this method should generally be used in preference to</span><br><span class="line">     * the constructor &#123;@link #Integer(int)&#125;, as this method is likely</span><br><span class="line">     * to yield significantly better space and time performance by</span><br><span class="line">     * caching frequently requested values.</span><br><span class="line">     *</span><br><span class="line">     * This method will always cache values in the range -128 to 127,</span><br><span class="line">     * inclusive, and may cache other values outside of this range.</span><br><span class="line">     *</span><br><span class="line">     * @param  i an &#123;@code int&#125; value.</span><br><span class="line">     * @return an &#123;@code Integer&#125; instance representing &#123;@code i&#125;.</span><br><span class="line">     * @since  1.5</span><br><span class="line">     *&#x2F;</span><br><span class="line">    public static Integer valueOf(int i) &#123;</span><br><span class="line">        if (i &gt;&#x3D; IntegerCache.low &amp;&amp; i &lt;&#x3D; IntegerCache.high)</span><br><span class="line">            return IntegerCache.cache[i + (-IntegerCache.low)];</span><br><span class="line">        return new Integer(i);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">&#x2F;**
+     * Returns an &#123;@code Integer&#125; instance representing the specified
+     * &#123;@code int&#125; value.  If a new &#123;@code Integer&#125; instance is not
+     * required, this method should generally be used in preference to
+     * the constructor &#123;@link #Integer(int)&#125;, as this method is likely
+     * to yield significantly better space and time performance by
+     * caching frequently requested values.
+     *
+     * This method will always cache values in the range -128 to 127,
+     * inclusive, and may cache other values outside of this range.
+     *
+     * @param  i an &#123;@code int&#125; value.
+     * @return an &#123;@code Integer&#125; instance representing &#123;@code i&#125;.
+     * @since  1.5
+     *&#x2F;
+    public static Integer valueOf(int i) &#123;
+        if (i &gt;&#x3D; IntegerCache.low &amp;&amp; i &lt;&#x3D; IntegerCache.high)
+            return IntegerCache.cache[i + (-IntegerCache.low)];
+        return new Integer(i);
+    &#125;</code></pre>
 
 <p><strong>如果值得范围在-128~127中，返回的是已缓存好的对象，所以为true</strong></p>
 <p><strong>对于其他基本变量包装类</strong></p>
@@ -1912,12 +2058,33 @@
         
           
             <h3 id="Predicate"><a href="#Predicate" class="headerlink" title="Predicate"></a>Predicate</h3><p>Predicate接口为函数式接口</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * Evaluates this predicate on the given argument.</span><br><span class="line"> *</span><br><span class="line"> * @param t the input argument</span><br><span class="line"> * @return &#123;@code true&#125; if the input argument matches the predicate,</span><br><span class="line"> * otherwise &#123;@code false&#125;</span><br><span class="line"> *&#x2F;</span><br><span class="line">boolean test(T t);</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">&#x2F;**
+ * Evaluates this predicate on the given argument.
+ *
+ * @param t the input argument
+ * @return &#123;@code true&#125; if the input argument matches the predicate,
+ * otherwise &#123;@code false&#125;
+ *&#x2F;
+boolean test(T t);</code></pre>
 <h3 id="Function"><a href="#Function" class="headerlink" title="Function"></a>Function</h3><p>Function接口为函数式接口</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * Applies this function to the given argument.</span><br><span class="line"> *</span><br><span class="line"> * @param t the function argument</span><br><span class="line"> * @return the function result</span><br><span class="line"> *&#x2F;</span><br><span class="line">R apply(T t);</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">&#x2F;**
+ * Applies this function to the given argument.
+ *
+ * @param t the function argument
+ * @return the function result
+ *&#x2F;
+R apply(T t);</code></pre>
 
 <p>与Consumer接口类似，但Function的抽象方法有返回值</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * Returns a function that always returns its input argument.</span><br><span class="line"> *</span><br><span class="line"> * @param &lt;T&gt; the type of the input and output objects to the function</span><br><span class="line"> * @return a function that always returns its input argument</span><br><span class="line"> *&#x2F;</span><br><span class="line">static &lt;T&gt; Function&lt;T, T&gt; identity() &#123;</span><br><span class="line">    return t -&gt; t;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">&#x2F;**
+ * Returns a function that always returns its input argument.
+ *
+ * @param &lt;T&gt; the type of the input and output objects to the function
+ * @return a function that always returns its input argument
+ *&#x2F;
+static &lt;T&gt; Function&lt;T, T&gt; identity() &#123;
+    return t -&gt; t;
+&#125;</code></pre>
 
 <p>相当于用lambda实现apply抽象方法：u-&gt;u</p>
 
@@ -1968,7 +2135,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/ArrayList/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/HashMap%20and%20HashTable/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="sinaill">
@@ -1987,7 +2154,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/06/17/ArrayList/" itemprop="url">ArrayList</a></h1>
+                <a class="post-title-link" href="/2020/06/17/HashMap%20and%20HashTable/" itemprop="url">HashMap与HashTable</a></h1>
         
 
         <div class="post-meta">
@@ -2061,29 +2228,417 @@
       
         
           
-            <h3 id="结构"><a href="#结构" class="headerlink" title="结构"></a>结构</h3><p>内部维护了一个自动扩容的Object类型数组</p>
-<h3 id="成员变量"><a href="#成员变量" class="headerlink" title="成员变量"></a>成员变量</h3><p><code>private static final int DEFAULT_CAPACITY = 10;</code> </p>
-<p>默认初始化容量</p>
-<p><code>private static final Object[] EMPTY_ELEMENTDATA = {};</code> </p>
-<p>Shared empty array instance used for empty instances.</p>
-<p><code>private static final Object[] DEFAULTCAPACITY_EMPTY_ELEMENTDATA = {};</code></p>
-<p>两个的区别是，上面的是初始化容量为0时共享的array instance，下面的是以默认容量初始化时共享的array instance.</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line">     * The array buffer into which the elements of the ArrayList are stored.</span><br><span class="line">     * The capacity of the ArrayList is the length of this array buffer. Any</span><br><span class="line">     * empty ArrayList with elementData &#x3D;&#x3D; DEFAULTCAPACITY_EMPTY_ELEMENTDATA</span><br><span class="line">     * will be expanded to DEFAULT_CAPACITY when the first element is added.</span><br><span class="line">     *&#x2F;</span><br><span class="line">	   transient Object[] elementData;</span><br></pre></td></tr></table></figure>
+            <p>1.HashTable继承自Dictionary,而HashMap继承自AbstractMap</p>
+<p>2.HashTable方法带有synchronized关键字，意味着HashTable是同步的，而HashMap是非同步的</p>
+<p>3.HashTable中提供了一个类似Iterator的Enumeration(fail-safe),用来遍历自身，而HashMap中无迭代器</p>
+<pre><code class="highlight plain">   public synchronized Enumeration&lt;K&gt; keys() &#123;
+       return this.&lt;K&gt;getEnumeration(KEYS);
+   &#125;
 
-<p>存储元素的Object数组，empty ArrayList with elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA will be expanded to DEFAULT_CAPACITY when the first element is added</p>
-<h3 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * Constructs an empty list with an initial capacity of ten.</span><br><span class="line"> *&#x2F;</span><br><span class="line">public ArrayList() &#123;</span><br><span class="line">    this.elementData &#x3D; DEFAULTCAPACITY_EMPTY_ELEMENTDATA;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>无参构造函数时，Constructs an empty list with an initial capacity of ten</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line">     * Constructs an empty list with the specified initial capacity.</span><br><span class="line">     *</span><br><span class="line">     * @param  initialCapacity  the initial capacity of the list</span><br><span class="line">     * @throws IllegalArgumentException if the specified initial capacity</span><br><span class="line">     *         is negative</span><br><span class="line">     *&#x2F;</span><br><span class="line">    public ArrayList(int initialCapacity) &#123;</span><br><span class="line">        if (initialCapacity &gt; 0) &#123;</span><br><span class="line">            this.elementData &#x3D; new Object[initialCapacity];</span><br><span class="line">        &#125; else if (initialCapacity &#x3D;&#x3D; 0) &#123;</span><br><span class="line">            this.elementData &#x3D; EMPTY_ELEMENTDATA;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            throw new IllegalArgumentException(&quot;Illegal Capacity: &quot;+</span><br><span class="line">                                               initialCapacity);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+public synchronized Enumeration&lt;V&gt; elements() &#123;
+       return this.&lt;V&gt;getEnumeration(VALUES);
+   &#125;</code></pre>
 
-<p>int类型为参数的构造函数，构造确定容量的ArrayList，<strong>而不是默认的10位</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line">     * Constructs a list containing the elements of the specified</span><br><span class="line">     * collection, in the order they are returned by the collection&#39;s</span><br><span class="line">     * iterator.</span><br><span class="line">     *</span><br><span class="line">     * @param c the collection whose elements are to be placed into this list</span><br><span class="line">     * @throws NullPointerException if the specified collection is null</span><br><span class="line">     *&#x2F;</span><br><span class="line">    public ArrayList(Collection&lt;? extends E&gt; c) &#123;</span><br><span class="line">        elementData &#x3D; c.toArray();</span><br><span class="line">        if ((size &#x3D; elementData.length) !&#x3D; 0) &#123;</span><br><span class="line">            &#x2F;&#x2F; c.toArray might (incorrectly) not return Object[] (see 6260652)</span><br><span class="line">            if (elementData.getClass() !&#x3D; Object[].class)</span><br><span class="line">                elementData &#x3D; Arrays.copyOf(elementData, size, Object[].class);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            &#x2F;&#x2F; replace with empty array.</span><br><span class="line">            this.elementData &#x3D; EMPTY_ELEMENTDATA;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>以keys为例</p>
+<pre><code class="highlight plain">Hashtable&lt;String,String&gt; a &#x3D; new Hashtable&lt;String,String&gt;();
+a.put(&quot;1&quot;, &quot;1&quot;);
+a.put(&quot;2&quot;, &quot;2&quot;);
+a.put(&quot;3&quot;, &quot;3&quot;);
+Enumeration&lt;String&gt; e &#x3D; a.keys();
+while(e.hasMoreElements())&#123;
+	System.out.println(e.nextElement());
+&#125;
+&#125;</code></pre>
 
-<p>可传入List或者Set类型参数，由它们存放的内容来实例化ArrayList</p>
-<h3 id="遍历方法"><a href="#遍历方法" class="headerlink" title="遍历方法"></a>遍历方法</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">List&lt;String&gt; a &#x3D; new ArrayList&lt;String&gt;();</span><br><span class="line">a.add(&quot;abc&quot;);</span><br><span class="line">a.add(&quot;ddd&quot;);</span><br><span class="line">a.add(&quot;ccc&quot;);</span><br><span class="line"></span><br><span class="line">for (String string : a) &#123;</span><br><span class="line">	System.out.println(string);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Iterator&lt;String&gt; it &#x3D; a.iterator();</span><br><span class="line">while(it.hasNext())&#123;	</span><br><span class="line">	System.out.println(it.next());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">a.forEach(str-&gt;system.out.println(str))</span><br></pre></td></tr></table></figure>
+<p><code>3 2 1</code></p>
+<p>结果是倒序的，我们看下源码</p>
+<pre><code class="highlight plain">public T nextElement() &#123;
+          Entry&lt;?,?&gt; et &#x3D; entry;
+          int i &#x3D; index;&#x2F;&#x2F;index&#x3D;table.length
+          Entry&lt;?,?&gt;[] t &#x3D; table;
+          &#x2F;* Use locals for faster loop iteration *&#x2F;
+          while (et &#x3D;&#x3D; null &amp;&amp; i &gt; 0) &#123;
+              et &#x3D; t[--i];
+          &#125;
+          entry &#x3D; et;
+          index &#x3D; i;
+          if (et !&#x3D; null) &#123;
+              Entry&lt;?,?&gt; e &#x3D; lastReturned &#x3D; entry;
+              entry &#x3D; e.next;
+              return type &#x3D;&#x3D; KEYS ? (T)e.key : (type &#x3D;&#x3D; VALUES ? (T)e.value : (T)e);
+          &#125;
+          throw new NoSuchElementException(&quot;Hashtable Enumerator&quot;);
+      &#125;</code></pre>
 
-<h3 id="自动扩容"><a href="#自动扩容" class="headerlink" title="自动扩容"></a>自动扩容</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"> private void grow(int minCapacity) &#123;</span><br><span class="line">     &#x2F;&#x2F; overflow-conscious code</span><br><span class="line">     int oldCapacity &#x3D; elementData.length;</span><br><span class="line">     int newCapacity &#x3D; oldCapacity + (oldCapacity &gt;&gt; 1);</span><br><span class="line">     if (newCapacity - minCapacity &lt; 0)</span><br><span class="line">         newCapacity &#x3D; minCapacity;</span><br><span class="line">     if (newCapacity - MAX_ARRAY_SIZE &gt; 0)</span><br><span class="line">         newCapacity &#x3D; hugeCapacity(minCapacity);</span><br><span class="line">     &#x2F;&#x2F; minCapacity is usually close to size, so this is a win:</span><br><span class="line">     elementData &#x3D; Arrays.copyOf(elementData, newCapacity);</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line">private static int hugeCapacity(int minCapacity) &#123;</span><br><span class="line">     if (minCapacity &lt; 0) &#x2F;&#x2F; overflow</span><br><span class="line">         throw new OutOfMemoryError();</span><br><span class="line">     return (minCapacity &gt; MAX_ARRAY_SIZE) ?</span><br><span class="line">         Integer.MAX_VALUE :</span><br><span class="line">         MAX_ARRAY_SIZE;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p>et = t[–i];所以结果是倒序的，但是我们还可以发现，与其他集合的Iterator不同，Enumerator的nextElement方法中没有检测modCount==expectedModCount，而HashMap中EntrySet的Iterator有检测这个。</p>
+<pre><code class="highlight plain">Hashtable&lt;String,String&gt; a &#x3D; new Hashtable&lt;String,String&gt;();
+a.put(&quot;1&quot;, &quot;1&quot;);
+a.put(&quot;2&quot;, &quot;2&quot;);
+a.put(&quot;3&quot;, &quot;3&quot;);
+a.put(&quot;4&quot;, &quot;4&quot;);
+a.put(&quot;5&quot;, &quot;5&quot;);
+a.put(&quot;6&quot;, &quot;6&quot;);
+Enumeration&lt;String&gt; e &#x3D; a.keys();
+String b &#x3D; null;
+while(e.hasMoreElements())&#123;
+	b &#x3D; e.nextElement();
+	if(b.equals(&quot;3&quot;))&#123;
+		a.remove(b);
+	&#125;
+&#125;
+a.forEach((c,d)-&gt;System.out.println(c+&quot; &quot;+d));
+&#125;</code></pre>
 
-<p>先1.5倍扩容，如果还是不够，直接设置为当前size，再比较MAX_ARRAY_SIZE，扩容后新容量大于它时，且minCapacity即当前包含元素个数&lt;MAX_ARRAY_SIZE，则新容量设置为MAX_ARRAY_SIZE。<br>反之，扩容后新容量和当前包含元素个数都都大于MAX_ARRAY_SIZE时，新容量设置为Integer.MAX_VALUE</p>
+<p>输出</p>
+<p><code>1 1 2 2 4 4 5 5 6 6</code></p>
+<p>确实没有抛出ConcurrentModificationException，Enumerator是一个fail-safe迭代器</p>
+<p>4.HashMap允许null作为key或value</p>
+<p>5.HashMap默认容量16，Hashtable默认容量11</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/@RequestParam%E4%BD%9C%E7%94%A8%E6%BA%90%E7%A0%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/@RequestParam%E4%BD%9C%E7%94%A8%E6%BA%90%E7%A0%81/" itemprop="url">注解@RequestParam作用源码</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">框架</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="RequestParam作用"><a href="#RequestParam作用" class="headerlink" title="@RequestParam作用"></a>@RequestParam作用</h3><p>在<code>Controller</code>方法的入参使用<code>@RequestParam</code>注解可以获取<code>Request</code>请求中的参数</p>
+<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><h4 id="普通变量"><a href="#普通变量" class="headerlink" title="普通变量"></a>普通变量</h4><p>依旧是查看解析<code>@RequestParam</code>注解的<code>RequestParamMethodArgumentResolver</code></p>
+<p><code>supportsParameter</code>方法如下</p>
+<pre><code class="highlight plain">	@Override
+public boolean supportsParameter(MethodParameter parameter) &#123;
+	Class&lt;?&gt; paramType &#x3D; parameter.getParameterType();
+	if (parameter.hasParameterAnnotation(RequestParam.class)) &#123;
+		if (Map.class.isAssignableFrom(paramType)) &#123;
+			String paramName &#x3D; parameter.getParameterAnnotation(RequestParam.class).value();
+			return StringUtils.hasText(paramName);
+		&#125;
+		else &#123;
+			return true;
+		&#125;
+	&#125;
+	else &#123;
+		if (parameter.hasParameterAnnotation(RequestPart.class)) &#123;
+			return false;
+		&#125;
+		else if (MultipartFile.class.equals(paramType) || &quot;javax.servlet.http.Part&quot;.equals(paramType.getName())) &#123;
+			return true;
+		&#125;
+		else if (this.useDefaultResolution) &#123;
+			return BeanUtils.isSimpleProperty(paramType);
+		&#125;
+		else &#123;
+			return false;
+		&#125;
+	&#125;
+&#125;</code></pre>
+
+<p>再看解析参数的<code>resolveArgument</code>方法</p>
+<pre><code class="highlight plain">@Override
+public final Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception &#123;
+
+	Class&lt;?&gt; paramType &#x3D; parameter.getParameterType();
+	NamedValueInfo namedValueInfo &#x3D; getNamedValueInfo(parameter);
+	&#x2F;&#x2F;取出请求中对应的属性arg
+	Object arg &#x3D; resolveName(namedValueInfo.name, parameter, webRequest);
+	&#x2F;&#x2F;请求中没有对应属性，arg为null
+	if (arg &#x3D;&#x3D; null) &#123;
+		&#x2F;&#x2F;除了设置&#96;defaultValue&#96;，其他都会抛出异常
+		if (namedValueInfo.defaultValue !&#x3D; null) &#123;
+			arg &#x3D; resolveDefaultValue(namedValueInfo.defaultValue);
+		&#125;
+		else if (namedValueInfo.required &amp;&amp; !parameter.getParameterType().getName().equals(&quot;java.util.Optional&quot;)) &#123;
+			handleMissingValue(namedValueInfo.name, parameter);
+		&#125;
+		arg &#x3D; handleNullValue(namedValueInfo.name, arg, paramType);
+	&#125;
+	&#x2F;&#x2F;arg为&quot;&quot;时并且设置了defaultValue时，arg接收处理后的defaultValue
+	else if (&quot;&quot;.equals(arg) &amp;&amp; namedValueInfo.defaultValue !&#x3D; null) &#123;
+		arg &#x3D; resolveDefaultValue(namedValueInfo.defaultValue);
+	&#125;
+
+	if (binderFactory !&#x3D; null) &#123;
+		WebDataBinder binder &#x3D; binderFactory.createBinder(webRequest, null, namedValueInfo.name);
+		arg &#x3D; binder.convertIfNecessary(arg, paramType, parameter);
+	&#125;
+
+	handleResolvedValue(arg, namedValueInfo.name, parameter, mavContainer, webRequest);
+
+	return arg;
+&#125;</code></pre>
+
+<p><code>NamedValueInfo</code>是用来存放<code>@RequestParam</code>注解中参数的类，包括<code>value</code>，<code>required</code>，<code>defaultValue</code></p>
+<pre><code class="highlight plain">private NamedValueInfo getNamedValueInfo(MethodParameter parameter) &#123;
+	NamedValueInfo namedValueInfo &#x3D; this.namedValueInfoCache.get(parameter);
+	if (namedValueInfo &#x3D;&#x3D; null) &#123;
+		namedValueInfo &#x3D; createNamedValueInfo(parameter);
+		namedValueInfo &#x3D; updateNamedValueInfo(parameter, namedValueInfo);
+		this.namedValueInfoCache.put(parameter, namedValueInfo);
+	&#125;
+	return namedValueInfo;
+&#125;
+
+
+@Override
+protected NamedValueInfo createNamedValueInfo(MethodParameter parameter) &#123;
+	RequestParam ann &#x3D; parameter.getParameterAnnotation(RequestParam.class);
+	&#x2F;&#x2F;不存在&#96;@requestParam&#96;时，用无参构造方法
+	return (ann !&#x3D; null ? new RequestParamNamedValueInfo(ann) : new RequestParamNamedValueInfo());
+&#125;
+
+&#x2F;&#x2F;构造方法
+	public RequestParamNamedValueInfo() &#123;
+		super(&quot;&quot;, false, ValueConstants.DEFAULT_NONE);
+	&#125;
+
+	public RequestParamNamedValueInfo(RequestParam annotation) &#123;
+		super(annotation.value(), annotation.required(), annotation.defaultValue());
+	&#125;</code></pre>
+
+<p>然后要对<code>NameValueInfo</code>进行update，处理当没有<code>@RequestParam</code>注解或者<code>@RequestParam</code>注解没有设置<code>value</code>值的导致<code>NameValueInfo</code>的<code>name</code>属性为<code>&quot;&quot;</code>的情况</p>
+<pre><code class="highlight plain">private NamedValueInfo updateNamedValueInfo(MethodParameter parameter, NamedValueInfo info) &#123;
+	String name &#x3D; info.name;
+	if (info.name.length() &#x3D;&#x3D; 0) &#123;
+		name &#x3D; parameter.getParameterName();
+		if (name &#x3D;&#x3D; null) &#123;
+			throw new IllegalArgumentException(&quot;Name for argument type [&quot; + parameter.getParameterType().getName() +
+					&quot;] not available, and parameter name information not found in class file either.&quot;);
+		&#125;
+	&#125;
+	String defaultValue &#x3D; (ValueConstants.DEFAULT_NONE.equals(info.defaultValue) ? null : info.defaultValue);
+	return new NamedValueInfo(name, info.required, defaultValue);
+&#125;</code></pre>
+<p>当<code>name</code>长度为0，取入参的变量名，作为<code>name</code>，如果没有设置<code>defaultValue</code>，这里则将<code>defaultValue</code>设置为<code>ValueConstants.DEFAULT_NONE</code></p>
+<p>然后看<code>resloveName</code>方法</p>
+<pre><code class="highlight plain">@Override
+protected Object resolveName(String name, MethodParameter parameter, NativeWebRequest webRequest) throws Exception &#123;
+	HttpServletRequest servletRequest &#x3D; webRequest.getNativeRequest(HttpServletRequest.class);
+	MultipartHttpServletRequest multipartRequest &#x3D;
+			WebUtils.getNativeRequest(servletRequest, MultipartHttpServletRequest.class);
+	Object arg;
+
+	if (MultipartFile.class.equals(parameter.getParameterType())) &#123;
+		assertIsMultipartRequest(servletRequest);
+		Assert.notNull(multipartRequest, &quot;Expected MultipartHttpServletRequest: is a MultipartResolver configured?&quot;);
+		arg &#x3D; multipartRequest.getFile(name);
+	&#125;
+	else if (isMultipartFileCollection(parameter)) &#123;
+		assertIsMultipartRequest(servletRequest);
+		Assert.notNull(multipartRequest, &quot;Expected MultipartHttpServletRequest: is a MultipartResolver configured?&quot;);
+		arg &#x3D; multipartRequest.getFiles(name);
+	&#125;
+	else if (isMultipartFileArray(parameter)) &#123;
+		assertIsMultipartRequest(servletRequest);
+		Assert.notNull(multipartRequest, &quot;Expected MultipartHttpServletRequest: is a MultipartResolver configured?&quot;);
+		List&lt;MultipartFile&gt; multipartFiles &#x3D; multipartRequest.getFiles(name);
+		arg &#x3D; multipartFiles.toArray(new MultipartFile[multipartFiles.size()]);
+	&#125;
+	else if (&quot;javax.servlet.http.Part&quot;.equals(parameter.getParameterType().getName())) &#123;
+		assertIsMultipartRequest(servletRequest);
+		arg &#x3D; servletRequest.getPart(name);
+	&#125;
+	else if (isPartCollection(parameter)) &#123;
+		assertIsMultipartRequest(servletRequest);
+		arg &#x3D; new ArrayList&lt;Object&gt;(servletRequest.getParts());
+	&#125;
+	else if (isPartArray(parameter)) &#123;
+		assertIsMultipartRequest(servletRequest);
+		arg &#x3D; RequestPartResolver.resolvePart(servletRequest);
+	&#125;
+	else &#123;
+		arg &#x3D; null;
+		if (multipartRequest !&#x3D; null) &#123;
+			List&lt;MultipartFile&gt; files &#x3D; multipartRequest.getFiles(name);
+			if (!files.isEmpty()) &#123;
+				arg &#x3D; (files.size() &#x3D;&#x3D; 1 ? files.get(0) : files);
+			&#125;
+		&#125;
+		if (arg &#x3D;&#x3D; null) &#123;
+			String[] paramValues &#x3D; webRequest.getParameterValues(name);
+			if (paramValues !&#x3D; null) &#123;
+				arg &#x3D; (paramValues.length &#x3D;&#x3D; 1 ? paramValues[0] : paramValues);
+			&#125;
+		&#125;
+	&#125;
+
+	return arg;
+&#125;</code></pre>
+
+<p>看最下面，以<code>name</code>从<code>request</code>请求中取出对应属性，然后返回给<code>resolveArgument</code>方法，经<code>dataBinder</code>转换为入参类型之后返回，然后作为反射调用<code>Controller</code>方法的参数</p>
+<h4 id="java-util-Map"><a href="#java-util-Map" class="headerlink" title="java.util.Map"></a>java.util.Map</h4><p>入参为<code>java.util.Map</code>类型，且前面有<code>@ReqeustParam</code>注解并且<code>value</code>为空时，作用在入参上的参数解析器为<code>RequestParamMapMethodArgumentResolver</code></p>
+<pre><code class="highlight plain">@Override
+public boolean supportsParameter(MethodParameter parameter) &#123;
+	RequestParam ann &#x3D; parameter.getParameterAnnotation(RequestParam.class);
+	if (ann !&#x3D; null) &#123;
+		if (Map.class.isAssignableFrom(parameter.getParameterType())) &#123;
+			return !StringUtils.hasText(ann.value());
+		&#125;
+	&#125;
+	return false;
+&#125;
+
+@Override
+public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception &#123;
+
+	Class&lt;?&gt; paramType &#x3D; parameter.getParameterType();
+
+	Map&lt;String, String[]&gt; parameterMap &#x3D; webRequest.getParameterMap();
+	if (MultiValueMap.class.isAssignableFrom(paramType)) &#123;
+		MultiValueMap&lt;String, String&gt; result &#x3D; new LinkedMultiValueMap&lt;String, String&gt;(parameterMap.size());
+		for (Map.Entry&lt;String, String[]&gt; entry : parameterMap.entrySet()) &#123;
+			for (String value : entry.getValue()) &#123;
+				result.add(entry.getKey(), value);
+			&#125;
+		&#125;
+		return result;
+	&#125;
+	else &#123;
+		Map&lt;String, String&gt; result &#x3D; new LinkedHashMap&lt;String, String&gt;(parameterMap.size());
+		for (Map.Entry&lt;String, String[]&gt; entry : parameterMap.entrySet()) &#123;
+			if (entry.getValue().length &gt; 0) &#123;
+				result.put(entry.getKey(), entry.getValue()[0]);
+			&#125;
+		&#125;
+		return result;
+	&#125;
+&#125;</code></pre>
+
+<p>获取请求中参数时是用的<code>getParameterMap</code>方法以参数名为key和参数值为value的方式，获取一个<code>Map</code>类型的入参，将它返回作为反射调用该<code>Controller</code>方法的参数</p>
 
           
         
@@ -2409,7 +2964,7 @@
 
   
 
-  <link rel="stylesheet" href="/lib/prettify/skins/desert.css" type="text/css">
+  <link rel="stylesheet" href="/lib/prettify/skins/sunburst.css" type="text/css">
 <script src="/lib/prettify/prettify.js" type="text/javascript"></script>
 <script type="text/javascript">
   $(document).ready(function() {

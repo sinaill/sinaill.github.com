@@ -79,12 +79,12 @@
 
 
 
-<meta name="description" content="单链表的概念 单链表每个节点node中存储了下一个节点的引用 结构节点class Node&lt;T&gt;&amp;#123;	private T data;	private Node&lt;T&gt; next;&#x2F;&#x2F;下一个节点的引用		public Node() &amp;#123;	&amp;#125;		public Node(T data) &amp;#123;		super();		this.da">
+<meta name="description" content="单链表的概念 单链表每个节点node中存储了下一个节点的引用 结构节点class Node&lt;T&gt;&amp;#123; 	private T data; 	private Node&lt;T&gt; next;&#x2F;&#x2F;下一个节点的引用 	 	public Node() &amp;#123; 	&amp;#125; 	 	public Node(T data) &amp;#123; 		super();">
 <meta property="og:type" content="article">
 <meta property="og:title" content="单链表">
 <meta property="og:url" content="http://yoursite.com/2020/06/17/%E5%8D%95%E9%93%BE%E8%A1%A8/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="单链表的概念 单链表每个节点node中存储了下一个节点的引用 结构节点class Node&lt;T&gt;&amp;#123;	private T data;	private Node&lt;T&gt; next;&#x2F;&#x2F;下一个节点的引用		public Node() &amp;#123;	&amp;#125;		public Node(T data) &amp;#123;		super();		this.da">
+<meta property="og:description" content="单链表的概念 单链表每个节点node中存储了下一个节点的引用 结构节点class Node&lt;T&gt;&amp;#123; 	private T data; 	private Node&lt;T&gt; next;&#x2F;&#x2F;下一个节点的引用 	 	public Node() &amp;#123; 	&amp;#125; 	 	public Node(T data) &amp;#123; 		super();">
 <meta property="og:image" content="http://wx3.sinaimg.cn/large/96b7c0f4ly1fymvb9v22yj216q07qmx3.jpg">
 <meta property="article:published_time" content="2020-06-16T17:43:37.254Z">
 <meta property="article:modified_time" content="2020-06-16T17:43:37.255Z">
@@ -345,32 +345,188 @@
       
         <h3 id="单链表的概念"><a href="#单链表的概念" class="headerlink" title="单链表的概念"></a>单链表的概念</h3><p><img src="http://wx3.sinaimg.cn/large/96b7c0f4ly1fymvb9v22yj216q07qmx3.jpg" alt=""></p>
 <p>单链表每个节点node中存储了下一个节点的引用</p>
-<h3 id="结构"><a href="#结构" class="headerlink" title="结构"></a>结构</h3><h4 id="节点"><a href="#节点" class="headerlink" title="节点"></a>节点</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Node&lt;T&gt;&#123;</span><br><span class="line">	private T data;</span><br><span class="line">	private Node&lt;T&gt; next;&#x2F;&#x2F;下一个节点的引用</span><br><span class="line">	</span><br><span class="line">	public Node() &#123;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	public Node(T data) &#123;</span><br><span class="line">		super();</span><br><span class="line">		this.data &#x3D; data;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public T getData() &#123;</span><br><span class="line">		return data;</span><br><span class="line">	&#125;</span><br><span class="line">	public void setData(T data) &#123;</span><br><span class="line">		this.data &#x3D; data;</span><br><span class="line">	&#125;</span><br><span class="line">	public Node&lt;T&gt; getNext() &#123;</span><br><span class="line">		return next;</span><br><span class="line">	&#125;</span><br><span class="line">	public void setNext(Node&lt;T&gt; next) &#123;</span><br><span class="line">		this.next &#x3D; next;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="结构"><a href="#结构" class="headerlink" title="结构"></a>结构</h3><h4 id="节点"><a href="#节点" class="headerlink" title="节点"></a>节点</h4><pre><code class="highlight plain">class Node&lt;T&gt;&#123;
+	private T data;
+	private Node&lt;T&gt; next;&#x2F;&#x2F;下一个节点的引用
+	
+	public Node() &#123;
+	&#125;
+	
+	public Node(T data) &#123;
+		super();
+		this.data &#x3D; data;
+	&#125;
 
-<h4 id="头节点"><a href="#头节点" class="headerlink" title="头节点"></a>头节点</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class LinkedList&lt;T&gt; &#123;</span><br><span class="line">	private Node&lt;T&gt; header;</span><br><span class="line">	</span><br><span class="line">	public LinkedList() &#123;</span><br><span class="line">		super();</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	public LinkedList(Node&lt;T&gt; header) &#123;</span><br><span class="line">		super();</span><br><span class="line">		this.header &#x3D; header;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public Node&lt;T&gt; getHeader() &#123;</span><br><span class="line">		return header;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public void setHeader(Node&lt;T&gt; header) &#123;</span><br><span class="line">		this.header &#x3D; header;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	·</span><br><span class="line">	·</span><br><span class="line">	·</span><br><span class="line"></span><br><span class="line">	单链表基本操作</span><br></pre></td></tr></table></figure>
+	public T getData() &#123;
+		return data;
+	&#125;
+	public void setData(T data) &#123;
+		this.data &#x3D; data;
+	&#125;
+	public Node&lt;T&gt; getNext() &#123;
+		return next;
+	&#125;
+	public void setNext(Node&lt;T&gt; next) &#123;
+		this.next &#x3D; next;
+	&#125;
+	
+	
+&#125;</code></pre>
 
-<h3 id="单链表的基本操作"><a href="#单链表的基本操作" class="headerlink" title="单链表的基本操作"></a>单链表的基本操作</h3><h4 id="头插法插入节点"><a href="#头插法插入节点" class="headerlink" title="头插法插入节点"></a>头插法插入节点</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void insertNodeHead(Node&lt;T&gt; node)&#123;</span><br><span class="line">	node.setNext(header);</span><br><span class="line">	header &#x3D; node;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="头节点"><a href="#头节点" class="headerlink" title="头节点"></a>头节点</h4><pre><code class="highlight plain">public class LinkedList&lt;T&gt; &#123;
+	private Node&lt;T&gt; header;
+	
+	public LinkedList() &#123;
+		super();
+	&#125;
+	
+	public LinkedList(Node&lt;T&gt; header) &#123;
+		super();
+		this.header &#x3D; header;
+	&#125;
 
-<h4 id="尾插法插入节点"><a href="#尾插法插入节点" class="headerlink" title="尾插法插入节点"></a>尾插法插入节点</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void insertNodeTail(Node&lt;T&gt; node)&#123;</span><br><span class="line">	Node&lt;T&gt; temp &#x3D; header;</span><br><span class="line">	if (header &#x3D;&#x3D; null) &#123;</span><br><span class="line">		header &#x3D; node;</span><br><span class="line">		return;</span><br><span class="line">	&#125;</span><br><span class="line">	while(temp.getNext() !&#x3D; null)&#123;</span><br><span class="line">		temp &#x3D; temp.getNext();</span><br><span class="line">	&#125;</span><br><span class="line">	temp.setNext(node);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="移除第一个节点"><a href="#移除第一个节点" class="headerlink" title="移除第一个节点"></a>移除第一个节点</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void removeFirstNode()&#123;</span><br><span class="line">	if(isEmpty())&#123;</span><br><span class="line">		return;</span><br><span class="line">	&#125;</span><br><span class="line">	header &#x3D; header.getNext();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+	public Node&lt;T&gt; getHeader() &#123;
+		return header;
+	&#125;
 
-<h4 id="移除最后一个节点"><a href="#移除最后一个节点" class="headerlink" title="移除最后一个节点"></a>移除最后一个节点</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void removeLastNode()&#123;</span><br><span class="line">	if(isEmpty())&#123;</span><br><span class="line">		return;</span><br><span class="line">	&#125;</span><br><span class="line">	Node&lt;T&gt; temp &#x3D; header;</span><br><span class="line">	while(temp.getNext().getNext() !&#x3D; null)&#123;</span><br><span class="line">		temp &#x3D; temp.getNext();</span><br><span class="line">	&#125;</span><br><span class="line">	temp.setNext(null);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+	public void setHeader(Node&lt;T&gt; header) &#123;
+		this.header &#x3D; header;
+	&#125;
 
-<h4 id="获取单链表长度"><a href="#获取单链表长度" class="headerlink" title="获取单链表长度"></a>获取单链表长度</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public int getLength()&#123;</span><br><span class="line">	int tempLength &#x3D; 0;</span><br><span class="line">	Node&lt;T&gt; tempNode &#x3D; header;</span><br><span class="line">	while(tempNode !&#x3D; null)&#123;</span><br><span class="line">		tempLength++;</span><br><span class="line">		tempNode &#x3D; tempNode.getNext();</span><br><span class="line">	&#125;</span><br><span class="line">	return tempLength;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+	·
+	·
+	·
 
-<h4 id="显示所有节点信息"><a href="#显示所有节点信息" class="headerlink" title="显示所有节点信息"></a>显示所有节点信息</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void dislayAllNode()&#123;</span><br><span class="line">	if(isEmpty())&#123;</span><br><span class="line">		return;</span><br><span class="line">	&#125;</span><br><span class="line">	Node&lt;T&gt; temp &#x3D; header;</span><br><span class="line">	while(temp !&#x3D; null)&#123;</span><br><span class="line">		System.out.println(temp.getData());</span><br><span class="line">		temp &#x3D; temp.getNext();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+	单链表基本操作</code></pre>
 
-<h4 id="指定位置插入节点"><a href="#指定位置插入节点" class="headerlink" title="指定位置插入节点"></a>指定位置插入节点</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void insertNodeByPos(int pos,Node&lt;T&gt; node)&#123;</span><br><span class="line">	&#x2F;&#x2F;链表为空或者指定位置超过链表长度结束</span><br><span class="line">	if(isEmpty() || getLength()+1 &lt; pos)&#123;</span><br><span class="line">		return;</span><br><span class="line">	&#125;</span><br><span class="line">	if(pos &#x3D;&#x3D; 1)&#123;</span><br><span class="line">		insertNodeHead(node);</span><br><span class="line">	&#125;else if (pos &#x3D;&#x3D; getLength()+1) &#123;</span><br><span class="line">		insertNodeTail(node);</span><br><span class="line">	&#125;else &#123;</span><br><span class="line">		Node&lt;T&gt; temp &#x3D; header;</span><br><span class="line">		for (int i &#x3D; pos - 2; i &gt; 0 &amp;&amp; temp !&#x3D; null; i--) &#123;</span><br><span class="line">			temp &#x3D; temp.getNext();</span><br><span class="line">		&#125;</span><br><span class="line">		node.setNext(temp.getNext());</span><br><span class="line">		temp.setNext(node);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="单链表的基本操作"><a href="#单链表的基本操作" class="headerlink" title="单链表的基本操作"></a>单链表的基本操作</h3><h4 id="头插法插入节点"><a href="#头插法插入节点" class="headerlink" title="头插法插入节点"></a>头插法插入节点</h4><pre><code class="highlight plain">public void insertNodeHead(Node&lt;T&gt; node)&#123;
+	node.setNext(header);
+	header &#x3D; node;
+&#125;</code></pre>
 
-<h4 id="删除指定位置节点"><a href="#删除指定位置节点" class="headerlink" title="删除指定位置节点"></a>删除指定位置节点</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void deleteNodeByPos(int pos)&#123;</span><br><span class="line">	if(isEmpty())&#123;</span><br><span class="line">		return;</span><br><span class="line">	&#125;</span><br><span class="line">	Node&lt;T&gt; temp &#x3D; header;</span><br><span class="line">	if (pos &#x3D;&#x3D; 1) &#123;</span><br><span class="line">		removeFirstNode();</span><br><span class="line">		return;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	for (int i &#x3D; pos - 2; i &gt; 0 &amp;&amp; temp !&#x3D; null; i--) &#123;</span><br><span class="line">		temp &#x3D; temp.getNext();</span><br><span class="line">	&#125;</span><br><span class="line">	temp.setNext(temp.getNext().getNext());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="尾插法插入节点"><a href="#尾插法插入节点" class="headerlink" title="尾插法插入节点"></a>尾插法插入节点</h4><pre><code class="highlight plain">public void insertNodeTail(Node&lt;T&gt; node)&#123;
+	Node&lt;T&gt; temp &#x3D; header;
+	if (header &#x3D;&#x3D; null) &#123;
+		header &#x3D; node;
+		return;
+	&#125;
+	while(temp.getNext() !&#x3D; null)&#123;
+		temp &#x3D; temp.getNext();
+	&#125;
+	temp.setNext(node);
+&#125;</code></pre>
+<h4 id="移除第一个节点"><a href="#移除第一个节点" class="headerlink" title="移除第一个节点"></a>移除第一个节点</h4><pre><code class="highlight plain">public void removeFirstNode()&#123;
+	if(isEmpty())&#123;
+		return;
+	&#125;
+	header &#x3D; header.getNext();
+&#125;</code></pre>
 
-<h4 id="查看元素在链表中位置"><a href="#查看元素在链表中位置" class="headerlink" title="查看元素在链表中位置"></a>查看元素在链表中位置</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public Integer elementPos(T data)&#123;</span><br><span class="line">	if(isEmpty())&#123;</span><br><span class="line">		return null;</span><br><span class="line">	&#125;</span><br><span class="line">	Node&lt;T&gt; temp &#x3D; header;</span><br><span class="line">	int pos &#x3D; 1;</span><br><span class="line">	while(temp !&#x3D; null)&#123;</span><br><span class="line">		if(temp.getData().equals(data))&#123;</span><br><span class="line">			return Integer.valueOf(pos);</span><br><span class="line">		&#125;</span><br><span class="line">		pos++;</span><br><span class="line">		temp &#x3D; temp.getNext();</span><br><span class="line">	&#125;</span><br><span class="line">	return null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="移除最后一个节点"><a href="#移除最后一个节点" class="headerlink" title="移除最后一个节点"></a>移除最后一个节点</h4><pre><code class="highlight plain">public void removeLastNode()&#123;
+	if(isEmpty())&#123;
+		return;
+	&#125;
+	Node&lt;T&gt; temp &#x3D; header;
+	while(temp.getNext().getNext() !&#x3D; null)&#123;
+		temp &#x3D; temp.getNext();
+	&#125;
+	temp.setNext(null);
+&#125;</code></pre>
 
-<h4 id="倒置链表"><a href="#倒置链表" class="headerlink" title="倒置链表"></a>倒置链表</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void reverse()&#123;</span><br><span class="line">	if(isEmpty() &amp;&amp; getLength()&#x3D;&#x3D;1)&#123;</span><br><span class="line">		return;</span><br><span class="line">	&#125;	</span><br><span class="line">	Node&lt;T&gt; next;&#x2F;&#x2F;保存下一个节点</span><br><span class="line">	Node&lt;T&gt; temp &#x3D; header;&#x2F;&#x2F;当前处理节点</span><br><span class="line">	header &#x3D; null;&#x2F;&#x2F;第一次做特殊处理，使尾节点中的next为空</span><br><span class="line">	while(temp !&#x3D; null)&#123;</span><br><span class="line">		next &#x3D; temp.getNext();</span><br><span class="line">		temp.setNext(header);</span><br><span class="line">		header &#x3D; temp;</span><br><span class="line">		temp &#x3D; next;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="获取单链表长度"><a href="#获取单链表长度" class="headerlink" title="获取单链表长度"></a>获取单链表长度</h4><pre><code class="highlight plain">public int getLength()&#123;
+	int tempLength &#x3D; 0;
+	Node&lt;T&gt; tempNode &#x3D; header;
+	while(tempNode !&#x3D; null)&#123;
+		tempLength++;
+		tempNode &#x3D; tempNode.getNext();
+	&#125;
+	return tempLength;
+&#125;</code></pre>
 
-<h4 id="查看链表是否为空"><a href="#查看链表是否为空" class="headerlink" title="查看链表是否为空"></a>查看链表是否为空</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public boolean isEmpty()&#123;</span><br><span class="line">	return Objects.isNull(header);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="显示所有节点信息"><a href="#显示所有节点信息" class="headerlink" title="显示所有节点信息"></a>显示所有节点信息</h4><pre><code class="highlight plain">public void dislayAllNode()&#123;
+	if(isEmpty())&#123;
+		return;
+	&#125;
+	Node&lt;T&gt; temp &#x3D; header;
+	while(temp !&#x3D; null)&#123;
+		System.out.println(temp.getData());
+		temp &#x3D; temp.getNext();
+	&#125;
+&#125;</code></pre>
 
-<h4 id="清空链表"><a href="#清空链表" class="headerlink" title="清空链表"></a>清空链表</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void clear()&#123;</span><br><span class="line">	header &#x3D; null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="指定位置插入节点"><a href="#指定位置插入节点" class="headerlink" title="指定位置插入节点"></a>指定位置插入节点</h4><pre><code class="highlight plain">public void insertNodeByPos(int pos,Node&lt;T&gt; node)&#123;
+	&#x2F;&#x2F;链表为空或者指定位置超过链表长度结束
+	if(isEmpty() || getLength()+1 &lt; pos)&#123;
+		return;
+	&#125;
+	if(pos &#x3D;&#x3D; 1)&#123;
+		insertNodeHead(node);
+	&#125;else if (pos &#x3D;&#x3D; getLength()+1) &#123;
+		insertNodeTail(node);
+	&#125;else &#123;
+		Node&lt;T&gt; temp &#x3D; header;
+		for (int i &#x3D; pos - 2; i &gt; 0 &amp;&amp; temp !&#x3D; null; i--) &#123;
+			temp &#x3D; temp.getNext();
+		&#125;
+		node.setNext(temp.getNext());
+		temp.setNext(node);
+	&#125;
+&#125;</code></pre>
+
+<h4 id="删除指定位置节点"><a href="#删除指定位置节点" class="headerlink" title="删除指定位置节点"></a>删除指定位置节点</h4><pre><code class="highlight plain">public void deleteNodeByPos(int pos)&#123;
+	if(isEmpty())&#123;
+		return;
+	&#125;
+	Node&lt;T&gt; temp &#x3D; header;
+	if (pos &#x3D;&#x3D; 1) &#123;
+		removeFirstNode();
+		return;
+	&#125;
+
+	for (int i &#x3D; pos - 2; i &gt; 0 &amp;&amp; temp !&#x3D; null; i--) &#123;
+		temp &#x3D; temp.getNext();
+	&#125;
+	temp.setNext(temp.getNext().getNext());
+&#125;</code></pre>
+
+<h4 id="查看元素在链表中位置"><a href="#查看元素在链表中位置" class="headerlink" title="查看元素在链表中位置"></a>查看元素在链表中位置</h4><pre><code class="highlight plain">public Integer elementPos(T data)&#123;
+	if(isEmpty())&#123;
+		return null;
+	&#125;
+	Node&lt;T&gt; temp &#x3D; header;
+	int pos &#x3D; 1;
+	while(temp !&#x3D; null)&#123;
+		if(temp.getData().equals(data))&#123;
+			return Integer.valueOf(pos);
+		&#125;
+		pos++;
+		temp &#x3D; temp.getNext();
+	&#125;
+	return null;
+&#125;</code></pre>
+
+<h4 id="倒置链表"><a href="#倒置链表" class="headerlink" title="倒置链表"></a>倒置链表</h4><pre><code class="highlight plain">public void reverse()&#123;
+	if(isEmpty() &amp;&amp; getLength()&#x3D;&#x3D;1)&#123;
+		return;
+	&#125;	
+	Node&lt;T&gt; next;&#x2F;&#x2F;保存下一个节点
+	Node&lt;T&gt; temp &#x3D; header;&#x2F;&#x2F;当前处理节点
+	header &#x3D; null;&#x2F;&#x2F;第一次做特殊处理，使尾节点中的next为空
+	while(temp !&#x3D; null)&#123;
+		next &#x3D; temp.getNext();
+		temp.setNext(header);
+		header &#x3D; temp;
+		temp &#x3D; next;
+	&#125;
+&#125;</code></pre>
+
+<h4 id="查看链表是否为空"><a href="#查看链表是否为空" class="headerlink" title="查看链表是否为空"></a>查看链表是否为空</h4><pre><code class="highlight plain">public boolean isEmpty()&#123;
+	return Objects.isNull(header);
+&#125;</code></pre>
+
+<h4 id="清空链表"><a href="#清空链表" class="headerlink" title="清空链表"></a>清空链表</h4><pre><code class="highlight plain">public void clear()&#123;
+	header &#x3D; null;
+&#125;</code></pre>
       
     </div>
     
@@ -400,8 +556,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/06/17/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/" rel="next" title="单例模式">
-                <i class="fa fa-chevron-left"></i> 单例模式
+              <a href="/2020/06/17/%E5%88%A9%E7%94%A8%E9%98%BB%E5%A1%9E%E9%98%9F%E5%88%97%E5%AE%9E%E7%8E%B0%E7%94%9F%E4%BA%A7%E8%80%85%E6%B6%88%E8%B4%B9%E8%80%85/" rel="next" title="利用阻塞队列实现生产者消费者">
+                <i class="fa fa-chevron-left"></i> 利用阻塞队列实现生产者消费者
               </a>
             
           </div>
@@ -410,8 +566,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2020/06/17/%E5%8F%8D%E5%B0%84%E5%9F%BA%E7%A1%80/" rel="prev" title="反射基础">
-                反射基础 <i class="fa fa-chevron-right"></i>
+              <a href="/2020/06/17/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/" rel="prev" title="单例模式">
+                单例模式 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -749,7 +905,7 @@
 
   
 
-  <link rel="stylesheet" href="/lib/prettify/skins/desert.css" type="text/css">
+  <link rel="stylesheet" href="/lib/prettify/skins/sunburst.css" type="text/css">
 <script src="/lib/prettify/prettify.js" type="text/javascript"></script>
 <script type="text/javascript">
   $(document).ready(function() {

@@ -341,16 +341,237 @@
       
         
           
-            <h3 id="synchornized"><a href="#synchornized" class="headerlink" title="synchornized"></a>synchornized</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Threadpc &#123;</span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		storage storage &#x3D; new storage();</span><br><span class="line">		new producer(&quot;生产者1&quot;,storage,50).start();</span><br><span class="line">		new producer(&quot;生产者2&quot;,storage,100).start();</span><br><span class="line">		new producer(&quot;生产者3&quot;,storage,60).start();</span><br><span class="line">		new consumer(&quot;消费者1&quot;, storage,20).start();</span><br><span class="line">		new consumer(&quot;消费者2&quot;, storage,40).start();</span><br><span class="line">		new consumer(&quot;消费者3&quot;, storage,60).start();</span><br><span class="line">		new consumer(&quot;消费者4&quot;, storage,30).start();</span><br><span class="line">		new consumer(&quot;消费者5&quot;, storage,50).start();</span><br><span class="line">		new consumer(&quot;消费者6&quot;, storage,10).start();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class storage&#123;</span><br><span class="line">	private final int MAX_SIZE &#x3D; 100;</span><br><span class="line">	private LinkedList&lt;Object&gt; list &#x3D; new LinkedList&lt;Object&gt;();</span><br><span class="line">	public void consume(int num,String threadName)&#123;</span><br><span class="line">		synchronized (list) &#123;</span><br><span class="line">			while(list.size()&lt;num)&#123;&#x2F;&#x2F;库存小于要消费的数量</span><br><span class="line">				try &#123;</span><br><span class="line">					System.out.println(threadName+&quot;暂时无法进行消费,库存不足&quot;);</span><br><span class="line">					list.wait();</span><br><span class="line">				&#125; catch (InterruptedException e) &#123;</span><br><span class="line">					&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">					e.printStackTrace();</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">			for (int i &#x3D; 0; i &lt; num; i++) &#123;</span><br><span class="line">				list.remove();</span><br><span class="line">			&#125;</span><br><span class="line">			System.out.println(threadName+&quot;消费产品&quot;+num+&quot;,剩余库存:&quot;+list.size());</span><br><span class="line">			list.notifyAll();</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	</span><br><span class="line">	public void produce(int num,String threadName)&#123;</span><br><span class="line">		synchronized (list) &#123;</span><br><span class="line">			while(num &gt; MAX_SIZE-list.size())&#123;&#x2F;&#x2F;生产数量超过库存限制</span><br><span class="line">				try &#123;</span><br><span class="line">					System.out.println(threadName+&quot;暂时无法进行生产,库存过多&quot;);</span><br><span class="line">					list.wait();</span><br><span class="line">				&#125; catch (InterruptedException e) &#123;</span><br><span class="line">					&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">					e.printStackTrace();</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">			for (int i &#x3D; 0; i &lt; num; i++) &#123;</span><br><span class="line">				list.add(new Object());</span><br><span class="line">			&#125;</span><br><span class="line">			System.out.println(threadName+&quot;生产产品&quot;+num+&quot;,剩余库存:&quot;+list.size());</span><br><span class="line">			list.notifyAll();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class consumer extends Thread&#123;</span><br><span class="line">	private int num;</span><br><span class="line">	private storage storage;</span><br><span class="line">	public consumer(String name,storage storage,int num) &#123;</span><br><span class="line">		super(name);</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated constructor stub</span><br><span class="line">		this.storage &#x3D; storage;</span><br><span class="line">		this.num &#x3D; num;</span><br><span class="line">	&#125;</span><br><span class="line">	@Override</span><br><span class="line">	public void run() &#123;</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated method stub</span><br><span class="line">		super.run();</span><br><span class="line">		storage.consume(num, Thread.currentThread().getName());</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class producer extends Thread&#123;</span><br><span class="line">	private int num;</span><br><span class="line">	private storage storage;</span><br><span class="line">	public producer(String name,storage storage,int num) &#123;</span><br><span class="line">		super(name);</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated constructor stub</span><br><span class="line">		this.storage &#x3D; storage;</span><br><span class="line">		this.num &#x3D; num;</span><br><span class="line">	&#125;</span><br><span class="line">	@Override</span><br><span class="line">	public void run() &#123;</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated method stub</span><br><span class="line">		super.run();</span><br><span class="line">		storage.produce(num, Thread.currentThread().getName());</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+            <h3 id="synchornized"><a href="#synchornized" class="headerlink" title="synchornized"></a>synchornized</h3><pre><code class="highlight plain">public class Threadpc &#123;
+	public static void main(String[] args) &#123;
+		storage storage &#x3D; new storage();
+		new producer(&quot;生产者1&quot;,storage,50).start();
+		new producer(&quot;生产者2&quot;,storage,100).start();
+		new producer(&quot;生产者3&quot;,storage,60).start();
+		new consumer(&quot;消费者1&quot;, storage,20).start();
+		new consumer(&quot;消费者2&quot;, storage,40).start();
+		new consumer(&quot;消费者3&quot;, storage,60).start();
+		new consumer(&quot;消费者4&quot;, storage,30).start();
+		new consumer(&quot;消费者5&quot;, storage,50).start();
+		new consumer(&quot;消费者6&quot;, storage,10).start();
+	&#125;
+&#125;
+
+class storage&#123;
+	private final int MAX_SIZE &#x3D; 100;
+	private LinkedList&lt;Object&gt; list &#x3D; new LinkedList&lt;Object&gt;();
+	public void consume(int num,String threadName)&#123;
+		synchronized (list) &#123;
+			while(list.size()&lt;num)&#123;&#x2F;&#x2F;库存小于要消费的数量
+				try &#123;
+					System.out.println(threadName+&quot;暂时无法进行消费,库存不足&quot;);
+					list.wait();
+				&#125; catch (InterruptedException e) &#123;
+					&#x2F;&#x2F; TODO Auto-generated catch block
+					e.printStackTrace();
+				&#125;
+			&#125;
+			for (int i &#x3D; 0; i &lt; num; i++) &#123;
+				list.remove();
+			&#125;
+			System.out.println(threadName+&quot;消费产品&quot;+num+&quot;,剩余库存:&quot;+list.size());
+			list.notifyAll();
+		&#125;
+
+	&#125;
+	
+	
+	public void produce(int num,String threadName)&#123;
+		synchronized (list) &#123;
+			while(num &gt; MAX_SIZE-list.size())&#123;&#x2F;&#x2F;生产数量超过库存限制
+				try &#123;
+					System.out.println(threadName+&quot;暂时无法进行生产,库存过多&quot;);
+					list.wait();
+				&#125; catch (InterruptedException e) &#123;
+					&#x2F;&#x2F; TODO Auto-generated catch block
+					e.printStackTrace();
+				&#125;
+			&#125;
+			for (int i &#x3D; 0; i &lt; num; i++) &#123;
+				list.add(new Object());
+			&#125;
+			System.out.println(threadName+&quot;生产产品&quot;+num+&quot;,剩余库存:&quot;+list.size());
+			list.notifyAll();
+		&#125;
+	&#125;
+&#125;
+
+class consumer extends Thread&#123;
+	private int num;
+	private storage storage;
+	public consumer(String name,storage storage,int num) &#123;
+		super(name);
+		&#x2F;&#x2F; TODO Auto-generated constructor stub
+		this.storage &#x3D; storage;
+		this.num &#x3D; num;
+	&#125;
+	@Override
+	public void run() &#123;
+		&#x2F;&#x2F; TODO Auto-generated method stub
+		super.run();
+		storage.consume(num, Thread.currentThread().getName());
+	&#125;
+	
+&#125;
+
+class producer extends Thread&#123;
+	private int num;
+	private storage storage;
+	public producer(String name,storage storage,int num) &#123;
+		super(name);
+		&#x2F;&#x2F; TODO Auto-generated constructor stub
+		this.storage &#x3D; storage;
+		this.num &#x3D; num;
+	&#125;
+	@Override
+	public void run() &#123;
+		&#x2F;&#x2F; TODO Auto-generated method stub
+		super.run();
+		storage.produce(num, Thread.currentThread().getName());
+	&#125;
+	
+&#125;</code></pre>
 
 <p>创建多个线程，<code>run</code>方法中调用共有的<code>storage</code>实例的<code>produce</code>和<code>consume</code>方法，在两个方法中使用<code>synchronized</code>代码块进行同步，使用<code>storage</code>中的共有的<code>list</code>的对象锁和<code>wait</code>和<code>notifyall</code>方法来调度生产者和消费者进程交替。输出如下：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">生产者2生产产品100,剩余库存:100</span><br><span class="line">生产者1暂时无法进行生产,库存过多</span><br><span class="line">生产者3暂时无法进行生产,库存过多</span><br><span class="line">消费者1消费产品20,剩余库存:80</span><br><span class="line">生产者3暂时无法进行生产,库存过多</span><br><span class="line">消费者4消费产品30,剩余库存:50</span><br><span class="line">消费者6消费产品10,剩余库存:40</span><br><span class="line">生产者1生产产品50,剩余库存:90</span><br><span class="line">消费者3消费产品60,剩余库存:30</span><br><span class="line">消费者2暂时无法进行消费,库存不足</span><br><span class="line">生产者3生产产品60,剩余库存:90</span><br><span class="line">消费者5消费产品50,剩余库存:40</span><br><span class="line">消费者2消费产品40,剩余库存:0</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">生产者2生产产品100,剩余库存:100
+生产者1暂时无法进行生产,库存过多
+生产者3暂时无法进行生产,库存过多
+消费者1消费产品20,剩余库存:80
+生产者3暂时无法进行生产,库存过多
+消费者4消费产品30,剩余库存:50
+消费者6消费产品10,剩余库存:40
+生产者1生产产品50,剩余库存:90
+消费者3消费产品60,剩余库存:30
+消费者2暂时无法进行消费,库存不足
+生产者3生产产品60,剩余库存:90
+消费者5消费产品50,剩余库存:40
+消费者2消费产品40,剩余库存:0</code></pre>
 
 <h3 id="ReentrantLock"><a href="#ReentrantLock" class="headerlink" title="ReentrantLock"></a>ReentrantLock</h3><p><code>ReentrantLock</code>锁的粒度比<code>synchronized</code>小，在尝试使用<code>synchronized</code>进行同样的分组唤醒，即生产者唤醒消费者和消费者唤醒生产者，忽略了一个要点，无论是执行对象的<code>wait</code>、<code>notify</code>还是<code>notifyAll</code>方法，必须保证当前运行的线程取得了该对象的锁，否则会报<code>java.lang.IllegalMonitorStateException</code>异常，发生异常代码如下</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void consume(int num,String threadName)&#123;</span><br><span class="line">	synchronized (o1) &#123;</span><br><span class="line">		System.out.println(threadName+&quot;获得锁&quot;);</span><br><span class="line">		while(list.size()&lt;num)&#123;&#x2F;&#x2F;库存小于要消费的数量</span><br><span class="line">			try &#123;</span><br><span class="line">				System.out.println(threadName+&quot;暂时无法进行消费,库存不足&quot;);</span><br><span class="line">				o1.wait();</span><br><span class="line">				&#x2F;&#x2F;list.wait();</span><br><span class="line">			&#125; catch (InterruptedException e) &#123;</span><br><span class="line">				&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">				e.printStackTrace();</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		for (int i &#x3D; 0; i &lt; num; i++) &#123;</span><br><span class="line">			list.remove();</span><br><span class="line">		&#125;</span><br><span class="line">		System.out.println(threadName+&quot;消费产品&quot;+num+&quot;,剩余库存:&quot;+list.size());</span><br><span class="line">		o2.notifyAll();&#x2F;&#x2F;未取得o2对象锁，不能运行这个方法</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public void consume(int num,String threadName)&#123;
+	synchronized (o1) &#123;
+		System.out.println(threadName+&quot;获得锁&quot;);
+		while(list.size()&lt;num)&#123;&#x2F;&#x2F;库存小于要消费的数量
+			try &#123;
+				System.out.println(threadName+&quot;暂时无法进行消费,库存不足&quot;);
+				o1.wait();
+				&#x2F;&#x2F;list.wait();
+			&#125; catch (InterruptedException e) &#123;
+				&#x2F;&#x2F; TODO Auto-generated catch block
+				e.printStackTrace();
+			&#125;
+		&#125;
+		for (int i &#x3D; 0; i &lt; num; i++) &#123;
+			list.remove();
+		&#125;
+		System.out.println(threadName+&quot;消费产品&quot;+num+&quot;,剩余库存:&quot;+list.size());
+		o2.notifyAll();&#x2F;&#x2F;未取得o2对象锁，不能运行这个方法
+	&#125;</code></pre>
 
 <p>下面用<code>ReentrantLock</code>来进行分组唤醒</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Threadpc &#123;</span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		storage storage &#x3D; new storage2();</span><br><span class="line">		new producer(&quot;生产者1&quot;,storage,50).start();</span><br><span class="line">		new producer(&quot;生产者2&quot;,storage,100).start();</span><br><span class="line">		new producer(&quot;生产者3&quot;,storage,60).start();</span><br><span class="line">		new consumer(&quot;消费者1&quot;, storage,20).start();</span><br><span class="line">		new consumer(&quot;消费者2&quot;, storage,40).start();</span><br><span class="line">		new consumer(&quot;消费者3&quot;, storage,60).start();</span><br><span class="line">		new consumer(&quot;消费者4&quot;, storage,30).start();</span><br><span class="line">		new consumer(&quot;消费者5&quot;, storage,50).start();</span><br><span class="line">		new consumer(&quot;消费者6&quot;, storage,10).start();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class storage2&#123;</span><br><span class="line">	private int MAX_SIZE &#x3D; 100;</span><br><span class="line">	private ReentrantLock lock &#x3D; new ReentrantLock();</span><br><span class="line">	private Condition produce &#x3D; lock.newCondition();</span><br><span class="line">	private Condition consumer &#x3D; lock.newCondition();</span><br><span class="line">	private LinkedList&lt;Object&gt; list &#x3D; new LinkedList&lt;Object&gt;();</span><br><span class="line">	</span><br><span class="line">	public void consume(int num,String threadName)&#123;</span><br><span class="line">		lock.lock();</span><br><span class="line">		while(num &gt; list.size())&#123;</span><br><span class="line">			try &#123;</span><br><span class="line">				System.out.println(threadName+&quot;暂时无法消费,库存余量为:&quot;+list.size());</span><br><span class="line">				consumer.await();</span><br><span class="line">			&#125; catch (InterruptedException e) &#123;</span><br><span class="line">				&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">				e.printStackTrace();</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		for (int i &#x3D; 0; i &lt; num; i++) &#123;</span><br><span class="line">			list.remove();</span><br><span class="line">		&#125;</span><br><span class="line">		System.out.println(threadName+&quot;消费库存&quot;+num+&quot;,库存余量为&quot;+list.size());</span><br><span class="line">		produce.signalAll();</span><br><span class="line">		lock.unlock();</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	public void produce(int num,String threadName)&#123;</span><br><span class="line">		lock.lock();</span><br><span class="line">		while(num+list.size()&gt;MAX_SIZE)&#123;</span><br><span class="line">			try &#123;</span><br><span class="line">				System.out.println(threadName+&quot;暂时无法生产,库存余量为:&quot;+list.size());</span><br><span class="line">				produce.await();</span><br><span class="line">			&#125; catch (InterruptedException e) &#123;</span><br><span class="line">				&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">				e.printStackTrace();</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		for (int i &#x3D; 0; i &lt; num; i++) &#123;</span><br><span class="line">			list.add(new Object());</span><br><span class="line">		&#125;</span><br><span class="line">		System.out.println(threadName+&quot;生产库存&quot;+num+&quot;,库存余量为&quot;+list.size());</span><br><span class="line">		consumer.signalAll();</span><br><span class="line">		lock.unlock();</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class producer2 extends Thread&#123;</span><br><span class="line">	</span><br><span class="line">	private storage storage;</span><br><span class="line">	private int num;</span><br><span class="line">	public producer(String name,storage storage,int num) &#123;</span><br><span class="line">		super(name);</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated constructor stub</span><br><span class="line">		this.storage &#x3D; storage;</span><br><span class="line">		this.num &#x3D; num;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public void run() &#123;</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated method stub</span><br><span class="line">		super.run();</span><br><span class="line">		storage.produce(num, Thread.currentThread().getName());</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class consumer2 extends Thread&#123;</span><br><span class="line">	private storage storage;</span><br><span class="line">	private int num;</span><br><span class="line">	public consumer2(String name,storage storage,int num) &#123;</span><br><span class="line">		super(name);</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated constructor stub</span><br><span class="line">		this.num &#x3D; num;</span><br><span class="line">		this.storage &#x3D; storage;</span><br><span class="line">	&#125;</span><br><span class="line">	@Override</span><br><span class="line">	public void run() &#123;</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated method stub</span><br><span class="line">		super.run();</span><br><span class="line">		storage.consume(num, Thread.currentThread().getName());</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public class Threadpc &#123;
+	public static void main(String[] args) &#123;
+		storage storage &#x3D; new storage2();
+		new producer(&quot;生产者1&quot;,storage,50).start();
+		new producer(&quot;生产者2&quot;,storage,100).start();
+		new producer(&quot;生产者3&quot;,storage,60).start();
+		new consumer(&quot;消费者1&quot;, storage,20).start();
+		new consumer(&quot;消费者2&quot;, storage,40).start();
+		new consumer(&quot;消费者3&quot;, storage,60).start();
+		new consumer(&quot;消费者4&quot;, storage,30).start();
+		new consumer(&quot;消费者5&quot;, storage,50).start();
+		new consumer(&quot;消费者6&quot;, storage,10).start();
+	&#125;
+
+&#125;
+
+class storage2&#123;
+	private int MAX_SIZE &#x3D; 100;
+	private ReentrantLock lock &#x3D; new ReentrantLock();
+	private Condition produce &#x3D; lock.newCondition();
+	private Condition consumer &#x3D; lock.newCondition();
+	private LinkedList&lt;Object&gt; list &#x3D; new LinkedList&lt;Object&gt;();
+	
+	public void consume(int num,String threadName)&#123;
+		lock.lock();
+		while(num &gt; list.size())&#123;
+			try &#123;
+				System.out.println(threadName+&quot;暂时无法消费,库存余量为:&quot;+list.size());
+				consumer.await();
+			&#125; catch (InterruptedException e) &#123;
+				&#x2F;&#x2F; TODO Auto-generated catch block
+				e.printStackTrace();
+			&#125;
+		&#125;
+		for (int i &#x3D; 0; i &lt; num; i++) &#123;
+			list.remove();
+		&#125;
+		System.out.println(threadName+&quot;消费库存&quot;+num+&quot;,库存余量为&quot;+list.size());
+		produce.signalAll();
+		lock.unlock();
+	&#125;
+	
+	public void produce(int num,String threadName)&#123;
+		lock.lock();
+		while(num+list.size()&gt;MAX_SIZE)&#123;
+			try &#123;
+				System.out.println(threadName+&quot;暂时无法生产,库存余量为:&quot;+list.size());
+				produce.await();
+			&#125; catch (InterruptedException e) &#123;
+				&#x2F;&#x2F; TODO Auto-generated catch block
+				e.printStackTrace();
+			&#125;
+		&#125;
+		for (int i &#x3D; 0; i &lt; num; i++) &#123;
+			list.add(new Object());
+		&#125;
+		System.out.println(threadName+&quot;生产库存&quot;+num+&quot;,库存余量为&quot;+list.size());
+		consumer.signalAll();
+		lock.unlock();
+	&#125;
+	
+&#125;
+
+class producer2 extends Thread&#123;
+	
+	private storage storage;
+	private int num;
+	public producer(String name,storage storage,int num) &#123;
+		super(name);
+		&#x2F;&#x2F; TODO Auto-generated constructor stub
+		this.storage &#x3D; storage;
+		this.num &#x3D; num;
+	&#125;
+
+	@Override
+	public void run() &#123;
+		&#x2F;&#x2F; TODO Auto-generated method stub
+		super.run();
+		storage.produce(num, Thread.currentThread().getName());
+	&#125;
+&#125;
+
+class consumer2 extends Thread&#123;
+	private storage storage;
+	private int num;
+	public consumer2(String name,storage storage,int num) &#123;
+		super(name);
+		&#x2F;&#x2F; TODO Auto-generated constructor stub
+		this.num &#x3D; num;
+		this.storage &#x3D; storage;
+	&#125;
+	@Override
+	public void run() &#123;
+		&#x2F;&#x2F; TODO Auto-generated method stub
+		super.run();
+		storage.consume(num, Thread.currentThread().getName());
+	&#125;
+	
+&#125;</code></pre>
           
         
       
@@ -492,13 +713,57 @@
         
           
             <h3 id="特性"><a href="#特性" class="headerlink" title="特性"></a>特性</h3><p>java接口中的default方法是在java 8之后引入的，即在不破坏java现有实现架构的情况下能往接口里增加新方法，这个特征又叫做虚拟扩展方法（Virtual extension methods），通常也称之为 defender 方法，它目前可以添加到接口中，为声明的方法提供默认的实现，子类可以直接调用或者复写该方法。作用为优化接口的同时，避免跟现有实现架构的兼容问题。</p>
-<h3 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">List&lt;Integer&gt; list &#x3D; new ArrayList&lt;Integer&gt;();</span><br><span class="line">list.add(1);</span><br><span class="line">list.add(2);</span><br><span class="line">list.forEach(System.out::println);</span><br></pre></td></tr></table></figure>
+<h3 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h3><pre><code class="highlight plain">List&lt;Integer&gt; list &#x3D; new ArrayList&lt;Integer&gt;();
+list.add(1);
+list.add(2);
+list.forEach(System.out::println);</code></pre>
 
 <p>java8之后list多了一个forEach方法来方便我们遍历集合，向上查找父类和实现的接口发现Iterable接口中多了一个default方法</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * Performs the given action for each element of the &#123;@code Iterable&#125;</span><br><span class="line"> * until all elements have been processed or the action throws an</span><br><span class="line"> * exception.  Unless otherwise specified by the implementing class,</span><br><span class="line"> * actions are performed in the order of iteration (if an iteration order</span><br><span class="line"> * is specified).  Exceptions thrown by the action are relayed to the</span><br><span class="line"> * caller.</span><br><span class="line"> *</span><br><span class="line"> * @implSpec</span><br><span class="line"> * &lt;p&gt;The default implementation behaves as if:</span><br><span class="line"> * &lt;pre&gt;&#123;@code</span><br><span class="line"> *     for (T t : this)</span><br><span class="line"> *         action.accept(t);</span><br><span class="line"> * &#125;&lt;&#x2F;pre&gt;</span><br><span class="line"> *</span><br><span class="line"> * @param action The action to be performed for each element</span><br><span class="line"> * @throws NullPointerException if the specified action is null</span><br><span class="line"> * @since 1.8</span><br><span class="line"> *&#x2F;</span><br><span class="line">default void forEach(Consumer&lt;? super T&gt; action) &#123;</span><br><span class="line">    Objects.requireNonNull(action);</span><br><span class="line">    for (T t : this) &#123;</span><br><span class="line">        action.accept(t);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">&#x2F;**
+ * Performs the given action for each element of the &#123;@code Iterable&#125;
+ * until all elements have been processed or the action throws an
+ * exception.  Unless otherwise specified by the implementing class,
+ * actions are performed in the order of iteration (if an iteration order
+ * is specified).  Exceptions thrown by the action are relayed to the
+ * caller.
+ *
+ * @implSpec
+ * &lt;p&gt;The default implementation behaves as if:
+ * &lt;pre&gt;&#123;@code
+ *     for (T t : this)
+ *         action.accept(t);
+ * &#125;&lt;&#x2F;pre&gt;
+ *
+ * @param action The action to be performed for each element
+ * @throws NullPointerException if the specified action is null
+ * @since 1.8
+ *&#x2F;
+default void forEach(Consumer&lt;? super T&gt; action) &#123;
+    Objects.requireNonNull(action);
+    for (T t : this) &#123;
+        action.accept(t);
+    &#125;
+&#125;</code></pre>
 
 <p>与此相同的还有Collection接口新增的stream方法，用来帮助我们更方便地处理集合元素</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * Returns a sequential &#123;@code Stream&#125; with this collection as its source.</span><br><span class="line"> *</span><br><span class="line"> * &lt;p&gt;This method should be overridden when the &#123;@link #spliterator()&#125;</span><br><span class="line"> * method cannot return a spliterator that is &#123;@code IMMUTABLE&#125;,</span><br><span class="line"> * &#123;@code CONCURRENT&#125;, or &lt;em&gt;late-binding&lt;&#x2F;em&gt;. (See &#123;@link #spliterator()&#125;</span><br><span class="line"> * for details.)</span><br><span class="line"> *</span><br><span class="line"> * @implSpec</span><br><span class="line"> * The default implementation creates a sequential &#123;@code Stream&#125; from the</span><br><span class="line"> * collection&#39;s &#123;@code Spliterator&#125;.</span><br><span class="line"> *</span><br><span class="line"> * @return a sequential &#123;@code Stream&#125; over the elements in this collection</span><br><span class="line"> * @since 1.8</span><br><span class="line"> *&#x2F;</span><br><span class="line">default Stream&lt;E&gt; stream() &#123;</span><br><span class="line">    return StreamSupport.stream(spliterator(), false);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">&#x2F;**
+ * Returns a sequential &#123;@code Stream&#125; with this collection as its source.
+ *
+ * &lt;p&gt;This method should be overridden when the &#123;@link #spliterator()&#125;
+ * method cannot return a spliterator that is &#123;@code IMMUTABLE&#125;,
+ * &#123;@code CONCURRENT&#125;, or &lt;em&gt;late-binding&lt;&#x2F;em&gt;. (See &#123;@link #spliterator()&#125;
+ * for details.)
+ *
+ * @implSpec
+ * The default implementation creates a sequential &#123;@code Stream&#125; from the
+ * collection&#39;s &#123;@code Spliterator&#125;.
+ *
+ * @return a sequential &#123;@code Stream&#125; over the elements in this collection
+ * @since 1.8
+ *&#x2F;
+default Stream&lt;E&gt; stream() &#123;
+    return StreamSupport.stream(spliterator(), false);
+&#125;</code></pre>
           
         
       
@@ -642,14 +907,61 @@
             <h3 id="理解枚举类型"><a href="#理解枚举类型" class="headerlink" title="理解枚举类型"></a>理解枚举类型</h3><p>枚举类型是Java 5中新增特性的一部分，它是一种特殊的数据类型，之所以特殊是因为它既是一种类(class)类型却又比类类型多了些特殊的约束，但是这些约束的存在也造就了枚举类型的简洁性、安全性以及便捷性</p>
 <h3 id="枚举用来定义常量"><a href="#枚举用来定义常量" class="headerlink" title="枚举用来定义常量"></a>枚举用来定义常量</h3><p><strong>枚举常量、类常量与静态常量</strong></p>
 <p>平常我们定义普通常量的时候</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Demo&#123;</span><br><span class="line">	public static final int OPEN &#x3D;1;</span><br><span class="line">	public static final int CLOSE&#x3D;2;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public class Demo&#123;
+	public static final int OPEN &#x3D;1;
+	public static final int CLOSE&#x3D;2;
+&#125;</code></pre>
 
 <p>上述的常量定义常量的方式称为int枚举模式，这样的定义方式并没有什么错，但它存在许多不足，如在类型安全和使用方便性上并没有多少好处，如果存在定义int值相同的变量，混淆的几率还是很大的，编译器也不会提出任何警告，因此这种方式在枚举出现后并不提倡，现在我们利用枚举类型来重新定义上述的常量，同时也感受一把枚举定义的方式</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">enum Demo&#123;</span><br><span class="line">	OPEN,CLOSE</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">enum Demo&#123;
+	OPEN,CLOSE
+&#125;</code></pre>
 
 <p>用普通常量的方式定义的话，值为<code>int</code>类型，用枚举来定义的话，取值<code>Demo.OPEN</code>输出为我们定义的枚举类型</p>
 <h3 id="枚举的构造函数"><a href="#枚举的构造函数" class="headerlink" title="枚举的构造函数"></a>枚举的构造函数</h3><p>测试Demo</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">enum fruit&#123;</span><br><span class="line">	apple(&quot;苹果&quot;),melon(&quot;西瓜&quot;);</span><br><span class="line">	private String chinese;</span><br><span class="line">	private fruit(String chinese) &#123;</span><br><span class="line">		this.chinese &#x3D; chinese;</span><br><span class="line">	&#125;</span><br><span class="line">	public String getChinese() &#123;</span><br><span class="line">		return chinese;</span><br><span class="line">	&#125;</span><br><span class="line">	public void setChinese(String chinese) &#123;</span><br><span class="line">		this.chinese &#x3D; chinese;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	@Test</span><br><span class="line">	void test3() &#123;</span><br><span class="line">		System.out.println(fruit.apple);</span><br><span class="line">		&#x2F;&#x2F;输出为apple</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Test</span><br><span class="line">	void test3() &#123;</span><br><span class="line">		System.out.println(fruit.apple.getClass());</span><br><span class="line">		&#x2F;&#x2F;输出为class 本包.fruit，为自定义的枚举类型</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F;调用函数</span><br><span class="line">	@Test</span><br><span class="line">	void test3() &#123;</span><br><span class="line">		System.out.println(fruit.apple.getChinese);</span><br><span class="line">		&#x2F;&#x2F;输出苹果</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	&#x2F;&#x2F;遍历枚举</span><br><span class="line">	@Test</span><br><span class="line">	void test3() &#123;</span><br><span class="line">		for(fruit f:fruit.values()) &#123;</span><br><span class="line">			System.out.println(f.getChinese());</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">enum fruit&#123;
+	apple(&quot;苹果&quot;),melon(&quot;西瓜&quot;);
+	private String chinese;
+	private fruit(String chinese) &#123;
+		this.chinese &#x3D; chinese;
+	&#125;
+	public String getChinese() &#123;
+		return chinese;
+	&#125;
+	public void setChinese(String chinese) &#123;
+		this.chinese &#x3D; chinese;
+	&#125;
+	
+	
+&#125;
+
+
+	@Test
+	void test3() &#123;
+		System.out.println(fruit.apple);
+		&#x2F;&#x2F;输出为apple
+	&#125;
+
+	@Test
+	void test3() &#123;
+		System.out.println(fruit.apple.getClass());
+		&#x2F;&#x2F;输出为class 本包.fruit，为自定义的枚举类型
+	&#125;
+
+	&#x2F;&#x2F;调用函数
+	@Test
+	void test3() &#123;
+		System.out.println(fruit.apple.getChinese);
+		&#x2F;&#x2F;输出苹果
+	&#125;
+	
+	&#x2F;&#x2F;遍历枚举
+	@Test
+	void test3() &#123;
+		for(fruit f:fruit.values()) &#123;
+			System.out.println(f.getChinese());
+		&#125;
+	&#125;</code></pre>
 
 
 
@@ -658,162 +970,6 @@
 <h3 id="其他特性"><a href="#其他特性" class="headerlink" title="其他特性"></a>其他特性</h3><p>枚举可以定义静态方法和非静态方法</p>
 <p>枚举不能有继承</p>
 <p>可以用在switch中</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" itemprop="url">排序算法</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="冒泡法"><a href="#冒泡法" class="headerlink" title="冒泡法"></a>冒泡法</h3><p>关键排序代码如下</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void bubble(int[] i)&#123;</span><br><span class="line">	int temp;</span><br><span class="line">	for(int j &#x3D; 0;j &lt; i.length-1; j++)&#123;</span><br><span class="line">		for(int k &#x3D; 0; k &lt; i.length - j -1; k++)&#123;</span><br><span class="line">			if(i[k] &gt; i[k+1])&#123;</span><br><span class="line">				temp &#x3D; i[k];</span><br><span class="line">				i[k] &#x3D; i[k+1];</span><br><span class="line">				i[k+1] &#x3D; temp;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>用来对一万个10000内随机数进行排序，所消耗时间为 <strong>耗时：14329ms</strong></p>
-<h3 id="选择排序"><a href="#选择排序" class="headerlink" title="选择排序"></a>选择排序</h3><p>关键代码如下</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void selectionSort(int n[]) &#123;</span><br><span class="line">	for (int i &#x3D; 0; i &lt; n.length - 1; i++) &#123;</span><br><span class="line">		int max &#x3D; 0;</span><br><span class="line">		for (int j &#x3D; 0; j &lt; n.length - i - 1; j++) &#123;</span><br><span class="line">			if(n[max] &lt; n[j+1])&#123;</span><br><span class="line">				max &#x3D; j+1;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		if (max !&#x3D; n.length-1-i) &#123;</span><br><span class="line">			int temp;</span><br><span class="line">			temp &#x3D; n[max];</span><br><span class="line">			n[max] &#x3D; n[n.length-1-i];</span><br><span class="line">			n[n.length-1-i] &#x3D; temp;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>用来对一万个10000内随机数进行排序，所消耗时间为 <strong>耗时：2657ms</strong></p>
-<h3 id="插入排序"><a href="#插入排序" class="headerlink" title="插入排序"></a>插入排序</h3><p>关键代码如下</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void Insert(int n[]) &#123;</span><br><span class="line">	for (int i &#x3D; 1; i &lt; n.length; i++) &#123;</span><br><span class="line">		int temp &#x3D; i;</span><br><span class="line">		for (int j &#x3D; i -1; j &gt;&#x3D; 0 &amp;&amp; n[j] &gt; n[temp]; j--) &#123;</span><br><span class="line">			exch(n, j, temp);</span><br><span class="line">			temp &#x3D; j;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">public void exch(int n[],int a,int b) &#123;</span><br><span class="line">	int temp &#x3D; n[a];</span><br><span class="line">	n[a] &#x3D; n[b];</span><br><span class="line">	n[b] &#x3D; temp;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>用来对一万个10000内随机数进行排序，所消耗时间为 <strong>耗时：3107ms</strong></p>
-<h3 id="快速排序"><a href="#快速排序" class="headerlink" title="快速排序"></a>快速排序</h3><p>关键代码如下</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">	public void Quick(int n[],int left,int right) &#123;</span><br><span class="line">		if(left &gt;&#x3D; right)&#123;</span><br><span class="line">			return;</span><br><span class="line">		&#125;</span><br><span class="line">		int key &#x3D; PartSort(n, left, right);</span><br><span class="line">		Quick(n, left, key);</span><br><span class="line">		Quick(n, key+1, right);</span><br><span class="line">	&#125;</span><br><span class="line">	public int PartSort(int n[],int left,int right) &#123;</span><br><span class="line">		int key &#x3D; n[left];</span><br><span class="line">		while(left &lt; right)&#123;</span><br><span class="line">			while (left &lt; right &amp;&amp; n[right] &gt;&#x3D; key) &#123;</span><br><span class="line">				right--;</span><br><span class="line">			&#125;</span><br><span class="line">			n[left] &#x3D; n[right];</span><br><span class="line">			while (left &lt; right &amp;&amp; n[left] &lt;&#x3D; key) &#123;</span><br><span class="line">				left++;</span><br><span class="line">			&#125;</span><br><span class="line">			n[right] &#x3D; n[left];</span><br><span class="line">		&#125;</span><br><span class="line">		n[left] &#x3D; key;</span><br><span class="line">		return left;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>用来对一万个10000内随机数进行排序，所消耗时间为 <strong>耗时：16ms</strong></p>
 
           
         
@@ -963,7 +1119,29 @@
 <li>当前Subject必须拥有所有指定的角色时，才能访问被该注解标注的方法。如果当天Subject不同时拥有所有指定角色，则方法不会执行还会抛出AuthorizationException异常。<br>RequiresUser</li>
 <li>表示当前Subject已经进行身份验证或者通过“记住我”登录。</li>
 </ul>
-<h4 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;属于user角色</span><br><span class="line">@RequiresRoles(&quot;user&quot;)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;必须同时属于user和admin角色</span><br><span class="line">@RequiresRoles(&#123;&quot;user&quot;,&quot;admin&quot;&#125;)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;属于user或者admin之一;修改logical为OR 即可</span><br><span class="line">@RequiresRoles(value&#x3D;&#123;&quot;user&quot;,&quot;admin&quot;&#125;,logical&#x3D;Logical.OR)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;符合index:hello权限要求</span><br><span class="line">@RequiresPermissions(&quot;index:hello&quot;)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;必须同时复核index:hello和index:world权限要求</span><br><span class="line">@RequiresPermissions(&#123;&quot;index:hello&quot;,&quot;index:world&quot;&#125;)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;符合index:hello或index:world权限要求即可</span><br><span class="line">@RequiresPermissions(value&#x3D;&#123;&quot;index:hello&quot;,&quot;index:world&quot;&#125;,logical&#x3D;Logical.OR)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@RequiresAuthentication</span><br><span class="line">@RequiresUser</span><br><span class="line">@RequiresGusst</span><br></pre></td></tr></table></figure>
+<h4 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h4><pre><code class="highlight plain">&#x2F;&#x2F;属于user角色
+@RequiresRoles(&quot;user&quot;)
+
+&#x2F;&#x2F;必须同时属于user和admin角色
+@RequiresRoles(&#123;&quot;user&quot;,&quot;admin&quot;&#125;)
+
+&#x2F;&#x2F;属于user或者admin之一;修改logical为OR 即可
+@RequiresRoles(value&#x3D;&#123;&quot;user&quot;,&quot;admin&quot;&#125;,logical&#x3D;Logical.OR)
+
+
+&#x2F;&#x2F;符合index:hello权限要求
+@RequiresPermissions(&quot;index:hello&quot;)
+
+&#x2F;&#x2F;必须同时复核index:hello和index:world权限要求
+@RequiresPermissions(&#123;&quot;index:hello&quot;,&quot;index:world&quot;&#125;)
+
+&#x2F;&#x2F;符合index:hello或index:world权限要求即可
+@RequiresPermissions(value&#x3D;&#123;&quot;index:hello&quot;,&quot;index:world&quot;&#125;,logical&#x3D;Logical.OR)
+
+
+@RequiresAuthentication
+@RequiresUser
+@RequiresGusst</code></pre>
 
 <h3 id="api"><a href="#api" class="headerlink" title="api"></a>api</h3><h4 id="Role-Based-Authorization-角色验证"><a href="#Role-Based-Authorization-角色验证" class="headerlink" title="Role-Based Authorization(角色验证)"></a>Role-Based Authorization(角色验证)</h4><table>
 <thead>
@@ -986,7 +1164,13 @@
 </tr>
 </tbody></table>
 <p>例子</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Subject currentUser &#x3D; SecurityUtils.getSubject();</span><br><span class="line"></span><br><span class="line">if (currentUser.hasRole(&quot;administrator&quot;)) &#123;</span><br><span class="line">    &#x2F;&#x2F;有权限处理业务逻辑</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    &#x2F;&#x2F;没权限处理业务逻辑</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">Subject currentUser &#x3D; SecurityUtils.getSubject();
+
+if (currentUser.hasRole(&quot;administrator&quot;)) &#123;
+    &#x2F;&#x2F;有权限处理业务逻辑
+&#125; else &#123;
+    &#x2F;&#x2F;没权限处理业务逻辑
+&#125;</code></pre>
 
 <h4 id="Role-Assertions-角色检查"><a href="#Role-Assertions-角色检查" class="headerlink" title="Role Assertions(角色检查)"></a>Role Assertions(角色检查)</h4><table>
 <thead>
@@ -1009,7 +1193,10 @@
 </tr>
 </tbody></table>
 <p>例子</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Subject currentUser &#x3D; SecurityUtils.getSubject();</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;检查是否有该bankTeller权限，若没有抛出异常，继续往下执行</span><br><span class="line">currentUser.checkRole(&quot;bankTeller&quot;);</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">Subject currentUser &#x3D; SecurityUtils.getSubject();
+
+&#x2F;&#x2F;检查是否有该bankTeller权限，若没有抛出异常，继续往下执行
+currentUser.checkRole(&quot;bankTeller&quot;);</code></pre>
 
 <h4 id="Permission-Based-Authorization-权限校验"><a href="#Permission-Based-Authorization-权限校验" class="headerlink" title="Permission-Based Authorization(权限校验)"></a>Permission-Based Authorization(权限校验)</h4><table>
 <thead>
@@ -1032,7 +1219,13 @@
 </tr>
 </tbody></table>
 <p>例子</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Subject currentUser &#x3D; SecurityUtils.getSubject();</span><br><span class="line"></span><br><span class="line">if (currentUser.isPermitted(&quot;printer:print:laserjet4400n&quot;)) &#123;</span><br><span class="line">    &#x2F;&#x2F;做有权限操作</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    &#x2F;&#x2F;做无权限操作</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">Subject currentUser &#x3D; SecurityUtils.getSubject();
+
+if (currentUser.isPermitted(&quot;printer:print:laserjet4400n&quot;)) &#123;
+    &#x2F;&#x2F;做有权限操作
+&#125; else &#123;
+    &#x2F;&#x2F;做无权限操作
+&#125;</code></pre>
 
 <h4 id="Permission-Assertions-权限检查"><a href="#Permission-Assertions-权限检查" class="headerlink" title="Permission Assertions(权限检查)"></a>Permission Assertions(权限检查)</h4><table>
 <thead>
@@ -1059,7 +1252,247 @@
 </tr>
 </tbody></table>
 <h3 id="jstl标签"><a href="#jstl标签" class="headerlink" title="jstl标签"></a>jstl标签</h3><p>导入标签库</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;%@taglib prefix&#x3D;&quot;shiro&quot; uri&#x3D;&quot;http:&#x2F;&#x2F;shiro.apache.org&#x2F;tags&quot; %&gt;</span><br><span class="line"></span><br><span class="line">&lt;shiro:guest&gt;&lt;&#x2F;shiro:guest&gt;   &#96;</span><br><span class="line"></span><br><span class="line">&lt;shiro:user&gt;&lt;&#x2F;shiro:user&gt;</span><br><span class="line"></span><br><span class="line">&lt;shiro:authenticated&gt;&lt;&#x2F;shiro:authenticated&gt;</span><br><span class="line"></span><br><span class="line">&lt;shiro:notAuthenticated&gt;未身份验证（包括记住我）&lt;&#x2F;shiro:notAuthenticated&gt;</span><br><span class="line"></span><br><span class="line">&lt;shiro: principal&#x2F;&gt;</span><br><span class="line"></span><br><span class="line">显示用户身份信息，默认调用Subject.getPrincipal()获取，即Primary Principal，获取的值为对象时，可以使用property属性指定</span><br><span class="line"></span><br><span class="line">&lt;shiro:hasRole name&#x3D;&quot;role&quot;&gt;&lt;&#x2F;shiro:hasRole&gt;</span><br><span class="line"></span><br><span class="line">&lt;shiro:hasAnyRoles name&#x3D;&quot;admin,user&quot;&gt;&lt;&#x2F;shiro:hasAnyRoles&gt;</span><br><span class="line"></span><br><span class="line">&lt;shiro:lacksRole name&#x3D;&quot;abc&quot;&gt;&lt;&#x2F;shiro:lacksRole&gt;</span><br><span class="line"></span><br><span class="line">&lt;shiro:hasPermission name&#x3D;&quot;user:create&quot;&gt;&lt;&#x2F;shiro:hasPermission&gt;</span><br><span class="line"></span><br><span class="line">&lt;shiro:lacksPermission name&#x3D;&quot;org:create&quot;&gt;&lt;&#x2F;shiro:lacksPermission&gt;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">&lt;%@taglib prefix&#x3D;&quot;shiro&quot; uri&#x3D;&quot;http:&#x2F;&#x2F;shiro.apache.org&#x2F;tags&quot; %&gt;
+
+&lt;shiro:guest&gt;&lt;&#x2F;shiro:guest&gt;   &#96;
+
+&lt;shiro:user&gt;&lt;&#x2F;shiro:user&gt;
+
+&lt;shiro:authenticated&gt;&lt;&#x2F;shiro:authenticated&gt;
+
+&lt;shiro:notAuthenticated&gt;未身份验证（包括记住我）&lt;&#x2F;shiro:notAuthenticated&gt;
+
+&lt;shiro: principal&#x2F;&gt;
+
+显示用户身份信息，默认调用Subject.getPrincipal()获取，即Primary Principal，获取的值为对象时，可以使用property属性指定
+
+&lt;shiro:hasRole name&#x3D;&quot;role&quot;&gt;&lt;&#x2F;shiro:hasRole&gt;
+
+&lt;shiro:hasAnyRoles name&#x3D;&quot;admin,user&quot;&gt;&lt;&#x2F;shiro:hasAnyRoles&gt;
+
+&lt;shiro:lacksRole name&#x3D;&quot;abc&quot;&gt;&lt;&#x2F;shiro:lacksRole&gt;
+
+&lt;shiro:hasPermission name&#x3D;&quot;user:create&quot;&gt;&lt;&#x2F;shiro:hasPermission&gt;
+
+&lt;shiro:lacksPermission name&#x3D;&quot;org:create&quot;&gt;&lt;&#x2F;shiro:lacksPermission&gt;</code></pre>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" itemprop="url">排序算法</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="冒泡法"><a href="#冒泡法" class="headerlink" title="冒泡法"></a>冒泡法</h3><p>关键排序代码如下</p>
+<pre><code class="highlight plain">public void bubble(int[] i)&#123;
+	int temp;
+	for(int j &#x3D; 0;j &lt; i.length-1; j++)&#123;
+		for(int k &#x3D; 0; k &lt; i.length - j -1; k++)&#123;
+			if(i[k] &gt; i[k+1])&#123;
+				temp &#x3D; i[k];
+				i[k] &#x3D; i[k+1];
+				i[k+1] &#x3D; temp;
+			&#125;
+		&#125;
+	&#125;
+&#125;</code></pre>
+
+<p>用来对一万个10000内随机数进行排序，所消耗时间为 <strong>耗时：14329ms</strong></p>
+<h3 id="选择排序"><a href="#选择排序" class="headerlink" title="选择排序"></a>选择排序</h3><p>关键代码如下</p>
+<pre><code class="highlight plain">public void selectionSort(int n[]) &#123;
+	for (int i &#x3D; 0; i &lt; n.length - 1; i++) &#123;
+		int max &#x3D; 0;
+		for (int j &#x3D; 0; j &lt; n.length - i - 1; j++) &#123;
+			if(n[max] &lt; n[j+1])&#123;
+				max &#x3D; j+1;
+			&#125;
+		&#125;
+		if (max !&#x3D; n.length-1-i) &#123;
+			int temp;
+			temp &#x3D; n[max];
+			n[max] &#x3D; n[n.length-1-i];
+			n[n.length-1-i] &#x3D; temp;
+		&#125;
+	&#125;
+&#125;</code></pre>
+
+<p>用来对一万个10000内随机数进行排序，所消耗时间为 <strong>耗时：2657ms</strong></p>
+<h3 id="插入排序"><a href="#插入排序" class="headerlink" title="插入排序"></a>插入排序</h3><p>关键代码如下</p>
+<pre><code class="highlight plain">public void Insert(int n[]) &#123;
+	for (int i &#x3D; 1; i &lt; n.length; i++) &#123;
+		int temp &#x3D; i;
+		for (int j &#x3D; i -1; j &gt;&#x3D; 0 &amp;&amp; n[j] &gt; n[temp]; j--) &#123;
+			exch(n, j, temp);
+			temp &#x3D; j;
+		&#125;
+	&#125;
+&#125;
+public void exch(int n[],int a,int b) &#123;
+	int temp &#x3D; n[a];
+	n[a] &#x3D; n[b];
+	n[b] &#x3D; temp;
+&#125;</code></pre>
+
+<p>用来对一万个10000内随机数进行排序，所消耗时间为 <strong>耗时：3107ms</strong></p>
+<h3 id="快速排序"><a href="#快速排序" class="headerlink" title="快速排序"></a>快速排序</h3><p>关键代码如下</p>
+<pre><code class="highlight plain">	public void Quick(int n[],int left,int right) &#123;
+		if(left &gt;&#x3D; right)&#123;
+			return;
+		&#125;
+		int key &#x3D; PartSort(n, left, right);
+		Quick(n, left, key);
+		Quick(n, key+1, right);
+	&#125;
+	public int PartSort(int n[],int left,int right) &#123;
+		int key &#x3D; n[left];
+		while(left &lt; right)&#123;
+			while (left &lt; right &amp;&amp; n[right] &gt;&#x3D; key) &#123;
+				right--;
+			&#125;
+			n[left] &#x3D; n[right];
+			while (left &lt; right &amp;&amp; n[left] &lt;&#x3D; key) &#123;
+				left++;
+			&#125;
+			n[right] &#x3D; n[left];
+		&#125;
+		n[left] &#x3D; key;
+		return left;
+	&#125;
+&#125;</code></pre>
+<p>用来对一万个10000内随机数进行排序，所消耗时间为 <strong>耗时：16ms</strong></p>
+
           
         
       
@@ -1213,7 +1646,55 @@
 <li>抽象产品(Product)角色 :简单工厂模式所创建的所有对象的父类，它负责描述所有实例所共有的公共接口。</li>
 <li>具体产品(Concrete Product)角色:简单工厂模式的创建目标，所有创建的对象都是充当这个角色的某个具体类的实例。</li>
 </ul>
-<h4 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;抽象产品</span><br><span class="line">public interface Product &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;具体产品</span><br><span class="line">public class Tv implements Product &#123;</span><br><span class="line">    public Tv()&#123;</span><br><span class="line">        System.out.println(&quot;电视被制造了&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public class Car implements Product &#123;</span><br><span class="line">    public Car()&#123;</span><br><span class="line">        System.out.println(&quot;汽车被制造了&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;工厂</span><br><span class="line">public class ProductFactory &#123;</span><br><span class="line"></span><br><span class="line">    public static Shape getProduct(String productType) &#123;</span><br><span class="line">        if (productType &#x3D;&#x3D; null) &#123;</span><br><span class="line">            return null;</span><br><span class="line">        &#125;</span><br><span class="line">        if (productType.equalsIgnoreCase(&quot;Tv&quot;)) &#123;</span><br><span class="line">            return new Tv();</span><br><span class="line">        &#125; else if (productType.equalsIgnoreCase(&quot;Car&quot;)) &#123;</span><br><span class="line">            return new Rectangle();</span><br><span class="line">        &#125; </span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;使用反射来为工厂创建类更好</span><br><span class="line">public class ProductFactory &#123;</span><br><span class="line">    public static Product produce(String className) throws Exception &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            Product product &#x3D; (Product) Class.forName(className).newInstance();</span><br><span class="line">            return product;</span><br><span class="line">        &#125; catch (InstantiationException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; catch (IllegalAccessException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; catch (ClassNotFoundException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        throw new Exception(&quot;没有该产品&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h4><pre><code class="highlight plain">&#x2F;&#x2F;抽象产品
+public interface Product &#123;
+&#125;
+
+&#x2F;&#x2F;具体产品
+public class Tv implements Product &#123;
+    public Tv()&#123;
+        System.out.println(&quot;电视被制造了&quot;);
+    &#125;
+&#125;
+
+public class Car implements Product &#123;
+    public Car()&#123;
+        System.out.println(&quot;汽车被制造了&quot;);
+    &#125;
+&#125;
+
+&#x2F;&#x2F;工厂
+public class ProductFactory &#123;
+
+    public static Shape getProduct(String productType) &#123;
+        if (productType &#x3D;&#x3D; null) &#123;
+            return null;
+        &#125;
+        if (productType.equalsIgnoreCase(&quot;Tv&quot;)) &#123;
+            return new Tv();
+        &#125; else if (productType.equalsIgnoreCase(&quot;Car&quot;)) &#123;
+            return new Rectangle();
+        &#125; 
+        return null;
+    &#125;
+&#125;
+
+&#x2F;&#x2F;使用反射来为工厂创建类更好
+public class ProductFactory &#123;
+    public static Product produce(String className) throws Exception &#123;
+        try &#123;
+            Product product &#x3D; (Product) Class.forName(className).newInstance();
+            return product;
+        &#125; catch (InstantiationException e) &#123;
+            e.printStackTrace();
+        &#125; catch (IllegalAccessException e) &#123;
+            e.printStackTrace();
+        &#125; catch (ClassNotFoundException e) &#123;
+            e.printStackTrace();
+        &#125;
+        throw new Exception(&quot;没有该产品&quot;);
+    &#125;
+&#125;</code></pre>
 
 <h3 id="工厂方法模式"><a href="#工厂方法模式" class="headerlink" title="工厂方法模式"></a>工厂方法模式</h3><h4 id="工厂方法模式介绍"><a href="#工厂方法模式介绍" class="headerlink" title="工厂方法模式介绍"></a>工厂方法模式介绍</h4><p>工厂方法模式定义一个用于创建对象的接口，让子类决定实例化哪一个类。Factory Method是一个类的实例化延迟到其子类。<br>在工厂方法模式中，核心的工厂类不再负责所有的产品的创建，而是将具体创建的工作交给子类去做。这个核心类则摇身一变，成为了一个抽象工厂角色，仅负责给出具体工厂子类必须实现的接口，而不接触哪一个产品类应当被实例化这种细节。</p>
 <h4 id="角色分配-1"><a href="#角色分配-1" class="headerlink" title="角色分配"></a>角色分配</h4><ul>
@@ -1222,7 +1703,42 @@
 <li>抽象产品（Product）角色：工厂方法模式所创建的对象的超类型，也就是产品对象的共同父类或共同拥有的接口。在本系统中，这个角色由Java 接口Product 扮演；在实际的系统中，这个角色也常常使用抽象Java 类实现。</li>
 <li>具体产品（Concrete Product）角色：这个角色实现了抽象产品角色所声明的接口。工厂方法模式所创建的每一个对象都是某个具体产品角色的实例。</li>
 </ul>
-<h4 id="例子-1"><a href="#例子-1" class="headerlink" title="例子"></a>例子</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;抽象工厂</span><br><span class="line">public interface Factory &#123;</span><br><span class="line">    public Product produce();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;抽象产品</span><br><span class="line">public interface Product&#123;&#125; </span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;具体产品</span><br><span class="line">public class Tv implements Product &#123;</span><br><span class="line">    public Tv() &#123;</span><br><span class="line">        System.out.println(&quot;电视被制造了&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">public class Car implements Product &#123;</span><br><span class="line">    public Car()&#123;</span><br><span class="line">        System.out.println(&quot;汽车被制造了&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;具体工厂</span><br><span class="line">public class TvFactory implements Factory &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public Product produce() &#123;</span><br><span class="line">        return new Tv();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public class CarFactory implements Factory &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public Product produce() &#123;</span><br><span class="line">        return new Car();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="例子-1"><a href="#例子-1" class="headerlink" title="例子"></a>例子</h4><pre><code class="highlight plain">&#x2F;&#x2F;抽象工厂
+public interface Factory &#123;
+    public Product produce();
+&#125;
+
+&#x2F;&#x2F;抽象产品
+public interface Product&#123;&#125; 
+
+&#x2F;&#x2F;具体产品
+public class Tv implements Product &#123;
+    public Tv() &#123;
+        System.out.println(&quot;电视被制造了&quot;);
+    &#125;
+&#125;
+
+
+public class Car implements Product &#123;
+    public Car()&#123;
+        System.out.println(&quot;汽车被制造了&quot;);
+    &#125;
+&#125;
+
+&#x2F;&#x2F;具体工厂
+public class TvFactory implements Factory &#123;
+    @Override
+    public Product produce() &#123;
+        return new Tv();
+    &#125;
+&#125;
+
+public class CarFactory implements Factory &#123;
+    @Override
+    public Product produce() &#123;
+        return new Car();
+    &#125;
+&#125;</code></pre>
 
 <h3 id="抽象工厂模式"><a href="#抽象工厂模式" class="headerlink" title="抽象工厂模式"></a>抽象工厂模式</h3><h4 id="抽象工厂模式介绍"><a href="#抽象工厂模式介绍" class="headerlink" title="抽象工厂模式介绍"></a>抽象工厂模式介绍</h4><p>抽象工厂模式提供一个创建一系列或相互依赖的对象的接口，而无需指定它们具体的类。</p>
 <h4 id="角色分配-2"><a href="#角色分配-2" class="headerlink" title="角色分配"></a>角色分配</h4><p>-抽象工厂（AbstractFactory）角色：是工厂方法模式的核心，与应用程序无关。任何在模式中创建的对象的工厂类必须实现这个接口。</p>
@@ -1233,7 +1749,89 @@
 </ul>
 <h4 id="和工厂方法的区别"><a href="#和工厂方法的区别" class="headerlink" title="和工厂方法的区别"></a>和工厂方法的区别</h4><p>抽象工厂是生产一整套有产品的（至少要生产两个产品)，这些产品必须相互是有关系或有依赖的，而工厂方法中的工厂是生产单一产品的工厂。</p>
 <h4 id="例子-2"><a href="#例子-2" class="headerlink" title="例子"></a>例子</h4><p>以枪和子弹为例子</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;抽象产品</span><br><span class="line">public interface Gun &#123;</span><br><span class="line">    public void shooting();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public interface Bullet &#123;</span><br><span class="line">    public void load();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;具体产品</span><br><span class="line">public class AK implements Gun&#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void shooting() &#123;</span><br><span class="line">        System.out.println(&quot;shooting with AK&quot;);</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public class M4A1 implements Gun &#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void shooting() &#123;</span><br><span class="line">        System.out.println(&quot;shooting with M4A1&quot;);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public class AK_Bullet implements Bullet &#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void load() &#123;</span><br><span class="line">        System.out.println(&quot;Load bullets with AK&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public class M4A1</span><br><span class="line">_Bullet implements Bullet &#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void load() &#123;</span><br><span class="line">        System.out.println(&quot;Load bullets with M4A1&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;抽象工厂</span><br><span class="line">public interface Factory &#123;</span><br><span class="line">    public Gun produceGun();</span><br><span class="line">    public Bullet produceBullet();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;具体工厂</span><br><span class="line">public class M4A1_Factory implements Factory&#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public Gun produceGun() &#123;</span><br><span class="line">        return new M4A1();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public Bullet produceBullet() &#123;</span><br><span class="line">        return new M4A1_Bullet();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public class AK_Factory implements Factory&#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public Gun produceGun() &#123;</span><br><span class="line">        return new AK();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public Bullet produceBullet() &#123;</span><br><span class="line">        return new AK_Bullet();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">&#x2F;&#x2F;抽象产品
+public interface Gun &#123;
+    public void shooting();
+&#125;
+
+public interface Bullet &#123;
+    public void load();
+&#125;
+
+&#x2F;&#x2F;具体产品
+public class AK implements Gun&#123;
+
+    @Override
+    public void shooting() &#123;
+        System.out.println(&quot;shooting with AK&quot;);
+        
+    &#125;
+
+&#125;
+
+public class M4A1 implements Gun &#123;
+
+    @Override
+    public void shooting() &#123;
+        System.out.println(&quot;shooting with M4A1&quot;);
+
+    &#125;
+
+&#125;
+
+public class AK_Bullet implements Bullet &#123;
+
+    @Override
+    public void load() &#123;
+        System.out.println(&quot;Load bullets with AK&quot;);
+    &#125;
+
+&#125;
+
+public class M4A1
+_Bullet implements Bullet &#123;
+
+    @Override
+    public void load() &#123;
+        System.out.println(&quot;Load bullets with M4A1&quot;);
+    &#125;
+
+&#125;
+
+&#x2F;&#x2F;抽象工厂
+public interface Factory &#123;
+    public Gun produceGun();
+    public Bullet produceBullet();
+&#125;
+
+&#x2F;&#x2F;具体工厂
+public class M4A1_Factory implements Factory&#123;
+
+    @Override
+    public Gun produceGun() &#123;
+        return new M4A1();
+    &#125;
+
+    @Override
+    public Bullet produceBullet() &#123;
+        return new M4A1_Bullet();
+    &#125;
+
+&#125;
+
+public class AK_Factory implements Factory&#123;
+
+    @Override
+    public Gun produceGun() &#123;
+        return new AK();
+    &#125;
+
+    @Override
+    public Bullet produceBullet() &#123;
+        return new AK_Bullet();
+    &#125;
+
+&#125;</code></pre>
           
         
       
@@ -1374,21 +1972,130 @@
       
         
           
-            <h3 id="自旋锁"><a href="#自旋锁" class="headerlink" title="自旋锁"></a>自旋锁</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import java.util.concurrent.atomic.AtomicReference;</span><br><span class="line">public class SpinLock &#123;</span><br><span class="line">   private AtomicReference&lt;Thread&gt; owner &#x3D; new AtomicReference&lt;Thread&gt;();</span><br><span class="line">   public void lock() &#123;</span><br><span class="line">       Thread currentThread &#x3D; Thread.currentThread();</span><br><span class="line">        &#x2F;&#x2F; 如果锁未被占用，则设置当前线程为锁的拥有者</span><br><span class="line">       while (!owner.compareAndSet(null, currentThread)) &#123;&#125;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   public void unlock() &#123;</span><br><span class="line">       Thread currentThread &#x3D; Thread.currentThread();</span><br><span class="line">        &#x2F;&#x2F; 只有锁的拥有者才能释放锁</span><br><span class="line">       owner.compareAndSet(currentThread, null);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+            <h3 id="自旋锁"><a href="#自旋锁" class="headerlink" title="自旋锁"></a>自旋锁</h3><pre><code class="highlight plain">import java.util.concurrent.atomic.AtomicReference;
+public class SpinLock &#123;
+   private AtomicReference&lt;Thread&gt; owner &#x3D; new AtomicReference&lt;Thread&gt;();
+   public void lock() &#123;
+       Thread currentThread &#x3D; Thread.currentThread();
+        &#x2F;&#x2F; 如果锁未被占用，则设置当前线程为锁的拥有者
+       while (!owner.compareAndSet(null, currentThread)) &#123;&#125;
+   &#125;
+
+   public void unlock() &#123;
+       Thread currentThread &#x3D; Thread.currentThread();
+        &#x2F;&#x2F; 只有锁的拥有者才能释放锁
+       owner.compareAndSet(currentThread, null);
+   &#125;
+&#125;</code></pre>
 
 <p>利用CAS第一个线程<code>owner.compareAndSet(null, currentThread)</code>抢到执行权，后面的线程则进入循环，直到第一个线程释放锁<code>owner.compareAndSet(currentThread, null)</code>，接着下一个线程抢到执行权，依次运行下去</p>
 <h3 id="公平自旋锁"><a href="#公平自旋锁" class="headerlink" title="公平自旋锁"></a>公平自旋锁</h3><p>我们第一个自旋锁所有线程一起抢执行权，如果要执行FIFO原则，如以下</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import java.util.concurrent.atomic.AtomicInteger;</span><br><span class="line"></span><br><span class="line">public class FairSpinLock &#123;</span><br><span class="line">   private AtomicInteger serviceNum &#x3D; new AtomicInteger(); &#x2F;&#x2F; 服务号</span><br><span class="line">   private AtomicInteger ticketNum &#x3D; new AtomicInteger(); &#x2F;&#x2F; 排队号</span><br><span class="line"></span><br><span class="line">   public int lock() &#123;</span><br><span class="line">       &#x2F;&#x2F; 首先原子性地获得一个排队号</span><br><span class="line">       int myTicketNum &#x3D; ticketNum.getAndIncrement();</span><br><span class="line">       &#x2F;&#x2F; 只要当前服务号不是自己的就不断轮询</span><br><span class="line">       while (serviceNum.get() !&#x3D; myTicketNum) &#123;</span><br><span class="line">       &#125;</span><br><span class="line">       return myTicketNum;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void unlock(int myTicket) &#123;</span><br><span class="line">        &#x2F;&#x2F; 只有当前线程拥有者才能释放锁</span><br><span class="line">        int next &#x3D; myTicket + 1;</span><br><span class="line">        serviceNum.compareAndSet(myTicket, next);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">import java.util.concurrent.atomic.AtomicInteger;
+
+public class FairSpinLock &#123;
+   private AtomicInteger serviceNum &#x3D; new AtomicInteger(); &#x2F;&#x2F; 服务号
+   private AtomicInteger ticketNum &#x3D; new AtomicInteger(); &#x2F;&#x2F; 排队号
+
+   public int lock() &#123;
+       &#x2F;&#x2F; 首先原子性地获得一个排队号
+       int myTicketNum &#x3D; ticketNum.getAndIncrement();
+       &#x2F;&#x2F; 只要当前服务号不是自己的就不断轮询
+       while (serviceNum.get() !&#x3D; myTicketNum) &#123;
+       &#125;
+       return myTicketNum;
+    &#125;
+
+    public void unlock(int myTicket) &#123;
+        &#x2F;&#x2F; 只有当前线程拥有者才能释放锁
+        int next &#x3D; myTicket + 1;
+        serviceNum.compareAndSet(myTicket, next);
+    &#125;
+&#125;</code></pre>
 
 <p>每个线程分配一个<code>myTicketNum</code>，每一次<code>unlock</code>将<code>serviceNum</code>自增，让下一个持<code>myTicketNum</code>与<code>serviceNum</code>相等的线程跳出循环，开始业务</p>
-<h3 id="MCS自旋锁"><a href="#MCS自旋锁" class="headerlink" title="MCS自旋锁"></a>MCS自旋锁</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;</span><br><span class="line">public class MCSLock &#123;</span><br><span class="line">    public static class MCSNode &#123;</span><br><span class="line">        volatile MCSNode next;</span><br><span class="line">        volatile boolean isWaiting &#x3D; true; &#x2F;&#x2F; 默认是在等待锁</span><br><span class="line">    &#125;</span><br><span class="line">    volatile MCSNode queue;&#x2F;&#x2F; 指向最后一个申请锁的MCSNode</span><br><span class="line">    private static final AtomicReferenceFieldUpdater&lt;MCSLock, MCSNode&gt; UPDATER &#x3D; AtomicReferenceFieldUpdater</span><br><span class="line">            .newUpdater(MCSLock.class, MCSNode.class, &quot;queue&quot;);</span><br><span class="line"></span><br><span class="line">    public void lock(MCSNode currentThread) &#123;</span><br><span class="line">        MCSNode predecessor &#x3D; UPDATER.getAndSet(this, currentThread);&#x2F;&#x2F; step 1</span><br><span class="line">        if (predecessor !&#x3D; null) &#123;</span><br><span class="line">            predecessor.next &#x3D; currentThread;&#x2F;&#x2F; step 2</span><br><span class="line">            while (currentThread.isWaiting) &#123;&#x2F;&#x2F; step 3</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; else &#123; &#x2F;&#x2F; 只有一个线程在使用锁，没有前驱来通知它，所以得自己标记自己已获得锁</span><br><span class="line">            currentThread.isWaiting &#x3D; false;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void unlock(MCSNode currentThread) &#123;</span><br><span class="line">        if (currentThread.isWaiting) &#123;&#x2F;&#x2F; 锁拥有者进行释放锁才有意义</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        if (currentThread.next &#x3D;&#x3D; null) &#123;&#x2F;&#x2F; 检查是否有人排在自己后面</span><br><span class="line">            if (UPDATER.compareAndSet(this, currentThread, null)) &#123;&#x2F;&#x2F; step 4</span><br><span class="line">                &#x2F;&#x2F; compareAndSet返回true表示确实没有人排在自己后面</span><br><span class="line">                return;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                &#x2F;&#x2F; 突然有人排在自己后面了，可能还不知道是谁，下面是等待后续者</span><br><span class="line">                &#x2F;&#x2F; 这里之所以要忙等是因为：step 1执行完后，step 2可能还没执行完</span><br><span class="line">                while (currentThread.next &#x3D;&#x3D; null) &#123; &#x2F;&#x2F; step 5</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        currentThread.next.isWaiting &#x3D; false;</span><br><span class="line">        currentThread.next &#x3D; null;&#x2F;&#x2F; for GC</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="MCS自旋锁"><a href="#MCS自旋锁" class="headerlink" title="MCS自旋锁"></a>MCS自旋锁</h3><pre><code class="highlight plain">import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
+public class MCSLock &#123;
+    public static class MCSNode &#123;
+        volatile MCSNode next;
+        volatile boolean isWaiting &#x3D; true; &#x2F;&#x2F; 默认是在等待锁
+    &#125;
+    volatile MCSNode queue;&#x2F;&#x2F; 指向最后一个申请锁的MCSNode
+    private static final AtomicReferenceFieldUpdater&lt;MCSLock, MCSNode&gt; UPDATER &#x3D; AtomicReferenceFieldUpdater
+            .newUpdater(MCSLock.class, MCSNode.class, &quot;queue&quot;);
+
+    public void lock(MCSNode currentThread) &#123;
+        MCSNode predecessor &#x3D; UPDATER.getAndSet(this, currentThread);&#x2F;&#x2F; step 1
+        if (predecessor !&#x3D; null) &#123;
+            predecessor.next &#x3D; currentThread;&#x2F;&#x2F; step 2
+            while (currentThread.isWaiting) &#123;&#x2F;&#x2F; step 3
+            &#125;
+        &#125; else &#123; &#x2F;&#x2F; 只有一个线程在使用锁，没有前驱来通知它，所以得自己标记自己已获得锁
+            currentThread.isWaiting &#x3D; false;
+        &#125;
+    &#125;
+
+    public void unlock(MCSNode currentThread) &#123;
+        if (currentThread.isWaiting) &#123;&#x2F;&#x2F; 锁拥有者进行释放锁才有意义
+            return;
+        &#125;
+
+        if (currentThread.next &#x3D;&#x3D; null) &#123;&#x2F;&#x2F; 检查是否有人排在自己后面
+            if (UPDATER.compareAndSet(this, currentThread, null)) &#123;&#x2F;&#x2F; step 4
+                &#x2F;&#x2F; compareAndSet返回true表示确实没有人排在自己后面
+                return;
+            &#125; else &#123;
+                &#x2F;&#x2F; 突然有人排在自己后面了，可能还不知道是谁，下面是等待后续者
+                &#x2F;&#x2F; 这里之所以要忙等是因为：step 1执行完后，step 2可能还没执行完
+                while (currentThread.next &#x3D;&#x3D; null) &#123; &#x2F;&#x2F; step 5
+                &#125;
+            &#125;
+        &#125;
+        currentThread.next.isWaiting &#x3D; false;
+        currentThread.next &#x3D; null;&#x2F;&#x2F; for GC
+    &#125;
+&#125;</code></pre>
 
 <p>利用CAS特性，<code>UPDATER.getAndSet(this, currentThread)</code>在多线程访问情况下将所有节点连成一个虚拟队列，然后将前后节点链成链表结构，每个申请锁的线程都是链表上的一个节点，这些线程会一直轮询自己的本地变量，来知道它自己是否获得了锁。已经获得了锁的线程在释放锁的时候，负责通知其它线程，这样 CPU 之间缓存的同步操作就减少了很多，仅在线程通知另外一个线程的时候发生，降低了系统总线和内存的开销。</p>
 <h3 id="CLH-自旋锁"><a href="#CLH-自旋锁" class="headerlink" title="CLH 自旋锁"></a>CLH 自旋锁</h3><p>CLH 锁与 MCS 锁的原理大致相同，都是各个线程轮询各自关注的变量，来避免多个线程对同一个变量的轮询，从而从 CPU 缓存一致性的角度上减少了系统的消耗。<br>CLH 锁的名字也与他们的发明人的名字相关：Craig，Landin and Hagersten。<br>CLH 锁与 MCS 锁最大的不同是，MCS 轮询的是当前队列节点的变量，而 CLH 轮询的是当前节点的前驱节点的变量，来判断前一个线程是否释放了锁。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;</span><br><span class="line">public class CLHLock &#123;</span><br><span class="line">    public static class CLHNode &#123;</span><br><span class="line">        private volatile boolean isWaiting &#x3D; true; &#x2F;&#x2F; 默认是在等待锁</span><br><span class="line">    &#125;</span><br><span class="line">    private volatile CLHNode tail ;</span><br><span class="line">    private static final AtomicReferenceFieldUpdater&lt;CLHLock, CLHNode&gt; UPDATER &#x3D; AtomicReferenceFieldUpdater</span><br><span class="line">            . newUpdater(CLHLock.class, CLHNode .class , &quot;tail&quot; );</span><br><span class="line">    public void lock(CLHNode currentThread) &#123;</span><br><span class="line">        CLHNode preNode &#x3D; UPDATER.getAndSet( this, currentThread);</span><br><span class="line">        if(preNode !&#x3D; null) &#123;&#x2F;&#x2F;已有线程占用了锁，进入自旋</span><br><span class="line">            while(preNode.isWaiting ) &#123;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void unlock(CLHNode currentThread) &#123;</span><br><span class="line">        &#x2F;&#x2F; 如果队列里只有当前线程，则释放对当前线程的引用（for GC）。</span><br><span class="line">        if (!UPDATER .compareAndSet(this, currentThread, null)) &#123;</span><br><span class="line">            &#x2F;&#x2F; 还有后续线程</span><br><span class="line">            currentThread.isWaiting &#x3D; false ;&#x2F;&#x2F; 改变状态，让后续线程结束自旋</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
+public class CLHLock &#123;
+    public static class CLHNode &#123;
+        private volatile boolean isWaiting &#x3D; true; &#x2F;&#x2F; 默认是在等待锁
+    &#125;
+    private volatile CLHNode tail ;
+    private static final AtomicReferenceFieldUpdater&lt;CLHLock, CLHNode&gt; UPDATER &#x3D; AtomicReferenceFieldUpdater
+            . newUpdater(CLHLock.class, CLHNode .class , &quot;tail&quot; );
+    public void lock(CLHNode currentThread) &#123;
+        CLHNode preNode &#x3D; UPDATER.getAndSet( this, currentThread);
+        if(preNode !&#x3D; null) &#123;&#x2F;&#x2F;已有线程占用了锁，进入自旋
+            while(preNode.isWaiting ) &#123;
+            &#125;
+        &#125;
+    &#125;
+
+    public void unlock(CLHNode currentThread) &#123;
+        &#x2F;&#x2F; 如果队列里只有当前线程，则释放对当前线程的引用（for GC）。
+        if (!UPDATER .compareAndSet(this, currentThread, null)) &#123;
+            &#x2F;&#x2F; 还有后续线程
+            currentThread.isWaiting &#x3D; false ;&#x2F;&#x2F; 改变状态，让后续线程结束自旋
+        &#125;
+    &#125;
+&#125;</code></pre>
 
 <p>CLH 锁与 MCS 锁的原理大致相同，都是各个线程轮询各自关注的变量，来避免多个线程对同一个变量的轮询，从而从 CPU 缓存一致性的角度上减少了系统的消耗。CLH 锁与 MCS 锁最大的不同是，MCS 轮询的是当前队列节点的变量，而 CLH 轮询的是当前节点的前驱节点的变量，来判断前一个线程是否释放了锁。</p>
-<h3 id="semaphore"><a href="#semaphore" class="headerlink" title="semaphore"></a>semaphore</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Store&#123;</span><br><span class="line">    private static int storage &#x3D; 0;</span><br><span class="line">    Semaphore semaphore &#x3D; new Semaphore(1);</span><br><span class="line">    public void add(int n) throws InterruptedException &#123;</span><br><span class="line">        semaphore.acquire();</span><br><span class="line">        storage +&#x3D; n;</span><br><span class="line">        semaphore.release();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void out()&#123;</span><br><span class="line">        System.out.println(storage);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="semaphore"><a href="#semaphore" class="headerlink" title="semaphore"></a>semaphore</h3><pre><code class="highlight plain">class Store&#123;
+    private static int storage &#x3D; 0;
+    Semaphore semaphore &#x3D; new Semaphore(1);
+    public void add(int n) throws InterruptedException &#123;
+        semaphore.acquire();
+        storage +&#x3D; n;
+        semaphore.release();
+    &#125;
+
+    public void out()&#123;
+        System.out.println(storage);
+    &#125;
+&#125;</code></pre>
 
 <p>设置信号量为1，这样可以保证多线程并发调用<code>add</code>方法时，只能单个线程运行，起到加锁效果</p>
 
@@ -1532,177 +2239,96 @@
       
         
           
-            <h3 id="synchronized"><a href="#synchronized" class="headerlink" title="synchronized"></a>synchronized</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Mythread2 &#123;</span><br><span class="line">	public static void main(String[] args) throws InterruptedException &#123;</span><br><span class="line">		Object A &#x3D; new Object();</span><br><span class="line">		Object B &#x3D; new Object();</span><br><span class="line">		Object C &#x3D; new Object();</span><br><span class="line">		new ThreadABC(C,A,&#39;A&#39;).start();</span><br><span class="line">		Thread.sleep(100);</span><br><span class="line">		new ThreadABC(A,B,&#39;B&#39;).start();</span><br><span class="line">		Thread.sleep(100);</span><br><span class="line">		new ThreadABC(B,C,&#39;C&#39;).start();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class ThreadABC extends Thread&#123;</span><br><span class="line">	private Object pre;</span><br><span class="line">	private Object self;</span><br><span class="line">	private char c;</span><br><span class="line">	public ThreadABC(Object pre, Object self, char c) &#123;</span><br><span class="line">		this.pre &#x3D; pre;</span><br><span class="line">		this.self &#x3D; self;</span><br><span class="line">		this.c &#x3D; c;</span><br><span class="line">	&#125;</span><br><span class="line">	@Override</span><br><span class="line">	public void run() &#123;</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated method stub</span><br><span class="line">		super.run();</span><br><span class="line">		while(true)&#123;</span><br><span class="line">			synchronized (pre) &#123;</span><br><span class="line">				synchronized (self) &#123;</span><br><span class="line">					System.out.println(c);</span><br><span class="line">					self.notifyAll();&#x2F;&#x2F;执行完同步代码块才会释放锁</span><br><span class="line">				&#125;</span><br><span class="line">				try &#123;</span><br><span class="line">					pre.wait();</span><br><span class="line">				&#125; catch (InterruptedException e) &#123;</span><br><span class="line">					&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">					e.printStackTrace();</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+            <h3 id="synchronized"><a href="#synchronized" class="headerlink" title="synchronized"></a>synchronized</h3><pre><code class="highlight plain">public class Mythread2 &#123;
+	public static void main(String[] args) throws InterruptedException &#123;
+		Object A &#x3D; new Object();
+		Object B &#x3D; new Object();
+		Object C &#x3D; new Object();
+		new ThreadABC(C,A,&#39;A&#39;).start();
+		Thread.sleep(100);
+		new ThreadABC(A,B,&#39;B&#39;).start();
+		Thread.sleep(100);
+		new ThreadABC(B,C,&#39;C&#39;).start();
+	&#125;
+&#125;
 
-<h3 id="ReentrantLock"><a href="#ReentrantLock" class="headerlink" title="ReentrantLock"></a>ReentrantLock</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Mythread3 &#123;</span><br><span class="line"></span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		ReentrantLock lock &#x3D; new ReentrantLock();</span><br><span class="line">		Condition A &#x3D; lock.newCondition();</span><br><span class="line">		Condition B &#x3D; lock.newCondition();</span><br><span class="line">		Condition C &#x3D; lock.newCondition();</span><br><span class="line">		new ThreadReen(C, A, &#39;A&#39;, lock).start();</span><br><span class="line">		new ThreadReen(A, B, &#39;B&#39;, lock).start();</span><br><span class="line">		new ThreadReen(B, C, &#39;C&#39;, lock).start();</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class ThreadReen extends Thread&#123;</span><br><span class="line">	private Condition pre;</span><br><span class="line">	private Condition self;</span><br><span class="line">	private char c;</span><br><span class="line">	private ReentrantLock lock;</span><br><span class="line">	</span><br><span class="line">	public ThreadReen(Condition pre, Condition self, char c, ReentrantLock lock) &#123;</span><br><span class="line">		this.pre &#x3D; pre;</span><br><span class="line">		this.self &#x3D; self;</span><br><span class="line">		this.c &#x3D; c;</span><br><span class="line">		this.lock &#x3D; lock;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public void run() &#123;</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated method stub</span><br><span class="line">		super.run();</span><br><span class="line">		while(true)&#123;</span><br><span class="line">			lock.lock();</span><br><span class="line">			System.out.println(c);</span><br><span class="line">			self.signalAll();&#x2F;&#x2F;执行完同步代码块才会释放锁</span><br><span class="line">			try &#123;</span><br><span class="line">				pre.await();</span><br><span class="line">			&#125; catch (InterruptedException e) &#123;</span><br><span class="line">				&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">				e.printStackTrace();</span><br><span class="line">			&#125;</span><br><span class="line">			lock.unlock();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-    
-    
-    
+class ThreadABC extends Thread&#123;
+	private Object pre;
+	private Object self;
+	private char c;
+	public ThreadABC(Object pre, Object self, char c) &#123;
+		this.pre &#x3D; pre;
+		this.self &#x3D; self;
+		this.c &#x3D; c;
+	&#125;
+	@Override
+	public void run() &#123;
+		&#x2F;&#x2F; TODO Auto-generated method stub
+		super.run();
+		while(true)&#123;
+			synchronized (pre) &#123;
+				synchronized (self) &#123;
+					System.out.println(c);
+					self.notifyAll();&#x2F;&#x2F;执行完同步代码块才会释放锁
+				&#125;
+				try &#123;
+					pre.wait();
+				&#125; catch (InterruptedException e) &#123;
+					&#x2F;&#x2F; TODO Auto-generated catch block
+					e.printStackTrace();
+				&#125;
+			&#125;
+		&#125;
+	&#125;
+	
+&#125;</code></pre>
 
-    
+<h3 id="ReentrantLock"><a href="#ReentrantLock" class="headerlink" title="ReentrantLock"></a>ReentrantLock</h3><pre><code class="highlight plain">public class Mythread3 &#123;
 
-    
+	public static void main(String[] args) &#123;
+		ReentrantLock lock &#x3D; new ReentrantLock();
+		Condition A &#x3D; lock.newCondition();
+		Condition B &#x3D; lock.newCondition();
+		Condition C &#x3D; lock.newCondition();
+		new ThreadReen(C, A, &#39;A&#39;, lock).start();
+		new ThreadReen(A, B, &#39;B&#39;, lock).start();
+		new ThreadReen(B, C, &#39;C&#39;, lock).start();
+	&#125;
+	
+&#125;
 
-    
+class ThreadReen extends Thread&#123;
+	private Condition pre;
+	private Condition self;
+	private char c;
+	private ReentrantLock lock;
+	
+	public ThreadReen(Condition pre, Condition self, char c, ReentrantLock lock) &#123;
+		this.pre &#x3D; pre;
+		this.self &#x3D; self;
+		this.c &#x3D; c;
+		this.lock &#x3D; lock;
+	&#125;
 
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E5%8F%8C%E5%90%91%E9%93%BE%E8%A1%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/%E5%8F%8C%E5%90%91%E9%93%BE%E8%A1%A8/" itemprop="url">双向链表</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="双向链表的结构"><a href="#双向链表的结构" class="headerlink" title="双向链表的结构"></a>双向链表的结构</h3><p><img src="http://wx4.sinaimg.cn/large/96b7c0f4ly1fymvpeor3pj20qq0a2js6.jpg" alt=""></p>
-<h3 id="节点"><a href="#节点" class="headerlink" title="节点"></a>节点</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Node&lt;T&gt;&#123;</span><br><span class="line">	Node&lt;T&gt; pre;</span><br><span class="line">	Node&lt;T&gt; next;</span><br><span class="line">	T data;</span><br><span class="line">	</span><br><span class="line">	public Node() &#123;</span><br><span class="line">	&#125;</span><br><span class="line">	public Node(T data) &#123;</span><br><span class="line">		super();</span><br><span class="line">		this.data &#x3D; data;</span><br><span class="line">	&#125;</span><br><span class="line">	public Node&lt;T&gt; getPre() &#123;</span><br><span class="line">		return pre;</span><br><span class="line">	&#125;</span><br><span class="line">	public void setPre(Node&lt;T&gt; pre) &#123;</span><br><span class="line">		this.pre &#x3D; pre;</span><br><span class="line">	&#125;</span><br><span class="line">	public Node&lt;T&gt; getNext() &#123;</span><br><span class="line">		return next;</span><br><span class="line">	&#125;</span><br><span class="line">	public void setNext(Node&lt;T&gt; next) &#123;</span><br><span class="line">		this.next &#x3D; next;</span><br><span class="line">	&#125;</span><br><span class="line">	public T getData() &#123;</span><br><span class="line">		return data;</span><br><span class="line">	&#125;</span><br><span class="line">	public void setData(T data) &#123;</span><br><span class="line">		this.data &#x3D; data;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="头节点"><a href="#头节点" class="headerlink" title="头节点"></a>头节点</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class DoublyLinkedList&lt;T&gt; &#123;</span><br><span class="line"></span><br><span class="line">	private Node&lt;T&gt; first;&#x2F;&#x2F;指向第一个节点</span><br><span class="line">	private Node&lt;T&gt; last;&#x2F;&#x2F;指向最后一个节点</span><br><span class="line">	</span><br><span class="line">	</span><br><span class="line">	public Node&lt;T&gt; getFirst() &#123;</span><br><span class="line">		return first;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public void setFirst(Node&lt;T&gt; first) &#123;</span><br><span class="line">		this.first &#x3D; first;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public Node&lt;T&gt; getLast() &#123;</span><br><span class="line">		return last;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public void setLast(Node&lt;T&gt; last) &#123;</span><br><span class="line">		this.last &#x3D; last;</span><br><span class="line">	&#125;</span><br><span class="line">	·</span><br><span class="line">	·</span><br><span class="line">	·	</span><br><span class="line">	基本操作</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="基本操作"><a href="#基本操作" class="headerlink" title="基本操作"></a>基本操作</h3><h4 id="头插法"><a href="#头插法" class="headerlink" title="头插法"></a>头插法</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void insertNodeHead(Node&lt;T&gt; node)&#123;</span><br><span class="line">	if(first &#x3D;&#x3D; null)&#123;</span><br><span class="line">		first &#x3D; node;</span><br><span class="line">		last &#x3D; node;</span><br><span class="line">		return;</span><br><span class="line">	&#125;</span><br><span class="line">	first.setPre(node);&#x2F;&#x2F;将第一个节点的pre设为新增进来的节点</span><br><span class="line">	node.setNext(first);&#x2F;&#x2F;将第一个节点设为新增节点的next</span><br><span class="line">	first &#x3D; node;&#x2F;&#x2F;将第一个节点置换为新增进来的节点</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="尾插法"><a href="#尾插法" class="headerlink" title="尾插法"></a>尾插法</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void insertNodeTail(Node&lt;T&gt; node)&#123;</span><br><span class="line">	</span><br><span class="line">	Node&lt;T&gt; temp &#x3D; first;</span><br><span class="line">	</span><br><span class="line">	if(first &#x3D;&#x3D;  null)&#123;</span><br><span class="line">		first &#x3D; node;</span><br><span class="line">		last &#x3D; node;</span><br><span class="line">		return;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	while(temp.getNext() !&#x3D; null)&#123;</span><br><span class="line">		temp &#x3D; temp.getNext();</span><br><span class="line">	&#125;</span><br><span class="line">	temp.setNext(node);	</span><br><span class="line">	node.setPre(temp);</span><br><span class="line">	last &#x3D; node;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="删除第一个节点"><a href="#删除第一个节点" class="headerlink" title="删除第一个节点"></a>删除第一个节点</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void removeFirstNode()&#123;</span><br><span class="line">	if(isEmpty())&#123;</span><br><span class="line">		return;</span><br><span class="line">	&#125;</span><br><span class="line">	first.getNext().setPre(null);</span><br><span class="line">	first &#x3D; first.getNext();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="删除最后一个节点"><a href="#删除最后一个节点" class="headerlink" title="删除最后一个节点"></a>删除最后一个节点</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void removeFirstNode()&#123;</span><br><span class="line">	if(isEmpty())&#123;</span><br><span class="line">		return;</span><br><span class="line">	&#125;</span><br><span class="line">	first.getNext().setPre(null);</span><br><span class="line">	first &#x3D; first.getNext();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="清空双链表"><a href="#清空双链表" class="headerlink" title="清空双链表"></a>清空双链表</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void clear()&#123;</span><br><span class="line">	setFirst(null);</span><br><span class="line">	setLast(null);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="查看指定节点数据"><a href="#查看指定节点数据" class="headerlink" title="查看指定节点数据"></a>查看指定节点数据</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public T getData(int index)&#123;</span><br><span class="line">	if(isEmpty())&#123;</span><br><span class="line">		return null;</span><br><span class="line">	&#125;</span><br><span class="line">	Node&lt;T&gt; temp &#x3D; first;</span><br><span class="line">	while(temp !&#x3D; null &amp;&amp; --index &gt; 0)&#123;</span><br><span class="line">		temp &#x3D; temp.getNext();</span><br><span class="line">	&#125;</span><br><span class="line">	return temp.getData();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="删除指定节点"><a href="#删除指定节点" class="headerlink" title="删除指定节点"></a>删除指定节点</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void removeNodeByPos(int index)&#123;</span><br><span class="line">	if(isEmpty())&#123;</span><br><span class="line">		return;</span><br><span class="line">	&#125;</span><br><span class="line">	if(getLength()&#x3D;&#x3D;index)&#123;</span><br><span class="line">		removeLastNode();</span><br><span class="line">		return;</span><br><span class="line">	&#125;</span><br><span class="line">	Node&lt;T&gt; temp &#x3D; first;</span><br><span class="line">	while(temp !&#x3D; null &amp;&amp; --index &gt; 0)&#123;</span><br><span class="line">		temp &#x3D; temp.getNext();</span><br><span class="line">	&#125;</span><br><span class="line">	temp.getNext().setPre(temp.getPre());</span><br><span class="line">	temp.getPre().setNext(temp.getNext());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="指定位置插入节点"><a href="#指定位置插入节点" class="headerlink" title="指定位置插入节点"></a>指定位置插入节点</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void insertByPos(int index,Node&lt;T&gt; node)&#123;</span><br><span class="line">	Node&lt;T&gt; temp &#x3D; first;</span><br><span class="line">	if(isEmpty() || index &#x3D;&#x3D; 1)&#123;&#x2F;&#x2F;空链表或者插入第一个时用头插法</span><br><span class="line">		insertNodeHead(node);</span><br><span class="line">		return;</span><br><span class="line">	&#125;</span><br><span class="line">	if(getLength()+1 &#x3D;&#x3D; index)&#123;&#x2F;&#x2F;指定最后位置时用尾插法</span><br><span class="line">		insertNodeTail(node);</span><br><span class="line">		return;</span><br><span class="line">	&#125;</span><br><span class="line">	while(temp !&#x3D; null &amp;&amp; --index &gt; 0)&#123;</span><br><span class="line">		temp &#x3D; temp.getNext();</span><br><span class="line">	&#125;</span><br><span class="line">	node.setNext(temp);&#x2F;&#x2F;新节点的next指向当前节点</span><br><span class="line">	node.setPre(temp.getPre());&#x2F;&#x2F;新节点的pre指向上一个节点</span><br><span class="line">	temp.getPre().setNext(node);&#x2F;&#x2F;上一个节点的next指向新节点</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="倒置空链表"><a href="#倒置空链表" class="headerlink" title="倒置空链表"></a>倒置空链表</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void reverse()&#123;</span><br><span class="line">	if(isEmpty())&#123;</span><br><span class="line">		return;</span><br><span class="line">	&#125;</span><br><span class="line">	Node&lt;T&gt; newNode &#x3D; first;</span><br><span class="line">	Node&lt;T&gt; temp &#x3D; first;</span><br><span class="line">	setFirst(null);</span><br><span class="line">	setLast(null);</span><br><span class="line">	while(newNode !&#x3D; null)&#123;&#x2F;&#x2F;遍历双链表</span><br><span class="line">		temp &#x3D; newNode.getNext();</span><br><span class="line">		newNode.setPre(null);</span><br><span class="line">		newNode.setNext(null);&#x2F;&#x2F;置空前后节点作为新节点</span><br><span class="line">		insertNodeHead(newNode);&#x2F;&#x2F;头插法</span><br><span class="line">		newNode &#x3D; temp;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="是否为空链表"><a href="#是否为空链表" class="headerlink" title="是否为空链表"></a>是否为空链表</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public boolean isEmpty()&#123;</span><br><span class="line">	return Objects.isNull(first);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="查看双链表长度"><a href="#查看双链表长度" class="headerlink" title="查看双链表长度"></a>查看双链表长度</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public int getLength()&#123;</span><br><span class="line">	Node&lt;T&gt; temp &#x3D; first;</span><br><span class="line">	int length &#x3D; 0;</span><br><span class="line">	while(temp !&#x3D; null)&#123;</span><br><span class="line">		length++;</span><br><span class="line">		temp &#x3D; temp.getNext();</span><br><span class="line">	&#125;</span><br><span class="line">	return length;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="显示所有节点"><a href="#显示所有节点" class="headerlink" title="显示所有节点"></a>显示所有节点</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void display()&#123;</span><br><span class="line">	Node&lt;T&gt; temp &#x3D; first;</span><br><span class="line">	while(temp !&#x3D; null)&#123;</span><br><span class="line">		System.out.println(temp.getData());</span><br><span class="line">		temp &#x3D; temp.getNext();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+	@Override
+	public void run() &#123;
+		&#x2F;&#x2F; TODO Auto-generated method stub
+		super.run();
+		while(true)&#123;
+			lock.lock();
+			System.out.println(c);
+			self.signalAll();&#x2F;&#x2F;执行完同步代码块才会释放锁
+			try &#123;
+				pre.await();
+			&#125; catch (InterruptedException e) &#123;
+				&#x2F;&#x2F; TODO Auto-generated catch block
+				e.printStackTrace();
+			&#125;
+			lock.unlock();
+		&#125;
+	&#125;
+	
+&#125;</code></pre>
           
         
       
@@ -1919,7 +2545,469 @@
 </ol>
 <p>获取包含了所有声明的构造函数的<code>Constructor</code>数组</p>
 <p>区别：<code>getConstructors</code>获取的是类中修饰符为public的构造函数，<code>getDeclaredConstructors</code>获取的是类中所有声明的构造函数</p>
-<h3 id="具体运用"><a href="#具体运用" class="headerlink" title="具体运用"></a>具体运用</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class reflect&#123;</span><br><span class="line">	public char asc &#x3D; &#39;a&#39;;</span><br><span class="line">	private int num;</span><br><span class="line">	private String string;</span><br><span class="line">	private int privateNum &#x3D; 1;</span><br><span class="line">	public reflect()&#123;</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	public reflect(int num,String string)&#123;</span><br><span class="line">		this.num &#x3D; num;</span><br><span class="line">		this.string &#x3D; string;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public int getNum() &#123;</span><br><span class="line">		return num;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public void setNum(int num) &#123;</span><br><span class="line">		this.num &#x3D; num;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public String getString() &#123;</span><br><span class="line">		return string;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public void setString(String string) &#123;</span><br><span class="line">		this.string &#x3D; string;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	public int getNum(int i)&#123;</span><br><span class="line">		return num+i;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	public void out()&#123;</span><br><span class="line">		System.out.println(num+string);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class sonReflect extends reflect&#123;</span><br><span class="line">	</span><br><span class="line">	public boolean bool &#x3D; true;</span><br><span class="line">	private float fnum;</span><br><span class="line">	</span><br><span class="line">	public sonReflect() &#123;</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public sonReflect(float fnum) &#123;</span><br><span class="line">		this.fnum &#x3D; fnum;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public float getFnum() &#123;</span><br><span class="line">		return fnum;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public void setFnum(float fnum) &#123;</span><br><span class="line">		this.fnum &#x3D; fnum;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	public void out()&#123;</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	private void privateOut()&#123;</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">		reflect r &#x3D; new reflect(1,&quot;1&quot;);</span><br><span class="line">		sonReflect sr &#x3D; new sonReflect(1.1f);</span><br><span class="line">		Class&lt;?&gt; rc &#x3D; r.getClass();</span><br><span class="line">		Class&lt;?&gt; src &#x3D; sr.getClass();</span><br><span class="line">		&#x2F;&#x2F;获取子类的Method</span><br><span class="line">		Method srcdeclaredMethod[] &#x3D; src.getDeclaredMethods();</span><br><span class="line">		Method srcMethod[] &#x3D; src.getMethods();</span><br><span class="line">		Arrays.asList(srcdeclaredMethod).forEach(m-&gt;System.out.print(m.getName()+&quot; &quot;));</span><br><span class="line">		System.out.println();</span><br><span class="line">		Arrays.asList(srcMethod).forEach(m-&gt;System.out.print(m.getName()+&quot; &quot;));</span><br><span class="line">		&#x2F;* 输出为:</span><br><span class="line">		 * out getFnum setFnum  和</span><br><span class="line">		 * out getFnum setFnum getString getNum getNum setNum setString</span><br><span class="line">		 * wait wait wait equals toString hashCode getClass notify notifyAll</span><br><span class="line">		 * getDeclaredMethods只能获取到当前类声明的所有类型方法，而getMethods能</span><br><span class="line">		 * 获取当前和从父类继承的public方法，例如privateOut方法它就无法获得</span><br><span class="line">		 * *&#x2F;</span><br><span class="line">		System.out.println();</span><br><span class="line">		Field srcdeclaredField[] &#x3D; src.getDeclaredFields();</span><br><span class="line">		Field srcField[] &#x3D; src.getFields();</span><br><span class="line">		Arrays.asList(srcdeclaredField).forEach(m-&gt;System.out.print(m.getName()+&quot; &quot;));</span><br><span class="line">		System.out.println();</span><br><span class="line">		Arrays.asList(srcField).forEach(m-&gt;System.out.print(m.getName()+&quot; &quot;));</span><br><span class="line">		&#x2F;* 输出为:</span><br><span class="line">		 * bool fnum 和 bool asc,从结果看出getDeclaredFields方法获取到了自身公有和私有</span><br><span class="line">		 * 属性,而getFields方法获取到了父类和子类的所有共有属性</span><br><span class="line">		 * </span><br><span class="line">		 * *&#x2F;</span><br><span class="line">		</span><br><span class="line">		Method m &#x3D; rc.getMethod(&quot;getNum&quot;, new Class[]&#123;int.class&#125;);</span><br><span class="line">		Method m1 &#x3D; rc.getMethod(&quot;getNum&quot;);</span><br><span class="line">		System.out.println(m.invoke(r, 1));</span><br><span class="line">		System.out.println(m1.invoke(r));</span><br><span class="line">	  &#x2F;&#x2F;System.out.println(m1.invoke(r, 1));&#x2F;&#x2F;抛出异常</span><br><span class="line">		&#x2F;*输出为:2 1 和一个异常,通过形参数组确定具体</span><br><span class="line">		 * 方法,再用invoke函数调用对象方法</span><br><span class="line">		 *&#x2F;</span><br><span class="line">		</span><br><span class="line">		Field f &#x3D; rc.getDeclaredField(&quot;privateNum&quot;);</span><br><span class="line">&#x2F;&#x2F;		Field f1 &#x3D; rc.getField(&quot;privateNum&quot;); </span><br><span class="line">&#x2F;&#x2F;		System.out.println(f.get(r)+&quot; &quot;+f1.get(r));</span><br><span class="line">		f.setAccessible(true);</span><br><span class="line">		System.out.println(f.get(r));</span><br><span class="line">		&#x2F;* 抛出两个异常,getField只能获取子类和父类的公有属性</span><br><span class="line">		 * f为私有属性且没有get方法,需要setAccessible设为true</span><br><span class="line">		 * 才能调用Field的get方法获取</span><br><span class="line">		 *&#x2F;</span><br><span class="line"></span><br><span class="line">		try &#123;</span><br><span class="line">			Class constructor &#x3D; Class.forName(&quot;reflect.reflect&quot;);</span><br><span class="line">			Constructor con &#x3D; constructor.getConstructor(new Class[]&#123;int.class,String.class&#125;);</span><br><span class="line">			reflect nr &#x3D; (reflect) con.newInstance(3,&quot;333&quot;);</span><br><span class="line">			nr.out();</span><br><span class="line">		&#125; catch (Exception e) &#123;</span><br><span class="line">			&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">		&#x2F;&#x2F;除了class.newInstance，构造器也能用来创建实例</span><br></pre></td></tr></table></figure>
+<h3 id="具体运用"><a href="#具体运用" class="headerlink" title="具体运用"></a>具体运用</h3><pre><code class="highlight plain">class reflect&#123;
+	public char asc &#x3D; &#39;a&#39;;
+	private int num;
+	private String string;
+	private int privateNum &#x3D; 1;
+	public reflect()&#123;
+		
+	&#125;
+	
+	public reflect(int num,String string)&#123;
+		this.num &#x3D; num;
+		this.string &#x3D; string;
+	&#125;
+
+	public int getNum() &#123;
+		return num;
+	&#125;
+
+	public void setNum(int num) &#123;
+		this.num &#x3D; num;
+	&#125;
+
+	public String getString() &#123;
+		return string;
+	&#125;
+
+	public void setString(String string) &#123;
+		this.string &#x3D; string;
+	&#125;
+	
+	public int getNum(int i)&#123;
+		return num+i;
+	&#125;
+	
+	public void out()&#123;
+		System.out.println(num+string);
+	&#125;
+&#125;
+
+class sonReflect extends reflect&#123;
+	
+	public boolean bool &#x3D; true;
+	private float fnum;
+	
+	public sonReflect() &#123;
+		
+	&#125;
+
+	public sonReflect(float fnum) &#123;
+		this.fnum &#x3D; fnum;
+	&#125;
+
+	public float getFnum() &#123;
+		return fnum;
+	&#125;
+
+	public void setFnum(float fnum) &#123;
+		this.fnum &#x3D; fnum;
+	&#125;
+	
+	public void out()&#123;
+		
+	&#125;
+	
+	private void privateOut()&#123;
+		
+	&#125;
+&#125;
+
+
+
+		reflect r &#x3D; new reflect(1,&quot;1&quot;);
+		sonReflect sr &#x3D; new sonReflect(1.1f);
+		Class&lt;?&gt; rc &#x3D; r.getClass();
+		Class&lt;?&gt; src &#x3D; sr.getClass();
+		&#x2F;&#x2F;获取子类的Method
+		Method srcdeclaredMethod[] &#x3D; src.getDeclaredMethods();
+		Method srcMethod[] &#x3D; src.getMethods();
+		Arrays.asList(srcdeclaredMethod).forEach(m-&gt;System.out.print(m.getName()+&quot; &quot;));
+		System.out.println();
+		Arrays.asList(srcMethod).forEach(m-&gt;System.out.print(m.getName()+&quot; &quot;));
+		&#x2F;* 输出为:
+		 * out getFnum setFnum  和
+		 * out getFnum setFnum getString getNum getNum setNum setString
+		 * wait wait wait equals toString hashCode getClass notify notifyAll
+		 * getDeclaredMethods只能获取到当前类声明的所有类型方法，而getMethods能
+		 * 获取当前和从父类继承的public方法，例如privateOut方法它就无法获得
+		 * *&#x2F;
+		System.out.println();
+		Field srcdeclaredField[] &#x3D; src.getDeclaredFields();
+		Field srcField[] &#x3D; src.getFields();
+		Arrays.asList(srcdeclaredField).forEach(m-&gt;System.out.print(m.getName()+&quot; &quot;));
+		System.out.println();
+		Arrays.asList(srcField).forEach(m-&gt;System.out.print(m.getName()+&quot; &quot;));
+		&#x2F;* 输出为:
+		 * bool fnum 和 bool asc,从结果看出getDeclaredFields方法获取到了自身公有和私有
+		 * 属性,而getFields方法获取到了父类和子类的所有共有属性
+		 * 
+		 * *&#x2F;
+		
+		Method m &#x3D; rc.getMethod(&quot;getNum&quot;, new Class[]&#123;int.class&#125;);
+		Method m1 &#x3D; rc.getMethod(&quot;getNum&quot;);
+		System.out.println(m.invoke(r, 1));
+		System.out.println(m1.invoke(r));
+	  &#x2F;&#x2F;System.out.println(m1.invoke(r, 1));&#x2F;&#x2F;抛出异常
+		&#x2F;*输出为:2 1 和一个异常,通过形参数组确定具体
+		 * 方法,再用invoke函数调用对象方法
+		 *&#x2F;
+		
+		Field f &#x3D; rc.getDeclaredField(&quot;privateNum&quot;);
+&#x2F;&#x2F;		Field f1 &#x3D; rc.getField(&quot;privateNum&quot;); 
+&#x2F;&#x2F;		System.out.println(f.get(r)+&quot; &quot;+f1.get(r));
+		f.setAccessible(true);
+		System.out.println(f.get(r));
+		&#x2F;* 抛出两个异常,getField只能获取子类和父类的公有属性
+		 * f为私有属性且没有get方法,需要setAccessible设为true
+		 * 才能调用Field的get方法获取
+		 *&#x2F;
+
+		try &#123;
+			Class constructor &#x3D; Class.forName(&quot;reflect.reflect&quot;);
+			Constructor con &#x3D; constructor.getConstructor(new Class[]&#123;int.class,String.class&#125;);
+			reflect nr &#x3D; (reflect) con.newInstance(3,&quot;333&quot;);
+			nr.out();
+		&#125; catch (Exception e) &#123;
+			&#x2F;&#x2F; TODO Auto-generated catch block
+			e.printStackTrace();
+		&#125;
+		&#x2F;&#x2F;除了class.newInstance，构造器也能用来创建实例</code></pre>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E5%8F%8C%E5%90%91%E9%93%BE%E8%A1%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/%E5%8F%8C%E5%90%91%E9%93%BE%E8%A1%A8/" itemprop="url">双向链表</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="双向链表的结构"><a href="#双向链表的结构" class="headerlink" title="双向链表的结构"></a>双向链表的结构</h3><p><img src="http://wx4.sinaimg.cn/large/96b7c0f4ly1fymvpeor3pj20qq0a2js6.jpg" alt=""></p>
+<h3 id="节点"><a href="#节点" class="headerlink" title="节点"></a>节点</h3><pre><code class="highlight plain">class Node&lt;T&gt;&#123;
+	Node&lt;T&gt; pre;
+	Node&lt;T&gt; next;
+	T data;
+	
+	public Node() &#123;
+	&#125;
+	public Node(T data) &#123;
+		super();
+		this.data &#x3D; data;
+	&#125;
+	public Node&lt;T&gt; getPre() &#123;
+		return pre;
+	&#125;
+	public void setPre(Node&lt;T&gt; pre) &#123;
+		this.pre &#x3D; pre;
+	&#125;
+	public Node&lt;T&gt; getNext() &#123;
+		return next;
+	&#125;
+	public void setNext(Node&lt;T&gt; next) &#123;
+		this.next &#x3D; next;
+	&#125;
+	public T getData() &#123;
+		return data;
+	&#125;
+	public void setData(T data) &#123;
+		this.data &#x3D; data;
+	&#125;
+	
+&#125;</code></pre>
+
+<h3 id="头节点"><a href="#头节点" class="headerlink" title="头节点"></a>头节点</h3><pre><code class="highlight plain">public class DoublyLinkedList&lt;T&gt; &#123;
+
+	private Node&lt;T&gt; first;&#x2F;&#x2F;指向第一个节点
+	private Node&lt;T&gt; last;&#x2F;&#x2F;指向最后一个节点
+	
+	
+	public Node&lt;T&gt; getFirst() &#123;
+		return first;
+	&#125;
+
+	public void setFirst(Node&lt;T&gt; first) &#123;
+		this.first &#x3D; first;
+	&#125;
+
+	public Node&lt;T&gt; getLast() &#123;
+		return last;
+	&#125;
+
+	public void setLast(Node&lt;T&gt; last) &#123;
+		this.last &#x3D; last;
+	&#125;
+	·
+	·
+	·	
+	基本操作
+
+&#125;</code></pre>
+
+<h3 id="基本操作"><a href="#基本操作" class="headerlink" title="基本操作"></a>基本操作</h3><h4 id="头插法"><a href="#头插法" class="headerlink" title="头插法"></a>头插法</h4><pre><code class="highlight plain">public void insertNodeHead(Node&lt;T&gt; node)&#123;
+	if(first &#x3D;&#x3D; null)&#123;
+		first &#x3D; node;
+		last &#x3D; node;
+		return;
+	&#125;
+	first.setPre(node);&#x2F;&#x2F;将第一个节点的pre设为新增进来的节点
+	node.setNext(first);&#x2F;&#x2F;将第一个节点设为新增节点的next
+	first &#x3D; node;&#x2F;&#x2F;将第一个节点置换为新增进来的节点
+&#125;</code></pre>
+
+<h4 id="尾插法"><a href="#尾插法" class="headerlink" title="尾插法"></a>尾插法</h4><pre><code class="highlight plain">public void insertNodeTail(Node&lt;T&gt; node)&#123;
+	
+	Node&lt;T&gt; temp &#x3D; first;
+	
+	if(first &#x3D;&#x3D;  null)&#123;
+		first &#x3D; node;
+		last &#x3D; node;
+		return;
+	&#125;
+	
+	while(temp.getNext() !&#x3D; null)&#123;
+		temp &#x3D; temp.getNext();
+	&#125;
+	temp.setNext(node);	
+	node.setPre(temp);
+	last &#x3D; node;
+&#125;</code></pre>
+
+<h4 id="删除第一个节点"><a href="#删除第一个节点" class="headerlink" title="删除第一个节点"></a>删除第一个节点</h4><pre><code class="highlight plain">public void removeFirstNode()&#123;
+	if(isEmpty())&#123;
+		return;
+	&#125;
+	first.getNext().setPre(null);
+	first &#x3D; first.getNext();
+&#125;</code></pre>
+
+<h4 id="删除最后一个节点"><a href="#删除最后一个节点" class="headerlink" title="删除最后一个节点"></a>删除最后一个节点</h4><pre><code class="highlight plain">public void removeFirstNode()&#123;
+	if(isEmpty())&#123;
+		return;
+	&#125;
+	first.getNext().setPre(null);
+	first &#x3D; first.getNext();
+&#125;</code></pre>
+
+<h4 id="清空双链表"><a href="#清空双链表" class="headerlink" title="清空双链表"></a>清空双链表</h4><pre><code class="highlight plain">public void clear()&#123;
+	setFirst(null);
+	setLast(null);
+&#125;</code></pre>
+
+<h4 id="查看指定节点数据"><a href="#查看指定节点数据" class="headerlink" title="查看指定节点数据"></a>查看指定节点数据</h4><pre><code class="highlight plain">public T getData(int index)&#123;
+	if(isEmpty())&#123;
+		return null;
+	&#125;
+	Node&lt;T&gt; temp &#x3D; first;
+	while(temp !&#x3D; null &amp;&amp; --index &gt; 0)&#123;
+		temp &#x3D; temp.getNext();
+	&#125;
+	return temp.getData();
+&#125;</code></pre>
+
+<h4 id="删除指定节点"><a href="#删除指定节点" class="headerlink" title="删除指定节点"></a>删除指定节点</h4><pre><code class="highlight plain">public void removeNodeByPos(int index)&#123;
+	if(isEmpty())&#123;
+		return;
+	&#125;
+	if(getLength()&#x3D;&#x3D;index)&#123;
+		removeLastNode();
+		return;
+	&#125;
+	Node&lt;T&gt; temp &#x3D; first;
+	while(temp !&#x3D; null &amp;&amp; --index &gt; 0)&#123;
+		temp &#x3D; temp.getNext();
+	&#125;
+	temp.getNext().setPre(temp.getPre());
+	temp.getPre().setNext(temp.getNext());
+&#125;</code></pre>
+
+<h4 id="指定位置插入节点"><a href="#指定位置插入节点" class="headerlink" title="指定位置插入节点"></a>指定位置插入节点</h4><pre><code class="highlight plain">public void insertByPos(int index,Node&lt;T&gt; node)&#123;
+	Node&lt;T&gt; temp &#x3D; first;
+	if(isEmpty() || index &#x3D;&#x3D; 1)&#123;&#x2F;&#x2F;空链表或者插入第一个时用头插法
+		insertNodeHead(node);
+		return;
+	&#125;
+	if(getLength()+1 &#x3D;&#x3D; index)&#123;&#x2F;&#x2F;指定最后位置时用尾插法
+		insertNodeTail(node);
+		return;
+	&#125;
+	while(temp !&#x3D; null &amp;&amp; --index &gt; 0)&#123;
+		temp &#x3D; temp.getNext();
+	&#125;
+	node.setNext(temp);&#x2F;&#x2F;新节点的next指向当前节点
+	node.setPre(temp.getPre());&#x2F;&#x2F;新节点的pre指向上一个节点
+	temp.getPre().setNext(node);&#x2F;&#x2F;上一个节点的next指向新节点
+&#125;</code></pre>
+
+<h4 id="倒置空链表"><a href="#倒置空链表" class="headerlink" title="倒置空链表"></a>倒置空链表</h4><pre><code class="highlight plain">public void reverse()&#123;
+	if(isEmpty())&#123;
+		return;
+	&#125;
+	Node&lt;T&gt; newNode &#x3D; first;
+	Node&lt;T&gt; temp &#x3D; first;
+	setFirst(null);
+	setLast(null);
+	while(newNode !&#x3D; null)&#123;&#x2F;&#x2F;遍历双链表
+		temp &#x3D; newNode.getNext();
+		newNode.setPre(null);
+		newNode.setNext(null);&#x2F;&#x2F;置空前后节点作为新节点
+		insertNodeHead(newNode);&#x2F;&#x2F;头插法
+		newNode &#x3D; temp;
+	&#125;
+&#125;</code></pre>
+
+<h4 id="是否为空链表"><a href="#是否为空链表" class="headerlink" title="是否为空链表"></a>是否为空链表</h4><pre><code class="highlight plain">public boolean isEmpty()&#123;
+	return Objects.isNull(first);
+&#125;</code></pre>
+
+<h4 id="查看双链表长度"><a href="#查看双链表长度" class="headerlink" title="查看双链表长度"></a>查看双链表长度</h4><pre><code class="highlight plain">public int getLength()&#123;
+	Node&lt;T&gt; temp &#x3D; first;
+	int length &#x3D; 0;
+	while(temp !&#x3D; null)&#123;
+		length++;
+		temp &#x3D; temp.getNext();
+	&#125;
+	return length;
+&#125;</code></pre>
+
+<h4 id="显示所有节点"><a href="#显示所有节点" class="headerlink" title="显示所有节点"></a>显示所有节点</h4><pre><code class="highlight plain">public void display()&#123;
+	Node&lt;T&gt; temp &#x3D; first;
+	while(temp !&#x3D; null)&#123;
+		System.out.println(temp.getData());
+		temp &#x3D; temp.getNext();
+	&#125;
+&#125;</code></pre>
           
         
       
@@ -2244,7 +3332,7 @@
 
   
 
-  <link rel="stylesheet" href="/lib/prettify/skins/desert.css" type="text/css">
+  <link rel="stylesheet" href="/lib/prettify/skins/sunburst.css" type="text/css">
 <script src="/lib/prettify/prettify.js" type="text/javascript"></script>
 <script type="text/javascript">
   $(document).ready(function() {

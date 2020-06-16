@@ -79,12 +79,12 @@
 
 
 
-<meta name="description" content="ConditionReentrantLock使用了Condition接口实现类ConditionObject来进行线程间通信，例如它的await、signal方法 public Condition newCondition() &amp;#123;    return sync.newCondition();&amp;#125;final ConditionObject newCondition() &amp;#123;">
+<meta name="description" content="ConditionReentrantLock使用了Condition接口实现类ConditionObject来进行线程间通信，例如它的await、signal方法 public Condition newCondition() &amp;#123;     return sync.newCondition(); &amp;#125;   final ConditionObject newCondition() &amp;">
 <meta property="og:type" content="article">
 <meta property="og:title" content="await、signal和signalAll源码">
 <meta property="og:url" content="http://yoursite.com/2020/06/17/await%E3%80%81signal%E5%92%8CsignalAll%E6%BA%90%E7%A0%81/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="ConditionReentrantLock使用了Condition接口实现类ConditionObject来进行线程间通信，例如它的await、signal方法 public Condition newCondition() &amp;#123;    return sync.newCondition();&amp;#125;final ConditionObject newCondition() &amp;#123;">
+<meta property="og:description" content="ConditionReentrantLock使用了Condition接口实现类ConditionObject来进行线程间通信，例如它的await、signal方法 public Condition newCondition() &amp;#123;     return sync.newCondition(); &amp;#125;   final ConditionObject newCondition() &amp;">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20190829203647414.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM1ODM1NjI0,size_16,color_FFFFFF,t_70">
 <meta property="article:published_time" content="2020-06-16T17:43:37.236Z">
 <meta property="article:modified_time" content="2020-06-16T17:43:37.236Z">
@@ -344,16 +344,69 @@
 
       
         <h3 id="Condition"><a href="#Condition" class="headerlink" title="Condition"></a>Condition</h3><p><code>ReentrantLock</code>使用了<code>Condition</code>接口实现类<code>ConditionObject</code>来进行线程间通信，例如它的<code>await、signal</code>方法</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public Condition newCondition() &#123;</span><br><span class="line">    return sync.newCondition();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">final ConditionObject newCondition() &#123;</span><br><span class="line">    return new ConditionObject();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public Condition newCondition() &#123;
+    return sync.newCondition();
+&#125;
+
+
+final ConditionObject newCondition() &#123;
+    return new ConditionObject();
+&#125;</code></pre>
 
 <p>接着观察<code>ConditionObject</code>，用来挂起线程的队列结构和抢锁时抢不到锁的线程队列结构相同，使用的<code>Node</code>都为<code>AbstractQueuedSynchronizer</code>内部类，并且<code>ConditionObject</code>也创建<code>firstWaiter</code>和<code>lastWaiter</code>指向链表头尾</p>
 <p><img src="https://img-blog.csdnimg.cn/20190829203647414.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM1ODM1NjI0,size_16,color_FFFFFF,t_70" alt=""></p>
-<h3 id="await-方法"><a href="#await-方法" class="headerlink" title="await()方法"></a>await()方法</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public final void await() throws InterruptedException &#123;</span><br><span class="line">    if (Thread.interrupted())</span><br><span class="line">        throw new InterruptedException();</span><br><span class="line">    Node node &#x3D; addConditionWaiter();&#x2F;&#x2F;往conditionqueue中添加当前线程节点</span><br><span class="line">    int savedState &#x3D; fullyRelease(node);&#x2F;&#x2F;完全释放锁(可重入)并且唤醒下个线程</span><br><span class="line">    int interruptMode &#x3D; 0;</span><br><span class="line">    while (!isOnSyncQueue(node)) &#123;&#x2F;&#x2F;如果节点不在waitqueue中</span><br><span class="line">        LockSupport.park(this);&#x2F;&#x2F;线程挂起</span><br><span class="line">        if ((interruptMode &#x3D; checkInterruptWhileWaiting(node)) !&#x3D; 0)</span><br><span class="line">            break;</span><br><span class="line">    &#125;</span><br><span class="line">	&#x2F;&#x2F;acquireQueued抢占锁，抢不到则挂起，无限循环</span><br><span class="line">    if (acquireQueued(node, savedState) &amp;&amp; interruptMode !&#x3D; THROW_IE)</span><br><span class="line">        interruptMode &#x3D; REINTERRUPT;</span><br><span class="line">    if (node.nextWaiter !&#x3D; null) </span><br><span class="line">        unlinkCancelledWaiters();&#x2F;&#x2F;清除waitStatus为cancelled的节点</span><br><span class="line">    if (interruptMode !&#x3D; 0)</span><br><span class="line">        reportInterruptAfterWait(interruptMode);&#x2F;&#x2F;处理中断，抛出异常或者中断当前线程</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="await-方法"><a href="#await-方法" class="headerlink" title="await()方法"></a>await()方法</h3><pre><code class="highlight plain">public final void await() throws InterruptedException &#123;
+    if (Thread.interrupted())
+        throw new InterruptedException();
+    Node node &#x3D; addConditionWaiter();&#x2F;&#x2F;往conditionqueue中添加当前线程节点
+    int savedState &#x3D; fullyRelease(node);&#x2F;&#x2F;完全释放锁(可重入)并且唤醒下个线程
+    int interruptMode &#x3D; 0;
+    while (!isOnSyncQueue(node)) &#123;&#x2F;&#x2F;如果节点不在waitqueue中
+        LockSupport.park(this);&#x2F;&#x2F;线程挂起
+        if ((interruptMode &#x3D; checkInterruptWhileWaiting(node)) !&#x3D; 0)
+            break;
+    &#125;
+	&#x2F;&#x2F;acquireQueued抢占锁，抢不到则挂起，无限循环
+    if (acquireQueued(node, savedState) &amp;&amp; interruptMode !&#x3D; THROW_IE)
+        interruptMode &#x3D; REINTERRUPT;
+    if (node.nextWaiter !&#x3D; null) 
+        unlinkCancelledWaiters();&#x2F;&#x2F;清除waitStatus为cancelled的节点
+    if (interruptMode !&#x3D; 0)
+        reportInterruptAfterWait(interruptMode);&#x2F;&#x2F;处理中断，抛出异常或者中断当前线程
+&#125;</code></pre>
 
 <p><code>addConditionWaiter</code>往<code>conditionQueue</code>中增加节点</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">private Node addConditionWaiter() &#123;</span><br><span class="line">    Node t &#x3D; lastWaiter;</span><br><span class="line">    &#x2F;&#x2F; If lastWaiter is cancelled, clean out.</span><br><span class="line">    if (t !&#x3D; null &amp;&amp; t.waitStatus !&#x3D; Node.CONDITION) &#123;</span><br><span class="line">        unlinkCancelledWaiters();</span><br><span class="line">        t &#x3D; lastWaiter;</span><br><span class="line">    &#125;</span><br><span class="line">    Node node &#x3D; new Node(Thread.currentThread(), Node.CONDITION);</span><br><span class="line">    if (t &#x3D;&#x3D; null)</span><br><span class="line">        firstWaiter &#x3D; node;</span><br><span class="line">    else</span><br><span class="line">        t.nextWaiter &#x3D; node;</span><br><span class="line">    lastWaiter &#x3D; node;</span><br><span class="line">    return node;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">private Node addConditionWaiter() &#123;
+    Node t &#x3D; lastWaiter;
+    &#x2F;&#x2F; If lastWaiter is cancelled, clean out.
+    if (t !&#x3D; null &amp;&amp; t.waitStatus !&#x3D; Node.CONDITION) &#123;
+        unlinkCancelledWaiters();
+        t &#x3D; lastWaiter;
+    &#125;
+    Node node &#x3D; new Node(Thread.currentThread(), Node.CONDITION);
+    if (t &#x3D;&#x3D; null)
+        firstWaiter &#x3D; node;
+    else
+        t.nextWaiter &#x3D; node;
+    lastWaiter &#x3D; node;
+    return node;
+&#125;</code></pre>
 <p>节点中依旧存放当前线程和<code>waitStatus</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">final int fullyRelease(Node node) &#123;</span><br><span class="line">    boolean failed &#x3D; true;</span><br><span class="line">    try &#123;</span><br><span class="line">        int savedState &#x3D; getState();</span><br><span class="line">        if (release(savedState)) &#123;</span><br><span class="line">            failed &#x3D; false;</span><br><span class="line">            return savedState;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            throw new IllegalMonitorStateException();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; finally &#123;</span><br><span class="line">        if (failed)</span><br><span class="line">            node.waitStatus &#x3D; Node.CANCELLED;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">final int fullyRelease(Node node) &#123;
+    boolean failed &#x3D; true;
+    try &#123;
+        int savedState &#x3D; getState();
+        if (release(savedState)) &#123;
+            failed &#x3D; false;
+            return savedState;
+        &#125; else &#123;
+            throw new IllegalMonitorStateException();
+        &#125;
+    &#125; finally &#123;
+        if (failed)
+            node.waitStatus &#x3D; Node.CANCELLED;
+    &#125;
+&#125;</code></pre>
 
 <p><code>fullyRelease</code>完全释放锁，唤醒<code>waitqueue</code>中下一个线程(unpark)</p>
 <p>接着一个<code>while</code>循环，<code>isOnSyncQueue(node)</code>判断这个节点是否在<code>waitqueue</code>，前面可以知道这个节点是在<code>conditionqueue</code>中，所以这里进入循环中，然后挂起线程</p>
@@ -361,22 +414,90 @@
 <p><code>signal</code>前被中断，这里返回<code>THROW_IE</code>，<code>signal</code>后被中断则返回<code>REINTERRUPT</code>，没有中断返回 0</p>
 <p>而按照正常流程，这里跳出循环是由于<code>node</code>节点被从<code>conditionqueue</code>中被转移到<code>waitqueue</code>中</p>
 <p>接着到<code>acquireQueued(node, savedState)</code>方法，之前已经看过这个方法</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">final boolean acquireQueued(final Node node, int arg) &#123;</span><br><span class="line">    boolean failed &#x3D; true;</span><br><span class="line">    try &#123;</span><br><span class="line">        boolean interrupted &#x3D; false;</span><br><span class="line">        for (;;) &#123;</span><br><span class="line">            final Node p &#x3D; node.predecessor();</span><br><span class="line">            if (p &#x3D;&#x3D; head &amp;&amp; tryAcquire(arg)) &#123;</span><br><span class="line">                setHead(node);</span><br><span class="line">                p.next &#x3D; null; &#x2F;&#x2F; help GC</span><br><span class="line">                failed &#x3D; false;</span><br><span class="line">                return interrupted;</span><br><span class="line">            &#125;</span><br><span class="line">            if (shouldParkAfterFailedAcquire(p, node) &amp;&amp;</span><br><span class="line">                parkAndCheckInterrupt())</span><br><span class="line">                interrupted &#x3D; true;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; finally &#123;</span><br><span class="line">        if (failed)</span><br><span class="line">            cancelAcquire(node);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">final boolean acquireQueued(final Node node, int arg) &#123;
+    boolean failed &#x3D; true;
+    try &#123;
+        boolean interrupted &#x3D; false;
+        for (;;) &#123;
+            final Node p &#x3D; node.predecessor();
+            if (p &#x3D;&#x3D; head &amp;&amp; tryAcquire(arg)) &#123;
+                setHead(node);
+                p.next &#x3D; null; &#x2F;&#x2F; help GC
+                failed &#x3D; false;
+                return interrupted;
+            &#125;
+            if (shouldParkAfterFailedAcquire(p, node) &amp;&amp;
+                parkAndCheckInterrupt())
+                interrupted &#x3D; true;
+        &#125;
+    &#125; finally &#123;
+        if (failed)
+            cancelAcquire(node);
+    &#125;
+&#125;</code></pre>
 
 <p>当<code>node</code>被转移到<code>waitqueue</code>之后，这个方法就发挥作用了，尝试抢锁，失败则被挂起，等待其他线程释放锁</p>
-<h3 id="signal-方法"><a href="#signal-方法" class="headerlink" title="signal()方法"></a>signal()方法</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public final void signal() &#123;</span><br><span class="line">    if (!isHeldExclusively())</span><br><span class="line">        throw new IllegalMonitorStateException();</span><br><span class="line">    Node first &#x3D; firstWaiter;</span><br><span class="line">    if (first !&#x3D; null)</span><br><span class="line">        doSignal(first);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="signal-方法"><a href="#signal-方法" class="headerlink" title="signal()方法"></a>signal()方法</h3><pre><code class="highlight plain">public final void signal() &#123;
+    if (!isHeldExclusively())
+        throw new IllegalMonitorStateException();
+    Node first &#x3D; firstWaiter;
+    if (first !&#x3D; null)
+        doSignal(first);
+&#125;</code></pre>
 
 <p>第一步就看到，想调用<code>signal</code>方法，必须先拿到锁</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">private void doSignal(Node first) &#123;</span><br><span class="line">    do &#123;</span><br><span class="line">        if ( (firstWaiter &#x3D; first.nextWaiter) &#x3D;&#x3D; null)</span><br><span class="line">            lastWaiter &#x3D; null;</span><br><span class="line">        first.nextWaiter &#x3D; null;</span><br><span class="line">    &#125; while (!transferForSignal(first) &amp;&amp;</span><br><span class="line">             (first &#x3D; firstWaiter) !&#x3D; null);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">private void doSignal(Node first) &#123;
+    do &#123;
+        if ( (firstWaiter &#x3D; first.nextWaiter) &#x3D;&#x3D; null)
+            lastWaiter &#x3D; null;
+        first.nextWaiter &#x3D; null;
+    &#125; while (!transferForSignal(first) &amp;&amp;
+             (first &#x3D; firstWaiter) !&#x3D; null);
+&#125;</code></pre>
 
 <p><code>transferForSignal(first)</code>遍历<code>conditionqueue</code>，而且是从第一个开始</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">final boolean transferForSignal(Node node) &#123;</span><br><span class="line">    &#x2F;*</span><br><span class="line">     * If cannot change waitStatus, the node has been cancelled.</span><br><span class="line">     *&#x2F;</span><br><span class="line">    if (!compareAndSetWaitStatus(node, Node.CONDITION, 0))</span><br><span class="line">        return false;</span><br><span class="line"></span><br><span class="line">    &#x2F;*</span><br><span class="line">     * Splice onto queue and try to set waitStatus of predecessor to</span><br><span class="line">     * indicate that thread is (probably) waiting. If cancelled or</span><br><span class="line">     * attempt to set waitStatus fails, wake up to resync (in which</span><br><span class="line">     * case the waitStatus can be transiently and harmlessly wrong).</span><br><span class="line">     *&#x2F;</span><br><span class="line">    Node p &#x3D; enq(node);</span><br><span class="line">    int ws &#x3D; p.waitStatus;</span><br><span class="line">    if (ws &gt; 0 || !compareAndSetWaitStatus(p, ws, Node.SIGNAL))</span><br><span class="line">        LockSupport.unpark(node.thread);</span><br><span class="line">    return true;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">final boolean transferForSignal(Node node) &#123;
+    &#x2F;*
+     * If cannot change waitStatus, the node has been cancelled.
+     *&#x2F;
+    if (!compareAndSetWaitStatus(node, Node.CONDITION, 0))
+        return false;
+
+    &#x2F;*
+     * Splice onto queue and try to set waitStatus of predecessor to
+     * indicate that thread is (probably) waiting. If cancelled or
+     * attempt to set waitStatus fails, wake up to resync (in which
+     * case the waitStatus can be transiently and harmlessly wrong).
+     *&#x2F;
+    Node p &#x3D; enq(node);
+    int ws &#x3D; p.waitStatus;
+    if (ws &gt; 0 || !compareAndSetWaitStatus(p, ws, Node.SIGNAL))
+        LockSupport.unpark(node.thread);
+    return true;
+&#125;</code></pre>
 
 <p>CAS将节点<code>waitStatus</code>从<code>Node.CONDITION</code>转为0，失败的话则是节点被取消，<code>waitStatus</code>被改变了</p>
 <p><code>enq(node)</code>之前获取锁释放锁源码已经看了，就是将<code>node</code>入队到<code>waitqueue</code>中，并且这里还将前节点<code>p</code>的<code>waitStatus</code>由默认0变为<code>Node.SIGNAL</code>，获取锁释放锁源码中完成这个的是<code>shouldParkAfterFailedAcquire</code>方法，所以这里返回<code>true</code></p>
 <p>这个<code>doSignal</code>方法遍历<code>conditionqueue</code>，只要成功将一个节点转移到<code>waitqueue</code>中，就停止，这样整个唤醒过程就完成了，接着等待该线程在<code>waitqueue</code>中被唤醒</p>
 <p>从源码看出，<code>await</code>被唤醒顺序按照谁先被<code>await</code>，因为是从<code>conditionqueue</code>第一个节点被放到<code>waitqueue</code>最后一个节点，被<code>signal</code>之后仍要等待<code>waitqueue</code>前面线程都运行完</p>
-<h3 id="signalAll"><a href="#signalAll" class="headerlink" title="signalAll()"></a>signalAll()</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public final void signalAll() &#123;</span><br><span class="line">    if (!isHeldExclusively())</span><br><span class="line">        throw new IllegalMonitorStateException();</span><br><span class="line">    Node first &#x3D; firstWaiter;</span><br><span class="line">    if (first !&#x3D; null)</span><br><span class="line">        doSignalAll(first);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">private void doSignalAll(Node first) &#123;</span><br><span class="line">    lastWaiter &#x3D; firstWaiter &#x3D; null;</span><br><span class="line">    do &#123;</span><br><span class="line">        Node next &#x3D; first.nextWaiter;</span><br><span class="line">        first.nextWaiter &#x3D; null;</span><br><span class="line">        transferForSignal(first);</span><br><span class="line">        first &#x3D; next;</span><br><span class="line">    &#125; while (first !&#x3D; null);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="signalAll"><a href="#signalAll" class="headerlink" title="signalAll()"></a>signalAll()</h3><pre><code class="highlight plain">public final void signalAll() &#123;
+    if (!isHeldExclusively())
+        throw new IllegalMonitorStateException();
+    Node first &#x3D; firstWaiter;
+    if (first !&#x3D; null)
+        doSignalAll(first);
+&#125;
+
+
+private void doSignalAll(Node first) &#123;
+    lastWaiter &#x3D; firstWaiter &#x3D; null;
+    do &#123;
+        Node next &#x3D; first.nextWaiter;
+        first.nextWaiter &#x3D; null;
+        transferForSignal(first);
+        first &#x3D; next;
+    &#125; while (first !&#x3D; null);
+&#125;</code></pre>
 
 <p>和<code>signal()</code>方法相比，这里跳出循环的条件少了<code>transferForSignal</code>的返回值，所以这里会将<code>conditionqueue</code>中所有节点转移到<code>waitqueue</code>中</p>
 
@@ -409,8 +530,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/06/17/bit%20arithmetic/" rel="next" title="java中的位运算">
-                <i class="fa fa-chevron-left"></i> java中的位运算
+              <a href="/2020/06/17/String%20and%20constant%20pool/" rel="next" title="String与常量池">
+                <i class="fa fa-chevron-left"></i> String与常量池
               </a>
             
           </div>
@@ -419,8 +540,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2020/06/17/ajax%E4%B8%ADjson%E5%92%8Cspringmvc/" rel="prev" title="ajax中json和SpringMVC">
-                ajax中json和SpringMVC <i class="fa fa-chevron-right"></i>
+              <a href="/2020/06/17/bit%20arithmetic/" rel="prev" title="java中的位运算">
+                java中的位运算 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -758,7 +879,7 @@
 
   
 
-  <link rel="stylesheet" href="/lib/prettify/skins/desert.css" type="text/css">
+  <link rel="stylesheet" href="/lib/prettify/skins/sunburst.css" type="text/css">
 <script src="/lib/prettify/prettify.js" type="text/javascript"></script>
 <script type="text/javascript">
   $(document).ready(function() {

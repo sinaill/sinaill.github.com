@@ -360,7 +360,8 @@
 </ol>
 <h4 id="Selector选择器"><a href="#Selector选择器" class="headerlink" title="Selector选择器"></a>Selector选择器</h4><p>Selector是Java NIO中的一个组件，用于检查一个或多个NIO Channel的状态是否处于可读、可写。如此可以实现单线程管理多个channels,也就是可以管理多个网络链接。</p>
 <h5 id="创建一个Selector"><a href="#创建一个Selector" class="headerlink" title="创建一个Selector"></a>创建一个Selector</h5><p><code>Selector selector = Selector.open();</code></p>
-<h5 id="注册Channel到Selector上"><a href="#注册Channel到Selector上" class="headerlink" title="注册Channel到Selector上"></a>注册Channel到Selector上</h5><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">channel.configureBlocking(false);&#x2F;&#x2F;必须设置非阻塞通道</span><br><span class="line">SelectionKey key &#x3D; channel.register(selector, SelectionKey.OP_READ);</span><br></pre></td></tr></table></figure>
+<h5 id="注册Channel到Selector上"><a href="#注册Channel到Selector上" class="headerlink" title="注册Channel到Selector上"></a>注册Channel到Selector上</h5><pre><code class="highlight plain">channel.configureBlocking(false);&#x2F;&#x2F;必须设置非阻塞通道
+SelectionKey key &#x3D; channel.register(selector, SelectionKey.OP_READ);</code></pre>
 
 <p>register的第二个参数，这个参数是一个“关注集合”，代表我们关注的channel状态，有四种基础类型可供监听：</p>
 <ul>
@@ -388,15 +389,23 @@
 <li>An attached object (optional)</li>
 </ul>
 <p>Interest Set实际上就是我们希望处理的事件的集合，它的值就是注册时传入的参数，我们可以用按为与运算把每个事件取出来：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int interestSet &#x3D; selectionKey.interestOps();</span><br><span class="line"></span><br><span class="line">boolean isInterestedInAccept  &#x3D; interestSet &amp; SelectionKey.OP_ACCEPT;</span><br><span class="line">boolean isInterestedInConnect &#x3D; interestSet &amp; SelectionKey.OP_CONNECT;</span><br><span class="line">boolean isInterestedInRead    &#x3D; interestSet &amp; SelectionKey.OP_READ;</span><br><span class="line">boolean isInterestedInWrite   &#x3D; interestSet &amp; SelectionKey.OP_WRITE;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">int interestSet &#x3D; selectionKey.interestOps();
+
+boolean isInterestedInAccept  &#x3D; interestSet &amp; SelectionKey.OP_ACCEPT;
+boolean isInterestedInConnect &#x3D; interestSet &amp; SelectionKey.OP_CONNECT;
+boolean isInterestedInRead    &#x3D; interestSet &amp; SelectionKey.OP_READ;
+boolean isInterestedInWrite   &#x3D; interestSet &amp; SelectionKey.OP_WRITE;</code></pre>
 
 <p>Ready Set中的值是当前channel处于就绪的值，为触发该channel的就绪状态</p>
 <p><code>int readySet = selectionKey.readyOps();</code></p>
 <p>Channel + Selector可以这样获得</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Channel  channel  &#x3D; selectionKey.channel();</span><br><span class="line">Selector selector &#x3D; selectionKey.selector();</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">Channel  channel  &#x3D; selectionKey.channel();
+Selector selector &#x3D; selectionKey.selector();</code></pre>
 
 <p>Attaching Objects，我们可以给一个SelectionKey附加一个Object，这样做一方面可以方便我们识别某个特定的channel，同时也增加了channel相关的附加信息。例如，可以把用于channel的buffer附加到SelectionKey上：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">selectionKey.attach(theObject);</span><br><span class="line"></span><br><span class="line">Object attachedObj &#x3D; selectionKey.attachment();</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">selectionKey.attach(theObject);
+
+Object attachedObj &#x3D; selectionKey.attachment();</code></pre>
 
 <p>附加对象的操作也可以在register的时候就执行：</p>
 <p><code>SelectionKey key = channel.register(selector, SelectionKey.OP_READ, theObject);</code></p>
@@ -413,7 +422,29 @@
 <p><code>Set&lt;SelectionKey&gt; selectedKeys = selector.selectedKeys();</code></p>
 <p>还记得在register时的操作吧，我们register后的返回值就是SelectionKey实例，也就是我们现在通过selectedKeys()方法所返回的SelectionKey。</p>
 <p>遍历这些SelectionKey可以通过如下方法：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Set&lt;SelectionKey&gt; selectedKeys &#x3D; selector.selectedKeys();</span><br><span class="line"></span><br><span class="line">Iterator&lt;SelectionKey&gt; keyIterator &#x3D; selectedKeys.iterator();</span><br><span class="line"></span><br><span class="line">while(keyIterator.hasNext()) &#123;</span><br><span class="line"></span><br><span class="line">    SelectionKey key &#x3D; keyIterator.next();</span><br><span class="line"></span><br><span class="line">    if(key.isAcceptable()) &#123;</span><br><span class="line">        &#x2F;&#x2F; a connection was accepted by a ServerSocketChannel.</span><br><span class="line"></span><br><span class="line">    &#125; else if (key.isConnectable()) &#123;</span><br><span class="line">        &#x2F;&#x2F; a connection was established with a remote server.</span><br><span class="line"></span><br><span class="line">    &#125; else if (key.isReadable()) &#123;</span><br><span class="line">        &#x2F;&#x2F; a channel is ready for reading</span><br><span class="line"></span><br><span class="line">    &#125; else if (key.isWritable()) &#123;</span><br><span class="line">        &#x2F;&#x2F; a channel is ready for writing</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    keyIterator.remove();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">Set&lt;SelectionKey&gt; selectedKeys &#x3D; selector.selectedKeys();
+
+Iterator&lt;SelectionKey&gt; keyIterator &#x3D; selectedKeys.iterator();
+
+while(keyIterator.hasNext()) &#123;
+
+    SelectionKey key &#x3D; keyIterator.next();
+
+    if(key.isAcceptable()) &#123;
+        &#x2F;&#x2F; a connection was accepted by a ServerSocketChannel.
+
+    &#125; else if (key.isConnectable()) &#123;
+        &#x2F;&#x2F; a connection was established with a remote server.
+
+    &#125; else if (key.isReadable()) &#123;
+        &#x2F;&#x2F; a channel is ready for reading
+
+    &#125; else if (key.isWritable()) &#123;
+        &#x2F;&#x2F; a channel is ready for writing
+    &#125;
+
+    keyIterator.remove();
+&#125;</code></pre>
 
 <p>由于调用select而被阻塞的线程，可以通过调用Selector.wakeup()来唤醒即便此时已然没有channel处于就绪状态。具体操作是，在另外一个线程调用wakeup，被阻塞与select方法的线程就会立刻返回。</p>
 <p>当操作Selector完毕后，需要调用close方法。close的调用会关闭Selector并使相关的SelectionKey都无效。channel本身不管被关闭。</p>
@@ -796,7 +827,7 @@
 
   
 
-  <link rel="stylesheet" href="/lib/prettify/skins/desert.css" type="text/css">
+  <link rel="stylesheet" href="/lib/prettify/skins/sunburst.css" type="text/css">
 <script src="/lib/prettify/prettify.js" type="text/javascript"></script>
 <script type="text/javascript">
   $(document).ready(function() {

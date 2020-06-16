@@ -79,12 +79,12 @@
 
 
 
-<meta name="description" content="什么是ThreadLocalThreadLocal一般称为线程本地变量，它是一种特殊的线程绑定机制，将变量与线程绑定在一起，为每一个线程维护一个独立的变量副本。通过ThreadLocal可以将对象的可见范围限制在同一个线程内。 查看源码先查看get方法 public void set(T value) &amp;#123;    Thread t &#x3D; Thread.currentThread()">
+<meta name="description" content="什么是ThreadLocalThreadLocal一般称为线程本地变量，它是一种特殊的线程绑定机制，将变量与线程绑定在一起，为每一个线程维护一个独立的变量副本。通过ThreadLocal可以将对象的可见范围限制在同一个线程内。 查看源码先查看get方法 public void set(T value) &amp;#123;     Thread t &#x3D; Thread.currentThread(">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ThreadLocal">
 <meta property="og:url" content="http://yoursite.com/2020/06/17/ThreadLocal/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="什么是ThreadLocalThreadLocal一般称为线程本地变量，它是一种特殊的线程绑定机制，将变量与线程绑定在一起，为每一个线程维护一个独立的变量副本。通过ThreadLocal可以将对象的可见范围限制在同一个线程内。 查看源码先查看get方法 public void set(T value) &amp;#123;    Thread t &#x3D; Thread.currentThread()">
+<meta property="og:description" content="什么是ThreadLocalThreadLocal一般称为线程本地变量，它是一种特殊的线程绑定机制，将变量与线程绑定在一起，为每一个线程维护一个独立的变量副本。通过ThreadLocal可以将对象的可见范围限制在同一个线程内。 查看源码先查看get方法 public void set(T value) &amp;#123;     Thread t &#x3D; Thread.currentThread(">
 <meta property="article:published_time" content="2020-06-16T17:43:37.235Z">
 <meta property="article:modified_time" content="2020-06-16T17:43:37.235Z">
 <meta property="article:author" content="sinaill">
@@ -343,26 +343,74 @@
       
         <h3 id="什么是ThreadLocal"><a href="#什么是ThreadLocal" class="headerlink" title="什么是ThreadLocal"></a>什么是ThreadLocal</h3><p><code>ThreadLocal</code>一般称为线程本地变量，它是一种特殊的线程绑定机制，将变量与线程绑定在一起，为每一个线程维护一个独立的变量副本。通过<code>ThreadLocal</code>可以将对象的可见范围限制在同一个线程内。</p>
 <h3 id="查看源码"><a href="#查看源码" class="headerlink" title="查看源码"></a>查看源码</h3><p>先查看<code>get</code>方法</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void set(T value) &#123;</span><br><span class="line">    Thread t &#x3D; Thread.currentThread();</span><br><span class="line">    ThreadLocalMap map &#x3D; getMap(t);</span><br><span class="line">    if (map !&#x3D; null)</span><br><span class="line">        map.set(this, value);</span><br><span class="line">    else</span><br><span class="line">        createMap(t, value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public void set(T value) &#123;
+    Thread t &#x3D; Thread.currentThread();
+    ThreadLocalMap map &#x3D; getMap(t);
+    if (map !&#x3D; null)
+        map.set(this, value);
+    else
+        createMap(t, value);
+&#125;</code></pre>
 
 <p>查看<code>getMap</code>方法</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ThreadLocalMap getMap(Thread t) &#123;</span><br><span class="line">    return t.threadLocals;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">ThreadLocalMap getMap(Thread t) &#123;
+    return t.threadLocals;
+&#125;</code></pre>
 
 <p>查看ThreadLocalMap类,为键值对的数据结构，另外Thread类中定义了一个ThreadLocalMap类的变量。get方法中先获取线程t，再获取线程t中的ThreadLocalMap实例，如果不为空，设置一个新键值对，key为当前ThreadLocal实例，value为传入的参数value。如果为空，进入createMap方法</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">void createMap(Thread t, T firstValue) &#123;</span><br><span class="line">    t.threadLocals &#x3D; new ThreadLocalMap(this, firstValue);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">ThreadLocalMap(ThreadLocal&lt;?&gt; firstKey, Object firstValue) &#123;</span><br><span class="line">        table &#x3D; new Entry[INITIAL_CAPACITY];</span><br><span class="line">        int i &#x3D; firstKey.threadLocalHashCode &amp; (INITIAL_CAPACITY - 1);</span><br><span class="line">        table[i] &#x3D; new Entry(firstKey, firstValue);</span><br><span class="line">        size &#x3D; 1;</span><br><span class="line">        setThreshold(INITIAL_CAPACITY);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">void createMap(Thread t, T firstValue) &#123;
+    t.threadLocals &#x3D; new ThreadLocalMap(this, firstValue);
+&#125;
+
+ThreadLocalMap(ThreadLocal&lt;?&gt; firstKey, Object firstValue) &#123;
+        table &#x3D; new Entry[INITIAL_CAPACITY];
+        int i &#x3D; firstKey.threadLocalHashCode &amp; (INITIAL_CAPACITY - 1);
+        table[i] &#x3D; new Entry(firstKey, firstValue);
+        size &#x3D; 1;
+        setThreshold(INITIAL_CAPACITY);
+    &#125;</code></pre>
 
 <p>给当前线程t的<code>ThreadLocalMap</code>类的引用传入新实例，<code>key</code>为当前<code>ThreadLocal</code>，值为传入的参数<code>firstValue</code></p>
 <p>查看<code>get</code>方法</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public T get() &#123;</span><br><span class="line">    Thread t &#x3D; Thread.currentThread();</span><br><span class="line">    ThreadLocalMap map &#x3D; getMap(t);</span><br><span class="line">    if (map !&#x3D; null) &#123;</span><br><span class="line">        ThreadLocalMap.Entry e &#x3D; map.getEntry(this);</span><br><span class="line">        if (e !&#x3D; null) &#123;</span><br><span class="line">            @SuppressWarnings(&quot;unchecked&quot;)</span><br><span class="line">            T result &#x3D; (T)e.value;</span><br><span class="line">            return result;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return setInitialValue();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public T get() &#123;
+    Thread t &#x3D; Thread.currentThread();
+    ThreadLocalMap map &#x3D; getMap(t);
+    if (map !&#x3D; null) &#123;
+        ThreadLocalMap.Entry e &#x3D; map.getEntry(this);
+        if (e !&#x3D; null) &#123;
+            @SuppressWarnings(&quot;unchecked&quot;)
+            T result &#x3D; (T)e.value;
+            return result;
+        &#125;
+    &#125;
+    return setInitialValue();
+&#125;</code></pre>
 
 <p>先获取当前线程t，再获取t中的<code>ThreadLocalMap</code>实例<code>map</code>，如果<code>map</code>不为空</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">private Entry getEntry(ThreadLocal&lt;?&gt; key) &#123;</span><br><span class="line">    int i &#x3D; key.threadLocalHashCode &amp; (table.length - 1);</span><br><span class="line">    Entry e &#x3D; table[i];</span><br><span class="line">    if (e !&#x3D; null &amp;&amp; e.get() &#x3D;&#x3D; key)</span><br><span class="line">        return e;</span><br><span class="line">    else</span><br><span class="line">        return getEntryAfterMiss(key, i, e);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">private Entry getEntry(ThreadLocal&lt;?&gt; key) &#123;
+    int i &#x3D; key.threadLocalHashCode &amp; (table.length - 1);
+    Entry e &#x3D; table[i];
+    if (e !&#x3D; null &amp;&amp; e.get() &#x3D;&#x3D; key)
+        return e;
+    else
+        return getEntryAfterMiss(key, i, e);
+&#125;</code></pre>
 
 <p>通过传入的<code>ThreadLocal</code>实例为<code>key</code>值获取对应键值对<code>Entry</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">static class Entry extends WeakReference&lt;ThreadLocal&lt;?&gt;&gt; &#123;</span><br><span class="line">    &#x2F;** The value associated with this ThreadLocal. *&#x2F;</span><br><span class="line">    Object value;</span><br><span class="line"></span><br><span class="line">    Entry(ThreadLocal&lt;?&gt; k, Object v) &#123;</span><br><span class="line">        super(k);</span><br><span class="line">        value &#x3D; v;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">static class Entry extends WeakReference&lt;ThreadLocal&lt;?&gt;&gt; &#123;
+    &#x2F;** The value associated with this ThreadLocal. *&#x2F;
+    Object value;
+
+    Entry(ThreadLocal&lt;?&gt; k, Object v) &#123;
+        super(k);
+        value &#x3D; v;
+    &#125;
+&#125;</code></pre>
 
 <p><code>Entry</code>中的<code>value</code>就是键值对中与当前<code>ThreadLocal</code>实例对应的<code>value</code>键值，<code>map</code>为空时，即调用<code>get</code>方法之前没有调用过<code>set</code>方法，<code>get</code>返回默认值(null)，可覆写</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">protected T initialValue() &#123;</span><br><span class="line">    return null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">protected T initialValue() &#123;
+    return null;
+&#125;</code></pre>
 
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p><code>Thread</code>类中存有<code>ThreadLocalMap</code>的引用，<code>ThreadLocalMap</code>类的定义在<code>ThreadLocal</code>中。</p>
 <p>调用<code>ThreadLocal</code>的<code>set</code>方法时，先获取当前线程，查看线程中<code>ThreadLocalMap</code>引用为不为空，若为空，为当前线程创建<code>ThreadLocalMap</code>实例，传入键值对<code>key</code>为当前<code>ThreadLocal</code>实例，<code>value</code>为<code>set</code>方法传入的参数值。若不为空，为<code>ThreadLocalMap</code>实例添加新键值对，<code>key</code>为当前<code>ThreadLocal</code>实例，<code>value</code>为<code>set</code>方法传入的参数值。</p>
@@ -398,8 +446,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/06/17/String%20and%20constant%20pool/" rel="next" title="String与常量池">
-                <i class="fa fa-chevron-left"></i> String与常量池
+              <a href="/2020/06/17/Spring%E4%B8%ADBean%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/" rel="next" title="Spring中Bean的生命周期">
+                <i class="fa fa-chevron-left"></i> Spring中Bean的生命周期
               </a>
             
           </div>
@@ -408,8 +456,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2020/06/17/bit%20arithmetic/" rel="prev" title="java中的位运算">
-                java中的位运算 <i class="fa fa-chevron-right"></i>
+              <a href="/2020/06/17/String%20and%20constant%20pool/" rel="prev" title="String与常量池">
+                String与常量池 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -747,7 +795,7 @@
 
   
 
-  <link rel="stylesheet" href="/lib/prettify/skins/desert.css" type="text/css">
+  <link rel="stylesheet" href="/lib/prettify/skins/sunburst.css" type="text/css">
 <script src="/lib/prettify/prettify.js" type="text/javascript"></script>
 <script type="text/javascript">
   $(document).ready(function() {

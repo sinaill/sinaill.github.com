@@ -417,7 +417,135 @@
 </ol>
 <p>获取包含了所有声明的构造函数的<code>Constructor</code>数组</p>
 <p>区别：<code>getConstructors</code>获取的是类中修饰符为public的构造函数，<code>getDeclaredConstructors</code>获取的是类中所有声明的构造函数</p>
-<h3 id="具体运用"><a href="#具体运用" class="headerlink" title="具体运用"></a>具体运用</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class reflect&#123;</span><br><span class="line">	public char asc &#x3D; &#39;a&#39;;</span><br><span class="line">	private int num;</span><br><span class="line">	private String string;</span><br><span class="line">	private int privateNum &#x3D; 1;</span><br><span class="line">	public reflect()&#123;</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	public reflect(int num,String string)&#123;</span><br><span class="line">		this.num &#x3D; num;</span><br><span class="line">		this.string &#x3D; string;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public int getNum() &#123;</span><br><span class="line">		return num;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public void setNum(int num) &#123;</span><br><span class="line">		this.num &#x3D; num;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public String getString() &#123;</span><br><span class="line">		return string;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public void setString(String string) &#123;</span><br><span class="line">		this.string &#x3D; string;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	public int getNum(int i)&#123;</span><br><span class="line">		return num+i;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	public void out()&#123;</span><br><span class="line">		System.out.println(num+string);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class sonReflect extends reflect&#123;</span><br><span class="line">	</span><br><span class="line">	public boolean bool &#x3D; true;</span><br><span class="line">	private float fnum;</span><br><span class="line">	</span><br><span class="line">	public sonReflect() &#123;</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public sonReflect(float fnum) &#123;</span><br><span class="line">		this.fnum &#x3D; fnum;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public float getFnum() &#123;</span><br><span class="line">		return fnum;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public void setFnum(float fnum) &#123;</span><br><span class="line">		this.fnum &#x3D; fnum;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	public void out()&#123;</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	private void privateOut()&#123;</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">		reflect r &#x3D; new reflect(1,&quot;1&quot;);</span><br><span class="line">		sonReflect sr &#x3D; new sonReflect(1.1f);</span><br><span class="line">		Class&lt;?&gt; rc &#x3D; r.getClass();</span><br><span class="line">		Class&lt;?&gt; src &#x3D; sr.getClass();</span><br><span class="line">		&#x2F;&#x2F;获取子类的Method</span><br><span class="line">		Method srcdeclaredMethod[] &#x3D; src.getDeclaredMethods();</span><br><span class="line">		Method srcMethod[] &#x3D; src.getMethods();</span><br><span class="line">		Arrays.asList(srcdeclaredMethod).forEach(m-&gt;System.out.print(m.getName()+&quot; &quot;));</span><br><span class="line">		System.out.println();</span><br><span class="line">		Arrays.asList(srcMethod).forEach(m-&gt;System.out.print(m.getName()+&quot; &quot;));</span><br><span class="line">		&#x2F;* 输出为:</span><br><span class="line">		 * out getFnum setFnum  和</span><br><span class="line">		 * out getFnum setFnum getString getNum getNum setNum setString</span><br><span class="line">		 * wait wait wait equals toString hashCode getClass notify notifyAll</span><br><span class="line">		 * getDeclaredMethods只能获取到当前类声明的所有类型方法，而getMethods能</span><br><span class="line">		 * 获取当前和从父类继承的public方法，例如privateOut方法它就无法获得</span><br><span class="line">		 * *&#x2F;</span><br><span class="line">		System.out.println();</span><br><span class="line">		Field srcdeclaredField[] &#x3D; src.getDeclaredFields();</span><br><span class="line">		Field srcField[] &#x3D; src.getFields();</span><br><span class="line">		Arrays.asList(srcdeclaredField).forEach(m-&gt;System.out.print(m.getName()+&quot; &quot;));</span><br><span class="line">		System.out.println();</span><br><span class="line">		Arrays.asList(srcField).forEach(m-&gt;System.out.print(m.getName()+&quot; &quot;));</span><br><span class="line">		&#x2F;* 输出为:</span><br><span class="line">		 * bool fnum 和 bool asc,从结果看出getDeclaredFields方法获取到了自身公有和私有</span><br><span class="line">		 * 属性,而getFields方法获取到了父类和子类的所有共有属性</span><br><span class="line">		 * </span><br><span class="line">		 * *&#x2F;</span><br><span class="line">		</span><br><span class="line">		Method m &#x3D; rc.getMethod(&quot;getNum&quot;, new Class[]&#123;int.class&#125;);</span><br><span class="line">		Method m1 &#x3D; rc.getMethod(&quot;getNum&quot;);</span><br><span class="line">		System.out.println(m.invoke(r, 1));</span><br><span class="line">		System.out.println(m1.invoke(r));</span><br><span class="line">	  &#x2F;&#x2F;System.out.println(m1.invoke(r, 1));&#x2F;&#x2F;抛出异常</span><br><span class="line">		&#x2F;*输出为:2 1 和一个异常,通过形参数组确定具体</span><br><span class="line">		 * 方法,再用invoke函数调用对象方法</span><br><span class="line">		 *&#x2F;</span><br><span class="line">		</span><br><span class="line">		Field f &#x3D; rc.getDeclaredField(&quot;privateNum&quot;);</span><br><span class="line">&#x2F;&#x2F;		Field f1 &#x3D; rc.getField(&quot;privateNum&quot;); </span><br><span class="line">&#x2F;&#x2F;		System.out.println(f.get(r)+&quot; &quot;+f1.get(r));</span><br><span class="line">		f.setAccessible(true);</span><br><span class="line">		System.out.println(f.get(r));</span><br><span class="line">		&#x2F;* 抛出两个异常,getField只能获取子类和父类的公有属性</span><br><span class="line">		 * f为私有属性且没有get方法,需要setAccessible设为true</span><br><span class="line">		 * 才能调用Field的get方法获取</span><br><span class="line">		 *&#x2F;</span><br><span class="line"></span><br><span class="line">		try &#123;</span><br><span class="line">			Class constructor &#x3D; Class.forName(&quot;reflect.reflect&quot;);</span><br><span class="line">			Constructor con &#x3D; constructor.getConstructor(new Class[]&#123;int.class,String.class&#125;);</span><br><span class="line">			reflect nr &#x3D; (reflect) con.newInstance(3,&quot;333&quot;);</span><br><span class="line">			nr.out();</span><br><span class="line">		&#125; catch (Exception e) &#123;</span><br><span class="line">			&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">		&#x2F;&#x2F;除了class.newInstance，构造器也能用来创建实例</span><br></pre></td></tr></table></figure>
+<h3 id="具体运用"><a href="#具体运用" class="headerlink" title="具体运用"></a>具体运用</h3><pre><code class="highlight plain">class reflect&#123;
+	public char asc &#x3D; &#39;a&#39;;
+	private int num;
+	private String string;
+	private int privateNum &#x3D; 1;
+	public reflect()&#123;
+		
+	&#125;
+	
+	public reflect(int num,String string)&#123;
+		this.num &#x3D; num;
+		this.string &#x3D; string;
+	&#125;
+
+	public int getNum() &#123;
+		return num;
+	&#125;
+
+	public void setNum(int num) &#123;
+		this.num &#x3D; num;
+	&#125;
+
+	public String getString() &#123;
+		return string;
+	&#125;
+
+	public void setString(String string) &#123;
+		this.string &#x3D; string;
+	&#125;
+	
+	public int getNum(int i)&#123;
+		return num+i;
+	&#125;
+	
+	public void out()&#123;
+		System.out.println(num+string);
+	&#125;
+&#125;
+
+class sonReflect extends reflect&#123;
+	
+	public boolean bool &#x3D; true;
+	private float fnum;
+	
+	public sonReflect() &#123;
+		
+	&#125;
+
+	public sonReflect(float fnum) &#123;
+		this.fnum &#x3D; fnum;
+	&#125;
+
+	public float getFnum() &#123;
+		return fnum;
+	&#125;
+
+	public void setFnum(float fnum) &#123;
+		this.fnum &#x3D; fnum;
+	&#125;
+	
+	public void out()&#123;
+		
+	&#125;
+	
+	private void privateOut()&#123;
+		
+	&#125;
+&#125;
+
+
+
+		reflect r &#x3D; new reflect(1,&quot;1&quot;);
+		sonReflect sr &#x3D; new sonReflect(1.1f);
+		Class&lt;?&gt; rc &#x3D; r.getClass();
+		Class&lt;?&gt; src &#x3D; sr.getClass();
+		&#x2F;&#x2F;获取子类的Method
+		Method srcdeclaredMethod[] &#x3D; src.getDeclaredMethods();
+		Method srcMethod[] &#x3D; src.getMethods();
+		Arrays.asList(srcdeclaredMethod).forEach(m-&gt;System.out.print(m.getName()+&quot; &quot;));
+		System.out.println();
+		Arrays.asList(srcMethod).forEach(m-&gt;System.out.print(m.getName()+&quot; &quot;));
+		&#x2F;* 输出为:
+		 * out getFnum setFnum  和
+		 * out getFnum setFnum getString getNum getNum setNum setString
+		 * wait wait wait equals toString hashCode getClass notify notifyAll
+		 * getDeclaredMethods只能获取到当前类声明的所有类型方法，而getMethods能
+		 * 获取当前和从父类继承的public方法，例如privateOut方法它就无法获得
+		 * *&#x2F;
+		System.out.println();
+		Field srcdeclaredField[] &#x3D; src.getDeclaredFields();
+		Field srcField[] &#x3D; src.getFields();
+		Arrays.asList(srcdeclaredField).forEach(m-&gt;System.out.print(m.getName()+&quot; &quot;));
+		System.out.println();
+		Arrays.asList(srcField).forEach(m-&gt;System.out.print(m.getName()+&quot; &quot;));
+		&#x2F;* 输出为:
+		 * bool fnum 和 bool asc,从结果看出getDeclaredFields方法获取到了自身公有和私有
+		 * 属性,而getFields方法获取到了父类和子类的所有共有属性
+		 * 
+		 * *&#x2F;
+		
+		Method m &#x3D; rc.getMethod(&quot;getNum&quot;, new Class[]&#123;int.class&#125;);
+		Method m1 &#x3D; rc.getMethod(&quot;getNum&quot;);
+		System.out.println(m.invoke(r, 1));
+		System.out.println(m1.invoke(r));
+	  &#x2F;&#x2F;System.out.println(m1.invoke(r, 1));&#x2F;&#x2F;抛出异常
+		&#x2F;*输出为:2 1 和一个异常,通过形参数组确定具体
+		 * 方法,再用invoke函数调用对象方法
+		 *&#x2F;
+		
+		Field f &#x3D; rc.getDeclaredField(&quot;privateNum&quot;);
+&#x2F;&#x2F;		Field f1 &#x3D; rc.getField(&quot;privateNum&quot;); 
+&#x2F;&#x2F;		System.out.println(f.get(r)+&quot; &quot;+f1.get(r));
+		f.setAccessible(true);
+		System.out.println(f.get(r));
+		&#x2F;* 抛出两个异常,getField只能获取子类和父类的公有属性
+		 * f为私有属性且没有get方法,需要setAccessible设为true
+		 * 才能调用Field的get方法获取
+		 *&#x2F;
+
+		try &#123;
+			Class constructor &#x3D; Class.forName(&quot;reflect.reflect&quot;);
+			Constructor con &#x3D; constructor.getConstructor(new Class[]&#123;int.class,String.class&#125;);
+			reflect nr &#x3D; (reflect) con.newInstance(3,&quot;333&quot;);
+			nr.out();
+		&#125; catch (Exception e) &#123;
+			&#x2F;&#x2F; TODO Auto-generated catch block
+			e.printStackTrace();
+		&#125;
+		&#x2F;&#x2F;除了class.newInstance，构造器也能用来创建实例</code></pre>
       
     </div>
     
@@ -447,8 +575,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/06/17/%E5%8D%95%E9%93%BE%E8%A1%A8/" rel="next" title="单链表">
-                <i class="fa fa-chevron-left"></i> 单链表
+              <a href="/2020/06/17/%E5%8F%8C%E5%90%91%E9%93%BE%E8%A1%A8/" rel="next" title="双向链表">
+                <i class="fa fa-chevron-left"></i> 双向链表
               </a>
             
           </div>
@@ -457,8 +585,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2020/06/17/%E5%8F%8C%E5%90%91%E9%93%BE%E8%A1%A8/" rel="prev" title="双向链表">
-                双向链表 <i class="fa fa-chevron-right"></i>
+              <a href="/2020/06/17/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%BA%A4%E6%9B%BF%E8%BE%93%E5%87%BAABC/" rel="prev" title="多线程交替输出ABC">
+                多线程交替输出ABC <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -796,7 +924,7 @@
 
   
 
-  <link rel="stylesheet" href="/lib/prettify/skins/desert.css" type="text/css">
+  <link rel="stylesheet" href="/lib/prettify/skins/sunburst.css" type="text/css">
 <script src="/lib/prettify/prettify.js" type="text/javascript"></script>
 <script type="text/javascript">
   $(document).ready(function() {

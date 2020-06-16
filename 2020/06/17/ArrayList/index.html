@@ -348,20 +348,97 @@
 <p>Shared empty array instance used for empty instances.</p>
 <p><code>private static final Object[] DEFAULTCAPACITY_EMPTY_ELEMENTDATA = {};</code></p>
 <p>两个的区别是，上面的是初始化容量为0时共享的array instance，下面的是以默认容量初始化时共享的array instance.</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line">     * The array buffer into which the elements of the ArrayList are stored.</span><br><span class="line">     * The capacity of the ArrayList is the length of this array buffer. Any</span><br><span class="line">     * empty ArrayList with elementData &#x3D;&#x3D; DEFAULTCAPACITY_EMPTY_ELEMENTDATA</span><br><span class="line">     * will be expanded to DEFAULT_CAPACITY when the first element is added.</span><br><span class="line">     *&#x2F;</span><br><span class="line">	   transient Object[] elementData;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">&#x2F;**
+     * The array buffer into which the elements of the ArrayList are stored.
+     * The capacity of the ArrayList is the length of this array buffer. Any
+     * empty ArrayList with elementData &#x3D;&#x3D; DEFAULTCAPACITY_EMPTY_ELEMENTDATA
+     * will be expanded to DEFAULT_CAPACITY when the first element is added.
+     *&#x2F;
+	   transient Object[] elementData;</code></pre>
 
 <p>存储元素的Object数组，empty ArrayList with elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA will be expanded to DEFAULT_CAPACITY when the first element is added</p>
-<h3 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * Constructs an empty list with an initial capacity of ten.</span><br><span class="line"> *&#x2F;</span><br><span class="line">public ArrayList() &#123;</span><br><span class="line">    this.elementData &#x3D; DEFAULTCAPACITY_EMPTY_ELEMENTDATA;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h3><pre><code class="highlight plain">&#x2F;**
+ * Constructs an empty list with an initial capacity of ten.
+ *&#x2F;
+public ArrayList() &#123;
+    this.elementData &#x3D; DEFAULTCAPACITY_EMPTY_ELEMENTDATA;
+&#125;</code></pre>
 <p>无参构造函数时，Constructs an empty list with an initial capacity of ten</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line">     * Constructs an empty list with the specified initial capacity.</span><br><span class="line">     *</span><br><span class="line">     * @param  initialCapacity  the initial capacity of the list</span><br><span class="line">     * @throws IllegalArgumentException if the specified initial capacity</span><br><span class="line">     *         is negative</span><br><span class="line">     *&#x2F;</span><br><span class="line">    public ArrayList(int initialCapacity) &#123;</span><br><span class="line">        if (initialCapacity &gt; 0) &#123;</span><br><span class="line">            this.elementData &#x3D; new Object[initialCapacity];</span><br><span class="line">        &#125; else if (initialCapacity &#x3D;&#x3D; 0) &#123;</span><br><span class="line">            this.elementData &#x3D; EMPTY_ELEMENTDATA;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            throw new IllegalArgumentException(&quot;Illegal Capacity: &quot;+</span><br><span class="line">                                               initialCapacity);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">&#x2F;**
+     * Constructs an empty list with the specified initial capacity.
+     *
+     * @param  initialCapacity  the initial capacity of the list
+     * @throws IllegalArgumentException if the specified initial capacity
+     *         is negative
+     *&#x2F;
+    public ArrayList(int initialCapacity) &#123;
+        if (initialCapacity &gt; 0) &#123;
+            this.elementData &#x3D; new Object[initialCapacity];
+        &#125; else if (initialCapacity &#x3D;&#x3D; 0) &#123;
+            this.elementData &#x3D; EMPTY_ELEMENTDATA;
+        &#125; else &#123;
+            throw new IllegalArgumentException(&quot;Illegal Capacity: &quot;+
+                                               initialCapacity);
+        &#125;
+    &#125;</code></pre>
 
 <p>int类型为参数的构造函数，构造确定容量的ArrayList，<strong>而不是默认的10位</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line">     * Constructs a list containing the elements of the specified</span><br><span class="line">     * collection, in the order they are returned by the collection&#39;s</span><br><span class="line">     * iterator.</span><br><span class="line">     *</span><br><span class="line">     * @param c the collection whose elements are to be placed into this list</span><br><span class="line">     * @throws NullPointerException if the specified collection is null</span><br><span class="line">     *&#x2F;</span><br><span class="line">    public ArrayList(Collection&lt;? extends E&gt; c) &#123;</span><br><span class="line">        elementData &#x3D; c.toArray();</span><br><span class="line">        if ((size &#x3D; elementData.length) !&#x3D; 0) &#123;</span><br><span class="line">            &#x2F;&#x2F; c.toArray might (incorrectly) not return Object[] (see 6260652)</span><br><span class="line">            if (elementData.getClass() !&#x3D; Object[].class)</span><br><span class="line">                elementData &#x3D; Arrays.copyOf(elementData, size, Object[].class);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            &#x2F;&#x2F; replace with empty array.</span><br><span class="line">            this.elementData &#x3D; EMPTY_ELEMENTDATA;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">&#x2F;**
+     * Constructs a list containing the elements of the specified
+     * collection, in the order they are returned by the collection&#39;s
+     * iterator.
+     *
+     * @param c the collection whose elements are to be placed into this list
+     * @throws NullPointerException if the specified collection is null
+     *&#x2F;
+    public ArrayList(Collection&lt;? extends E&gt; c) &#123;
+        elementData &#x3D; c.toArray();
+        if ((size &#x3D; elementData.length) !&#x3D; 0) &#123;
+            &#x2F;&#x2F; c.toArray might (incorrectly) not return Object[] (see 6260652)
+            if (elementData.getClass() !&#x3D; Object[].class)
+                elementData &#x3D; Arrays.copyOf(elementData, size, Object[].class);
+        &#125; else &#123;
+            &#x2F;&#x2F; replace with empty array.
+            this.elementData &#x3D; EMPTY_ELEMENTDATA;
+        &#125;
+    &#125;</code></pre>
 
 <p>可传入List或者Set类型参数，由它们存放的内容来实例化ArrayList</p>
-<h3 id="遍历方法"><a href="#遍历方法" class="headerlink" title="遍历方法"></a>遍历方法</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">List&lt;String&gt; a &#x3D; new ArrayList&lt;String&gt;();</span><br><span class="line">a.add(&quot;abc&quot;);</span><br><span class="line">a.add(&quot;ddd&quot;);</span><br><span class="line">a.add(&quot;ccc&quot;);</span><br><span class="line"></span><br><span class="line">for (String string : a) &#123;</span><br><span class="line">	System.out.println(string);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Iterator&lt;String&gt; it &#x3D; a.iterator();</span><br><span class="line">while(it.hasNext())&#123;	</span><br><span class="line">	System.out.println(it.next());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">a.forEach(str-&gt;system.out.println(str))</span><br></pre></td></tr></table></figure>
+<h3 id="遍历方法"><a href="#遍历方法" class="headerlink" title="遍历方法"></a>遍历方法</h3><pre><code class="highlight plain">List&lt;String&gt; a &#x3D; new ArrayList&lt;String&gt;();
+a.add(&quot;abc&quot;);
+a.add(&quot;ddd&quot;);
+a.add(&quot;ccc&quot;);
 
-<h3 id="自动扩容"><a href="#自动扩容" class="headerlink" title="自动扩容"></a>自动扩容</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"> private void grow(int minCapacity) &#123;</span><br><span class="line">     &#x2F;&#x2F; overflow-conscious code</span><br><span class="line">     int oldCapacity &#x3D; elementData.length;</span><br><span class="line">     int newCapacity &#x3D; oldCapacity + (oldCapacity &gt;&gt; 1);</span><br><span class="line">     if (newCapacity - minCapacity &lt; 0)</span><br><span class="line">         newCapacity &#x3D; minCapacity;</span><br><span class="line">     if (newCapacity - MAX_ARRAY_SIZE &gt; 0)</span><br><span class="line">         newCapacity &#x3D; hugeCapacity(minCapacity);</span><br><span class="line">     &#x2F;&#x2F; minCapacity is usually close to size, so this is a win:</span><br><span class="line">     elementData &#x3D; Arrays.copyOf(elementData, newCapacity);</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line">private static int hugeCapacity(int minCapacity) &#123;</span><br><span class="line">     if (minCapacity &lt; 0) &#x2F;&#x2F; overflow</span><br><span class="line">         throw new OutOfMemoryError();</span><br><span class="line">     return (minCapacity &gt; MAX_ARRAY_SIZE) ?</span><br><span class="line">         Integer.MAX_VALUE :</span><br><span class="line">         MAX_ARRAY_SIZE;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+for (String string : a) &#123;
+	System.out.println(string);
+&#125;
+
+Iterator&lt;String&gt; it &#x3D; a.iterator();
+while(it.hasNext())&#123;	
+	System.out.println(it.next());
+&#125;
+
+a.forEach(str-&gt;system.out.println(str))</code></pre>
+
+<h3 id="自动扩容"><a href="#自动扩容" class="headerlink" title="自动扩容"></a>自动扩容</h3><pre><code class="highlight plain"> private void grow(int minCapacity) &#123;
+     &#x2F;&#x2F; overflow-conscious code
+     int oldCapacity &#x3D; elementData.length;
+     int newCapacity &#x3D; oldCapacity + (oldCapacity &gt;&gt; 1);
+     if (newCapacity - minCapacity &lt; 0)
+         newCapacity &#x3D; minCapacity;
+     if (newCapacity - MAX_ARRAY_SIZE &gt; 0)
+         newCapacity &#x3D; hugeCapacity(minCapacity);
+     &#x2F;&#x2F; minCapacity is usually close to size, so this is a win:
+     elementData &#x3D; Arrays.copyOf(elementData, newCapacity);
+ &#125;
+
+private static int hugeCapacity(int minCapacity) &#123;
+     if (minCapacity &lt; 0) &#x2F;&#x2F; overflow
+         throw new OutOfMemoryError();
+     return (minCapacity &gt; MAX_ARRAY_SIZE) ?
+         Integer.MAX_VALUE :
+         MAX_ARRAY_SIZE;
+ &#125;</code></pre>
 
 <p>先1.5倍扩容，如果还是不够，直接设置为当前size，再比较MAX_ARRAY_SIZE，扩容后新容量大于它时，且minCapacity即当前包含元素个数&lt;MAX_ARRAY_SIZE，则新容量设置为MAX_ARRAY_SIZE。<br>反之，扩容后新容量和当前包含元素个数都都大于MAX_ARRAY_SIZE时，新容量设置为Integer.MAX_VALUE</p>
 
@@ -394,8 +471,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/06/17/@RequestParam%E4%BD%9C%E7%94%A8%E6%BA%90%E7%A0%81/" rel="next" title="注解@RequestParam作用源码">
-                <i class="fa fa-chevron-left"></i> 注解@RequestParam作用源码
+              <a href="/2020/06/17/BeanWrapperImpl%E5%9C%A8SpringMVC/" rel="next" title="BeanWrapperImpl初探">
+                <i class="fa fa-chevron-left"></i> BeanWrapperImpl初探
               </a>
             
           </div>
@@ -404,8 +481,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2020/06/17/Function%20and%20Predicate/" rel="prev" title="Predicate和Function">
-                Predicate和Function <i class="fa fa-chevron-right"></i>
+              <a href="/2020/06/17/@RequestParam%E4%BD%9C%E7%94%A8%E6%BA%90%E7%A0%81/" rel="prev" title="注解@RequestParam作用源码">
+                注解@RequestParam作用源码 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -743,7 +820,7 @@
 
   
 
-  <link rel="stylesheet" href="/lib/prettify/skins/desert.css" type="text/css">
+  <link rel="stylesheet" href="/lib/prettify/skins/sunburst.css" type="text/css">
 <script src="/lib/prettify/prettify.js" type="text/javascript"></script>
 <script type="text/javascript">
   $(document).ready(function() {

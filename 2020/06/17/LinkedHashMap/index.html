@@ -79,12 +79,12 @@
 
 
 
-<meta name="description" content="使用LRU时，我们要用到这个构造函数 &#x2F;** * Constructs an empty &lt;tt&gt;LinkedHashMap&lt;&#x2F;tt&gt; instance with the * specified initial capacity, load factor and ordering mode. * * @param  initialCapacity the">
+<meta name="description" content="使用LRU时，我们要用到这个构造函数 &#x2F;**  * Constructs an empty &lt;tt&gt;LinkedHashMap&lt;&#x2F;tt&gt; instance with the  * specified initial capacity, load factor and ordering mode.  *  * @param  initialCapacity">
 <meta property="og:type" content="article">
 <meta property="og:title" content="LinkedHashMap与LRU算法">
 <meta property="og:url" content="http://yoursite.com/2020/06/17/LinkedHashMap/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="使用LRU时，我们要用到这个构造函数 &#x2F;** * Constructs an empty &lt;tt&gt;LinkedHashMap&lt;&#x2F;tt&gt; instance with the * specified initial capacity, load factor and ordering mode. * * @param  initialCapacity the">
+<meta property="og:description" content="使用LRU时，我们要用到这个构造函数 &#x2F;**  * Constructs an empty &lt;tt&gt;LinkedHashMap&lt;&#x2F;tt&gt; instance with the  * specified initial capacity, load factor and ordering mode.  *  * @param  initialCapacity">
 <meta property="article:published_time" content="2020-06-16T17:43:37.223Z">
 <meta property="article:modified_time" content="2020-06-16T17:43:37.223Z">
 <meta property="article:author" content="sinaill">
@@ -342,30 +342,126 @@
 
       
         <p>使用LRU时，我们要用到这个构造函数</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * Constructs an empty &lt;tt&gt;LinkedHashMap&lt;&#x2F;tt&gt; instance with the</span><br><span class="line"> * specified initial capacity, load factor and ordering mode.</span><br><span class="line"> *</span><br><span class="line"> * @param  initialCapacity the initial capacity</span><br><span class="line"> * @param  loadFactor      the load factor</span><br><span class="line"> * @param  accessOrder     the ordering mode - &lt;tt&gt;true&lt;&#x2F;tt&gt; for</span><br><span class="line"> *         access-order, &lt;tt&gt;false&lt;&#x2F;tt&gt; for insertion-order</span><br><span class="line"> * @throws IllegalArgumentException if the initial capacity is negative</span><br><span class="line"> *         or the load factor is nonpositive</span><br><span class="line"> *&#x2F;</span><br><span class="line">public LinkedHashMap(int initialCapacity,</span><br><span class="line">                     float loadFactor,</span><br><span class="line">                     boolean accessOrder) &#123;</span><br><span class="line">    super(initialCapacity, loadFactor);</span><br><span class="line">    this.accessOrder &#x3D; accessOrder;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">&#x2F;**
+ * Constructs an empty &lt;tt&gt;LinkedHashMap&lt;&#x2F;tt&gt; instance with the
+ * specified initial capacity, load factor and ordering mode.
+ *
+ * @param  initialCapacity the initial capacity
+ * @param  loadFactor      the load factor
+ * @param  accessOrder     the ordering mode - &lt;tt&gt;true&lt;&#x2F;tt&gt; for
+ *         access-order, &lt;tt&gt;false&lt;&#x2F;tt&gt; for insertion-order
+ * @throws IllegalArgumentException if the initial capacity is negative
+ *         or the load factor is nonpositive
+ *&#x2F;
+public LinkedHashMap(int initialCapacity,
+                     float loadFactor,
+                     boolean accessOrder) &#123;
+    super(initialCapacity, loadFactor);
+    this.accessOrder &#x3D; accessOrder;
+&#125;</code></pre>
 
 <p>对于变量accessOrder，传入false时，集合中元素顺序基于插入顺序，传入true是，集合中元素基于访问顺序</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">LinkedHashMap&lt;Integer, String&gt; lhm &#x3D; new LinkedHashMap&lt;Integer,String&gt;(8, 0.75f, true);</span><br><span class="line">lhm.put(3, &quot;3&quot;);</span><br><span class="line">lhm.put(2, &quot;2&quot;);</span><br><span class="line">lhm.put(1, &quot;1&quot;);</span><br><span class="line">lhm.put(6, &quot;6&quot;);</span><br><span class="line">lhm.put(5, &quot;5&quot;);</span><br><span class="line">lhm.put(4, &quot;4&quot;);</span><br><span class="line">lhm.get(2);</span><br><span class="line">lhm.forEach((a,b)-&gt;System.out.println(a));</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">LinkedHashMap&lt;Integer, String&gt; lhm &#x3D; new LinkedHashMap&lt;Integer,String&gt;(8, 0.75f, true);
+lhm.put(3, &quot;3&quot;);
+lhm.put(2, &quot;2&quot;);
+lhm.put(1, &quot;1&quot;);
+lhm.put(6, &quot;6&quot;);
+lhm.put(5, &quot;5&quot;);
+lhm.put(4, &quot;4&quot;);
+lhm.get(2);
+lhm.forEach((a,b)-&gt;System.out.println(a));</code></pre>
 
 <p>得到输出</p>
 <p><code>3 1 6 5 4 2</code></p>
 <p>查看get方法</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public V get(Object key) &#123;</span><br><span class="line">    Node&lt;K,V&gt; e;</span><br><span class="line">    if ((e &#x3D; getNode(hash(key), key)) &#x3D;&#x3D; null)</span><br><span class="line">        return null;</span><br><span class="line">    if (accessOrder)&#x2F;&#x2F;access为true时，将访问元素放到尾部</span><br><span class="line">        afterNodeAccess(e);</span><br><span class="line">    return e.value;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"> void afterNodeAccess(Node&lt;K,V&gt; e) &#123; &#x2F;&#x2F; move node to last</span><br><span class="line">    LinkedHashMap.Entry&lt;K,V&gt; last;</span><br><span class="line">    if (accessOrder &amp;&amp; (last &#x3D; tail) !&#x3D; e) &#123;</span><br><span class="line">        LinkedHashMap.Entry&lt;K,V&gt; p &#x3D;</span><br><span class="line">            (LinkedHashMap.Entry&lt;K,V&gt;)e, b &#x3D; p.before, a &#x3D; p.after;</span><br><span class="line">        p.after &#x3D; null;</span><br><span class="line">        if (b &#x3D;&#x3D; null)</span><br><span class="line">            head &#x3D; a;</span><br><span class="line">        else</span><br><span class="line">            b.after &#x3D; a;</span><br><span class="line">        if (a !&#x3D; null)</span><br><span class="line">            a.before &#x3D; b;</span><br><span class="line">        else</span><br><span class="line">            last &#x3D; b;</span><br><span class="line">        if (last &#x3D;&#x3D; null)</span><br><span class="line">            head &#x3D; p;</span><br><span class="line">        else &#123;</span><br><span class="line">            p.before &#x3D; last;</span><br><span class="line">            last.after &#x3D; p;</span><br><span class="line">        &#125;</span><br><span class="line">        tail &#x3D; p;</span><br><span class="line">        ++modCount;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public V get(Object key) &#123;
+    Node&lt;K,V&gt; e;
+    if ((e &#x3D; getNode(hash(key), key)) &#x3D;&#x3D; null)
+        return null;
+    if (accessOrder)&#x2F;&#x2F;access为true时，将访问元素放到尾部
+        afterNodeAccess(e);
+    return e.value;
+&#125;
+
+ void afterNodeAccess(Node&lt;K,V&gt; e) &#123; &#x2F;&#x2F; move node to last
+    LinkedHashMap.Entry&lt;K,V&gt; last;
+    if (accessOrder &amp;&amp; (last &#x3D; tail) !&#x3D; e) &#123;
+        LinkedHashMap.Entry&lt;K,V&gt; p &#x3D;
+            (LinkedHashMap.Entry&lt;K,V&gt;)e, b &#x3D; p.before, a &#x3D; p.after;
+        p.after &#x3D; null;
+        if (b &#x3D;&#x3D; null)
+            head &#x3D; a;
+        else
+            b.after &#x3D; a;
+        if (a !&#x3D; null)
+            a.before &#x3D; b;
+        else
+            last &#x3D; b;
+        if (last &#x3D;&#x3D; null)
+            head &#x3D; p;
+        else &#123;
+            p.before &#x3D; last;
+            last.after &#x3D; p;
+        &#125;
+        tail &#x3D; p;
+        ++modCount;
+    &#125;
+&#125;</code></pre>
 
 <p>调用get节点访问元素后，会继续调用afterNodeAccess将元素移动到尾部，要实现LinkedHashMap中元素个数大于容量*负载因子时，删除头部，即最近最少被访问的元素,先查看put方法，找到关键代码</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">if (++size &gt; threshold)</span><br><span class="line">    resize();</span><br><span class="line">afterNodeInsertion(evict);</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">if (++size &gt; threshold)
+    resize();
+afterNodeInsertion(evict);</code></pre>
 
 <p>进入该方法：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">void afterNodeInsertion(boolean evict) &#123; &#x2F;&#x2F; possibly remove eldest</span><br><span class="line">    LinkedHashMap.Entry&lt;K,V&gt; first;</span><br><span class="line">    if (evict &amp;&amp; (first &#x3D; head) !&#x3D; null &amp;&amp; removeEldestEntry(first)) &#123;</span><br><span class="line">        K key &#x3D; first.key;</span><br><span class="line">        removeNode(hash(key), key, null, false, true);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">void afterNodeInsertion(boolean evict) &#123; &#x2F;&#x2F; possibly remove eldest
+    LinkedHashMap.Entry&lt;K,V&gt; first;
+    if (evict &amp;&amp; (first &#x3D; head) !&#x3D; null &amp;&amp; removeEldestEntry(first)) &#123;
+        K key &#x3D; first.key;
+        removeNode(hash(key), key, null, false, true);
+    &#125;
+&#125;</code></pre>
 
 <p>发现removeEldestEntry(first)，接着查看removeEldestEntry(first)</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">protected boolean removeEldestEntry(Map.Entry&lt;K,V&gt; eldest) &#123;</span><br><span class="line">    return false;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">protected boolean removeEldestEntry(Map.Entry&lt;K,V&gt; eldest) &#123;
+    return false;
+&#125;</code></pre>
 
 <p>方法总是放回一个false，所以要实现移除头部，需要覆写本方法，我们新定义一个类继承LinkedHashMap</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class MyLinkedHashMap&lt;K,V&gt; extends LinkedHashMap&lt;K, V&gt;&#123;</span><br><span class="line">	&#x2F;**</span><br><span class="line">	 * </span><br><span class="line">	 *&#x2F;</span><br><span class="line">	private static final long serialVersionUID &#x3D; 1L;</span><br><span class="line">	private int MaxSize;</span><br><span class="line"></span><br><span class="line">	public MyLinkedHashMap(int capacity,float factor,boolean accessOrder,int MaxSize)&#123;</span><br><span class="line">		super(capacity,factor,accessOrder);</span><br><span class="line">		this.MaxSize &#x3D; MaxSize;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	&#x2F;* (non-Javadoc)</span><br><span class="line">	 * @see java.util.LinkedHashMap#removeEldestEntry(java.util.Map.Entry)</span><br><span class="line">	 *&#x2F;</span><br><span class="line">	@Override</span><br><span class="line">	protected boolean removeEldestEntry(Entry&lt;K, V&gt; eldest) &#123;</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated method stub</span><br><span class="line">		return this.size()&gt;MaxSize;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">class MyLinkedHashMap&lt;K,V&gt; extends LinkedHashMap&lt;K, V&gt;&#123;
+	&#x2F;**
+	 * 
+	 *&#x2F;
+	private static final long serialVersionUID &#x3D; 1L;
+	private int MaxSize;
+
+	public MyLinkedHashMap(int capacity,float factor,boolean accessOrder,int MaxSize)&#123;
+		super(capacity,factor,accessOrder);
+		this.MaxSize &#x3D; MaxSize;
+	&#125;
+
+	&#x2F;* (non-Javadoc)
+	 * @see java.util.LinkedHashMap#removeEldestEntry(java.util.Map.Entry)
+	 *&#x2F;
+	@Override
+	protected boolean removeEldestEntry(Entry&lt;K, V&gt; eldest) &#123;
+		&#x2F;&#x2F; TODO Auto-generated method stub
+		return this.size()&gt;MaxSize;
+	&#125;
+	
+	
+&#125;</code></pre>
 
 <p>构造方法调用父类上文提到那个，再加一个MaxSize表示集合元素最大个数，在removeEldestEntry方法中比较size和MaxSize大小，这样当集合中元素个数size超过设定最大个数MaxSize时，就会触发removeNode，移除头结点即最近最少使用的元素</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">LinkedHashMap&lt;Integer, String&gt; lhm &#x3D; new MyLinkedHashMap&lt;Integer,String&gt;(8, 0.75f, true,6);</span><br><span class="line">lhm.put(3, &quot;3&quot;);</span><br><span class="line">lhm.put(2, &quot;2&quot;);</span><br><span class="line">lhm.put(1, &quot;1&quot;);</span><br><span class="line">lhm.put(6, &quot;6&quot;);</span><br><span class="line">lhm.put(5, &quot;5&quot;);</span><br><span class="line">lhm.put(4, &quot;4&quot;);</span><br><span class="line">lhm.put(7,&quot;7&quot;);</span><br><span class="line">lhm.forEach((a,b)-&gt;System.out.println(a+&quot; &quot;+b));</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">LinkedHashMap&lt;Integer, String&gt; lhm &#x3D; new MyLinkedHashMap&lt;Integer,String&gt;(8, 0.75f, true,6);
+lhm.put(3, &quot;3&quot;);
+lhm.put(2, &quot;2&quot;);
+lhm.put(1, &quot;1&quot;);
+lhm.put(6, &quot;6&quot;);
+lhm.put(5, &quot;5&quot;);
+lhm.put(4, &quot;4&quot;);
+lhm.put(7,&quot;7&quot;);
+lhm.forEach((a,b)-&gt;System.out.println(a+&quot; &quot;+b));</code></pre>
 
 <p>输出</p>
 <p><code>2 1 6 5 4 7</code></p>
@@ -400,8 +496,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/06/17/InnerClass/" rel="next" title="内部类">
-                <i class="fa fa-chevron-left"></i> 内部类
+              <a href="/2020/06/17/ModelAttribute%E6%B3%A8%E8%A7%A3%E7%AC%94%E8%AE%B0/" rel="next" title="ModelAttribute注解笔记">
+                <i class="fa fa-chevron-left"></i> ModelAttribute注解笔记
               </a>
             
           </div>
@@ -410,8 +506,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2020/06/17/ModelAttribute%E6%B3%A8%E8%A7%A3%E7%AC%94%E8%AE%B0/" rel="prev" title="ModelAttribute注解笔记">
-                ModelAttribute注解笔记 <i class="fa fa-chevron-right"></i>
+              <a href="/2020/06/17/JDBC/" rel="prev" title="JDBC">
+                JDBC <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -724,7 +820,7 @@
 
   
 
-  <link rel="stylesheet" href="/lib/prettify/skins/desert.css" type="text/css">
+  <link rel="stylesheet" href="/lib/prettify/skins/sunburst.css" type="text/css">
 <script src="/lib/prettify/prettify.js" type="text/javascript"></script>
 <script type="text/javascript">
   $(document).ready(function() {

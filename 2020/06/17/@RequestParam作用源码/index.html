@@ -79,12 +79,12 @@
 
 
 
-<meta name="description" content="@RequestParam作用在Controller方法的入参使用@RequestParam注解可以获取Request请求中的参数 原理普通变量依旧是查看解析@RequestParam注解的RequestParamMethodArgumentResolver supportsParameter方法如下 	@Overridepublic boolean supportsParameter(Metho">
+<meta name="description" content="@RequestParam作用在Controller方法的入参使用@RequestParam注解可以获取Request请求中的参数 原理普通变量依旧是查看解析@RequestParam注解的RequestParamMethodArgumentResolver supportsParameter方法如下 	@Override public boolean supportsParameter(Meth">
 <meta property="og:type" content="article">
 <meta property="og:title" content="注解@RequestParam作用源码">
 <meta property="og:url" content="http://yoursite.com/2020/06/17/@RequestParam%E4%BD%9C%E7%94%A8%E6%BA%90%E7%A0%81/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="@RequestParam作用在Controller方法的入参使用@RequestParam注解可以获取Request请求中的参数 原理普通变量依旧是查看解析@RequestParam注解的RequestParamMethodArgumentResolver supportsParameter方法如下 	@Overridepublic boolean supportsParameter(Metho">
+<meta property="og:description" content="@RequestParam作用在Controller方法的入参使用@RequestParam注解可以获取Request请求中的参数 原理普通变量依旧是查看解析@RequestParam注解的RequestParamMethodArgumentResolver supportsParameter方法如下 	@Override public boolean supportsParameter(Meth">
 <meta property="article:published_time" content="2020-06-16T17:43:37.220Z">
 <meta property="article:modified_time" content="2020-06-16T17:43:37.220Z">
 <meta property="article:author" content="sinaill">
@@ -344,23 +344,205 @@
         <h3 id="RequestParam作用"><a href="#RequestParam作用" class="headerlink" title="@RequestParam作用"></a>@RequestParam作用</h3><p>在<code>Controller</code>方法的入参使用<code>@RequestParam</code>注解可以获取<code>Request</code>请求中的参数</p>
 <h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><h4 id="普通变量"><a href="#普通变量" class="headerlink" title="普通变量"></a>普通变量</h4><p>依旧是查看解析<code>@RequestParam</code>注解的<code>RequestParamMethodArgumentResolver</code></p>
 <p><code>supportsParameter</code>方法如下</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">	@Override</span><br><span class="line">public boolean supportsParameter(MethodParameter parameter) &#123;</span><br><span class="line">	Class&lt;?&gt; paramType &#x3D; parameter.getParameterType();</span><br><span class="line">	if (parameter.hasParameterAnnotation(RequestParam.class)) &#123;</span><br><span class="line">		if (Map.class.isAssignableFrom(paramType)) &#123;</span><br><span class="line">			String paramName &#x3D; parameter.getParameterAnnotation(RequestParam.class).value();</span><br><span class="line">			return StringUtils.hasText(paramName);</span><br><span class="line">		&#125;</span><br><span class="line">		else &#123;</span><br><span class="line">			return true;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	else &#123;</span><br><span class="line">		if (parameter.hasParameterAnnotation(RequestPart.class)) &#123;</span><br><span class="line">			return false;</span><br><span class="line">		&#125;</span><br><span class="line">		else if (MultipartFile.class.equals(paramType) || &quot;javax.servlet.http.Part&quot;.equals(paramType.getName())) &#123;</span><br><span class="line">			return true;</span><br><span class="line">		&#125;</span><br><span class="line">		else if (this.useDefaultResolution) &#123;</span><br><span class="line">			return BeanUtils.isSimpleProperty(paramType);</span><br><span class="line">		&#125;</span><br><span class="line">		else &#123;</span><br><span class="line">			return false;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">	@Override
+public boolean supportsParameter(MethodParameter parameter) &#123;
+	Class&lt;?&gt; paramType &#x3D; parameter.getParameterType();
+	if (parameter.hasParameterAnnotation(RequestParam.class)) &#123;
+		if (Map.class.isAssignableFrom(paramType)) &#123;
+			String paramName &#x3D; parameter.getParameterAnnotation(RequestParam.class).value();
+			return StringUtils.hasText(paramName);
+		&#125;
+		else &#123;
+			return true;
+		&#125;
+	&#125;
+	else &#123;
+		if (parameter.hasParameterAnnotation(RequestPart.class)) &#123;
+			return false;
+		&#125;
+		else if (MultipartFile.class.equals(paramType) || &quot;javax.servlet.http.Part&quot;.equals(paramType.getName())) &#123;
+			return true;
+		&#125;
+		else if (this.useDefaultResolution) &#123;
+			return BeanUtils.isSimpleProperty(paramType);
+		&#125;
+		else &#123;
+			return false;
+		&#125;
+	&#125;
+&#125;</code></pre>
 
 <p>再看解析参数的<code>resolveArgument</code>方法</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Override</span><br><span class="line">public final Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,</span><br><span class="line">		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception &#123;</span><br><span class="line"></span><br><span class="line">	Class&lt;?&gt; paramType &#x3D; parameter.getParameterType();</span><br><span class="line">	NamedValueInfo namedValueInfo &#x3D; getNamedValueInfo(parameter);</span><br><span class="line">	&#x2F;&#x2F;取出请求中对应的属性arg</span><br><span class="line">	Object arg &#x3D; resolveName(namedValueInfo.name, parameter, webRequest);</span><br><span class="line">	&#x2F;&#x2F;请求中没有对应属性，arg为null</span><br><span class="line">	if (arg &#x3D;&#x3D; null) &#123;</span><br><span class="line">		&#x2F;&#x2F;除了设置&#96;defaultValue&#96;，其他都会抛出异常</span><br><span class="line">		if (namedValueInfo.defaultValue !&#x3D; null) &#123;</span><br><span class="line">			arg &#x3D; resolveDefaultValue(namedValueInfo.defaultValue);</span><br><span class="line">		&#125;</span><br><span class="line">		else if (namedValueInfo.required &amp;&amp; !parameter.getParameterType().getName().equals(&quot;java.util.Optional&quot;)) &#123;</span><br><span class="line">			handleMissingValue(namedValueInfo.name, parameter);</span><br><span class="line">		&#125;</span><br><span class="line">		arg &#x3D; handleNullValue(namedValueInfo.name, arg, paramType);</span><br><span class="line">	&#125;</span><br><span class="line">	&#x2F;&#x2F;arg为&quot;&quot;时并且设置了defaultValue时，arg接收处理后的defaultValue</span><br><span class="line">	else if (&quot;&quot;.equals(arg) &amp;&amp; namedValueInfo.defaultValue !&#x3D; null) &#123;</span><br><span class="line">		arg &#x3D; resolveDefaultValue(namedValueInfo.defaultValue);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	if (binderFactory !&#x3D; null) &#123;</span><br><span class="line">		WebDataBinder binder &#x3D; binderFactory.createBinder(webRequest, null, namedValueInfo.name);</span><br><span class="line">		arg &#x3D; binder.convertIfNecessary(arg, paramType, parameter);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	handleResolvedValue(arg, namedValueInfo.name, parameter, mavContainer, webRequest);</span><br><span class="line"></span><br><span class="line">	return arg;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">@Override
+public final Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception &#123;
+
+	Class&lt;?&gt; paramType &#x3D; parameter.getParameterType();
+	NamedValueInfo namedValueInfo &#x3D; getNamedValueInfo(parameter);
+	&#x2F;&#x2F;取出请求中对应的属性arg
+	Object arg &#x3D; resolveName(namedValueInfo.name, parameter, webRequest);
+	&#x2F;&#x2F;请求中没有对应属性，arg为null
+	if (arg &#x3D;&#x3D; null) &#123;
+		&#x2F;&#x2F;除了设置&#96;defaultValue&#96;，其他都会抛出异常
+		if (namedValueInfo.defaultValue !&#x3D; null) &#123;
+			arg &#x3D; resolveDefaultValue(namedValueInfo.defaultValue);
+		&#125;
+		else if (namedValueInfo.required &amp;&amp; !parameter.getParameterType().getName().equals(&quot;java.util.Optional&quot;)) &#123;
+			handleMissingValue(namedValueInfo.name, parameter);
+		&#125;
+		arg &#x3D; handleNullValue(namedValueInfo.name, arg, paramType);
+	&#125;
+	&#x2F;&#x2F;arg为&quot;&quot;时并且设置了defaultValue时，arg接收处理后的defaultValue
+	else if (&quot;&quot;.equals(arg) &amp;&amp; namedValueInfo.defaultValue !&#x3D; null) &#123;
+		arg &#x3D; resolveDefaultValue(namedValueInfo.defaultValue);
+	&#125;
+
+	if (binderFactory !&#x3D; null) &#123;
+		WebDataBinder binder &#x3D; binderFactory.createBinder(webRequest, null, namedValueInfo.name);
+		arg &#x3D; binder.convertIfNecessary(arg, paramType, parameter);
+	&#125;
+
+	handleResolvedValue(arg, namedValueInfo.name, parameter, mavContainer, webRequest);
+
+	return arg;
+&#125;</code></pre>
 
 <p><code>NamedValueInfo</code>是用来存放<code>@RequestParam</code>注解中参数的类，包括<code>value</code>，<code>required</code>，<code>defaultValue</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">private NamedValueInfo getNamedValueInfo(MethodParameter parameter) &#123;</span><br><span class="line">	NamedValueInfo namedValueInfo &#x3D; this.namedValueInfoCache.get(parameter);</span><br><span class="line">	if (namedValueInfo &#x3D;&#x3D; null) &#123;</span><br><span class="line">		namedValueInfo &#x3D; createNamedValueInfo(parameter);</span><br><span class="line">		namedValueInfo &#x3D; updateNamedValueInfo(parameter, namedValueInfo);</span><br><span class="line">		this.namedValueInfoCache.put(parameter, namedValueInfo);</span><br><span class="line">	&#125;</span><br><span class="line">	return namedValueInfo;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@Override</span><br><span class="line">protected NamedValueInfo createNamedValueInfo(MethodParameter parameter) &#123;</span><br><span class="line">	RequestParam ann &#x3D; parameter.getParameterAnnotation(RequestParam.class);</span><br><span class="line">	&#x2F;&#x2F;不存在&#96;@requestParam&#96;时，用无参构造方法</span><br><span class="line">	return (ann !&#x3D; null ? new RequestParamNamedValueInfo(ann) : new RequestParamNamedValueInfo());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;构造方法</span><br><span class="line">	public RequestParamNamedValueInfo() &#123;</span><br><span class="line">		super(&quot;&quot;, false, ValueConstants.DEFAULT_NONE);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public RequestParamNamedValueInfo(RequestParam annotation) &#123;</span><br><span class="line">		super(annotation.value(), annotation.required(), annotation.defaultValue());</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">private NamedValueInfo getNamedValueInfo(MethodParameter parameter) &#123;
+	NamedValueInfo namedValueInfo &#x3D; this.namedValueInfoCache.get(parameter);
+	if (namedValueInfo &#x3D;&#x3D; null) &#123;
+		namedValueInfo &#x3D; createNamedValueInfo(parameter);
+		namedValueInfo &#x3D; updateNamedValueInfo(parameter, namedValueInfo);
+		this.namedValueInfoCache.put(parameter, namedValueInfo);
+	&#125;
+	return namedValueInfo;
+&#125;
+
+
+@Override
+protected NamedValueInfo createNamedValueInfo(MethodParameter parameter) &#123;
+	RequestParam ann &#x3D; parameter.getParameterAnnotation(RequestParam.class);
+	&#x2F;&#x2F;不存在&#96;@requestParam&#96;时，用无参构造方法
+	return (ann !&#x3D; null ? new RequestParamNamedValueInfo(ann) : new RequestParamNamedValueInfo());
+&#125;
+
+&#x2F;&#x2F;构造方法
+	public RequestParamNamedValueInfo() &#123;
+		super(&quot;&quot;, false, ValueConstants.DEFAULT_NONE);
+	&#125;
+
+	public RequestParamNamedValueInfo(RequestParam annotation) &#123;
+		super(annotation.value(), annotation.required(), annotation.defaultValue());
+	&#125;</code></pre>
 
 <p>然后要对<code>NameValueInfo</code>进行update，处理当没有<code>@RequestParam</code>注解或者<code>@RequestParam</code>注解没有设置<code>value</code>值的导致<code>NameValueInfo</code>的<code>name</code>属性为<code>&quot;&quot;</code>的情况</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">private NamedValueInfo updateNamedValueInfo(MethodParameter parameter, NamedValueInfo info) &#123;</span><br><span class="line">	String name &#x3D; info.name;</span><br><span class="line">	if (info.name.length() &#x3D;&#x3D; 0) &#123;</span><br><span class="line">		name &#x3D; parameter.getParameterName();</span><br><span class="line">		if (name &#x3D;&#x3D; null) &#123;</span><br><span class="line">			throw new IllegalArgumentException(&quot;Name for argument type [&quot; + parameter.getParameterType().getName() +</span><br><span class="line">					&quot;] not available, and parameter name information not found in class file either.&quot;);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	String defaultValue &#x3D; (ValueConstants.DEFAULT_NONE.equals(info.defaultValue) ? null : info.defaultValue);</span><br><span class="line">	return new NamedValueInfo(name, info.required, defaultValue);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">private NamedValueInfo updateNamedValueInfo(MethodParameter parameter, NamedValueInfo info) &#123;
+	String name &#x3D; info.name;
+	if (info.name.length() &#x3D;&#x3D; 0) &#123;
+		name &#x3D; parameter.getParameterName();
+		if (name &#x3D;&#x3D; null) &#123;
+			throw new IllegalArgumentException(&quot;Name for argument type [&quot; + parameter.getParameterType().getName() +
+					&quot;] not available, and parameter name information not found in class file either.&quot;);
+		&#125;
+	&#125;
+	String defaultValue &#x3D; (ValueConstants.DEFAULT_NONE.equals(info.defaultValue) ? null : info.defaultValue);
+	return new NamedValueInfo(name, info.required, defaultValue);
+&#125;</code></pre>
 <p>当<code>name</code>长度为0，取入参的变量名，作为<code>name</code>，如果没有设置<code>defaultValue</code>，这里则将<code>defaultValue</code>设置为<code>ValueConstants.DEFAULT_NONE</code></p>
 <p>然后看<code>resloveName</code>方法</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Override</span><br><span class="line">protected Object resolveName(String name, MethodParameter parameter, NativeWebRequest webRequest) throws Exception &#123;</span><br><span class="line">	HttpServletRequest servletRequest &#x3D; webRequest.getNativeRequest(HttpServletRequest.class);</span><br><span class="line">	MultipartHttpServletRequest multipartRequest &#x3D;</span><br><span class="line">			WebUtils.getNativeRequest(servletRequest, MultipartHttpServletRequest.class);</span><br><span class="line">	Object arg;</span><br><span class="line"></span><br><span class="line">	if (MultipartFile.class.equals(parameter.getParameterType())) &#123;</span><br><span class="line">		assertIsMultipartRequest(servletRequest);</span><br><span class="line">		Assert.notNull(multipartRequest, &quot;Expected MultipartHttpServletRequest: is a MultipartResolver configured?&quot;);</span><br><span class="line">		arg &#x3D; multipartRequest.getFile(name);</span><br><span class="line">	&#125;</span><br><span class="line">	else if (isMultipartFileCollection(parameter)) &#123;</span><br><span class="line">		assertIsMultipartRequest(servletRequest);</span><br><span class="line">		Assert.notNull(multipartRequest, &quot;Expected MultipartHttpServletRequest: is a MultipartResolver configured?&quot;);</span><br><span class="line">		arg &#x3D; multipartRequest.getFiles(name);</span><br><span class="line">	&#125;</span><br><span class="line">	else if (isMultipartFileArray(parameter)) &#123;</span><br><span class="line">		assertIsMultipartRequest(servletRequest);</span><br><span class="line">		Assert.notNull(multipartRequest, &quot;Expected MultipartHttpServletRequest: is a MultipartResolver configured?&quot;);</span><br><span class="line">		List&lt;MultipartFile&gt; multipartFiles &#x3D; multipartRequest.getFiles(name);</span><br><span class="line">		arg &#x3D; multipartFiles.toArray(new MultipartFile[multipartFiles.size()]);</span><br><span class="line">	&#125;</span><br><span class="line">	else if (&quot;javax.servlet.http.Part&quot;.equals(parameter.getParameterType().getName())) &#123;</span><br><span class="line">		assertIsMultipartRequest(servletRequest);</span><br><span class="line">		arg &#x3D; servletRequest.getPart(name);</span><br><span class="line">	&#125;</span><br><span class="line">	else if (isPartCollection(parameter)) &#123;</span><br><span class="line">		assertIsMultipartRequest(servletRequest);</span><br><span class="line">		arg &#x3D; new ArrayList&lt;Object&gt;(servletRequest.getParts());</span><br><span class="line">	&#125;</span><br><span class="line">	else if (isPartArray(parameter)) &#123;</span><br><span class="line">		assertIsMultipartRequest(servletRequest);</span><br><span class="line">		arg &#x3D; RequestPartResolver.resolvePart(servletRequest);</span><br><span class="line">	&#125;</span><br><span class="line">	else &#123;</span><br><span class="line">		arg &#x3D; null;</span><br><span class="line">		if (multipartRequest !&#x3D; null) &#123;</span><br><span class="line">			List&lt;MultipartFile&gt; files &#x3D; multipartRequest.getFiles(name);</span><br><span class="line">			if (!files.isEmpty()) &#123;</span><br><span class="line">				arg &#x3D; (files.size() &#x3D;&#x3D; 1 ? files.get(0) : files);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		if (arg &#x3D;&#x3D; null) &#123;</span><br><span class="line">			String[] paramValues &#x3D; webRequest.getParameterValues(name);</span><br><span class="line">			if (paramValues !&#x3D; null) &#123;</span><br><span class="line">				arg &#x3D; (paramValues.length &#x3D;&#x3D; 1 ? paramValues[0] : paramValues);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return arg;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">@Override
+protected Object resolveName(String name, MethodParameter parameter, NativeWebRequest webRequest) throws Exception &#123;
+	HttpServletRequest servletRequest &#x3D; webRequest.getNativeRequest(HttpServletRequest.class);
+	MultipartHttpServletRequest multipartRequest &#x3D;
+			WebUtils.getNativeRequest(servletRequest, MultipartHttpServletRequest.class);
+	Object arg;
+
+	if (MultipartFile.class.equals(parameter.getParameterType())) &#123;
+		assertIsMultipartRequest(servletRequest);
+		Assert.notNull(multipartRequest, &quot;Expected MultipartHttpServletRequest: is a MultipartResolver configured?&quot;);
+		arg &#x3D; multipartRequest.getFile(name);
+	&#125;
+	else if (isMultipartFileCollection(parameter)) &#123;
+		assertIsMultipartRequest(servletRequest);
+		Assert.notNull(multipartRequest, &quot;Expected MultipartHttpServletRequest: is a MultipartResolver configured?&quot;);
+		arg &#x3D; multipartRequest.getFiles(name);
+	&#125;
+	else if (isMultipartFileArray(parameter)) &#123;
+		assertIsMultipartRequest(servletRequest);
+		Assert.notNull(multipartRequest, &quot;Expected MultipartHttpServletRequest: is a MultipartResolver configured?&quot;);
+		List&lt;MultipartFile&gt; multipartFiles &#x3D; multipartRequest.getFiles(name);
+		arg &#x3D; multipartFiles.toArray(new MultipartFile[multipartFiles.size()]);
+	&#125;
+	else if (&quot;javax.servlet.http.Part&quot;.equals(parameter.getParameterType().getName())) &#123;
+		assertIsMultipartRequest(servletRequest);
+		arg &#x3D; servletRequest.getPart(name);
+	&#125;
+	else if (isPartCollection(parameter)) &#123;
+		assertIsMultipartRequest(servletRequest);
+		arg &#x3D; new ArrayList&lt;Object&gt;(servletRequest.getParts());
+	&#125;
+	else if (isPartArray(parameter)) &#123;
+		assertIsMultipartRequest(servletRequest);
+		arg &#x3D; RequestPartResolver.resolvePart(servletRequest);
+	&#125;
+	else &#123;
+		arg &#x3D; null;
+		if (multipartRequest !&#x3D; null) &#123;
+			List&lt;MultipartFile&gt; files &#x3D; multipartRequest.getFiles(name);
+			if (!files.isEmpty()) &#123;
+				arg &#x3D; (files.size() &#x3D;&#x3D; 1 ? files.get(0) : files);
+			&#125;
+		&#125;
+		if (arg &#x3D;&#x3D; null) &#123;
+			String[] paramValues &#x3D; webRequest.getParameterValues(name);
+			if (paramValues !&#x3D; null) &#123;
+				arg &#x3D; (paramValues.length &#x3D;&#x3D; 1 ? paramValues[0] : paramValues);
+			&#125;
+		&#125;
+	&#125;
+
+	return arg;
+&#125;</code></pre>
 
 <p>看最下面，以<code>name</code>从<code>request</code>请求中取出对应属性，然后返回给<code>resolveArgument</code>方法，经<code>dataBinder</code>转换为入参类型之后返回，然后作为反射调用<code>Controller</code>方法的参数</p>
 <h4 id="java-util-Map"><a href="#java-util-Map" class="headerlink" title="java.util.Map"></a>java.util.Map</h4><p>入参为<code>java.util.Map</code>类型，且前面有<code>@ReqeustParam</code>注解并且<code>value</code>为空时，作用在入参上的参数解析器为<code>RequestParamMapMethodArgumentResolver</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Override</span><br><span class="line">public boolean supportsParameter(MethodParameter parameter) &#123;</span><br><span class="line">	RequestParam ann &#x3D; parameter.getParameterAnnotation(RequestParam.class);</span><br><span class="line">	if (ann !&#x3D; null) &#123;</span><br><span class="line">		if (Map.class.isAssignableFrom(parameter.getParameterType())) &#123;</span><br><span class="line">			return !StringUtils.hasText(ann.value());</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	return false;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@Override</span><br><span class="line">public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,</span><br><span class="line">		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception &#123;</span><br><span class="line"></span><br><span class="line">	Class&lt;?&gt; paramType &#x3D; parameter.getParameterType();</span><br><span class="line"></span><br><span class="line">	Map&lt;String, String[]&gt; parameterMap &#x3D; webRequest.getParameterMap();</span><br><span class="line">	if (MultiValueMap.class.isAssignableFrom(paramType)) &#123;</span><br><span class="line">		MultiValueMap&lt;String, String&gt; result &#x3D; new LinkedMultiValueMap&lt;String, String&gt;(parameterMap.size());</span><br><span class="line">		for (Map.Entry&lt;String, String[]&gt; entry : parameterMap.entrySet()) &#123;</span><br><span class="line">			for (String value : entry.getValue()) &#123;</span><br><span class="line">				result.add(entry.getKey(), value);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		return result;</span><br><span class="line">	&#125;</span><br><span class="line">	else &#123;</span><br><span class="line">		Map&lt;String, String&gt; result &#x3D; new LinkedHashMap&lt;String, String&gt;(parameterMap.size());</span><br><span class="line">		for (Map.Entry&lt;String, String[]&gt; entry : parameterMap.entrySet()) &#123;</span><br><span class="line">			if (entry.getValue().length &gt; 0) &#123;</span><br><span class="line">				result.put(entry.getKey(), entry.getValue()[0]);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		return result;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">@Override
+public boolean supportsParameter(MethodParameter parameter) &#123;
+	RequestParam ann &#x3D; parameter.getParameterAnnotation(RequestParam.class);
+	if (ann !&#x3D; null) &#123;
+		if (Map.class.isAssignableFrom(parameter.getParameterType())) &#123;
+			return !StringUtils.hasText(ann.value());
+		&#125;
+	&#125;
+	return false;
+&#125;
+
+@Override
+public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception &#123;
+
+	Class&lt;?&gt; paramType &#x3D; parameter.getParameterType();
+
+	Map&lt;String, String[]&gt; parameterMap &#x3D; webRequest.getParameterMap();
+	if (MultiValueMap.class.isAssignableFrom(paramType)) &#123;
+		MultiValueMap&lt;String, String&gt; result &#x3D; new LinkedMultiValueMap&lt;String, String&gt;(parameterMap.size());
+		for (Map.Entry&lt;String, String[]&gt; entry : parameterMap.entrySet()) &#123;
+			for (String value : entry.getValue()) &#123;
+				result.add(entry.getKey(), value);
+			&#125;
+		&#125;
+		return result;
+	&#125;
+	else &#123;
+		Map&lt;String, String&gt; result &#x3D; new LinkedHashMap&lt;String, String&gt;(parameterMap.size());
+		for (Map.Entry&lt;String, String[]&gt; entry : parameterMap.entrySet()) &#123;
+			if (entry.getValue().length &gt; 0) &#123;
+				result.put(entry.getKey(), entry.getValue()[0]);
+			&#125;
+		&#125;
+		return result;
+	&#125;
+&#125;</code></pre>
 
 <p>获取请求中参数时是用的<code>getParameterMap</code>方法以参数名为key和参数值为value的方式，获取一个<code>Map</code>类型的入参，将它返回作为反射调用该<code>Controller</code>方法的参数</p>
 
@@ -393,8 +575,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/06/17/BeanWrapperImpl%E5%9C%A8SpringMVC/" rel="next" title="BeanWrapperImpl初探">
-                <i class="fa fa-chevron-left"></i> BeanWrapperImpl初探
+              <a href="/2020/06/17/ArrayList/" rel="next" title="ArrayList">
+                <i class="fa fa-chevron-left"></i> ArrayList
               </a>
             
           </div>
@@ -403,8 +585,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2020/06/17/ArrayList/" rel="prev" title="ArrayList">
-                ArrayList <i class="fa fa-chevron-right"></i>
+              <a href="/2020/06/17/HashMap%20and%20HashTable/" rel="prev" title="HashMap与HashTable">
+                HashMap与HashTable <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -742,7 +924,7 @@
 
   
 
-  <link rel="stylesheet" href="/lib/prettify/skins/desert.css" type="text/css">
+  <link rel="stylesheet" href="/lib/prettify/skins/sunburst.css" type="text/css">
 <script src="/lib/prettify/prettify.js" type="text/javascript"></script>
 <script type="text/javascript">
   $(document).ready(function() {

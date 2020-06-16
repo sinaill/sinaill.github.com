@@ -343,40 +343,163 @@
       
         <h3 id="PathVariable"><a href="#PathVariable" class="headerlink" title="@PathVariable"></a>@PathVariable</h3><p>通过 @PathVariable 可以将 URL 中占位符参数绑定到控制器处理方法的入参中：URL 中的 {xxx} 占位符可以通过@PathVariable(“xxx”) 绑定到操作方法的入参中</p>
 <h3 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h3><h4 id="注解java-util-Map类型"><a href="#注解java-util-Map类型" class="headerlink" title="注解java.util.Map类型"></a>注解java.util.Map类型</h4><p>依旧是查看处理<code>@PathVariable</code>注解的入参的参数解析处理器<code>PathVariableMapMethodArgumentResolver</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Override</span><br><span class="line">public boolean supportsParameter(MethodParameter parameter) &#123;</span><br><span class="line">	PathVariable ann &#x3D; parameter.getParameterAnnotation(PathVariable.class);</span><br><span class="line">	return (ann !&#x3D; null &amp;&amp; (Map.class.isAssignableFrom(parameter.getParameterType()))</span><br><span class="line">			&amp;&amp; !StringUtils.hasText(ann.value()));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@Override</span><br><span class="line">public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,</span><br><span class="line">		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception &#123;</span><br><span class="line"></span><br><span class="line">	@SuppressWarnings(&quot;unchecked&quot;)</span><br><span class="line">	Map&lt;String, String&gt; uriTemplateVars &#x3D;</span><br><span class="line">			(Map&lt;String, String&gt;) webRequest.getAttribute(</span><br><span class="line">					HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);</span><br><span class="line"></span><br><span class="line">	if (!CollectionUtils.isEmpty(uriTemplateVars)) &#123;</span><br><span class="line">		return new LinkedHashMap&lt;String, String&gt;(uriTemplateVars);</span><br><span class="line">	&#125;</span><br><span class="line">	else &#123;</span><br><span class="line">		return Collections.emptyMap();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">@Override
+public boolean supportsParameter(MethodParameter parameter) &#123;
+	PathVariable ann &#x3D; parameter.getParameterAnnotation(PathVariable.class);
+	return (ann !&#x3D; null &amp;&amp; (Map.class.isAssignableFrom(parameter.getParameterType()))
+			&amp;&amp; !StringUtils.hasText(ann.value()));
+&#125;
+
+
+@Override
+public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception &#123;
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	Map&lt;String, String&gt; uriTemplateVars &#x3D;
+			(Map&lt;String, String&gt;) webRequest.getAttribute(
+					HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
+
+	if (!CollectionUtils.isEmpty(uriTemplateVars)) &#123;
+		return new LinkedHashMap&lt;String, String&gt;(uriTemplateVars);
+	&#125;
+	else &#123;
+		return Collections.emptyMap();
+	&#125;
+&#125;</code></pre>
 
 <p>适用于<code>@PathVariable</code>注解的<code>java.util.Map</code>类型的入参，且<code>@PathVariable</code>注解的<code>value</code>为空</p>
 <p><code>resolveArgument</code>方法中，把使用PathVariable方法传参的属性名和值获取到<code>java.util.Map&lt;String,Object&gt;</code>中然后返回，作为反射调用<code>Controller</code>方法的入参，这个适用于使用一个<code>java.util.Map</code>变量接收请求中多个PathVariable变量</p>
 <h4 id="注解其他变量"><a href="#注解其他变量" class="headerlink" title="注解其他变量"></a>注解其他变量</h4><p>注解入参不是<code>java.util.Map</code>类型时，使用的参数解析器为<code>PathVariableMethodArgumentResolver</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Override</span><br><span class="line">public boolean supportsParameter(MethodParameter parameter) &#123;</span><br><span class="line">	if (!parameter.hasParameterAnnotation(PathVariable.class)) &#123;</span><br><span class="line">		return false;</span><br><span class="line">	&#125;</span><br><span class="line">	if (Map.class.isAssignableFrom(parameter.getParameterType())) &#123;</span><br><span class="line">		String paramName &#x3D; parameter.getParameterAnnotation(PathVariable.class).value();</span><br><span class="line">		return StringUtils.hasText(paramName);</span><br><span class="line">	&#125;</span><br><span class="line">	return true;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">@Override
+public boolean supportsParameter(MethodParameter parameter) &#123;
+	if (!parameter.hasParameterAnnotation(PathVariable.class)) &#123;
+		return false;
+	&#125;
+	if (Map.class.isAssignableFrom(parameter.getParameterType())) &#123;
+		String paramName &#x3D; parameter.getParameterAnnotation(PathVariable.class).value();
+		return StringUtils.hasText(paramName);
+	&#125;
+	return true;
+&#125;</code></pre>
 
 <p><code>PathVariableMethodArgumentResolver</code>和<code>RequestParamMethodArgumentResolver</code>继承了<code>AbstractNamedValueMethodArgumentResolver</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Override</span><br><span class="line">public final Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,</span><br><span class="line">		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception &#123;</span><br><span class="line"></span><br><span class="line">	Class&lt;?&gt; paramType &#x3D; parameter.getParameterType();</span><br><span class="line">	NamedValueInfo namedValueInfo &#x3D; getNamedValueInfo(parameter);</span><br><span class="line"></span><br><span class="line">	Object arg &#x3D; resolveName(namedValueInfo.name, parameter, webRequest);</span><br><span class="line">	if (arg &#x3D;&#x3D; null) &#123;</span><br><span class="line">		if (namedValueInfo.defaultValue !&#x3D; null) &#123;</span><br><span class="line">			arg &#x3D; resolveDefaultValue(namedValueInfo.defaultValue);</span><br><span class="line">		&#125;</span><br><span class="line">		else if (namedValueInfo.required &amp;&amp; !parameter.getParameterType().getName().equals(&quot;java.util.Optional&quot;)) &#123;</span><br><span class="line">			handleMissingValue(namedValueInfo.name, parameter);</span><br><span class="line">		&#125;</span><br><span class="line">		arg &#x3D; handleNullValue(namedValueInfo.name, arg, paramType);</span><br><span class="line">	&#125;</span><br><span class="line">	else if (&quot;&quot;.equals(arg) &amp;&amp; namedValueInfo.defaultValue !&#x3D; null) &#123;</span><br><span class="line">		arg &#x3D; resolveDefaultValue(namedValueInfo.defaultValue);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	if (binderFactory !&#x3D; null) &#123;</span><br><span class="line">		WebDataBinder binder &#x3D; binderFactory.createBinder(webRequest, null, namedValueInfo.name);</span><br><span class="line">		arg &#x3D; binder.convertIfNecessary(arg, paramType, parameter);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	handleResolvedValue(arg, namedValueInfo.name, parameter, mavContainer, webRequest);</span><br><span class="line"></span><br><span class="line">	return arg;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">@Override
+public final Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception &#123;
+
+	Class&lt;?&gt; paramType &#x3D; parameter.getParameterType();
+	NamedValueInfo namedValueInfo &#x3D; getNamedValueInfo(parameter);
+
+	Object arg &#x3D; resolveName(namedValueInfo.name, parameter, webRequest);
+	if (arg &#x3D;&#x3D; null) &#123;
+		if (namedValueInfo.defaultValue !&#x3D; null) &#123;
+			arg &#x3D; resolveDefaultValue(namedValueInfo.defaultValue);
+		&#125;
+		else if (namedValueInfo.required &amp;&amp; !parameter.getParameterType().getName().equals(&quot;java.util.Optional&quot;)) &#123;
+			handleMissingValue(namedValueInfo.name, parameter);
+		&#125;
+		arg &#x3D; handleNullValue(namedValueInfo.name, arg, paramType);
+	&#125;
+	else if (&quot;&quot;.equals(arg) &amp;&amp; namedValueInfo.defaultValue !&#x3D; null) &#123;
+		arg &#x3D; resolveDefaultValue(namedValueInfo.defaultValue);
+	&#125;
+
+	if (binderFactory !&#x3D; null) &#123;
+		WebDataBinder binder &#x3D; binderFactory.createBinder(webRequest, null, namedValueInfo.name);
+		arg &#x3D; binder.convertIfNecessary(arg, paramType, parameter);
+	&#125;
+
+	handleResolvedValue(arg, namedValueInfo.name, parameter, mavContainer, webRequest);
+
+	return arg;
+&#125;</code></pre>
 
 <p><code>getNamedValueInfo</code>获取存放<code>@PathVariable</code>注解的<code>value</code>、<code>required</code>、<code>default</code></p>
 <p><code>resolveName</code>根据注解的<code>value</code>从请求中获取对应的值</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">protected Object resolveName(String name, MethodParameter parameter, NativeWebRequest request) throws Exception &#123;</span><br><span class="line">	Map&lt;String, String&gt; uriTemplateVars &#x3D;</span><br><span class="line">		(Map&lt;String, String&gt;) request.getAttribute(</span><br><span class="line">				HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);</span><br><span class="line">	return (uriTemplateVars !&#x3D; null) ? uriTemplateVars.get(name) : null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">protected Object resolveName(String name, MethodParameter parameter, NativeWebRequest request) throws Exception &#123;
+	Map&lt;String, String&gt; uriTemplateVars &#x3D;
+		(Map&lt;String, String&gt;) request.getAttribute(
+				HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
+	return (uriTemplateVars !&#x3D; null) ? uriTemplateVars.get(name) : null;
+&#125;</code></pre>
 
 <p>从请求中获取存放PathVariable的<code>java.util.Map</code>类的变量，怎么来的后面有解释，然后根据<code>value</code>从<code>Map</code>中获取对应的值</p>
 <p>最后要注意<code>handleResolvedValue</code>方法</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">protected void handleResolvedValue(Object arg, String name, MethodParameter parameter,</span><br><span class="line">		ModelAndViewContainer mavContainer, NativeWebRequest request) &#123;</span><br><span class="line"></span><br><span class="line">	String key &#x3D; View.PATH_VARIABLES;</span><br><span class="line">	int scope &#x3D; RequestAttributes.SCOPE_REQUEST;</span><br><span class="line">	Map&lt;String, Object&gt; pathVars &#x3D; (Map&lt;String, Object&gt;) request.getAttribute(key, scope);</span><br><span class="line">	if (pathVars &#x3D;&#x3D; null) &#123;</span><br><span class="line">		pathVars &#x3D; new HashMap&lt;String, Object&gt;();</span><br><span class="line">		request.setAttribute(key, pathVars, scope);</span><br><span class="line">	&#125;</span><br><span class="line">	pathVars.put(name, arg);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">protected void handleResolvedValue(Object arg, String name, MethodParameter parameter,
+		ModelAndViewContainer mavContainer, NativeWebRequest request) &#123;
+
+	String key &#x3D; View.PATH_VARIABLES;
+	int scope &#x3D; RequestAttributes.SCOPE_REQUEST;
+	Map&lt;String, Object&gt; pathVars &#x3D; (Map&lt;String, Object&gt;) request.getAttribute(key, scope);
+	if (pathVars &#x3D;&#x3D; null) &#123;
+		pathVars &#x3D; new HashMap&lt;String, Object&gt;();
+		request.setAttribute(key, pathVars, scope);
+	&#125;
+	pathVars.put(name, arg);
+&#125;</code></pre>
 
 <p>这里将PathVariable又以<code>View.PATH_VARIABLES</code>为键值放到<code>request</code>中，后面解析视图的时候会用到</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Override</span><br><span class="line">@SuppressWarnings(&quot;unchecked&quot;)</span><br><span class="line">protected Object resolveName(String name, MethodParameter parameter, NativeWebRequest request) throws Exception &#123;</span><br><span class="line">	Map&lt;String, String&gt; uriTemplateVars &#x3D;</span><br><span class="line">		(Map&lt;String, String&gt;) request.getAttribute(</span><br><span class="line">				HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);</span><br><span class="line">	return (uriTemplateVars !&#x3D; null) ? uriTemplateVars.get(name) : null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">@Override
+@SuppressWarnings(&quot;unchecked&quot;)
+protected Object resolveName(String name, MethodParameter parameter, NativeWebRequest request) throws Exception &#123;
+	Map&lt;String, String&gt; uriTemplateVars &#x3D;
+		(Map&lt;String, String&gt;) request.getAttribute(
+				HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
+	return (uriTemplateVars !&#x3D; null) ? uriTemplateVars.get(name) : null;
+&#125;</code></pre>
 
 <p>一样先从请求中获取存放了PathVariable类型的变量名和值的<code>java.util.Map</code>，然后以传入的<code>value</code>为key取出对应值返回，作为反射调用对应<code>Controller</code>方法的入参，也就顺利传给了我们注解了<code>@PathVariable</code>变量</p>
-<h4 id="关于获取PathVariable变量"><a href="#关于获取PathVariable变量" class="headerlink" title="关于获取PathVariable变量"></a>关于获取PathVariable变量</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Override</span><br><span class="line">protected void handleMatch(RequestMappingInfo info, String lookupPath, HttpServletRequest request) &#123;</span><br><span class="line">	super.handleMatch(info, lookupPath, request);</span><br><span class="line"></span><br><span class="line">	String bestPattern;</span><br><span class="line">	Map&lt;String, String&gt; uriVariables;</span><br><span class="line">	Map&lt;String, String&gt; decodedUriVariables;</span><br><span class="line"></span><br><span class="line">	Set&lt;String&gt; patterns &#x3D; info.getPatternsCondition().getPatterns();</span><br><span class="line">	if (patterns.isEmpty()) &#123;</span><br><span class="line">		bestPattern &#x3D; lookupPath;</span><br><span class="line">		uriVariables &#x3D; Collections.emptyMap();</span><br><span class="line">		decodedUriVariables &#x3D; Collections.emptyMap();</span><br><span class="line">	&#125;</span><br><span class="line">	else &#123;</span><br><span class="line">		bestPattern &#x3D; patterns.iterator().next();</span><br><span class="line">		uriVariables &#x3D; getPathMatcher().extractUriTemplateVariables(bestPattern, lookupPath);</span><br><span class="line">		decodedUriVariables &#x3D; getUrlPathHelper().decodePathVariables(request, uriVariables);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	request.setAttribute(BEST_MATCHING_PATTERN_ATTRIBUTE, bestPattern);</span><br><span class="line">	request.setAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, decodedUriVariables);</span><br><span class="line"></span><br><span class="line">	if (isMatrixVariableContentAvailable()) &#123;</span><br><span class="line">		Map&lt;String, MultiValueMap&lt;String, String&gt;&gt; matrixVars &#x3D; extractMatrixVariables(request, uriVariables);</span><br><span class="line">		request.setAttribute(HandlerMapping.MATRIX_VARIABLES_ATTRIBUTE, matrixVars);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	if (!info.getProducesCondition().getProducibleMediaTypes().isEmpty()) &#123;</span><br><span class="line">		Set&lt;MediaType&gt; mediaTypes &#x3D; info.getProducesCondition().getProducibleMediaTypes();</span><br><span class="line">		request.setAttribute(PRODUCIBLE_MEDIA_TYPES_ATTRIBUTE, mediaTypes);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="关于获取PathVariable变量"><a href="#关于获取PathVariable变量" class="headerlink" title="关于获取PathVariable变量"></a>关于获取PathVariable变量</h4><pre><code class="highlight plain">@Override
+protected void handleMatch(RequestMappingInfo info, String lookupPath, HttpServletRequest request) &#123;
+	super.handleMatch(info, lookupPath, request);
+
+	String bestPattern;
+	Map&lt;String, String&gt; uriVariables;
+	Map&lt;String, String&gt; decodedUriVariables;
+
+	Set&lt;String&gt; patterns &#x3D; info.getPatternsCondition().getPatterns();
+	if (patterns.isEmpty()) &#123;
+		bestPattern &#x3D; lookupPath;
+		uriVariables &#x3D; Collections.emptyMap();
+		decodedUriVariables &#x3D; Collections.emptyMap();
+	&#125;
+	else &#123;
+		bestPattern &#x3D; patterns.iterator().next();
+		uriVariables &#x3D; getPathMatcher().extractUriTemplateVariables(bestPattern, lookupPath);
+		decodedUriVariables &#x3D; getUrlPathHelper().decodePathVariables(request, uriVariables);
+	&#125;
+
+	request.setAttribute(BEST_MATCHING_PATTERN_ATTRIBUTE, bestPattern);
+	request.setAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, decodedUriVariables);
+
+	if (isMatrixVariableContentAvailable()) &#123;
+		Map&lt;String, MultiValueMap&lt;String, String&gt;&gt; matrixVars &#x3D; extractMatrixVariables(request, uriVariables);
+		request.setAttribute(HandlerMapping.MATRIX_VARIABLES_ATTRIBUTE, matrixVars);
+	&#125;
+
+	if (!info.getProducesCondition().getProducibleMediaTypes().isEmpty()) &#123;
+		Set&lt;MediaType&gt; mediaTypes &#x3D; info.getProducesCondition().getProducibleMediaTypes();
+		request.setAttribute(PRODUCIBLE_MEDIA_TYPES_ATTRIBUTE, mediaTypes);
+	&#125;
+&#125;</code></pre>
 
 <p>以上代码段属于在<code>RequestMappingHandlerMapping</code>获取<code>RequestMappingHandlerAdapter</code>的过程中，使用<code>url</code>匹配对应的<code>RequestMappingInfo</code>，匹配完之后最后对<code>url</code>解析，获取PathVariable</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">uriVariables &#x3D; getPathMatcher().extractUriTemplateVariables(bestPattern, lookupPath);</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">uriVariables &#x3D; getPathMatcher().extractUriTemplateVariables(bestPattern, lookupPath);</code></pre>
 
 <p><code>bestPattern</code>指向被匹配的<code>@RequestMapping</code>的<code>value</code>，<code>lookupPath</code>指向<code>ServletPath</code></p>
 <p>通过<code>extractUriTemplateVariables</code>方法获取{}中字符和对应<code>lookupPath</code>中对应的值</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Override</span><br><span class="line">public Map&lt;String, String&gt; extractUriTemplateVariables(String pattern, String path) &#123;</span><br><span class="line">	Map&lt;String, String&gt; variables &#x3D; new LinkedHashMap&lt;String, String&gt;();</span><br><span class="line">	boolean result &#x3D; doMatch(pattern, path, true, variables);</span><br><span class="line">	Assert.state(result, &quot;Pattern \&quot;&quot; + pattern + &quot;\&quot; is not a match for \&quot;&quot; + path + &quot;\&quot;&quot;);</span><br><span class="line">	return variables;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">@Override
+public Map&lt;String, String&gt; extractUriTemplateVariables(String pattern, String path) &#123;
+	Map&lt;String, String&gt; variables &#x3D; new LinkedHashMap&lt;String, String&gt;();
+	boolean result &#x3D; doMatch(pattern, path, true, variables);
+	Assert.state(result, &quot;Pattern \&quot;&quot; + pattern + &quot;\&quot; is not a match for \&quot;&quot; + path + &quot;\&quot;&quot;);
+	return variables;
+&#125;</code></pre>
 
 <p>返回的一个<code>java.util.Map&lt;String,String&gt;</code>类型的变量，存放了PathVariable的变量名和值</p>
 <p>然后进行url解码</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">decodedUriVariables &#x3D; getUrlPathHelper().decodePathVariables(request, uriVariables);</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">decodedUriVariables &#x3D; getUrlPathHelper().decodePathVariables(request, uriVariables);</code></pre>
 
 <p>解码后将它以<code>HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE</code>为变量名调用<code>Requrest</code>的<code>SetAttribute</code>方法放入请求中</p>
 
@@ -409,8 +532,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/06/17/@PathVariable%E5%8F%82%E4%B8%8E%E5%88%B0%E5%B0%86%E5%8F%82%E6%95%B0%E7%BB%91%E5%AE%9A%E5%88%B0%E5%85%A5%E5%8F%82Bean/" rel="next" title="注解@PathVariable参与到将参数绑定到入参Bean">
-                <i class="fa fa-chevron-left"></i> 注解@PathVariable参与到将参数绑定到入参Bean
+              <a href="/2020/06/17/@ModelAttribute%E5%92%8C@RequestParam%E5%8A%A0%E4%B8%8E%E4%B8%8D%E5%8A%A0/" rel="next" title="注解@ModelAttribute和@RequestParam加与不加">
+                <i class="fa fa-chevron-left"></i> 注解@ModelAttribute和@RequestParam加与不加
               </a>
             
           </div>
@@ -419,8 +542,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2020/06/17/BeanWrapperImpl%E5%9C%A8SpringMVC/" rel="prev" title="BeanWrapperImpl初探">
-                BeanWrapperImpl初探 <i class="fa fa-chevron-right"></i>
+              <a href="/2020/06/17/@PathVariable%E5%8F%82%E4%B8%8E%E5%88%B0%E5%B0%86%E5%8F%82%E6%95%B0%E7%BB%91%E5%AE%9A%E5%88%B0%E5%85%A5%E5%8F%82Bean/" rel="prev" title="注解@PathVariable参与到将参数绑定到入参Bean">
+                注解@PathVariable参与到将参数绑定到入参Bean <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -758,7 +881,7 @@
 
   
 
-  <link rel="stylesheet" href="/lib/prettify/skins/desert.css" type="text/css">
+  <link rel="stylesheet" href="/lib/prettify/skins/sunburst.css" type="text/css">
 <script src="/lib/prettify/prettify.js" type="text/javascript"></script>
 <script type="text/javascript">
   $(document).ready(function() {

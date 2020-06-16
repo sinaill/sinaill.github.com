@@ -351,12 +351,104 @@
 <hr>
 <p>得到这样一个结构图就能更好的理解io，以装饰类<code>BufferedInputStream</code>为例，如果使用继承的方法，那么要为具体构件例如<code>ByteArrayInputStream</code>，<code>FileInputStream</code>等都添加缓冲功能，需要为他们都设计一个子类，而现在，只需要将他们传入<code>BufferedInputStream</code>中，就能获取相应的带缓冲的流。</p>
 <p>首先看构造方法，需要传入一个普通字节输入流</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public BufferedInputStream(InputStream in) &#123;</span><br><span class="line">    this(in, DEFAULT_BUFFER_SIZE);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public BufferedInputStream(InputStream in, int size) &#123;</span><br><span class="line">    super(in);</span><br><span class="line">    if (size &lt;&#x3D; 0) &#123;</span><br><span class="line">        throw new IllegalArgumentException(&quot;Buffer size &lt;&#x3D; 0&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    buf &#x3D; new byte[size];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public BufferedInputStream(InputStream in) &#123;
+    this(in, DEFAULT_BUFFER_SIZE);
+&#125;
+
+public BufferedInputStream(InputStream in, int size) &#123;
+    super(in);
+    if (size &lt;&#x3D; 0) &#123;
+        throw new IllegalArgumentException(&quot;Buffer size &lt;&#x3D; 0&quot;);
+    &#125;
+    buf &#x3D; new byte[size];
+&#125;</code></pre>
 
 <p>接着，装饰类中新定义一个字节数组作为缓冲区</p>
 <p><code>protected volatile byte buf[]</code></p>
 <p>接下来我们看装饰类是怎么让普通的输入流用上缓冲的,这是装饰类中的read方法，在调用普通输入流的read方法前后进行了一系列操作(对read方法进行修饰)。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public synchronized int read(byte b[], int off, int len)</span><br><span class="line">    throws IOException</span><br><span class="line">&#123;</span><br><span class="line">    getBufIfOpen(); &#x2F;&#x2F; Check for closed stream</span><br><span class="line">    if ((off | len | (off + len) | (b.length - (off + len))) &lt; 0) &#123;</span><br><span class="line">        throw new IndexOutOfBoundsException();</span><br><span class="line">    &#125; else if (len &#x3D;&#x3D; 0) &#123;</span><br><span class="line">        return 0;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    int n &#x3D; 0;</span><br><span class="line">    for (;;) &#123;</span><br><span class="line">        int nread &#x3D; read1(b, off + n, len - n);&#x2F;&#x2F;此处跳入read1方法</span><br><span class="line">        if (nread &lt;&#x3D; 0)</span><br><span class="line">            return (n &#x3D;&#x3D; 0) ? nread : n;</span><br><span class="line">        n +&#x3D; nread;</span><br><span class="line">        if (n &gt;&#x3D; len)</span><br><span class="line">            return n;</span><br><span class="line">        &#x2F;&#x2F; if not closed but no bytes available, return</span><br><span class="line">        InputStream input &#x3D; in;</span><br><span class="line">        if (input !&#x3D; null &amp;&amp; input.available() &lt;&#x3D; 0)</span><br><span class="line">            return n;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private int read1(byte[] b, int off, int len) throws IOException &#123;</span><br><span class="line">    int avail &#x3D; count - pos;</span><br><span class="line">    if (avail &lt;&#x3D; 0) &#123;</span><br><span class="line">        &#x2F;* If the requested length is at least as large as the buffer, and</span><br><span class="line">           if there is no mark&#x2F;reset activity, do not bother to copy the</span><br><span class="line">           bytes into the local buffer.  In this way buffered streams will</span><br><span class="line">           cascade harmlessly. *&#x2F;</span><br><span class="line">        if (len &gt;&#x3D; getBufIfOpen().length &amp;&amp; markpos &lt; 0) &#123;</span><br><span class="line">            return getInIfOpen().read(b, off, len);&#x2F;&#x2F;这里调用了普通输入流的read方法，读取长度超过缓冲默认长度时，不使用缓冲直接读取。</span><br><span class="line">        &#125;</span><br><span class="line">        fill();&#x2F;&#x2F;填充缓冲区，进入这个方法</span><br><span class="line">        avail &#x3D; count - pos;</span><br><span class="line">        if (avail &lt;&#x3D; 0) return -1;</span><br><span class="line">    &#125;</span><br><span class="line">    int cnt &#x3D; (avail &lt; len) ? avail : len;</span><br><span class="line">    System.arraycopy(getBufIfOpen(), pos, b, off, cnt);</span><br><span class="line">    pos +&#x3D; cnt;</span><br><span class="line">    return cnt;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">private void fill() throws IOException &#123;</span><br><span class="line">    byte[] buffer &#x3D; getBufIfOpen();</span><br><span class="line">    if (markpos &lt; 0)</span><br><span class="line">        pos &#x3D; 0;            &#x2F;* no mark: throw away the buffer *&#x2F;</span><br><span class="line">    else if (pos &gt;&#x3D; buffer.length)  &#x2F;* no room left in buffer *&#x2F;</span><br><span class="line">        if (markpos &gt; 0) &#123;  &#x2F;* can throw away early part of the buffer *&#x2F;</span><br><span class="line">            int sz &#x3D; pos - markpos;</span><br><span class="line">            System.arraycopy(buffer, markpos, buffer, 0, sz);</span><br><span class="line">            pos &#x3D; sz;</span><br><span class="line">            markpos &#x3D; 0;</span><br><span class="line">        &#125; else if (buffer.length &gt;&#x3D; marklimit) &#123;</span><br><span class="line">            markpos &#x3D; -1;   &#x2F;* buffer got too big, invalidate mark *&#x2F;</span><br><span class="line">            pos &#x3D; 0;        &#x2F;* drop buffer contents *&#x2F;</span><br><span class="line">        &#125; else if (buffer.length &gt;&#x3D; MAX_BUFFER_SIZE) &#123;</span><br><span class="line">            throw new OutOfMemoryError(&quot;Required array size too large&quot;);</span><br><span class="line">        &#125; else &#123;            &#x2F;* grow buffer *&#x2F;</span><br><span class="line">            int nsz &#x3D; (pos &lt;&#x3D; MAX_BUFFER_SIZE - pos) ?</span><br><span class="line">                    pos * 2 : MAX_BUFFER_SIZE;</span><br><span class="line">            if (nsz &gt; marklimit)</span><br><span class="line">                nsz &#x3D; marklimit;</span><br><span class="line">            byte nbuf[] &#x3D; new byte[nsz];</span><br><span class="line">            System.arraycopy(buffer, 0, nbuf, 0, pos);</span><br><span class="line">            if (!bufUpdater.compareAndSet(this, buffer, nbuf)) &#123;</span><br><span class="line">                &#x2F;&#x2F; Can&#39;t replace buf if there was an async close.</span><br><span class="line">                &#x2F;&#x2F; Note: This would need to be changed if fill()</span><br><span class="line">                &#x2F;&#x2F; is ever made accessible to multiple threads.</span><br><span class="line">                &#x2F;&#x2F; But for now, the only way CAS can fail is via close.</span><br><span class="line">                &#x2F;&#x2F; assert buf &#x3D;&#x3D; null;</span><br><span class="line">                throw new IOException(&quot;Stream closed&quot;);</span><br><span class="line">            &#125;</span><br><span class="line">            buffer &#x3D; nbuf;</span><br><span class="line">        &#125;</span><br><span class="line">    count &#x3D; pos;</span><br><span class="line">    int n &#x3D; getInIfOpen().read(buffer, pos, buffer.length - pos);&#x2F;&#x2F;在这个地方又再次调用普通输入流的read方法，一次读取默认长度8192个长度的数据到缓冲区</span><br><span class="line">    if (n &gt; 0)</span><br><span class="line">        count &#x3D; n + pos;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plain">public synchronized int read(byte b[], int off, int len)
+    throws IOException
+&#123;
+    getBufIfOpen(); &#x2F;&#x2F; Check for closed stream
+    if ((off | len | (off + len) | (b.length - (off + len))) &lt; 0) &#123;
+        throw new IndexOutOfBoundsException();
+    &#125; else if (len &#x3D;&#x3D; 0) &#123;
+        return 0;
+    &#125;
+
+    int n &#x3D; 0;
+    for (;;) &#123;
+        int nread &#x3D; read1(b, off + n, len - n);&#x2F;&#x2F;此处跳入read1方法
+        if (nread &lt;&#x3D; 0)
+            return (n &#x3D;&#x3D; 0) ? nread : n;
+        n +&#x3D; nread;
+        if (n &gt;&#x3D; len)
+            return n;
+        &#x2F;&#x2F; if not closed but no bytes available, return
+        InputStream input &#x3D; in;
+        if (input !&#x3D; null &amp;&amp; input.available() &lt;&#x3D; 0)
+            return n;
+    &#125;
+&#125;
+
+private int read1(byte[] b, int off, int len) throws IOException &#123;
+    int avail &#x3D; count - pos;
+    if (avail &lt;&#x3D; 0) &#123;
+        &#x2F;* If the requested length is at least as large as the buffer, and
+           if there is no mark&#x2F;reset activity, do not bother to copy the
+           bytes into the local buffer.  In this way buffered streams will
+           cascade harmlessly. *&#x2F;
+        if (len &gt;&#x3D; getBufIfOpen().length &amp;&amp; markpos &lt; 0) &#123;
+            return getInIfOpen().read(b, off, len);&#x2F;&#x2F;这里调用了普通输入流的read方法，读取长度超过缓冲默认长度时，不使用缓冲直接读取。
+        &#125;
+        fill();&#x2F;&#x2F;填充缓冲区，进入这个方法
+        avail &#x3D; count - pos;
+        if (avail &lt;&#x3D; 0) return -1;
+    &#125;
+    int cnt &#x3D; (avail &lt; len) ? avail : len;
+    System.arraycopy(getBufIfOpen(), pos, b, off, cnt);
+    pos +&#x3D; cnt;
+    return cnt;
+&#125;
+
+
+private void fill() throws IOException &#123;
+    byte[] buffer &#x3D; getBufIfOpen();
+    if (markpos &lt; 0)
+        pos &#x3D; 0;            &#x2F;* no mark: throw away the buffer *&#x2F;
+    else if (pos &gt;&#x3D; buffer.length)  &#x2F;* no room left in buffer *&#x2F;
+        if (markpos &gt; 0) &#123;  &#x2F;* can throw away early part of the buffer *&#x2F;
+            int sz &#x3D; pos - markpos;
+            System.arraycopy(buffer, markpos, buffer, 0, sz);
+            pos &#x3D; sz;
+            markpos &#x3D; 0;
+        &#125; else if (buffer.length &gt;&#x3D; marklimit) &#123;
+            markpos &#x3D; -1;   &#x2F;* buffer got too big, invalidate mark *&#x2F;
+            pos &#x3D; 0;        &#x2F;* drop buffer contents *&#x2F;
+        &#125; else if (buffer.length &gt;&#x3D; MAX_BUFFER_SIZE) &#123;
+            throw new OutOfMemoryError(&quot;Required array size too large&quot;);
+        &#125; else &#123;            &#x2F;* grow buffer *&#x2F;
+            int nsz &#x3D; (pos &lt;&#x3D; MAX_BUFFER_SIZE - pos) ?
+                    pos * 2 : MAX_BUFFER_SIZE;
+            if (nsz &gt; marklimit)
+                nsz &#x3D; marklimit;
+            byte nbuf[] &#x3D; new byte[nsz];
+            System.arraycopy(buffer, 0, nbuf, 0, pos);
+            if (!bufUpdater.compareAndSet(this, buffer, nbuf)) &#123;
+                &#x2F;&#x2F; Can&#39;t replace buf if there was an async close.
+                &#x2F;&#x2F; Note: This would need to be changed if fill()
+                &#x2F;&#x2F; is ever made accessible to multiple threads.
+                &#x2F;&#x2F; But for now, the only way CAS can fail is via close.
+                &#x2F;&#x2F; assert buf &#x3D;&#x3D; null;
+                throw new IOException(&quot;Stream closed&quot;);
+            &#125;
+            buffer &#x3D; nbuf;
+        &#125;
+    count &#x3D; pos;
+    int n &#x3D; getInIfOpen().read(buffer, pos, buffer.length - pos);&#x2F;&#x2F;在这个地方又再次调用普通输入流的read方法，一次读取默认长度8192个长度的数据到缓冲区
+    if (n &gt; 0)
+        count &#x3D; n + pos;
+&#125;</code></pre>
 <p>就这样，BufferedInputStream就成了带缓冲区的字节输入流，通过使用装饰者模式，对普通输入流的read方法添加修改，扩充了普通输入流的功能。</p>
 
       
@@ -390,8 +482,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/06/17/fail-fast%20fail-safe/" rel="next" title="fail-fast与fail-safe">
-                <i class="fa fa-chevron-left"></i> fail-fast与fail-safe
+              <a href="/2020/06/17/deference%20between%20sb%20and%20str/" rel="next" title="StringBuffer与String的区别">
+                <i class="fa fa-chevron-left"></i> StringBuffer与String的区别
               </a>
             
           </div>
@@ -739,7 +831,7 @@
 
   
 
-  <link rel="stylesheet" href="/lib/prettify/skins/desert.css" type="text/css">
+  <link rel="stylesheet" href="/lib/prettify/skins/sunburst.css" type="text/css">
 <script src="/lib/prettify/prettify.js" type="text/javascript"></script>
 <script type="text/javascript">
   $(document).ready(function() {
