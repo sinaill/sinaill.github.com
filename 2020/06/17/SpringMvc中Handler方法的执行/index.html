@@ -1,0 +1,1509 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="SpringMVC," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="需要注意的类invocableHandlerMethodHandlerMethodParameterHandlerMethodParameter为HandlerMethod的内部类和MethodParameter的子类 先看MethodParameter private final Method method&#x2F;&#x2F;指向方法private final int parameterIn">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringMVC中Handler方法的执行">
+<meta property="og:url" content="http://yoursite.com/2020/06/17/SpringMvc%E4%B8%ADHandler%E6%96%B9%E6%B3%95%E7%9A%84%E6%89%A7%E8%A1%8C/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="需要注意的类invocableHandlerMethodHandlerMethodParameterHandlerMethodParameter为HandlerMethod的内部类和MethodParameter的子类 先看MethodParameter private final Method method&#x2F;&#x2F;指向方法private final int parameterIn">
+<meta property="article:published_time" content="2020-06-16T17:43:37.227Z">
+<meta property="article:modified_time" content="2020-06-16T17:43:37.227Z">
+<meta property="article:author" content="sinaill">
+<meta property="article:tag" content="SpringMVC">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/06/17/SpringMvc中Handler方法的执行/"/>
+
+
+
+
+
+  <title>SpringMVC中Handler方法的执行 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/SpringMvc%E4%B8%ADHandler%E6%96%B9%E6%B3%95%E7%9A%84%E6%89%A7%E8%A1%8C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">SpringMVC中Handler方法的执行</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">框架</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="需要注意的类"><a href="#需要注意的类" class="headerlink" title="需要注意的类"></a>需要注意的类</h3><h4 id="invocableHandlerMethod"><a href="#invocableHandlerMethod" class="headerlink" title="invocableHandlerMethod"></a>invocableHandlerMethod</h4><h4 id="HandlerMethodParameter"><a href="#HandlerMethodParameter" class="headerlink" title="HandlerMethodParameter"></a>HandlerMethodParameter</h4><p><code>HandlerMethodParameter</code>为<code>HandlerMethod</code>的内部类和<code>MethodParameter</code>的子类</p>
+<p>先看<code>MethodParameter</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">private final Method method</span><br><span class="line">&#x2F;&#x2F;指向方法</span><br><span class="line">private final int parameterIndex;</span><br><span class="line">&#x2F;&#x2F;本方法参数在方法中的形参位置index，从0开始</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<h4 id="argumentResolver"><a href="#argumentResolver" class="headerlink" title="argumentResolver"></a>argumentResolver</h4><p>创建<code>InvocableHandlerMethod</code>的时候，将<code>Spring</code>给<code>RequestMappingHandlerAdapter</code>注入的<code>argumentResovlers</code>参数传递给<code>InvocableHandlerMethod</code>，用来对通过<code>GenericTypeResolver</code>确定方法参数类型之后的<code>MethodParameter</code>进行处理</p>
+<p>例如<code>RequestParamMethodArgumentResolver</code>，它的<code>supportParameter</code>方法，即验证是否适用于当前参数</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Override</span><br><span class="line">public boolean supportsParameter(MethodParameter parameter) &#123;</span><br><span class="line">	Class&lt;?&gt; paramType &#x3D; parameter.getParameterType();</span><br><span class="line">	if (parameter.hasParameterAnnotation(RequestParam.class)) &#123;</span><br><span class="line">		&#x2F;&#x2F;与instanceof作用相同，只不过这个是判断类之间的管理</span><br><span class="line">		&#x2F;&#x2F;判断传入的类与这个类是否相同或者是不是传入的这个类的超类或者超接口</span><br><span class="line">		if (Map.class.isAssignableFrom(paramType)) &#123;</span><br><span class="line">			String paramName &#x3D; parameter.getParameterAnnotation(RequestParam.class).value();</span><br><span class="line">			return StringUtils.hasText(paramName);</span><br><span class="line">		&#125;</span><br><span class="line">		else &#123;</span><br><span class="line">			return true;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	else &#123;</span><br><span class="line">		if (parameter.hasParameterAnnotation(RequestPart.class)) &#123;</span><br><span class="line">			return false;</span><br><span class="line">		&#125;</span><br><span class="line">		else if (MultipartFile.class.equals(paramType) || &quot;javax.servlet.http.Part&quot;.equals(paramType.getName())) &#123;</span><br><span class="line">			return true;</span><br><span class="line">		&#125;</span><br><span class="line">		else if (this.useDefaultResolution) &#123;</span><br><span class="line">			return BeanUtils.isSimpleProperty(paramType);</span><br><span class="line">		&#125;</span><br><span class="line">		else &#123;</span><br><span class="line">			return false;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h3><p><code>Handler</code>方法的执行由<code>handlerAdapter</code>接口的实现类的<code>handle</code>方法为入口</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; Actually invoke the handler.</span><br><span class="line">mv &#x3D; ha.handle(processedRequest, response, mappedHandler.getHandler());</span><br><span class="line">&#96;&#96;&#96; </span><br><span class="line"></span><br><span class="line">本Demo中配置方式决定了&#96;ha&#96;变量为&#96;RequestMappingHandlerAdapter&#96;实例对象，调用该对象的&#96;handle&#96;方法</span><br><span class="line">，&#96;handle&#96;方法为它父类&#96;AbstractHandlerMethodAdapter&#96;中的方法</span><br></pre></td></tr></table></figure>
+<p>@Override<br>public final ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)<br>        throws Exception {</p>
+<pre><code>return handleInternal(request, response, (HandlerMethod) handler);</code></pre><p>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">接着又调用该对象的&#96;handleInternal&#96;方法</span><br></pre></td></tr></table></figure>
+<p>@Override<br>protected ModelAndView handleInternal(HttpServletRequest request,<br>        HttpServletResponse response, HandlerMethod handlerMethod) throws Exception {</p>
+<pre><code>//判断是否有@SessionAttributes注解
+if (getSessionAttributesHandler(handlerMethod).hasSessionAttributes()) {
+    // Always prevent caching in case of session attribute management.
+    checkAndPrepare(request, response, this.cacheSecondsForSessionAttributeHandlers, true);
+}
+else {
+    // Uses configured default cacheSeconds setting.
+    checkAndPrepare(request, response, true);
+}
+
+// Execute invokeHandlerMethod in synchronized block if required.
+if (this.synchronizeOnSession) {
+    HttpSession session = request.getSession(false);
+    if (session != null) {
+        Object mutex = WebUtils.getSessionMutex(session);
+        synchronized (mutex) {
+            return invokeHandleMethod(request, response, handlerMethod);
+        }
+    }
+}
+
+return invokeHandleMethod(request, response, handlerMethod);</code></pre><p>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">&#96;getSessionAttributesHandler&#96;方法</span><br></pre></td></tr></table></figure>
+<p>private SessionAttributesHandler getSessionAttributesHandler(HandlerMethod handlerMethod) {<br>    Class&lt;?&gt; handlerType = handlerMethod.getBeanType();<br>    SessionAttributesHandler sessionAttrHandler = this.sessionAttributesHandlerCache.get(handlerType);<br>    if (sessionAttrHandler == null) {<br>        synchronized (this.sessionAttributesHandlerCache) {<br>            sessionAttrHandler = this.sessionAttributesHandlerCache.get(handlerType);<br>            if (sessionAttrHandler == null) {<br>                sessionAttrHandler = new SessionAttributesHandler(handlerType, sessionAttributeStore);<br>                this.sessionAttributesHandlerCache.put(handlerType, sessionAttrHandler);<br>            }<br>        }<br>    }<br>    return sessionAttrHandler;<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">单例模式创建&#96;SessionAttributesHandler&#96;，看构造方法</span><br></pre></td></tr></table></figure>
+<p>public SessionAttributesHandler(Class&lt;?&gt; handlerType, SessionAttributeStore sessionAttributeStore) {<br>    Assert.notNull(sessionAttributeStore, “SessionAttributeStore may not be null.”);<br>    this.sessionAttributeStore = sessionAttributeStore;</p>
+<pre><code>SessionAttributes annotation = AnnotationUtils.findAnnotation(handlerType, SessionAttributes.class);
+if (annotation != null) {
+    this.attributeNames.addAll(Arrays.asList(annotation.value()));
+    this.attributeTypes.addAll(Arrays.&lt;Class&lt;?&gt;&gt;asList(annotation.types()));
+}
+
+for (String attributeName : this.attributeNames) {
+    this.knownAttributeNames.add(attributeName);
+}</code></pre><p>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">查看&#96;Controller&#96;有没有&#96;@SessionAttributes&#96;注解</span><br><span class="line"></span><br><span class="line">把注解中的&#96;value&#96;值放入成员变量&#96;knownAttributeNames&#96;集合中</span><br><span class="line"></span><br><span class="line">跟入&#96;invokeHandleMethod&#96;</span><br></pre></td></tr></table></figure>
+<p>/**</p>
+<ul>
+<li><p>Invoke the {@link RequestMapping} handler method preparing a {@link ModelAndView}</p>
+</li>
+<li><p>if view resolution is required.</p>
+</li>
+<li><p>/<br>private ModelAndView invokeHandleMethod(HttpServletRequest request,</p>
+<pre><code>HttpServletResponse response, HandlerMethod handlerMethod) throws Exception {</code></pre><p>  ServletWebRequest webRequest = new ServletWebRequest(request, response);</p>
+<p>  WebDataBinderFactory binderFactory = getDataBinderFactory(handlerMethod);<br>  ModelFactory modelFactory = getModelFactory(handlerMethod, binderFactory);<br>  ServletInvocableHandlerMethod requestMappingMethod = createRequestMappingMethod(handlerMethod, binderFactory);</p>
+<p>  ModelAndViewContainer mavContainer = new ModelAndViewContainer();<br>  mavContainer.addAllAttributes(RequestContextUtils.getInputFlashMap(request));<br>  modelFactory.initModel(webRequest, mavContainer, requestMappingMethod);<br>  mavContainer.setIgnoreDefaultModelOnRedirect(this.ignoreDefaultModelOnRedirect);</p>
+<p>  AsyncWebRequest asyncWebRequest = WebAsyncUtils.createAsyncWebRequest(request, response);<br>  asyncWebRequest.setTimeout(this.asyncRequestTimeout);</p>
+<p>  final WebAsyncManager asyncManager = WebAsyncUtils.getAsyncManager(request);<br>  asyncManager.setTaskExecutor(this.taskExecutor);<br>  asyncManager.setAsyncWebRequest(asyncWebRequest);<br>  asyncManager.registerCallableInterceptors(this.callableInterceptors);<br>  asyncManager.registerDeferredResultInterceptors(this.deferredResultInterceptors);</p>
+<p>  if (asyncManager.hasConcurrentResult()) {</p>
+<pre><code>Object result = asyncManager.getConcurrentResult();
+mavContainer = (ModelAndViewContainer) asyncManager.getConcurrentResultContext()[0];
+asyncManager.clearConcurrentResult();
+
+if (logger.isDebugEnabled()) {
+    logger.debug(&quot;Found concurrent result value [&quot; + result + &quot;]&quot;);
+}
+requestMappingMethod = requestMappingMethod.wrapConcurrentResult(result);</code></pre><p>  }</p>
+<p>  requestMappingMethod.invokeAndHandle(webRequest, mavContainer);</p>
+<p>  if (asyncManager.isConcurrentHandlingStarted()) {</p>
+<pre><code>return null;</code></pre><p>  }</p>
+<p>  return getModelAndView(mavContainer, modelFactory, webRequest);<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">先看&#96;WebDataBinderFactory binderFactory &#x3D; getDataBinderFactory(handlerMethod);&#96;，进入&#96;getDataBinderFactory&#96;</span><br></pre></td></tr></table></figure>
+<p>private WebDataBinderFactory getDataBinderFactory(HandlerMethod handlerMethod) throws Exception {<br>  Class&lt;?&gt; handlerType = handlerMethod.getBeanType();<br>  Set<Method> methods = this.initBinderCache.get(handlerType);<br>  if (methods == null) {</p>
+<pre><code>methods = HandlerMethodSelector.selectMethods(handlerType, INIT_BINDER_METHODS);
+this.initBinderCache.put(handlerType, methods);</code></pre><p>  }<br>  List<InvocableHandlerMethod> initBinderMethods = new ArrayList<InvocableHandlerMethod>();<br>  // Global methods first<br>  for (Entry&lt;ControllerAdviceBean, Set<Method>&gt; entry : this.initBinderAdviceCache .entrySet()) {</p>
+<pre><code>if (entry.getKey().isApplicableToBeanType(handlerType)) {
+    Object bean = entry.getKey().resolveBean();
+    for (Method method : entry.getValue()) {
+        initBinderMethods.add(createInitBinderMethod(bean, method));
+    }
+}</code></pre><p>  }<br>  for (Method method : methods) {</p>
+<pre><code>Object bean = handlerMethod.getBean();
+initBinderMethods.add(createInitBinderMethod(bean, method));</code></pre><p>  }<br>  return createDataBinderFactory(initBinderMethods);<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">&#96;initBinderCache&#96;字面看是&#96;@initBinder&#96;方法的缓存，看&#96;selectMethod&#96;方法</span><br></pre></td></tr></table></figure>
+<p>public static Set<Method> selectMethods(final Class<?> handlerType, final MethodFilter handlerMethodFilter) {
+  final Set<Method> handlerMethods = new LinkedHashSet<Method>();
+  Set<Class<?>&gt; handlerTypes = new LinkedHashSet&lt;Class<?>>();
+  Class<?> specificHandlerType = null;<br>  if (!Proxy.isProxyClass(handlerType)) {</p>
+<pre><code>handlerTypes.add(handlerType);
+specificHandlerType = handlerType;</code></pre><p>  }<br>  handlerTypes.addAll(Arrays.asList(handlerType.getInterfaces()));<br>  for (Class&lt;?&gt; currentHandlerType : handlerTypes) {</p>
+<pre><code>final Class&lt;?&gt; targetClass = (specificHandlerType != null ? specificHandlerType : currentHandlerType);
+ReflectionUtils.doWithMethods(currentHandlerType, new ReflectionUtils.MethodCallback() {
+    @Override
+    public void doWith(Method method) {
+        Method specificMethod = ClassUtils.getMostSpecificMethod(method, targetClass);
+        Method bridgedMethod = BridgeMethodResolver.findBridgedMethod(specificMethod);
+        if (handlerMethodFilter.matches(specificMethod) &amp;&amp;
+                (bridgedMethod == specificMethod || !handlerMethodFilter.matches(bridgedMethod))) {
+            handlerMethods.add(specificMethod);
+        }
+    }
+}, ReflectionUtils.USER_DECLARED_METHODS);</code></pre><p>  }<br>  return handlerMethods;<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">判断传入的&#96;handlerType&#96;是不是代理类，不是的话添加到集合&#96;handlerTypes&#96;中，再让&#96;specificHandlerYtpe&#96;指向它，如果事代理类的话，将代理类实现的接口添加到集合&#96;handlerTypes&#96;中。</span><br><span class="line">下一步对&#96;handlerTypes&#96;进行处理，当&#96;handlerType&#96;不是代理类时，这一步处理的就是&#96;handlerType&#96;本身，</span><br><span class="line">调用了类&#96;ReflectionUtils&#96;的&#96;doWithMethods&#96;方法对&#96;handlerType&#96;进行处理</span><br></pre></td></tr></table></figure>
+<p>public static void doWithMethods(Class&lt;?&gt; clazz, MethodCallback mc, MethodFilter mf) {<br>  // Keep backing up the inheritance hierarchy.<br>  Method[] methods = getDeclaredMethods(clazz);<br>  for (Method method : methods) {</p>
+<pre><code>if (mf != null &amp;&amp; !mf.matches(method)) {
+    continue;
+}
+try {
+    mc.doWith(method);
+}
+catch (IllegalAccessException ex) {
+    throw new IllegalStateException(&quot;Not allowed to access method &apos;&quot; + method.getName() + &quot;&apos;: &quot; + ex);
+}</code></pre><p>  }<br>  if (clazz.getSuperclass() != null) {</p>
+<pre><code>doWithMethods(clazz.getSuperclass(), mc, mf);</code></pre><p>  }<br>  else if (clazz.isInterface()) {</p>
+<pre><code>for (Class&lt;?&gt; superIfc : clazz.getInterfaces()) {
+    doWithMethods(superIfc, mc, mf);
+}</code></pre><p>  }<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">&#96;mf&#96;为&#96;MethodFilter&#96;接口的实现类，作用为判断如果传入的&#96;method&#96;为非桥接方法和非&#96;Object&#96;中的方法就返回&#96;true&#96;，否则返回&#96;false&#96;。</span><br></pre></td></tr></table></figure>
+<p>public static MethodFilter USER_DECLARED_METHODS = new MethodFilter() {</p>
+<p>  @Override<br>  public boolean matches(Method method) {</p>
+<pre><code>return (!method.isBridge() &amp;&amp; method.getDeclaringClass() != Object.class);</code></pre><p>  }<br>}</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line">接着获取上一步的&#96;handlerType&#96;的方法，&#96;getDeclaredMethod&#96;获取的是类中定义的所有类型的方法，不包括从父类继承的。然后通过&#96;mf&#96;过滤掉桥接方法，然后使用&#96;mc&#96;的&#96;dowith&#96;方法遍历所有它们，&#96;mc&#96;为&#96;selectMehtod&#96;中的用匿名内部类的方法构造。</span><br></pre></td></tr></table></figure>
+<p>new ReflectionUtils.MethodCallback() {<br>            @Override<br>            public void doWith(Method method) {<br>                Method specificMethod = ClassUtils.getMostSpecificMethod(method, targetClass);<br>                Method bridgedMethod = BridgeMethodResolver.findBridgedMethod(specificMethod);<br>                if (handlerMethodFilter.matches(specificMethod) &amp;&amp;<br>                        (bridgedMethod == specificMethod || !handlerMethodFilter.matches(bridgedMethod))) {<br>                    handlerMethods.add(specificMethod);<br>                }<br>            }<br>        }</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">其中&#96;ClassUtils&#96;的&#96;getMostSpecificmethod&#96;方法，通过&#96;method&#96;查找方法名和变量名在&#96;targetClass&#96;中相同的&#96;method&#96;，&#96;BridgeMethodResolver.findBridgedMethod&#96;api的英文解释，Find the original method for the supplied bridge Method.从源码看是通过传入的桥接方法获取到Class，然后获取所有方法，匹配名字和参数个数相同的方法。接下来是&#96;handlerMethodFilter&#96;过滤器的匹配，这个过滤器定义在&#96;RequestMappingHandlerAdapter&#96;中</span><br></pre></td></tr></table></figure>
+<p>public static final MethodFilter INIT_BINDER_METHODS = new MethodFilter() {</p>
+<pre><code>@Override
+public boolean matches(Method method) {
+    return AnnotationUtils.findAnnotation(method, InitBinder.class) != null;
+}</code></pre><p>};</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">作用是查看方法是否有&#96;@initBinder&#96;注解，如果有返回&#96;true&#96;，没有就返回&#96;false&#96;，当&#96;specificMethod&#96;不是&#96;@initBinder&#96;注解的方法，切不是桥接方法或桥接方法为&#96;@initBinder&#96;方法时，将&#96;specificMethod&#96;添加到&#96;handlerMethods&#96;中，然后返回</span><br></pre></td></tr></table></figure>
+
+<p>private WebDataBinderFactory getDataBinderFactory(HandlerMethod handlerMethod) throws Exception {<br>    Class&lt;?&gt; handlerType = handlerMethod.getBeanType();<br>    Set<Method> methods = this.initBinderCache.get(handlerType);<br>    if (methods == null) {<br>        methods = HandlerMethodSelector.selectMethods(handlerType, INIT_BINDER_METHODS);<br>        this.initBinderCache.put(handlerType, methods);<br>    }<br>    List<InvocableHandlerMethod> initBinderMethods = new ArrayList<InvocableHandlerMethod>();<br>    // Global methods first<br>    for (Entry&lt;ControllerAdviceBean, Set<Method>&gt; entry : this.initBinderAdviceCache .entrySet()) {<br>        if (entry.getKey().isApplicableToBeanType(handlerType)) {<br>            Object bean = entry.getKey().resolveBean();<br>            for (Method method : entry.getValue()) {<br>                initBinderMethods.add(createInitBinderMethod(bean, method));<br>            }<br>        }<br>    }<br>    for (Method method : methods) {<br>        Object bean = handlerMethod.getBean();<br>        initBinderMethods.add(createInitBinderMethod(bean, method));<br>    }<br>    return createDataBinderFactory(initBinderMethods);<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">这样返回的&#96;methods&#96;集合中就有了和当前&#96;handlerType&#96;(当前&#96;request&#96;对应的&#96;controller&#96;)对应的&#96;@initBinder&#96;方法，并且存放在了缓存&#96;initBinderCache&#96;中，&#96;initBinderAdviceCache&#96;存放的是在&#96;@controllerAdvice&#96;中的全局&#96;@initBinder&#96;方法。</span><br><span class="line"></span><br><span class="line">然后调用&#96;createInitBinderMethod&#96;方法创建一个&#96;invocableHandlerMethod&#96;</span><br></pre></td></tr></table></figure>
+<p>private InvocableHandlerMethod createInitBinderMethod(Object bean, Method method) {<br>    InvocableHandlerMethod binderMethod = new InvocableHandlerMethod(bean, method);<br>    binderMethod.setHandlerMethodArgumentResolvers(this.initBinderArgumentResolvers);<br>    binderMethod.setDataBinderFactory(new DefaultDataBinderFactory(this.webBindingInitializer));<br>    binderMethod.setParameterNameDiscoverer(this.parameterNameDiscoverer);<br>    return binderMethod;<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">然后将全局&#96;@initBinder&#96;方法和控制器中的&#96;@initBinder&#96;方法放入集合&#96;initBinderMethods&#96;中，并且用它来创建数据绑定工厂</span><br></pre></td></tr></table></figure>
+<p>protected InitBinderDataBinderFactory createDataBinderFactory(List<InvocableHandlerMethod> binderMethods)<br>        throws Exception {</p>
+<pre><code>return new ServletRequestDataBinderFactory(binderMethods, getWebBindingInitializer());</code></pre><p>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>WebDataBinderFactory binderFactory = getDataBinderFactory(handlerMethod);</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">以上主要查找了控制器中和全局&#96;@initBinder&#96;方法，然后和&#96;webBindingInitializer&#96;一同创建&#96;servletRequestDataBinderFactory&#96;</span><br><span class="line"></span><br><span class="line">接下来看</span><br></pre></td></tr></table></figure>
+<p>ModelFactory modelFactory = getModelFactory(handlerMethod, binderFactory)</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>private ModelFactory getModelFactory(HandlerMethod handlerMethod, WebDataBinderFactory binderFactory) {<br>    SessionAttributesHandler sessionAttrHandler = getSessionAttributesHandler(handlerMethod);<br>    Class&lt;?&gt; handlerType = handlerMethod.getBeanType();<br>    Set<Method> methods = this.modelAttributeCache.get(handlerType);<br>    if (methods == null) {<br>        methods = HandlerMethodSelector.selectMethods(handlerType, MODEL_ATTRIBUTE_METHODS);<br>        this.modelAttributeCache.put(handlerType, methods);<br>    }<br>    List<InvocableHandlerMethod> attrMethods = new ArrayList<InvocableHandlerMethod>();<br>    // Global methods first<br>    for (Entry&lt;ControllerAdviceBean, Set<Method>&gt; entry : this.modelAttributeAdviceCache.entrySet()) {<br>        if (entry.getKey().isApplicableToBeanType(handlerType)) {<br>            Object bean = entry.getKey().resolveBean();<br>            for (Method method : entry.getValue()) {<br>                attrMethods.add(createModelAttributeMethod(binderFactory, bean, method));<br>            }<br>        }<br>    }<br>    for (Method method : methods) {<br>        Object bean = handlerMethod.getBean();<br>        attrMethods.add(createModelAttributeMethod(binderFactory, bean, method));<br>    }<br>    return new ModelFactory(attrMethods, binderFactory, sessionAttrHandler);<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">主要是处理&#96;@modelAttribute&#96;注解方法</span><br><span class="line"></span><br><span class="line">&#96;getSessionAttributesHandler&#96;方法获取创建好的&#96;SessionAttributesHandler&#96;</span><br><span class="line"></span><br><span class="line">接着从当前&#96;modelAttributeCache&#96;根据当前&#96;handlerType&#96;查找集合&#96;methods&#96;</span><br></pre></td></tr></table></figure>
+<p>methods = HandlerMethodSelector.selectMethods(handlerType, MODEL_ATTRIBUTE_METHODS);</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">熟悉的方法，不过过滤器换成了&#96;MODEL_ATTRIBUTE_METHODS&#96;</span><br></pre></td></tr></table></figure>
+<p>public static final MethodFilter MODEL_ATTRIBUTE_METHODS = new MethodFilter() {</p>
+<pre><code>@Override
+public boolean matches(Method method) {
+    return ((AnnotationUtils.findAnnotation(method, RequestMapping.class) == null) &amp;&amp;
+            (AnnotationUtils.findAnnotation(method, ModelAttribute.class) != null));
+}</code></pre><p>};</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">查找当前&#96;handlerType&#96;中没有被&#96;@requestMapping&#96;注解并且有&#96;@modelAttribute&#96;注解的方法，然后再从&#96;@controllerAdvice&#96;注解的类中也找相同的全局&#96;@modelAttribute&#96;方法，然后创建&#96;modelFactory&#96;</span><br></pre></td></tr></table></figure>
+<p>ServletInvocableHandlerMethod requestMappingMethod = createRequestMappingMethod(handlerMethod, binderFactory);</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">创建&#96;ServletInvocableHandlerMethod&#96;对象</span><br></pre></td></tr></table></figure>
+<p>private ServletInvocableHandlerMethod createRequestMappingMethod(<br>        HandlerMethod handlerMethod, WebDataBinderFactory binderFactory) {</p>
+<pre><code>ServletInvocableHandlerMethod requestMethod;
+requestMethod = new ServletInvocableHandlerMethod(handlerMethod);
+requestMethod.setHandlerMethodArgumentResolvers(this.argumentResolvers);
+requestMethod.setHandlerMethodReturnValueHandlers(this.returnValueHandlers);
+requestMethod.setDataBinderFactory(binderFactory);
+requestMethod.setParameterNameDiscoverer(this.parameterNameDiscoverer);
+return requestMethod;</code></pre><p>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">&#96;argumentResolver&#96;是&#96;HandlerMethodArgumentResolver&#96;类的实例，用来做参数解析，&#96;returnValueHandlers&#96;是&#96;HandlerMethodReturnValueHandlerComposite&#96;类的实例，用来对返回结果做处理，&#96;parameterNameDiscoverer&#96;用来记录参数名解析器</span><br></pre></td></tr></table></figure>
+<p>ModelAndViewContainer mavContainer = new ModelAndViewContainer();</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">ModelAndViewContainer主要是用来返回&#96;Model&#96;对象的，当然里面还有变量&#96;view&#96;存放视图</span><br><span class="line"></span><br><span class="line">此时&#96;Model&#96;为默认&#96;Model&#96;，是新建的&#96;BindingAwareModelMap&#96;类的实例</span><br></pre></td></tr></table></figure>
+<p>modelFactory.initModel(webRequest, mavContainer, requestMappingMethod);</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">文档是这样写的</span><br></pre></td></tr></table></figure>
+<p>/**</p>
+<ul>
+<li><p>Populate the model in the following order:</p>
+</li>
+<li><ol></li>
+<li><li>Retrieve "known" session attributes listed as {@code @SessionAttributes}.</li>
+<li><li>Invoke {@code @ModelAttribute} methods</li>
+<li><li>Find {@code @ModelAttribute} method arguments also listed as</li>
+<li><p>{@code @SessionAttributes} and ensure they’re present in the model raising</p>
+</li>
+<li><p>an exception if necessary.</p>
+</li>
+<li></ol></li>
+<li><p>@param request the current request</p>
+</li>
+<li><p>@param mavContainer a container with the model to be initialized</p>
+</li>
+<li><p>@param handlerMethod the method for which the model is initialized</p>
+</li>
+<li><p>@throws Exception may arise from {@code @ModelAttribute} methods</p>
+</li>
+<li><p>/<br>public void initModel(NativeWebRequest request, ModelAndViewContainer mavContainer, HandlerMethod handlerMethod)</p>
+<pre><code>throws Exception {</code></pre><p>  Map&lt;String, ?&gt; sessionAttributes = this.sessionAttributesHandler.retrieveAttributes(request);<br>  mavContainer.mergeAttributes(sessionAttributes);</p>
+<p>  invokeModelAttributeMethods(request, mavContainer);</p>
+<p>  for (String name : findSessionAttributeArguments(handlerMethod)) {</p>
+<pre><code>if (!mavContainer.containsAttribute(name)) {
+    Object value = this.sessionAttributesHandler.retrieveAttribute(request, name);
+    if (value == null) {
+        throw new HttpSessionRequiredException(&quot;Expected session attribute &apos;&quot; + name + &quot;&apos;&quot;);
+    }
+    mavContainer.addAttribute(name, value);
+}</code></pre><p>  }<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">当与&#96;@SessionAttribute&#96;注解的&#96;value&#96;值相同的变量名在控制器某个方法被实例化放入&#96;model&#96;中，也就是被放入&#96;Session&#96;中后，在此处会获得这个注解的变量名的属性，源码也就是变量&#96;sessionAttributesHandler&#96;中有个变量&#96;knownAttributeNames&#96;集合，存放了&#96;@SessionAttribute&#96;注解的&#96;value&#96;值，这里通过&#96;request&#96;获取&#96;Session&#96;，然后取出&#96;value&#96;对应属性</span><br><span class="line"></span><br><span class="line">然后&#96;mergeAttributes&#96;将获取到的属性复制一份放到&#96;mavContainer&#96;的&#96;model&#96;中</span><br><span class="line"></span><br><span class="line">查看&#96;invokeModelAttributeMethods&#96;方法</span><br></pre></td></tr></table></figure>
+<p>private void invokeModelAttributeMethods(NativeWebRequest request, ModelAndViewContainer mavContainer)</p>
+<pre><code>throws Exception {</code></pre><p>  while (!this.modelMethods.isEmpty()) {</p>
+<pre><code>InvocableHandlerMethod attrMethod = getNextModelMethod(mavContainer).getHandlerMethod();
+String modelName = attrMethod.getMethodAnnotation(ModelAttribute.class).value();
+if (mavContainer.containsAttribute(modelName)) {
+    continue;
+}
+
+Object returnValue = attrMethod.invokeForRequest(request, mavContainer);
+
+if (!attrMethod.isVoid()){
+    String returnValueName = getNameForReturnValue(returnValue, attrMethod.getReturnType());
+    if (!mavContainer.containsAttribute(returnValueName)) {
+        mavContainer.addAttribute(returnValueName, returnValue);
+    }
+}</code></pre><p>  }<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">此处的&#96;modelMethods&#96;在前几步的&#96;getModelFactory&#96;中，是获取的控制器和全局&#96;@ModelAttribute&#96;方法的集合。</span><br><span class="line"></span><br><span class="line">我们看&#96;getNextModelMethod(mavContainer).getHandlerMethod()&#96;</span><br></pre></td></tr></table></figure>
+<p>private ModelMethod getNextModelMethod(ModelAndViewContainer mavContainer) {<br>  for (ModelMethod modelMethod : this.modelMethods) {</p>
+<pre><code>if (modelMethod.checkDependencies(mavContainer)) {
+    if (logger.isTraceEnabled()) {
+        logger.trace(&quot;Selected @ModelAttribute method &quot; + modelMethod);
+    }
+    this.modelMethods.remove(modelMethod);
+    return modelMethod;
+}</code></pre><p>  }<br>  ModelMethod modelMethod = this.modelMethods.get(0);<br>  if (logger.isTraceEnabled()) {</p>
+<pre><code>logger.trace(&quot;Selected @ModelAttribute method (not present: &quot; +
+        modelMethod.getUnresolvedDependencies(mavContainer)+ &quot;) &quot; + modelMethod);</code></pre><p>  }<br>  this.modelMethods.remove(modelMethod);<br>  return modelMethod;<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">对集合&#96;modelMethods&#96;进行遍历，查找合适条件的&#96;modelMethod&#96;，这里用的&#96;modelMethod&#96;的&#96;checkDependencies&#96;方法</span><br></pre></td></tr></table></figure>
+<p>public boolean checkDependencies(ModelAndViewContainer mavContainer) {<br>  for (String name : this.dependencies) {</p>
+<pre><code>if (!mavContainer.containsAttribute(name)) {
+    return false;
+}</code></pre><p>  }<br>  return true;<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">关于&#96;ModelMethod&#96;的&#96;denpendencies&#96;变量，需要往前追溯一下变量&#96;modelMethod&#96;是怎么创建的</span><br><span class="line"></span><br><span class="line">回到&#96;getModelFactory&#96;方法</span><br></pre></td></tr></table></figure>
+<p>attrMethods.add(createModelAttributeMethod(binderFactory, bean, method));</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">将获取到的带&#96;@ModelAttribute&#96;注解的方法&#96;method&#96;包装为&#96;InvocableHandlerMethod&#96;类型然后添加到&#96;List&lt;InvocableHandlerMethod&gt;&#96;的集合中&#96;attrMethods&#96;中，在创建&#96;ModelFactory&#96;类的实例的时候利用构造函数将其集合类型转化为&#96;List&lt;ModelMethod&gt;&#96;的集合&#96;modelMethods&#96;</span><br></pre></td></tr></table></figure>
+<p>public ModelFactory(List<InvocableHandlerMethod> invocableMethods, WebDataBinderFactory dataBinderFactory,</p>
+<pre><code>SessionAttributesHandler sessionAttributesHandler) {</code></pre><p>  if (invocableMethods != null) {</p>
+<pre><code>for (InvocableHandlerMethod method : invocableMethods) {
+    this.modelMethods.add(new ModelMethod(method));
+}</code></pre><p>  }<br>  this.dataBinderFactory = dataBinderFactory;<br>  this.sessionAttributesHandler = sessionAttributesHandler;<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">在构造函数里，集合&#96;attrMethods&#96;中的&#96;invocableHandlerMethod&#96;类的实例被包装为&#96;ModelMethod&#96;类的实例</span><br><span class="line">&#96;new ModelMethod(method)&#96;</span><br><span class="line"></span><br><span class="line">我们看&#96;ModelMethod&#96;的构造函数是怎么处理&#96;dependencies&#96;变量的</span><br></pre></td></tr></table></figure>
+<p>private ModelMethod(InvocableHandlerMethod handlerMethod) {<br>  this.handlerMethod = handlerMethod;<br>  for (MethodParameter parameter : handlerMethod.getMethodParameters()) {</p>
+<pre><code>if (parameter.hasParameterAnnotation(ModelAttribute.class)) {
+    this.dependencies.add(getNameForParameter(parameter));
+}</code></pre><p>  }<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">&#96;getMethodParameters&#96;获取方法的所有参数，返回一个&#96;MethodParameter&#96;集合，接下来遍历这些参数，如果有带&#96;@ModelAttribute&#96;注解的，获取参数的名字放入类型为&#96;Set&lt;String&gt;&#96;集合的&#96;dependencies&#96;中</span><br><span class="line"></span><br><span class="line">接下来就知道&#96;checkDependencies&#96;方法是做什么的了</span><br></pre></td></tr></table></figure>
+<p>public boolean checkDependencies(ModelAndViewContainer mavContainer) {<br>  for (String name : this.dependencies) {</p>
+<pre><code>if (!mavContainer.containsAttribute(name)) {
+    return false;
+}</code></pre><p>  }<br>  return true;<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">&#96;!mavContainer.containsAttribute(name)&#96;，对方法的所有参数名字遍历</span><br></pre></td></tr></table></figure>
+<p>public boolean containsAttribute(String name) {<br>  return getModel().containsAttribute(name);<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">以上将&#96;@ModelAttribute&#96;方法的集合做了包装，&#96;invocableHandlerMethod -&gt; ModelMethod&#96;，多了个&#96;dependencies&#96;属性，类型为&#96;Set&lt;String&gt;&#96;，用来存放当前方法中带了&#96;@ModelAttribute&#96;注解的**形参**的参数名</span><br><span class="line"></span><br><span class="line">接着遍历包装后的集合，&#96;mavContainer&#96;中的&#96;model&#96;必须拥有&#96;dependencies&#96;中所有的属性名，此时&#96;checkDependencies&#96;方法返回&#96;true&#96;，当&#96;ModelMethod&#96;的&#96;dependencies&#96;为空时，也返回&#96;true&#96;，其他返回&#96;false&#96;</span><br><span class="line"></span><br><span class="line">回到变量&#96;ModelFactory&#96;的&#96;getNextModelMethod(mavContainer).getHandlerMethod()&#96;</span><br></pre></td></tr></table></figure>
+<p>private ModelMethod getNextModelMethod(ModelAndViewContainer mavContainer) {<br>  for (ModelMethod modelMethod : this.modelMethods) {</p>
+<pre><code>if (modelMethod.checkDependencies(mavContainer)) {
+    if (logger.isTraceEnabled()) {
+        logger.trace(&quot;Selected @ModelAttribute method &quot; + modelMethod);
+    }
+    this.modelMethods.remove(modelMethod);
+    return modelMethod;
+}</code></pre><p>  }<br>  ModelMethod modelMethod = this.modelMethods.get(0);<br>  if (logger.isTraceEnabled()) {</p>
+<pre><code>logger.trace(&quot;Selected @ModelAttribute method (not present: &quot; +
+        modelMethod.getUnresolvedDependencies(mavContainer)+ &quot;) &quot; + modelMethod);</code></pre><p>  }<br>  this.modelMethods.remove(modelMethod);<br>  return modelMethod;<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">由于当前Demo中&#96;@ModelAttribute&#96;方法的形参没有带&#96;@ModelAttribute&#96;注解，所以这里&#96;dependencies&#96;为空，返回&#96;true&#96;</span><br><span class="line"></span><br><span class="line">将符合条件的&#96;ModelMethod&#96;返回，然后移除，下面再依次返回不符合条件的&#96;ModelMethod&#96;</span><br><span class="line"></span><br><span class="line">往回&#96;invokeModelAttributeMethods&#96;方法</span><br></pre></td></tr></table></figure>
+<p>private void invokeModelAttributeMethods(NativeWebRequest request, ModelAndViewContainer mavContainer)</p>
+<pre><code>throws Exception {</code></pre><p>  while (!this.modelMethods.isEmpty()) {</p>
+<pre><code>InvocableHandlerMethod attrMethod = getNextModelMethod(mavContainer).getHandlerMethod();
+String modelName = attrMethod.getMethodAnnotation(ModelAttribute.class).value();
+if (mavContainer.containsAttribute(modelName)) {
+    continue;
+}
+
+Object returnValue = attrMethod.invokeForRequest(request, mavContainer);
+
+if (!attrMethod.isVoid()){
+    String returnValueName = getNameForReturnValue(returnValue, attrMethod.getReturnType());
+    if (!mavContainer.containsAttribute(returnValueName)) {
+        mavContainer.addAttribute(returnValueName, returnValue);
+    }
+}</code></pre><p>  }<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">&#96;getNextModelMethod&#96;获取到&#96;ModelMetod&#96;后，将它解包装回&#96;InvocableHandlerMethod&#96;，获取当前方法注解&#96;@ModelAttribute&#96;的&#96;value&#96;值，如果当前&#96;mavContainer&#96;中的&#96;Model&#96;已经有与&#96;value&#96;同名的属性名，则跳过，**在之前的代码，我们知道此时**&#96;Model&#96;**中的属性来自于**&#96;@SessionAttributes&#96;</span><br><span class="line"></span><br><span class="line">然后调用&#96;InvocableHandlerMethod&#96;的&#96;invokeForRequest&#96;方法来完成执行&#96;ModelAttribute&#96;方法，取得返回值</span><br></pre></td></tr></table></figure>
+<p>public Object invokeForRequest(NativeWebRequest request, ModelAndViewContainer mavContainer,</p>
+<pre><code>Object... providedArgs) throws Exception {</code></pre><p>  Object[] args = getMethodArgumentValues(request, mavContainer, providedArgs);<br>  if (logger.isTraceEnabled()) {</p>
+<pre><code>StringBuilder sb = new StringBuilder(&quot;Invoking [&quot;);
+sb.append(getBeanType().getSimpleName()).append(&quot;.&quot;);
+sb.append(getMethod().getName()).append(&quot;] method with arguments &quot;);
+sb.append(Arrays.asList(args));
+logger.trace(sb.toString());</code></pre><p>  }<br>  Object returnValue = doInvoke(args);<br>  if (logger.isTraceEnabled()) {</p>
+<pre><code>logger.trace(&quot;Method [&quot; + getMethod().getName() + &quot;] returned [&quot; + returnValue + &quot;]&quot;);</code></pre><p>  }<br>  return returnValue;<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">获取方法参数数组</span><br></pre></td></tr></table></figure>
+<p>private Object[] getMethodArgumentValues(NativeWebRequest request, ModelAndViewContainer mavContainer,</p>
+<pre><code>Object... providedArgs) throws Exception {</code></pre><p>  MethodParameter[] parameters = getMethodParameters();<br>  Object[] args = new Object[parameters.length];<br>  for (int i = 0; i &lt; parameters.length; i++) {</p>
+<pre><code>MethodParameter parameter = parameters[i];
+parameter.initParameterNameDiscovery(this.parameterNameDiscoverer);
+GenericTypeResolver.resolveParameterType(parameter, getBean().getClass());
+args[i] = resolveProvidedArgument(parameter, providedArgs);
+if (args[i] != null) {
+    continue;
+}
+if (this.argumentResolvers.supportsParameter(parameter)) {
+    try {
+        args[i] = this.argumentResolvers.resolveArgument(
+                parameter, mavContainer, request, this.dataBinderFactory);
+        continue;
+    }
+    catch (Exception ex) {
+        if (logger.isDebugEnabled()) {
+            logger.debug(getArgumentResolutionErrorMessage(&quot;Error resolving argument&quot;, i), ex);
+        }
+        throw ex;
+    }
+}
+if (args[i] == null) {
+    String msg = getArgumentResolutionErrorMessage(&quot;No suitable resolver for argument&quot;, i);
+    throw new IllegalStateException(msg);
+}</code></pre><p>  }<br>  return args;<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">获取了方法参数类型数组&#96;MethodParameter[]&#96;</span><br><span class="line"></span><br><span class="line">遍历该数组，&#96;resolveParameterType&#96;确定每个方法参数的类型，&#96;getBean().getClass()&#96;传入方法所在的类的&#96;Class&#96;</span><br></pre></td></tr></table></figure>
+<p>public static Class<?> resolveParameterType(MethodParameter methodParam, Class<?> clazz) {<br>  Assert.notNull(methodParam, “MethodParameter must not be null”);<br>  Assert.notNull(clazz, “Class must not be null”);<br>  methodParam.setContainingClass(clazz);<br>  methodParam.setParameterType(ResolvableType.forMethodParameter(methodParam).resolve());<br>  return methodParam.getParameterType();<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">设置成员变量&#96;containClass&#96;和&#96;parameterType&#96;，先看&#96;forMethodParameter&#96;方法</span><br></pre></td></tr></table></figure>
+<p>public static ResolvableType forMethodParameter(MethodParameter methodParameter) {<br>  return forMethodParameter(methodParameter, (Type) null);<br>}</p>
+</li>
+</ul>
+<p>public static ResolvableType forMethodParameter(MethodParameter methodParameter, Type targetType) {<br>    Assert.notNull(methodParameter, “MethodParameter must not be null”);<br>    //获取方法参数所在的类的ResolvableType,其它参数TypeProvider和variableResolve为空<br>    ResolvableType owner = forType(methodParameter.getContainingClass()).as(methodParameter.getDeclaringClass());<br>    //typeProvider由methodParameter为参数，提供参数的真正类型<br>    //以owner创建它的内部类new DefaultVariableResolver<br>    return forType(targetType, new MethodParameterTypeProvider(methodParameter), owner.asVariableResolver()).<br>            getNested(methodParameter.getNestingLevel(), methodParameter.typeIndexesPerLevel);<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">&#96;forType&#96;是用来创建&#96;ResolveType&#96;类型的变量</span><br></pre></td></tr></table></figure>
+<p>public static ResolvableType forType(Type type) {<br>    return forType(type, null, null);<br>}</p>
+<p>static ResolvableType forType(Type type, TypeProvider typeProvider, VariableResolver variableResolver) {<br>    if (type == null &amp;&amp; typeProvider != null) {<br>        type = SerializableTypeWrapper.forTypeProvider(typeProvider);<br>    }<br>    if (type == null) {<br>        return NONE;<br>    }</p>
+<pre><code>// Purge empty entries on access since we don&apos;t have a clean-up thread or the like.
+cache.purgeUnreferencedEntries();
+
+// For simple Class references, build the wrapper right away -
+// no expensive resolution necessary, so not worth caching...
+if (type instanceof Class) {
+    return new ResolvableType(type, typeProvider, variableResolver, null);
+}
+
+// Check the cache - we may have a ResolvableType which has been resolved before...
+ResolvableType key = new ResolvableType(type, typeProvider, variableResolver);
+ResolvableType resolvableType = cache.get(key);
+if (resolvableType == null) {
+    resolvableType = new ResolvableType(type, typeProvider, variableResolver, null);
+    cache.put(resolvableType, resolvableType);
+}
+return resolvableType;</code></pre><p>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">这里先用单独一个&#96;type&#96;，这里是&#96;containClass&#96;即方法参数所在的类，创建一个&#96;ResolveType&#96;</span><br></pre></td></tr></table></figure>
+<p>private ResolvableType(<br>        Type type, TypeProvider typeProvider, VariableResolver variableResolver, ResolvableType componentType) {</p>
+<pre><code>this.type = type;
+this.typeProvider = typeProvider;
+this.variableResolver = variableResolver;
+this.componentType = componentType;
+this.resolved = resolveClass();</code></pre><p>}</p>
+<p>private Class<?> resolveClass() {
+    if (this.type instanceof Class || this.type == null) {
+        return (Class<?>) this.type;<br>    }<br>    if (this.type instanceof GenericArrayType) {<br>        Class&lt;?&gt; resolvedComponent = getComponentType().resolve();<br>        return (resolvedComponent != null ? Array.newInstance(resolvedComponent, 0).getClass() : null);<br>    }<br>    return resolveType().resolve();<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">因为传来的&#96;type&#96;是&#96;invocableHandlerMethod&#96;中的&#96;bean&#96;，所以&#96;type&#96;&#x3D;&#x3D;&#96;resolved&#96;</span><br><span class="line"></span><br><span class="line">第二次使用了为&#96;null&#96;的&#96;targetType&#96;，&#96;new MethodParameterTypeProvider(methodParameter)&#96;和&#96;owner.asVariableResolver()&#96;</span><br></pre></td></tr></table></figure>
+<p>public MethodParameterTypeProvider(MethodParameter methodParameter) {<br>    if (methodParameter.getMethod() != null) {<br>        this.methodName = methodParameter.getMethod().getName();<br>        this.parameterTypes = methodParameter.getMethod().getParameterTypes();<br>    }<br>    else {<br>        this.methodName = null;<br>        this.parameterTypes = methodParameter.getConstructor().getParameterTypes();<br>    }<br>    this.declaringClass = methodParameter.getDeclaringClass();<br>    this.parameterIndex = methodParameter.getParameterIndex();<br>    this.methodParameter = methodParameter;<br>}</p>
+<p>VariableResolver asVariableResolver() {<br>    if (this == NONE) {<br>        return null;<br>    }<br>    return new DefaultVariableResolver();<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">创建这个&#96;TypeProvider&#96;通过构造函数传入了&#96;methodParameter&#96;，并且将它的一些属性注入到自己中</span><br><span class="line"></span><br><span class="line">因为传入的&#96;targetType&#96;为&#96;null&#96;</span><br></pre></td></tr></table></figure>
+<p>if (type == null &amp;&amp; typeProvider != null) {<br>    type = SerializableTypeWrapper.forTypeProvider(typeProvider);<br>}</p>
+<p>static Type forTypeProvider(final TypeProvider provider) {<br>    Assert.notNull(provider, “Provider must not be null”);<br>    if (provider.getType() instanceof Serializable || provider.getType() == null) {<br>        return provider.getType();<br>    }<br>    Type cached = cache.get(provider.getType());<br>    if (cached != null) {<br>        return cached;<br>    }<br>    for (Class<?> type : SUPPORTED_SERIALIZABLE_TYPES) {
+        if (type.isAssignableFrom(provider.getType().getClass())) {
+            ClassLoader classLoader = provider.getClass().getClassLoader();
+            Class<?>[] interfaces = new Class&lt;?&gt;[] { type,<br>                SerializableTypeProxy.class, Serializable.class };<br>            InvocationHandler handler = new TypeProxyInvocationHandler(provider);<br>            cached = (Type) Proxy.newProxyInstance(classLoader, interfaces, handler);<br>            cache.put(provider.getType(), cached);<br>            return cached;<br>        }<br>    }<br>    throw new IllegalArgumentException(“Unsupported Type class “ + provider.getType().getClass().getName());<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">&#96;provider.getType()&#96;，变量&#96;provider&#96;为前面传来&#96;MethodParameterTypeProvider&#96;类型的变量，决定了参数的具体类型，它的父类&#96;TypeProvoider&#96;实现了&#96;serializable&#96;接口</span><br></pre></td></tr></table></figure>
+<p>@Override<br>public Type getType() {<br>    return this.methodParameter.getGenericParameterType();<br>}</p>
+<p>public Type getGenericParameterType() {<br>    if (this.genericParameterType == null) {<br>        if (this.parameterIndex &lt; 0) {<br>            this.genericParameterType = (this.method != null ? this.method.getGenericReturnType() : null);<br>        }<br>        else {<br>            this.genericParameterType = (this.method != null ?<br>                this.method.getGenericParameterTypes()[this.parameterIndex] :<br>                this.constructor.getGenericParameterTypes()[this.parameterIndex]);<br>        }<br>    }<br>    return this.genericParameterType;<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">调用了类&#96;TypeProvider&#96;的&#96;getType&#96;，通过之前注入的变量&#96;MethodParameter&#96;</span><br><span class="line"></span><br><span class="line">因为创建类&#96;HandlerMethodParameter&#96;的时候注入了&#96;Method&#96;</span><br></pre></td></tr></table></figure>
+<p>public HandlerMethodParameter(int index) {<br>    super(HandlerMethod.this.bridgedMethod, index);<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">所以这里能获取到参数所在的方法的所有方法参数类型&#96;this.method.getGenericParameterTypes()[this.parameterIndex]&#96;</span><br><span class="line"></span><br><span class="line">然后利用这返回的方法参数的类型用来创建&#96;ResolveType&#96;</span><br></pre></td></tr></table></figure>
+<p>if (type instanceof Class) {<br>    return new ResolvableType(type, typeProvider, variableResolver, null);<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">返回的参数类型的&#96;type&#96;，又用来和之前的&#96;TypeProvider&#96;和&#96;VariableResolve&#96;创建新&#96;ResolveType&#96;</span><br><span class="line"></span><br><span class="line">再回到之前的方法</span><br></pre></td></tr></table></figure>
+<p>public static Class<?> resolveParameterType(MethodParameter methodParam, Class<?> clazz) {<br>    Assert.notNull(methodParam, “MethodParameter must not be null”);<br>    Assert.notNull(clazz, “Class must not be null”);<br>    methodParam.setContainingClass(clazz);<br>    methodParam.setParameterType(ResolvableType.forMethodParameter(methodParam).resolve());<br>    return methodParam.getParameterType();<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">这里再次调用创建好的&#96;ResolveType&#96;的&#96;resolve&#96;方法</span><br></pre></td></tr></table></figure>
+<p>public Class&lt;?&gt; resolve() {<br>    return resolve(null);<br>}</p>
+<p>public Class<?> resolve(Class<?> fallback) {<br>    return (this.resolved != null ? this.resolved : fallback);<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">这里&#96;ResolveType&#96;的成员变量&#96;resolve&#96;和&#96;type&#96;指向的都是方法的参数类型</span><br><span class="line"></span><br><span class="line">所以这里通过&#96;ResolvableType.forMethodParameter(methodParam).resolve()&#96;来找到方法参数的具体类型，然后设置到&#96;methodParam&#96;的&#96;ParameterType&#96;中</span><br><span class="line"></span><br><span class="line">通过这样确定了方法参数的具体类型</span><br><span class="line"></span><br><span class="line">回到&#96;InvocalbleHandlerMethod&#96;</span><br></pre></td></tr></table></figure>
+<p>private Object[] getMethodArgumentValues(NativeWebRequest request, ModelAndViewContainer mavContainer,<br>        Object… providedArgs) throws Exception {</p>
+<pre><code>MethodParameter[] parameters = getMethodParameters();
+Object[] args = new Object[parameters.length];
+for (int i = 0; i &lt; parameters.length; i++) {
+    MethodParameter parameter = parameters[i];
+    parameter.initParameterNameDiscovery(this.parameterNameDiscoverer);
+    GenericTypeResolver.resolveParameterType(parameter, getBean().getClass());
+    args[i] = resolveProvidedArgument(parameter, providedArgs);
+    if (args[i] != null) {
+        continue;
+    }
+    if (this.argumentResolvers.supportsParameter(parameter)) {
+        try {
+            args[i] = this.argumentResolvers.resolveArgument(
+                    parameter, mavContainer, request, this.dataBinderFactory);
+            continue;
+        }
+        catch (Exception ex) {
+            if (logger.isDebugEnabled()) {
+                logger.debug(getArgumentResolutionErrorMessage(&quot;Error resolving argument&quot;, i), ex);
+            }
+            throw ex;
+        }
+    }
+    if (args[i] == null) {
+        String msg = getArgumentResolutionErrorMessage(&quot;No suitable resolver for argument&quot;, i);
+        throw new IllegalStateException(msg);
+    }
+}
+return args;</code></pre><p>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">确定方法参数的具体类型之后，接着调用&#96;InvocableHandlerMethod&#96;自身的&#96;resolveProvidedArgument&#96;方法处理对方法参数进行处理</span><br></pre></td></tr></table></figure>
+<p>private Object resolveProvidedArgument(MethodParameter parameter, Object… providedArgs) {<br>    if (providedArgs == null) {<br>        return null;<br>    }<br>    for (Object providedArg : providedArgs) {<br>        if (parameter.getParameterType().isInstance(providedArg)) {<br>            return providedArg;<br>        }<br>    }<br>    return null;<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">Demo中源码传入得入参&#96;providedArgs&#96;为&#96;[]&#96;，所以这里返回空</span><br><span class="line"></span><br><span class="line">接着判断&#96;this.argumentResolvers.supportsParameter(parameter)&#96;</span><br></pre></td></tr></table></figure>
+<p>@Override<br>public boolean supportsParameter(MethodParameter parameter) {<br>    return getArgumentResolver(parameter) != null;<br>}</p>
+<p>private HandlerMethodArgumentResolver getArgumentResolver(MethodParameter parameter) {<br>    HandlerMethodArgumentResolver result = this.argumentResolverCache.get(parameter);<br>    if (result == null) {<br>        for (HandlerMethodArgumentResolver methodArgumentResolver : this.argumentResolvers) {<br>            if (logger.isTraceEnabled()) {<br>                logger.trace(“Testing if argument resolver [“ + methodArgumentResolver + “] supports [“ +<br>                        parameter.getGenericParameterType() + “]”);<br>            }<br>            if (methodArgumentResolver.supportsParameter(parameter)) {<br>                result = methodArgumentResolver;<br>                this.argumentResolverCache.put(parameter, result);<br>                break;<br>            }<br>        }<br>    }<br>    return result;<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">&#96;argumentResolvers&#96;属于类&#96;HandlerMethodArgumentResolverComposite&#96;，实现了&#96;HandlerMethodArgumentResolver&#96;接口，用来解析方法参数</span><br><span class="line"></span><br><span class="line">遍历成员变量&#96;argumentResolvers&#96;，查找一个支持当前参数类型得参数解析器，放入缓存</span><br><span class="line"></span><br><span class="line">当前Demo正在执行&#96;@ModelAttribute&#96;方法</span><br></pre></td></tr></table></figure>
+<p>@ModelAttribute(“attr”)<br>public void mda(Map map) {<br>    Person person = new Person(“li”, 12);<br>    map.put(“person”, new Person(“zh”, 14));<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">这里适用于这个的解析器为&#96;MapMethodProcessor&#96;</span><br><span class="line"></span><br><span class="line">有支持当前参数的参数解析器，所以返回&#96;true&#96;</span><br><span class="line"></span><br><span class="line">之后对方法参数变量&#96;MethodParameter&#96;进行处理</span><br></pre></td></tr></table></figure>
+<p>args[i] = this.argumentResolvers.resolveArgument(<br>        parameter, mavContainer, request, this.dataBinderFactory);</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">接下来</span><br></pre></td></tr></table></figure>
+<p>@Override<br>public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,<br>        NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {</p>
+<pre><code>HandlerMethodArgumentResolver resolver = getArgumentResolver(parameter);
+Assert.notNull(resolver, &quot;Unknown parameter type [&quot; + parameter.getParameterType().getName() + &quot;]&quot;);
+return resolver.resolveArgument(parameter, mavContainer, webRequest, binderFactory);</code></pre><p>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">&#96;getArgumentResover(parameter)&#96;返回&#96;MapMethodProcessor&#96;</span><br><span class="line"></span><br><span class="line">查看&#96;MapMethodProcessor&#96;的&#96;resolveArgument&#96;方法</span><br></pre></td></tr></table></figure>
+<p>@Override<br>public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,<br>        NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {</p>
+<pre><code>return mavContainer.getModel();</code></pre><p>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">返回容器中的默认&#96;BindingAwareModelMap&#96;</span><br><span class="line"></span><br><span class="line">也就是说，此时&#96;@ModelAttribute&#96;方法中的&#96;Map&#96;类型的参数指向了&#96;mavContainer&#96;中的&#96;Model&#96;</span><br><span class="line"></span><br><span class="line">方法在最后返回方法参数&#96;args[]&#96;数组</span><br><span class="line"></span><br><span class="line">回到&#96;InvocableHandlerMethod&#96;的&#96;invokeForRequest&#96;方法</span><br></pre></td></tr></table></figure>
+<p>public Object invokeForRequest(NativeWebRequest request, ModelAndViewContainer mavContainer,<br>        Object… providedArgs) throws Exception {</p>
+<pre><code>Object[] args = getMethodArgumentValues(request, mavContainer, providedArgs);
+if (logger.isTraceEnabled()) {
+    StringBuilder sb = new StringBuilder(&quot;Invoking [&quot;);
+    sb.append(getBeanType().getSimpleName()).append(&quot;.&quot;);
+    sb.append(getMethod().getName()).append(&quot;] method with arguments &quot;);
+    sb.append(Arrays.asList(args));
+    logger.trace(sb.toString());
+}
+Object returnValue = doInvoke(args);
+if (logger.isTraceEnabled()) {
+    logger.trace(&quot;Method [&quot; + getMethod().getName() + &quot;] returned [&quot; + returnValue + &quot;]&quot;);
+}
+return returnValue;</code></pre><p>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">这里接收返回的参数之后，调用&#96;doInvoke(args)&#96;真正对&#96;@ModelAttribute&#96;方法执行</span><br></pre></td></tr></table></figure>
+<p>protected Object doInvoke(Object… args) throws Exception {<br>    ReflectionUtils.makeAccessible(getBridgedMethod());<br>    try {<br>        return getBridgedMethod().invoke(getBean(), args);<br>    }<br>    catch (IllegalArgumentException ex) {<br>        assertTargetBean(getBridgedMethod(), getBean(), args);<br>        throw new IllegalStateException(getInvocationErrorMessage(ex.getMessage(), args), ex);<br>    }<br>    catch (InvocationTargetException ex) {<br>        // Unwrap for HandlerExceptionResolvers …<br>        Throwable targetException = ex.getTargetException();<br>        if (targetException instanceof RuntimeException) {<br>            throw (RuntimeException) targetException;<br>        }<br>        else if (targetException instanceof Error) {<br>            throw (Error) targetException;<br>        }<br>        else if (targetException instanceof Exception) {<br>            throw (Exception) targetException;<br>        }<br>        else {<br>            String msg = getInvocationErrorMessage(“Failed to invoke controller method”, args);<br>            throw new IllegalStateException(msg, targetException);<br>        }<br>    }<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">这里使用了反射的方式来执行方法，然后返回返回值，所以我们现在也知道了操作&#96;@ModelAttribute&#96;方法中的&#96;Map&#96;入参，就等于是在操作&#96;mavContainer&#96;的&#96;Model&#96;</span><br><span class="line"></span><br><span class="line">回到&#96;ModelFactory&#96;的&#96;invokeModelAttributeMethods&#96;</span><br></pre></td></tr></table></figure>
+<p>private void invokeModelAttributeMethods(NativeWebRequest request, ModelAndViewContainer mavContainer)<br>        throws Exception {</p>
+<pre><code>while (!this.modelMethods.isEmpty()) {
+    InvocableHandlerMethod attrMethod = getNextModelMethod(mavContainer).getHandlerMethod();
+    String modelName = attrMethod.getMethodAnnotation(ModelAttribute.class).value();
+    if (mavContainer.containsAttribute(modelName)) {
+        continue;
+    }
+
+    Object returnValue = attrMethod.invokeForRequest(request, mavContainer);
+
+    if (!attrMethod.isVoid()){
+        String returnValueName = getNameForReturnValue(returnValue, attrMethod.getReturnType());
+        if (!mavContainer.containsAttribute(returnValueName)) {
+            mavContainer.addAttribute(returnValueName, returnValue);
+        }
+    }
+}</code></pre><p>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">如果&#96;@ModelAttribute&#96;方法不是&#96;void&#96;类型</span><br><span class="line"></span><br><span class="line">传入参数为&#96;@ModelAttribute&#96;方法的返回值和&#96;attrMethod.getReturnType()&#96;</span><br></pre></td></tr></table></figure>
+<p>public MethodParameter getReturnType() {<br>    return new HandlerMethodParameter(-1);<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">接下来获取返回值名</span><br></pre></td></tr></table></figure>
+<p>public static String getNameForReturnValue(Object returnValue, MethodParameter returnType) {<br>    ModelAttribute annotation = returnType.getMethodAnnotation(ModelAttribute.class);<br>    if (annotation != null &amp;&amp; StringUtils.hasText(annotation.value())) {<br>        return annotation.value();<br>    }<br>    else {<br>        Method method = returnType.getMethod();<br>        Class&lt;?&gt; resolvedType = GenericTypeResolver.resolveReturnType(method, returnType.getContainingClass());<br>        return Conventions.getVariableNameForReturnType(method, resolvedType, returnValue);<br>    }<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">第一行获取方法参数所在方法是否有&#96;@ModelAttribute&#96;注解</span><br></pre></td></tr></table></figure>
+<p>public <T extends Annotation> T getMethodAnnotation(Class<T> annotationType) {<br>    return getAnnotatedElement().getAnnotation(annotationType);<br>}</p>
+<p>public AnnotatedElement getAnnotatedElement() {<br>    // NOTE: no ternary expression to retain JDK &lt;8 compatibility even when using<br>    // the JDK 8 compiler (potentially selecting java.lang.reflect.Executable<br>    // as common type, with that new base class not available on older JDKs)<br>    if (this.method != null) {<br>        return this.method;<br>    }<br>    else {<br>        return this.constructor;<br>    }<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">如果存在注解，返回注解的&#96;value&#96;属性</span><br><span class="line"></span><br><span class="line">然后检测&#96;mavContainer&#96;中的&#96;Model&#96;是否已经包含该&#96;value&#96;属性的值为&#96;key&#96;的键值对，如果不包含，则将&#96;value&#96;和返回值添加到&#96;Model&#96;中</span><br><span class="line"></span><br><span class="line">回到&#96;ModelFactory&#96;的&#96;initModel&#96;方法</span><br></pre></td></tr></table></figure>
+<p>public void initModel(NativeWebRequest request, ModelAndViewContainer mavContainer, HandlerMethod handlerMethod)<br>        throws Exception {</p>
+<pre><code>Map&lt;String, ?&gt; sessionAttributes = this.sessionAttributesHandler.retrieveAttributes(request);
+mavContainer.mergeAttributes(sessionAttributes);
+
+invokeModelAttributeMethods(request, mavContainer);
+
+for (String name : findSessionAttributeArguments(handlerMethod)) {
+    if (!mavContainer.containsAttribute(name)) {
+        Object value = this.sessionAttributesHandler.retrieveAttribute(request, name);
+        if (value == null) {
+            throw new HttpSessionRequiredException(&quot;Expected session attribute &apos;&quot; + name + &quot;&apos;&quot;);
+        }
+        mavContainer.addAttribute(name, value);
+    }
+}</code></pre><p>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">上面执行完&#96;invokeModelAttributeMethods(request, mavContainer)&#96;之后</span><br><span class="line"></span><br><span class="line">&#96;findSessionAttributeArguments(handlerMethod)&#96;返回的结果是响应的&#96;Handler&#96;方法中参数带&#96;@ModelAttribute&#96;注解的&#96;value&#96;值和&#96;@SessionAttributes&#96;注解的&#96;value&#96;相同时的&#96;value&#96;，或者带&#96;@ModelAttribute&#96;注解的方法参数属于&#96;@SessionAttributes&#96;注解的&#96;Types&#96;范围内的&#96;value&#96;</span><br><span class="line"></span><br><span class="line">然后将&#96;value&#96;作为&#96;key&#96;取出因为&#96;Session&#96;中相应属性，添加到&#96;mavContainer&#96;的&#96;Model&#96;中</span><br><span class="line"></span><br><span class="line">取出的值为null时，抛出异常，也就是说当&#96;@SessionAttributes&#96;和&#96;Handler&#96;方法中参数的&#96;@ModelAttribute&#96;对应时，例如&#96;value&#96;相同，在执行完ModelAttribute方法之后，&#96;mavContainer&#96;中必须有值能传给这个&#96;@ModelAttribute&#96;方法参数</span><br><span class="line"></span><br><span class="line">以上就是&#96;modelFactory.initModel(webRequest, mavContainer, requestMappingMethod)&#96;完成的事</span><br><span class="line"></span><br><span class="line">接下来是对&#96;Controller&#96;中响应网页请求的方法的执行</span><br><span class="line"></span><br><span class="line">该方法</span><br></pre></td></tr></table></figure>
+<p>@RequestMapping(“/Person”)<br>public String testParam(Person person,HttpSession session) {<br>    System.out.println(person.getName()+” “+person.getAge());<br>    session.setAttribute(“person”, person);<br>    return “person”;<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">依旧回到&#96;RequestMappingHandlerAdapter&#96;</span><br></pre></td></tr></table></figure>
+<p>requestMappingMethod.invokeAndHandle(webRequest, mavContainer)</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">其中&#96;requestMappingMethod&#96;是由&#96;InvocableHandlerMethod&#96;包装成的&#96;ServletInvocableHandlerMethod&#96;，它指向响应了客户端请求的方法</span><br></pre></td></tr></table></figure>
+<p>ServletInvocableHandlerMethod requestMappingMethod = createRequestMappingMethod(handlerMethod, binderFactory)</p>
+<p>private ServletInvocableHandlerMethod createRequestMappingMethod(<br>        HandlerMethod handlerMethod, WebDataBinderFactory binderFactory) {</p>
+<pre><code>ServletInvocableHandlerMethod requestMethod;
+requestMethod = new ServletInvocableHandlerMethod(handlerMethod);
+requestMethod.setHandlerMethodArgumentResolvers(this.argumentResolvers);
+requestMethod.setHandlerMethodReturnValueHandlers(this.returnValueHandlers);
+requestMethod.setDataBinderFactory(binderFactory);
+requestMethod.setParameterNameDiscoverer(this.parameterNameDiscoverer);
+return requestMethod;</code></pre><p>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">进入&#96;invokeAndHandle(webRequest, mavContainer)&#96;，调用响应方法</span><br></pre></td></tr></table></figure>
+<p>public void invokeAndHandle(ServletWebRequest webRequest,<br>        ModelAndViewContainer mavContainer, Object… providedArgs) throws Exception {</p>
+<pre><code>Object returnValue = invokeForRequest(webRequest, mavContainer, providedArgs);
+setResponseStatus(webRequest);
+
+if (returnValue == null) {
+    if (isRequestNotModified(webRequest) || hasResponseStatus() || mavContainer.isRequestHandled()) {
+        mavContainer.setRequestHandled(true);
+        return;
+    }
+}
+else if (StringUtils.hasText(this.responseReason)) {
+    mavContainer.setRequestHandled(true);
+    return;
+}
+
+mavContainer.setRequestHandled(false);
+try {
+    this.returnValueHandlers.handleReturnValue(
+            returnValue, getReturnValueType(returnValue), mavContainer, webRequest);
+}
+catch (Exception ex) {
+    if (logger.isTraceEnabled()) {
+        logger.trace(getReturnValueHandlingErrorMessage(&quot;Error handling return value&quot;, returnValue), ex);
+    }
+    throw ex;
+}</code></pre><p>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">&#96;invokeForRequest&#96;方法调用响应方法获取返回值</span><br></pre></td></tr></table></figure>
+<p>public Object invokeForRequest(NativeWebRequest request, ModelAndViewContainer mavContainer,<br>        Object… providedArgs) throws Exception {</p>
+<pre><code>Object[] args = getMethodArgumentValues(request, mavContainer, providedArgs);
+if (logger.isTraceEnabled()) {
+    StringBuilder sb = new StringBuilder(&quot;Invoking [&quot;);
+    sb.append(getBeanType().getSimpleName()).append(&quot;.&quot;);
+    sb.append(getMethod().getName()).append(&quot;] method with arguments &quot;);
+    sb.append(Arrays.asList(args));
+    logger.trace(sb.toString());
+}
+Object returnValue = doInvoke(args);
+if (logger.isTraceEnabled()) {
+    logger.trace(&quot;Method [&quot; + getMethod().getName() + &quot;] returned [&quot; + returnValue + &quot;]&quot;);
+}
+return returnValue;</code></pre><p>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">接下来的步骤与执行&#96;@ModelAttribute&#96;方法差不多，通过&#96;GenericTypeResolver&#96;确认了&#96;MethodParameter&#96;中的&#96;ParameterType&#96;</span><br><span class="line"></span><br><span class="line">接着获取适用&#96;HandlerMethodArgumentResolver&#96;时，这里使用的是&#96;ServletModelAttributeMethodProcessor&#96;</span><br></pre></td></tr></table></figure>
+<p>public boolean supportsParameter(MethodParameter parameter) {<br>    if (parameter.hasParameterAnnotation(ModelAttribute.class)) {<br>        return true;<br>    }<br>    else if (this.annotationNotRequired) {<br>        return !BeanUtils.isSimpleProperty(parameter.getParameterType());<br>    }<br>    else {<br>        return false;<br>    }<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">&#96;BeanUtils.isSimpleProperty(parameter.getParameterType()&#96;方法确认了&#96;MethodParameter&#96;不是简单属性，英文解释如下</span><br><span class="line"></span><br><span class="line">Check if the given type represents a &quot;simple&quot; value type:a primitive, a String or other CharSequence, a Number, a Date,a URI, a URL, a Locale or a Class.</span><br><span class="line"></span><br><span class="line">然后使用&#96;argumentResolver&#96;处理&#96;MethodParameter&#96;</span><br></pre></td></tr></table></figure>
+<p>public final Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,<br>        NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {</p>
+<pre><code>String name = ModelFactory.getNameForParameter(parameter);
+Object attribute = (mavContainer.containsAttribute(name) ?
+        mavContainer.getModel().get(name) : createAttribute(name, parameter, binderFactory, webRequest));
+
+WebDataBinder binder = binderFactory.createBinder(webRequest, attribute, name);
+if (binder.getTarget() != null) {
+    bindRequestParameters(binder, webRequest);
+    validateIfApplicable(binder, parameter);
+    if (binder.getBindingResult().hasErrors() &amp;&amp; isBindExceptionRequired(binder, parameter)) {
+        throw new BindException(binder.getBindingResult());
+    }
+}
+
+// Add resolved attribute and BindingResult at the end of the model
+Map&lt;String, Object&gt; bindingResultModel = binder.getBindingResult().getModel();
+mavContainer.removeAttributes(bindingResultModel);
+mavContainer.addAllAttributes(bindingResultModel);
+
+return binder.convertIfNecessary(binder.getTarget(), parameter.getParameterType(), parameter);</code></pre><p>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">&#96;getNameForParameter(parameter)&#96;决定了变量的名字，如果变量被&#96;@ModelAttribute&#96;注解修饰，则&#96;name&#96;取此&#96;value&#96;属性，当变量为&#96;Array&#96;或者&#96;Collection&#96;或者普通&#96;Class&#96;，则取成员变量或者全限定名最后一个.之后的字符作为&#96;name&#96;</span><br><span class="line"></span><br><span class="line">接着如果&#96;mavContainer&#96;中存在&#96;key&#96;为&#96;name&#96;，则取出对应的值，否则&#96;createAttribute&#96;方法获取&#96;MethodParameter&#96;的&#96;Class&#96;来创建新对象</span><br><span class="line"></span><br><span class="line">接着&#96;binderFactory.createBinder&#96;创建一个数据绑定器</span><br></pre></td></tr></table></figure>
+<p>@Override<br>public final WebDataBinder createBinder(NativeWebRequest webRequest, Object target, String objectName)<br>        throws Exception {<br>    WebDataBinder dataBinder = createBinderInstance(target, objectName, webRequest);<br>    if (this.initializer != null) {<br>        this.initializer.initBinder(dataBinder, webRequest);<br>    }<br>    initBinder(dataBinder, webRequest);<br>    return dataBinder;<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">创建&#96;binderFactory&#96;的时候，&#96;RequestMappingHandlerAdapter&#96;给它注入了一个&#96;ConfigurableWebBindinginitializer&#96;类的变量，然后用它来初步初始化&#96;dataBinder&#96;，这个&#96;dataBinder&#96;的类型为&#96;ExtendedServletRequestDataBinder&#96;</span><br></pre></td></tr></table></figure>
+<p>@Override<br>public void initBinder(WebDataBinder binder, WebRequest request) {<br>    binder.setAutoGrowNestedPaths(this.autoGrowNestedPaths);<br>    if (this.directFieldAccess) {<br>        binder.initDirectFieldAccess();<br>    }<br>    if (this.messageCodesResolver != null) {<br>        binder.setMessageCodesResolver(this.messageCodesResolver);<br>    }<br>    if (this.bindingErrorProcessor != null) {<br>        binder.setBindingErrorProcessor(this.bindingErrorProcessor);<br>    }<br>    if (this.validator != null &amp;&amp; binder.getTarget() != null &amp;&amp;<br>            this.validator.supports(binder.getTarget().getClass())) {<br>        binder.setValidator(this.validator);<br>    }<br>    if (this.conversionService != null) {<br>        binder.setConversionService(this.conversionService);<br>    }<br>    if (this.propertyEditorRegistrars != null) {<br>        for (PropertyEditorRegistrar propertyEditorRegistrar : this.propertyEditorRegistrars) {<br>            propertyEditorRegistrar.registerCustomEditors(binder);<br>        }<br>    }<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">&#96;initializer&#96;中有个重要变量&#96;conversionService&#96;，属于接口&#96;ConversionService&#96;，它指向了一个&#96;DefaultFormattingConversionService&#96;类的实例，该实例也是由&#96;SpringMvc&#96;注入，存放&#96;SpringMvc&#96;自带的类型转换器converters</span><br><span class="line"></span><br><span class="line">接着由&#96;binderFactory&#96;的&#96;init&#96;方法初始化&#96;dataBinder&#96;</span><br></pre></td></tr></table></figure>
+<p>@Override<br>public void initBinder(WebDataBinder binder, NativeWebRequest request) throws Exception {<br>    for (InvocableHandlerMethod binderMethod : this.binderMethods) {<br>        if (isBinderMethodApplicable(binderMethod, binder)) {<br>            Object returnValue = binderMethod.invokeForRequest(request, null, binder);<br>            if (returnValue != null) {<br>                throw new IllegalStateException(“@InitBinder methods should return void: “ + binderMethod);<br>            }<br>        }<br>    }<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">这里真正调用我们使用&#96;@InitBinder&#96;注解的方法，同样的&#96;invokeForRequest&#96;方法，这里传入的&#96;binder&#96;，会作为调用该方法的参数</span><br></pre></td></tr></table></figure>
+<p>@InitBinder<br>public void initBinder(WebDataBinder binder) {<br>    SimpleDateFormat sdf = new SimpleDateFormat(“yyyy-MM-dd”);<br>    sdf.setLenient(false);<br>    binder.registerCustomEditor(Date.class, new CustomDateEditor(sdf, true));<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">所以我们&#96;@InitBinder&#96;的方法，其实就是在初始化&#96;SpringMvc&#96;为每个请求创建的&#96;dataBinder&#96;</span><br><span class="line"></span><br><span class="line">我们这里使用了&#96;registerCustomEditor&#96;注册了它&#96;SpringMvc&#96;中已经定义好的&#96;PropertyEditor&#96;，用来将字符串转化为&#96;java.util.Date&#96;，它继承了&#96;PropertyEditorSupport&#96;，如果要使用我们自定义的&#96;PropertyEditor&#96;，也是如此，覆写&#96;getAsText&#96;和&#96;setAsText&#96;方法，然后注册</span><br></pre></td></tr></table></figure>
+<p>@Override<br>public String getAsText() {<br>    Date value = (Date) getValue();<br>    return (value != null ? this.dateFormat.format(value) : “”);<br>}</p>
+<p>@Override<br>public void setAsText(String text) throws IllegalArgumentException {<br>    if (this.allowEmpty &amp;&amp; !StringUtils.hasText(text)) {<br>        // Treat empty String as null value.<br>        setValue(null);<br>    }<br>    //exactDateLength可以指定需要转化成Date类型的字符串长度<br>    else if (text != null &amp;&amp; this.exactDateLength &gt;= 0 &amp;&amp; text.length() != this.exactDateLength) {<br>        throw new IllegalArgumentException(<br>                “Could not parse date: it is not exactly” + this.exactDateLength + “characters long”);<br>    }<br>    else {<br>        try {<br>            //使用我们注入的DateFormat将字符串转化成Date<br>            setValue(this.dateFormat.parse(text));<br>        }<br>        catch (ParseException ex) {<br>            throw new IllegalArgumentException(“Could not parse date: “ + ex.getMessage(), ex);<br>        }<br>    }<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">我们看是怎么用&#96;dataBinder&#96;注册的</span><br></pre></td></tr></table></figure>
+<p>@Override<br>public void registerCustomEditor(Class&lt;?&gt; requiredType, PropertyEditor propertyEditor) {<br>    getPropertyEditorRegistry().registerCustomEditor(requiredType, propertyEditor);<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">获取&#96;PropertyEditorRegistry&#96;</span><br></pre></td></tr></table></figure>
+<p>protected PropertyEditorRegistry getPropertyEditorRegistry() {<br>    if (getTarget() != null) {<br>        return getInternalBindingResult().getPropertyAccessor();<br>    }<br>    else {<br>        return getSimpleTypeConverter();<br>    }<br>}</p>
+<p>protected AbstractPropertyBindingResult getInternalBindingResult() {<br>    if (this.bindingResult == null) {<br>        initBeanPropertyAccess();<br>    }<br>    return this.bindingResult;<br>}</p>
+<p>public void initBeanPropertyAccess() {<br>    Assert.state(this.bindingResult == null,<br>            “DataBinder is already initialized - call initBeanPropertyAccess before other configuration methods”);<br>    this.bindingResult = new BeanPropertyBindingResult(<br>            getTarget(), getObjectName(), isAutoGrowNestedPaths(), getAutoGrowCollectionLimit());<br>    if (this.conversionService != null) {<br>        this.bindingResult.initConversion(this.conversionService);<br>    }<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">这里创建了一个&#96;BeanPropertyBindingResult&#96;类的实例，将&#96;dataBinder&#96;中的&#96;target&#96;和&#96;objectName&#96;传入，让&#96;dataBinder&#96;的&#96;bindingResult&#96;指向它，然后返回这个对象</span><br><span class="line"></span><br><span class="line">然后调用这个实例的&#96;getPropertyAccessor&#96;方法，获取属性存取器</span><br></pre></td></tr></table></figure>
+<p>@Override<br>public final ConfigurablePropertyAccessor getPropertyAccessor() {<br>    if (this.beanWrapper == null) {<br>        this.beanWrapper = createBeanWrapper();<br>        this.beanWrapper.setExtractOldValueForEditor(true);<br>        this.beanWrapper.setAutoGrowNestedPaths(this.autoGrowNestedPaths);<br>        this.beanWrapper.setAutoGrowCollectionLimit(this.autoGrowCollectionLimit);<br>    }<br>    return this.beanWrapper;<br>}</p>
+<p>protected BeanWrapper createBeanWrapper() {<br>    Assert.state(this.target != null, “Cannot access properties on null bean instance ‘“ + getObjectName() + “‘!”);<br>    return PropertyAccessorFactory.forBeanPropertyAccess(this.target);<br>}</p>
+<p>public static BeanWrapper forBeanPropertyAccess(Object target) {<br>    return new BeanWrapperImpl(target);<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">最后返回的是一个&#96;BeanWrapperImpl&#96;类的实例，并且让&#96;BeanPropertyBindingResult&#96;的&#96;beanWrapper&#96;指向它，这个类继承了&#96;AbstractPropertyAccessor&#96;和&#96;PropertyEditorRegistrySupport&#96;</span><br><span class="line"></span><br><span class="line">然后开始注册&#96;PropertyEditor&#96;，也就是执行我们自定义的&#96;@InitBinder&#96;注解的方法</span><br></pre></td></tr></table></figure>
+<p>@Override<br>public void registerCustomEditor(Class&lt;?&gt; requiredType, PropertyEditor propertyEditor) {<br>    registerCustomEditor(requiredType, null, propertyEditor);<br>}</p>
+<p>@Override<br>public void registerCustomEditor(Class<?> requiredType, String propertyPath, PropertyEditor propertyEditor) {
+    if (requiredType == null && propertyPath == null) {
+        throw new IllegalArgumentException("Either requiredType or propertyPath is required");
+    }
+    if (propertyPath != null) {
+        if (this.customEditorsForPath == null) {
+            this.customEditorsForPath = new LinkedHashMap<String, CustomEditorHolder>(16);
+        }
+        this.customEditorsForPath.put(propertyPath, new CustomEditorHolder(propertyEditor, requiredType));
+    }
+    else {
+        if (this.customEditors == null) {
+            this.customEditors = new LinkedHashMap<Class<?>, PropertyEditor&gt;(16);<br>        }<br>        this.customEditors.put(requiredType, propertyEditor);<br>        this.customEditorCache = null;<br>    }<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">然后将&#96;PropertyEditor&#96;放入&#96;customEditors&#96;，此时，&#96;@InitBinder&#96;注解的方法执行完毕</span><br></pre></td></tr></table></figure>
+<p>@Override<br>public void initBinder(WebDataBinder binder, NativeWebRequest request) throws Exception {<br>    for (InvocableHandlerMethod binderMethod : this.binderMethods) {<br>        if (isBinderMethodApplicable(binderMethod, binder)) {<br>            Object returnValue = binderMethod.invokeForRequest(request, null, binder);<br>            if (returnValue != null) {<br>                throw new IllegalStateException(“@InitBinder methods should return void: “ + binderMethod);<br>            }<br>        }<br>    }<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">这里可以看到&#96;@InitBinder&#96;注解的方法不能有返回值</span><br></pre></td></tr></table></figure>
+<p>@Override<br>public final WebDataBinder createBinder(NativeWebRequest webRequest, Object target, String objectName)<br>        throws Exception {<br>    WebDataBinder dataBinder = createBinderInstance(target, objectName, webRequest);<br>    if (this.initializer != null) {<br>        this.initializer.initBinder(dataBinder, webRequest);<br>    }<br>    initBinder(dataBinder, webRequest);<br>    return dataBinder;<br>}</p>
+<p>public final Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,<br>        NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {</p>
+<pre><code>String name = ModelFactory.getNameForParameter(parameter);
+Object attribute = (mavContainer.containsAttribute(name) ?
+        mavContainer.getModel().get(name) : createAttribute(name, parameter, binderFactory, webRequest));
+
+WebDataBinder binder = binderFactory.createBinder(webRequest, attribute, name);
+if (binder.getTarget() != null) {
+    bindRequestParameters(binder, webRequest);
+    validateIfApplicable(binder, parameter);
+    if (binder.getBindingResult().hasErrors() &amp;&amp; isBindExceptionRequired(binder, parameter)) {
+        throw new BindException(binder.getBindingResult());
+    }
+}</code></pre><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">初始化完&#96;dataBinder&#96;之后，开始绑定请求数据&#96;bindRequestParameters(binder, webRequest)&#96;</span><br></pre></td></tr></table></figure>
+<pre><code>protected void bindRequestParameters(WebDataBinder binder, NativeWebRequest request) {
+    ServletRequest servletRequest = request.getNativeRequest(ServletRequest.class);
+    ServletRequestDataBinder servletBinder = (ServletRequestDataBinder) binder;
+    servletBinder.bind(servletRequest);
+}</code></pre><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">&#96;RequestFacade&#96;在前面被封装成&#96;ServletWebRequest&#96;，这里又解包装</span><br><span class="line">然后将&#96;binder&#96;从&#96;ExtendedServletRequestDataBinder&#96;向上转型为&#96;ServletRequestDataBinder&#96;</span><br></pre></td></tr></table></figure>
+<p>public void bind(ServletRequest request) {<br>    MutablePropertyValues mpvs = new ServletRequestParameterPropertyValues(request);<br>    MultipartRequest multipartRequest = WebUtils.getNativeRequest(request, MultipartRequest.class);<br>    if (multipartRequest != null) {<br>        bindMultipart(multipartRequest.getMultiFileMap(), mpvs);<br>    }<br>    addBindValues(mpvs, request);<br>    doBind(mpvs);<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">看mpvs是什么</span><br></pre></td></tr></table></figure>
+<p>public ServletRequestParameterPropertyValues(ServletRequest request) {<br>    this(request, null, null);<br>}</p>
+<p>public ServletRequestParameterPropertyValues(ServletRequest request, String prefix, String prefixSeparator) {<br>    super(WebUtils.getParametersStartingWith(<br>            request, (prefix != null ? prefix + prefixSeparator : null)));<br>}</p>
+<p>public static Map&lt;String, Object&gt; getParametersStartingWith(ServletRequest request, String prefix) {<br>    Assert.notNull(request, “Request must not be null”);<br>    Enumeration<String> paramNames = request.getParameterNames();<br>    Map&lt;String, Object&gt; params = new TreeMap&lt;String, Object&gt;();<br>    if (prefix == null) {<br>        prefix = “”;<br>    }<br>    while (paramNames != null &amp;&amp; paramNames.hasMoreElements()) {<br>        String paramName = paramNames.nextElement();<br>        if (“”.equals(prefix) || paramName.startsWith(prefix)) {<br>            String unprefixed = paramName.substring(prefix.length());<br>            String[] values = request.getParameterValues(paramName);<br>            if (values == null || values.length == 0) {<br>                // Do nothing, no values found at all.<br>            }<br>            else if (values.length &gt; 1) {<br>                params.put(unprefixed, values);<br>            }<br>            else {<br>                params.put(unprefixed, values[0]);<br>            }<br>        }<br>    }<br>    return params;<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">这里&#96;request.getParameterNames()&#96;获取请求中传来的参数的名字的枚举集合，然后&#96;request.getParameterValues(paramName)&#96;获取请求中参数的值</span><br><span class="line"></span><br><span class="line">继续构造方法</span><br></pre></td></tr></table></figure>
+<p>public MutablePropertyValues(Map<?, ?> original) {<br>    // We can optimize this because it’s all new:<br>    // There is no replacement of existing property values.<br>    if (original != null) {<br>        this.propertyValueList = new ArrayList<PropertyValue>(original.size());<br>        for (Map.Entry<?, ?> entry : original.entrySet()) {<br>            this.propertyValueList.add(new PropertyValue(entry.getKey().toString(), entry.getValue()));<br>        }<br>    }<br>    else {<br>        this.propertyValueList = new ArrayList<PropertyValue>(0);<br>    }<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">&#96;original&#96;存放了请求中参数的名和值，将其从&#96;Map&#96;类型转换到&#96;PropertyValue&#96;的数组队列</span><br></pre></td></tr></table></figure>
+<p>public void bind(ServletRequest request) {<br>    MutablePropertyValues mpvs = new ServletRequestParameterPropertyValues(request);<br>    MultipartRequest multipartRequest = WebUtils.getNativeRequest(request, MultipartRequest.class);<br>    if (multipartRequest != null) {<br>        bindMultipart(multipartRequest.getMultiFileMap(), mpvs);<br>    }<br>    addBindValues(mpvs, request);<br>    doBind(mpvs);<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">&#96;addBindValues(mpvc,request)&#96;将&#96;pathVariable&#96;变量添加入&#96;mpvs&#96;中，&#96;key&#96;重复时跳过</span><br><span class="line"></span><br><span class="line">然后&#96;doBind(mpvs)&#96;把&#96;mvps&#96;中的参数绑定到&#96;dataBinder&#96;的&#96;target&#96;中，也就是目标&#96;handlerMethod&#96;方法得参数中，中间利用到的转换器有默认的&#96;ConversionService&#96;中注入的转换器，例如&#96;java.lang.String&#96;转换到&#96;java.lang.Integer&#96;的转换器&#96;StringToNumber&#96;</span><br></pre></td></tr></table></figure>
+<p>final class StringToNumberConverterFactory implements ConverterFactory&lt;String, Number&gt; {</p>
+<pre><code>@Override
+public &lt;T extends Number&gt; Converter&lt;String, T&gt; getConverter(Class&lt;T&gt; targetType) {
+    return new StringToNumber&lt;T&gt;(targetType);
+}
+
+private static final class StringToNumber&lt;T extends Number&gt; implements Converter&lt;String, T&gt; {
+
+    private final Class&lt;T&gt; targetType;
+
+    public StringToNumber(Class&lt;T&gt; targetType) {
+        this.targetType = targetType;
+    }
+
+    @Override
+    public T convert(String source) {
+        if (source.length() == 0) {
+            return null;
+        }
+        return NumberUtils.parseNumber(source, this.targetType);
+    }
+}</code></pre><p>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">回到&#96;ServletModelAttributeMethodProcessor&#96;的&#96;resolveArgument&#96;</span><br></pre></td></tr></table></figure>
+<p>public final Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,<br>        NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {</p>
+<pre><code>String name = ModelFactory.getNameForParameter(parameter);
+Object attribute = (mavContainer.containsAttribute(name) ?
+        mavContainer.getModel().get(name) : createAttribute(name, parameter, binderFactory, webRequest));
+
+WebDataBinder binder = binderFactory.createBinder(webRequest, attribute, name);
+if (binder.getTarget() != null) {
+    bindRequestParameters(binder, webRequest);
+    validateIfApplicable(binder, parameter);
+    if (binder.getBindingResult().hasErrors() &amp;&amp; isBindExceptionRequired(binder, parameter)) {
+        throw new BindException(binder.getBindingResult());
+    }
+}
+
+// Add resolved attribute and BindingResult at the end of the model
+Map&lt;String, Object&gt; bindingResultModel = binder.getBindingResult().getModel();
+mavContainer.removeAttributes(bindingResultModel);
+mavContainer.addAllAttributes(bindingResultModel);
+
+return binder.convertIfNecessary(binder.getTarget(), parameter.getParameterType(), parameter);</code></pre><p>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">&#96;validateIfApplicable(binder,webRequest)&#96;这句的作用在&#96;@validated&#96;注解的使用，对&#96;POJO&#96;类的属性进行jrs303验证</span><br><span class="line"></span><br><span class="line">最后将&#96;dataBinder&#96;中的&#96;BeanPropertyBindingResult&#96;的已经和请求中的参数做了数据绑定之后的&#96;target&#96;和处理&#96;@validated&#96;注解之后的&#96;BeanPropertyBindingResult&#96;也就是它自身绑定到&#96;mavContainer&#96;的&#96;Model&#96;中</span><br><span class="line"></span><br><span class="line">回到最初执行控制器&#96;Controller&#96;的&#96;ServletInvocableHandlerMethod&#96;</span><br></pre></td></tr></table></figure>
+<p>public Object invokeForRequest(NativeWebRequest request, ModelAndViewContainer mavContainer,<br>        Object… providedArgs) throws Exception {</p>
+<pre><code>Object[] args = getMethodArgumentValues(request, mavContainer, providedArgs);
+if (logger.isTraceEnabled()) {
+    StringBuilder sb = new StringBuilder(&quot;Invoking [&quot;);
+    sb.append(getBeanType().getSimpleName()).append(&quot;.&quot;);
+    sb.append(getMethod().getName()).append(&quot;] method with arguments &quot;);
+    sb.append(Arrays.asList(args));
+    logger.trace(sb.toString());
+}
+Object returnValue = doInvoke(args);
+if (logger.isTraceEnabled()) {
+    logger.trace(&quot;Method [&quot; + getMethod().getName() + &quot;] returned [&quot; + returnValue + &quot;]&quot;);
+}
+return returnValue;</code></pre><p>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">&#96;getMethodArgumentValues&#96;方法中，&#96;argumentResolver&#96;对形参&#96;methodParameter&#96;解析之后，获取到要执行的方法的参数的具体的值</span><br><span class="line"></span><br><span class="line">然后利用反射执行方法，然后返回返回值</span><br></pre></td></tr></table></figure>
+<p>public void invokeAndHandle(ServletWebRequest webRequest,<br>        ModelAndViewContainer mavContainer, Object… providedArgs) throws Exception {</p>
+<pre><code>Object returnValue = invokeForRequest(webRequest, mavContainer, providedArgs);
+setResponseStatus(webRequest);
+
+if (returnValue == null) {
+    if (isRequestNotModified(webRequest) || hasResponseStatus() || mavContainer.isRequestHandled()) {
+        mavContainer.setRequestHandled(true);
+        return;
+    }
+}
+else if (StringUtils.hasText(this.responseReason)) {
+    mavContainer.setRequestHandled(true);
+    return;
+}
+
+mavContainer.setRequestHandled(false);
+try {
+    this.returnValueHandlers.handleReturnValue(
+            returnValue, getReturnValueType(returnValue), mavContainer, webRequest);
+}
+catch (Exception ex) {
+    if (logger.isTraceEnabled()) {
+        logger.trace(getReturnValueHandlingErrorMessage(&quot;Error handling return value&quot;, returnValue), ex);
+    }
+    throw ex;
+}</code></pre><p>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">&#96;Controller&#96;中方法返回值一般就是&#96;view&#96;了</span><br><span class="line"></span><br><span class="line">&#96;RequestMappingHandlerAdapter&#96;在将&#96;Controller&#96;中目标方法包装成&#96;ServletInvocableHandlerMethod&#96;时注入了&#96;HandlerMethodReturnValueHandlerComposite&#96;的实例，其中包含了许多处理返回值的&#96;HandlerMethodReturnValueHandler&#96;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">其中这里处理&#96;view&#96;视图的是&#96;ViewNameMethodReturnValueHandler&#96;</span><br></pre></td></tr></table></figure>
+<p>@Override<br>public void handleReturnValue(Object returnValue, MethodParameter returnType,<br>        ModelAndViewContainer mavContainer, NativeWebRequest webRequest) throws Exception {</p>
+<pre><code>if (returnValue == null) {
+    return;
+}
+else if (returnValue instanceof String) {
+    String viewName = (String) returnValue;
+    mavContainer.setViewName(viewName);
+    if (isRedirectViewName(viewName)) {
+        mavContainer.setRedirectModelScenario(true);
+    }
+}
+else {
+    // should not happen
+    throw new UnsupportedOperationException(&quot;Unexpected return type: &quot; +
+            returnType.getParameterType().getName() + &quot; in method: &quot; + returnType.getMethod());
+}</code></pre><p>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">返回值为&#96;String&#96;类型的时候，将它作为&#96;viewName&#96;放入&#96;mavContainer&#96;，然后判断&#96;viewName&#96;中是否以&#96;redirect:&#96;开头的设置&#96;redirectModelScenario&#96;属性</span><br><span class="line"></span><br><span class="line">此时，&#96;RequestMappingHandlerAdapter&#96;的&#96;InvokeHandleMethod&#96;，也就是&#96;handler&#96;方法执行的入口就只剩下最后一步</span><br></pre></td></tr></table></figure>
+<p>return getModelAndView(mavContainer, modelFactory, webRequest);</p>
+<p>private ModelAndView getModelAndView(ModelAndViewContainer mavContainer,<br>        ModelFactory modelFactory, NativeWebRequest webRequest) throws Exception {</p>
+<pre><code>modelFactory.updateModel(webRequest, mavContainer);
+if (mavContainer.isRequestHandled()) {
+    return null;
+}
+ModelMap model = mavContainer.getModel();
+ModelAndView mav = new ModelAndView(mavContainer.getViewName(), model);
+if (!mavContainer.isViewReference()) {
+    mav.setView((View) mavContainer.getView());
+}
+if (model instanceof RedirectAttributes) {
+    Map&lt;String, ?&gt; flashAttributes = ((RedirectAttributes) model).getFlashAttributes();
+    HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
+    RequestContextUtils.getOutputFlashMap(request).putAll(flashAttributes);
+}
+return mav;</code></pre><p>}</p>
+<p>```</p>
+<p>前面看到返回值为空时，设置<code>requestHandled</code>为<code>true</code>，使用<code>mavContainer</code>中的<code>Model</code>和<code>viewName</code>创建一个<code>ModelAndView</code>返回，接下来就是对视图进行处理</p>
+<h3 id="步骤总结"><a href="#步骤总结" class="headerlink" title="步骤总结"></a>步骤总结</h3><ol>
+<li><p>创建<code>WebDataBinderFactory</code>，用来处理请求中属性绑定到形参</p>
+</li>
+<li><p>创建<code>ModelFactory</code>，处理<code>@ModelAttribute</code>方法</p>
+</li>
+<li><p>创建<code>ModelAndViewContainer</code>，用来作为<code>Model</code>和<code>View</code>的容器</p>
+</li>
+<li><p>执行<code>@ModelAttribute</code>方法，在这之前先将<code>@SessionAttributes</code>注解的属性从<code>Session</code>中取出放入<code>mavContainer</code>的<code>Model</code>中</p>
+</li>
+<li><p>执行<code>Controller</code>目标方法，主要通过获取方法的形参，然后根据形参选择适用的<code>HandlerMethodArgumentResolver</code>对形参进行解析处理，并且在其中使用<code>WebDataBinderFactory</code>创建<code>DataBinder</code>将请求中附带的属性绑定到形参中，然后利用反射的方式来执行方法</p>
+</li>
+<li><p>获取到方法的返回值过后，利用合适的<code>HandlerMethodReturnValueHandler</code>对返回值也就是<code>view</code>进行处理，然后放入<code>mavContainer</code></p>
+</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/SpringMVC/" rel="tag"># SpringMVC</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/06/17/SpringMVC%E4%B8%ADdataBinder%E5%85%A5%E5%8F%82%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2/" rel="next" title="SpringMVC中DataBinder对入参类型转换">
+                <i class="fa fa-chevron-left"></i> SpringMVC中DataBinder对入参类型转换
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/06/17/SpringMvc%E5%AF%B9Controller%E7%9B%AE%E6%A0%87%E6%96%B9%E6%B3%95%E8%BF%94%E5%9B%9Emav%E7%9A%84%E5%A4%84%E7%90%86/" rel="prev" title="SpringMVC对Controller目标方法返回mav的处理">
+                SpringMVC对Controller目标方法返回mav的处理 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">sinaill</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">85</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#需要注意的类"><span class="nav-number">1.</span> <span class="nav-text">需要注意的类</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#invocableHandlerMethod"><span class="nav-number">1.1.</span> <span class="nav-text">invocableHandlerMethod</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#HandlerMethodParameter"><span class="nav-number">1.2.</span> <span class="nav-text">HandlerMethodParameter</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#argumentResolver"><span class="nav-number">1.3.</span> <span class="nav-text">argumentResolver</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#流程"><span class="nav-number">2.</span> <span class="nav-text">流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#步骤总结"><span class="nav-number">3.</span> <span class="nav-text">步骤总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">sinaill</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  <link rel="stylesheet" href="/lib/prettify/skins/desert.css" type="text/css">
+<script src="/lib/prettify/prettify.js" type="text/javascript"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+      $('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+      prettyPrint();
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="SpringMVC," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="DataBinderDataBinder在SpringMVC中起的作用主要是为Request中参数转化为对应的入参类型 注册自己的PropertyEditor由于DataBinder实现了PropertyEditorRegistry接口，所以有了注册属性编辑器的方法，我们可以手动添加我们需要的PropertyEditor，如下 @InitBinderpublic void initBinder(W">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringMVC中DataBinder对入参类型转换">
+<meta property="og:url" content="http://yoursite.com/2020/06/17/SpringMVC%E4%B8%ADdataBinder%E5%85%A5%E5%8F%82%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="DataBinderDataBinder在SpringMVC中起的作用主要是为Request中参数转化为对应的入参类型 注册自己的PropertyEditor由于DataBinder实现了PropertyEditorRegistry接口，所以有了注册属性编辑器的方法，我们可以手动添加我们需要的PropertyEditor，如下 @InitBinderpublic void initBinder(W">
+<meta property="article:published_time" content="2020-06-16T17:43:37.226Z">
+<meta property="article:modified_time" content="2020-06-16T17:43:37.226Z">
+<meta property="article:author" content="sinaill">
+<meta property="article:tag" content="SpringMVC">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/06/17/SpringMVC中dataBinder入参类型转换/"/>
+
+
+
+
+
+  <title>SpringMVC中DataBinder对入参类型转换 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/SpringMVC%E4%B8%ADdataBinder%E5%85%A5%E5%8F%82%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">SpringMVC中DataBinder对入参类型转换</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">框架</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="DataBinder"><a href="#DataBinder" class="headerlink" title="DataBinder"></a>DataBinder</h3><p><code>DataBinder</code>在<code>SpringMVC</code>中起的作用主要是为<code>Request</code>中参数转化为对应的入参类型</p>
+<h3 id="注册自己的PropertyEditor"><a href="#注册自己的PropertyEditor" class="headerlink" title="注册自己的PropertyEditor"></a>注册自己的PropertyEditor</h3><p>由于<code>DataBinder</code>实现了<code>PropertyEditorRegistry</code>接口，所以有了注册属性编辑器的方法，我们可以手动添加我们需要的<code>PropertyEditor</code>，如下</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@InitBinder</span><br><span class="line">public void initBinder(WebDataBinder binder) &#123;</span><br><span class="line">	SimpleDateFormat sdf &#x3D; new SimpleDateFormat(&quot;yyyy-MM-dd&quot;);</span><br><span class="line">	sdf.setLenient(false);</span><br><span class="line">	binder.registerCustomEditor(Date.class, new CustomDateEditor(sdf, true));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个方法会被收录在<code>WebDataBinderFactory</code>中，然后在创建和初始化<code>DataBinder</code>对象时，将<code>DataBinder</code>作为入参调用这个方法来注入<code>PropertyEditor</code></p>
+<h3 id="conversionservice"><a href="#conversionservice" class="headerlink" title="conversionservice"></a>conversionservice</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;mvc:annotation-driven &#x2F;&gt;</span><br></pre></td></tr></table></figure>
+
+<p>这个配置默认注册了<code>FormattingConversionServiceFactoryBean</code>来创将一个<code>DefaultFormattingConversionService</code>，其中注册了许多<code>converter</code>用来进行类型转换</p>
+<h3 id="转化过程"><a href="#转化过程" class="headerlink" title="转化过程"></a>转化过程</h3><p>既然是将参数转化为入参需要的类型，那应该发生在参数解析的时候，先看简单的例如<code>int</code>类型的转化</p>
+<p>解析它的参数解析器为<code>RequestParamMethodArgumentResolver</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Override</span><br><span class="line">public final Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,</span><br><span class="line">		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception &#123;</span><br><span class="line">	&#x2F;&#x2F;获取这个入参的参数类型</span><br><span class="line">	Class&lt;?&gt; paramType &#x3D; parameter.getParameterType();</span><br><span class="line">	&#x2F;&#x2F;获取@RequestParam的值</span><br><span class="line">	NamedValueInfo namedValueInfo &#x3D; getNamedValueInfo(parameter);</span><br><span class="line">	&#x2F;&#x2F;根据@RequestParam从request获取该参数的值</span><br><span class="line">	Object arg &#x3D; resolveName(namedValueInfo.name, parameter, webRequest);</span><br><span class="line">	if (arg &#x3D;&#x3D; null) &#123;</span><br><span class="line">		if (namedValueInfo.defaultValue !&#x3D; null) &#123;</span><br><span class="line">			arg &#x3D; resolveDefaultValue(namedValueInfo.defaultValue);</span><br><span class="line">		&#125;</span><br><span class="line">		else if (namedValueInfo.required &amp;&amp; !parameter.getParameterType().getName().equals(&quot;java.util.Optional&quot;)) &#123;</span><br><span class="line">			handleMissingValue(namedValueInfo.name, parameter);</span><br><span class="line">		&#125;</span><br><span class="line">		arg &#x3D; handleNullValue(namedValueInfo.name, arg, paramType);</span><br><span class="line">	&#125;</span><br><span class="line">	else if (&quot;&quot;.equals(arg) &amp;&amp; namedValueInfo.defaultValue !&#x3D; null) &#123;</span><br><span class="line">		arg &#x3D; resolveDefaultValue(namedValueInfo.defaultValue);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	if (binderFactory !&#x3D; null) &#123;</span><br><span class="line">		&#x2F;&#x2F;创建DataBinder</span><br><span class="line">		WebDataBinder binder &#x3D; binderFactory.createBinder(webRequest, null, namedValueInfo.name);</span><br><span class="line">		&#x2F;&#x2F;将从Request中获取的参数值转化为入参需要的类型paramType</span><br><span class="line">		arg &#x3D; binder.convertIfNecessary(arg, paramType, parameter);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	handleResolvedValue(arg, namedValueInfo.name, parameter, mavContainer, webRequest);</span><br><span class="line"></span><br><span class="line">	return arg;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>转化过程发生在<code>arg = binder.convertIfNecessary(arg, paramType, parameter);</code></p>
+<p>先看<code>DataBinder</code>初始化</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Override</span><br><span class="line">public final WebDataBinder createBinder(NativeWebRequest webRequest, Object target, String objectName)</span><br><span class="line">		throws Exception &#123;</span><br><span class="line">	WebDataBinder dataBinder &#x3D; createBinderInstance(target, objectName, webRequest);</span><br><span class="line">	if (this.initializer !&#x3D; null) &#123;</span><br><span class="line">		&#x2F;&#x2F;target为null的话，只将conversionservice注入到DataBinder</span><br><span class="line">		&#x2F;&#x2F;否则也一并注入到DataBinder内部变量BindingResult和它的</span><br><span class="line">		&#x2F;&#x2F;内部变量BeanWrapperImpl中</span><br><span class="line">		this.initializer.initBinder(dataBinder, webRequest);</span><br><span class="line">	&#125;</span><br><span class="line">	&#x2F;&#x2F;调用@InitBinder方法</span><br><span class="line">	initBinder(dataBinder, webRequest);</span><br><span class="line">	return dataBinder;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;调用的构造函数</span><br><span class="line">public DataBinder(Object target, String objectName) &#123;</span><br><span class="line">	if (target !&#x3D; null &amp;&amp; target.getClass().equals(javaUtilOptionalClass)) &#123;</span><br><span class="line">		this.target &#x3D; OptionalUnwrapper.unwrap(target);</span><br><span class="line">	&#125;</span><br><span class="line">	else &#123;</span><br><span class="line">		this.target &#x3D; target;</span><br><span class="line">	&#125;</span><br><span class="line">	this.objectName &#x3D; objectName;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在这里<code>target</code>为<code>null</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Override</span><br><span class="line">public &lt;T&gt; T convertIfNecessary(Object value, Class&lt;T&gt; requiredType, MethodParameter methodParam)</span><br><span class="line">		throws TypeMismatchException &#123;</span><br><span class="line"></span><br><span class="line">	return getTypeConverter().convertIfNecessary(value, requiredType, methodParam);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>getTypeConverter()</code>获取转换器</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">protected TypeConverter getTypeConverter() &#123;</span><br><span class="line">	if (getTarget() !&#x3D; null) &#123;</span><br><span class="line">		return getInternalBindingResult().getPropertyAccessor();</span><br><span class="line">	&#125;</span><br><span class="line">	else &#123;</span><br><span class="line">		return getSimpleTypeConverter();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>因为<code>target</code>为<code>null</code>，使用简单转换器</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">protected SimpleTypeConverter getSimpleTypeConverter() &#123;</span><br><span class="line">	if (this.typeConverter &#x3D;&#x3D; null) &#123;</span><br><span class="line">		&#x2F;&#x2F;创建typeConverter</span><br><span class="line">		this.typeConverter &#x3D; new SimpleTypeConverter();</span><br><span class="line">		if (this.conversionService !&#x3D; null) &#123;</span><br><span class="line">			&#x2F;&#x2F;注入conversionservice</span><br><span class="line">			this.typeConverter.setConversionService(this.conversionService);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	return this.typeConverter;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;构造函数</span><br><span class="line">public SimpleTypeConverter() &#123;</span><br><span class="line">	this.typeConverterDelegate &#x3D; new TypeConverterDelegate(this);</span><br><span class="line">	&#x2F;&#x2F;注册默认PropertyEditor</span><br><span class="line">	registerDefaultEditors();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用简单转换器进行类型转化</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Override</span><br><span class="line">public &lt;T&gt; T convertIfNecessary(Object value, Class&lt;T&gt; requiredType, MethodParameter methodParam)</span><br><span class="line">		throws TypeMismatchException &#123;</span><br><span class="line"></span><br><span class="line">	return doConvert(value, requiredType, methodParam, null);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">private &lt;T&gt; T doConvert(Object value, Class&lt;T&gt; requiredType, MethodParameter methodParam, Field field)</span><br><span class="line">		throws TypeMismatchException &#123;</span><br><span class="line">	try &#123;</span><br><span class="line">		if (field !&#x3D; null) &#123;</span><br><span class="line">			return this.typeConverterDelegate.convertIfNecessary(value, requiredType, field);</span><br><span class="line">		&#125;</span><br><span class="line">		else &#123;</span><br><span class="line">			return this.typeConverterDelegate.convertIfNecessary(value, requiredType, methodParam);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	catch (ConverterNotFoundException ex) &#123;</span><br><span class="line">		throw new ConversionNotSupportedException(value, requiredType, ex);</span><br><span class="line">	&#125;</span><br><span class="line">	catch (ConversionException ex) &#123;</span><br><span class="line">		throw new TypeMismatchException(value, requiredType, ex);</span><br><span class="line">	&#125;</span><br><span class="line">	catch (IllegalStateException ex) &#123;</span><br><span class="line">		throw new ConversionNotSupportedException(value, requiredType, ex);</span><br><span class="line">	&#125;</span><br><span class="line">	catch (IllegalArgumentException ex) &#123;</span><br><span class="line">		throw new TypeMismatchException(value, requiredType, ex);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>调用<code>simpleTypeConverter</code>的成员变量<code>typeConverterDelegate</code>转换</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public &lt;T&gt; T convertIfNecessary(Object newValue, Class&lt;T&gt; requiredType, MethodParameter methodParam)</span><br><span class="line">		throws IllegalArgumentException &#123;</span><br><span class="line"></span><br><span class="line">	return convertIfNecessary(null, null, newValue, requiredType,</span><br><span class="line">			(methodParam !&#x3D; null ? new TypeDescriptor(methodParam) : TypeDescriptor.valueOf(requiredType)));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后到关键代码，这里的<code>propertyEditorRegistry</code>指向的就是之前的<code>simpleTypeConverter</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public &lt;T&gt; T convertIfNecessary(String propertyName, Object oldValue, Object newValue,</span><br><span class="line">		Class&lt;T&gt; requiredType, TypeDescriptor typeDescriptor) throws IllegalArgumentException &#123;</span><br><span class="line"></span><br><span class="line">	Object convertedValue &#x3D; newValue;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F; Custom editor for this type?</span><br><span class="line">	&#x2F;&#x2F;查找我们通过@InitBinder注入的PropertyEditor适用吗</span><br><span class="line">	PropertyEditor editor &#x3D; this.propertyEditorRegistry.findCustomEditor(requiredType, propertyName);</span><br><span class="line"></span><br><span class="line">	ConversionFailedException firstAttemptEx &#x3D; null;</span><br><span class="line">	</span><br><span class="line">	&#x2F;&#x2F; No custom editor but custom ConversionService specified?</span><br><span class="line">	&#x2F;&#x2F;找不到则从conversionService中查找适用的&#96;Converter&#96;</span><br><span class="line">	ConversionService conversionService &#x3D; this.propertyEditorRegistry.getConversionService();</span><br><span class="line">	&#x2F;&#x2F;没有找到自定义的PropertyEditor时且conversionservice中有适用的converter</span><br><span class="line">	&#x2F;&#x2F;使用它来进行类型转换</span><br><span class="line">	if (editor &#x3D;&#x3D; null &amp;&amp; conversionService !&#x3D; null &amp;&amp; convertedValue !&#x3D; null &amp;&amp; typeDescriptor !&#x3D; null) &#123;</span><br><span class="line">		TypeDescriptor sourceTypeDesc &#x3D; TypeDescriptor.forObject(newValue);</span><br><span class="line">		TypeDescriptor targetTypeDesc &#x3D; typeDescriptor;</span><br><span class="line">		if (conversionService.canConvert(sourceTypeDesc, targetTypeDesc)) &#123;</span><br><span class="line">			try &#123;</span><br><span class="line">				return (T) conversionService.convert(convertedValue, sourceTypeDesc, targetTypeDesc);</span><br><span class="line">			&#125;</span><br><span class="line">			catch (ConversionFailedException ex) &#123;</span><br><span class="line">				&#x2F;&#x2F; fallback to default conversion logic below</span><br><span class="line">				firstAttemptEx &#x3D; ex;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F; Value not of required type?</span><br><span class="line">	&#x2F;&#x2F;自定义的PropertyEditor适用时或者值的类型不属于要转换的那个类型</span><br><span class="line">	if (editor !&#x3D; null || (requiredType !&#x3D; null &amp;&amp; !ClassUtils.isAssignableValue(requiredType, convertedValue))) &#123;</span><br><span class="line">		&#x2F;&#x2F;String转集合</span><br><span class="line">		if (requiredType !&#x3D; null &amp;&amp; Collection.class.isAssignableFrom(requiredType) &amp;&amp; convertedValue instanceof String) &#123;</span><br><span class="line">			TypeDescriptor elementType &#x3D; typeDescriptor.getElementTypeDescriptor();</span><br><span class="line">			if (elementType !&#x3D; null &amp;&amp; Enum.class.isAssignableFrom(elementType.getType())) &#123;</span><br><span class="line">				convertedValue &#x3D; StringUtils.commaDelimitedListToStringArray((String) convertedValue);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		&#x2F;&#x2F;自定义PropertyEditor和conversionservice中都没有适用的</span><br><span class="line">		&#x2F;&#x2F;从默认注册的PropertyEditor中查找</span><br><span class="line">		if (editor &#x3D;&#x3D; null) &#123;</span><br><span class="line">			editor &#x3D; findDefaultEditor(requiredType);</span><br><span class="line">		&#125;</span><br><span class="line">		&#x2F;&#x2F;进行转换，如果要转换的值convertedValue不属于String，转换用的是setValue方法</span><br><span class="line">		convertedValue &#x3D; doConvertValue(oldValue, convertedValue, requiredType, editor);</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	&#x2F;&#x2F;以上对值的转换完成，由Object类型的convertedValue接收转换好的值</span><br><span class="line">	boolean standardConversion &#x3D; false;</span><br><span class="line">	</span><br><span class="line">	&#x2F;&#x2F;以下应该是根据requiredType对转换好的值convertedValue进行再处理</span><br><span class="line">	if (requiredType !&#x3D; null) &#123;</span><br><span class="line">		&#x2F;&#x2F; Try to apply some standard type conversion rules if appropriate.</span><br><span class="line"></span><br><span class="line">		if (convertedValue !&#x3D; null) &#123;</span><br><span class="line">			if (Object.class.equals(requiredType)) &#123;</span><br><span class="line">				return (T) convertedValue;</span><br><span class="line">			&#125;</span><br><span class="line">			else if (requiredType.isArray()) &#123;</span><br><span class="line">				&#x2F;&#x2F; Array required -&gt; apply appropriate conversion of elements.</span><br><span class="line">				if (convertedValue instanceof String &amp;&amp; Enum.class.isAssignableFrom(requiredType.getComponentType())) &#123;</span><br><span class="line">					convertedValue &#x3D; StringUtils.commaDelimitedListToStringArray((String) convertedValue);</span><br><span class="line">				&#125;</span><br><span class="line">				return (T) convertToTypedArray(convertedValue, propertyName, requiredType.getComponentType());</span><br><span class="line">			&#125;</span><br><span class="line">			else if (convertedValue instanceof Collection) &#123;</span><br><span class="line">				&#x2F;&#x2F; Convert elements to target type, if determined.</span><br><span class="line">				convertedValue &#x3D; convertToTypedCollection(</span><br><span class="line">						(Collection&lt;?&gt;) convertedValue, propertyName, requiredType, typeDescriptor);</span><br><span class="line">				standardConversion &#x3D; true;</span><br><span class="line">			&#125;</span><br><span class="line">			else if (convertedValue instanceof Map) &#123;</span><br><span class="line">				&#x2F;&#x2F; Convert keys and values to respective target type, if determined.</span><br><span class="line">				convertedValue &#x3D; convertToTypedMap(</span><br><span class="line">						(Map&lt;?, ?&gt;) convertedValue, propertyName, requiredType, typeDescriptor);</span><br><span class="line">				standardConversion &#x3D; true;</span><br><span class="line">			&#125;</span><br><span class="line">			if (convertedValue.getClass().isArray() &amp;&amp; Array.getLength(convertedValue) &#x3D;&#x3D; 1) &#123;</span><br><span class="line">				convertedValue &#x3D; Array.get(convertedValue, 0);</span><br><span class="line">				standardConversion &#x3D; true;</span><br><span class="line">			&#125;</span><br><span class="line">			if (String.class.equals(requiredType) &amp;&amp; ClassUtils.isPrimitiveOrWrapper(convertedValue.getClass())) &#123;</span><br><span class="line">				&#x2F;&#x2F; We can stringify any primitive value...</span><br><span class="line">				return (T) convertedValue.toString();</span><br><span class="line">			&#125;</span><br><span class="line">			else if (convertedValue instanceof String &amp;&amp; !requiredType.isInstance(convertedValue)) &#123;</span><br><span class="line">				if (firstAttemptEx &#x3D;&#x3D; null &amp;&amp; !requiredType.isInterface() &amp;&amp; !requiredType.isEnum()) &#123;</span><br><span class="line">					try &#123;</span><br><span class="line">						Constructor&lt;T&gt; strCtor &#x3D; requiredType.getConstructor(String.class);</span><br><span class="line">						return BeanUtils.instantiateClass(strCtor, convertedValue);</span><br><span class="line">					&#125;</span><br><span class="line">					catch (NoSuchMethodException ex) &#123;</span><br><span class="line">						&#x2F;&#x2F; proceed with field lookup</span><br><span class="line">						if (logger.isTraceEnabled()) &#123;</span><br><span class="line">							logger.trace(&quot;No String constructor found on type [&quot; + requiredType.getName() + &quot;]&quot;, ex);</span><br><span class="line">						&#125;</span><br><span class="line">					&#125;</span><br><span class="line">					catch (Exception ex) &#123;</span><br><span class="line">						if (logger.isDebugEnabled()) &#123;</span><br><span class="line">							logger.debug(&quot;Construction via String failed for type [&quot; + requiredType.getName() + &quot;]&quot;, ex);</span><br><span class="line">						&#125;</span><br><span class="line">					&#125;</span><br><span class="line">				&#125;</span><br><span class="line">				String trimmedValue &#x3D; ((String) convertedValue).trim();</span><br><span class="line">				if (requiredType.isEnum() &amp;&amp; &quot;&quot;.equals(trimmedValue)) &#123;</span><br><span class="line">					&#x2F;&#x2F; It&#39;s an empty enum identifier: reset the enum value to null.</span><br><span class="line">					return null;</span><br><span class="line">				&#125;</span><br><span class="line">				convertedValue &#x3D; attemptToConvertStringToEnum(requiredType, trimmedValue, convertedValue);</span><br><span class="line">				standardConversion &#x3D; true;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		else &#123;</span><br><span class="line">			&#x2F;&#x2F; convertedValue &#x3D;&#x3D; null</span><br><span class="line">			if (javaUtilOptionalEmpty !&#x3D; null &amp;&amp; requiredType.equals(javaUtilOptionalEmpty.getClass())) &#123;</span><br><span class="line">				convertedValue &#x3D; javaUtilOptionalEmpty;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		if (!ClassUtils.isAssignableValue(requiredType, convertedValue)) &#123;</span><br><span class="line">			if (firstAttemptEx !&#x3D; null) &#123;</span><br><span class="line">				throw firstAttemptEx;</span><br><span class="line">			&#125;</span><br><span class="line">			&#x2F;&#x2F; Definitely doesn&#39;t match: throw IllegalArgumentException&#x2F;IllegalStateException</span><br><span class="line">			StringBuilder msg &#x3D; new StringBuilder();</span><br><span class="line">			msg.append(&quot;Cannot convert value of type [&quot;).append(ClassUtils.getDescriptiveType(newValue));</span><br><span class="line">			msg.append(&quot;] to required type [&quot;).append(ClassUtils.getQualifiedName(requiredType)).append(&quot;]&quot;);</span><br><span class="line">			if (propertyName !&#x3D; null) &#123;</span><br><span class="line">				msg.append(&quot; for property &#39;&quot;).append(propertyName).append(&quot;&#39;&quot;);</span><br><span class="line">			&#125;</span><br><span class="line">			if (editor !&#x3D; null) &#123;</span><br><span class="line">				msg.append(&quot;: PropertyEditor [&quot;).append(editor.getClass().getName()).append(</span><br><span class="line">						&quot;] returned inappropriate value of type [&quot;).append(</span><br><span class="line">						ClassUtils.getDescriptiveType(convertedValue)).append(&quot;]&quot;);</span><br><span class="line">				throw new IllegalArgumentException(msg.toString());</span><br><span class="line">			&#125;</span><br><span class="line">			else &#123;</span><br><span class="line">				msg.append(&quot;: no matching editors or conversion strategy found&quot;);</span><br><span class="line">				throw new IllegalStateException(msg.toString());</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	if (firstAttemptEx !&#x3D; null) &#123;</span><br><span class="line">		if (editor &#x3D;&#x3D; null &amp;&amp; !standardConversion &amp;&amp; requiredType !&#x3D; null &amp;&amp; !Object.class.equals(requiredType)) &#123;</span><br><span class="line">			throw firstAttemptEx;</span><br><span class="line">		&#125;</span><br><span class="line">		logger.debug(&quot;Original ConversionService attempt failed - ignored since &quot; +</span><br><span class="line">				&quot;PropertyEditor based conversion eventually succeeded&quot;, firstAttemptEx);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return (T) convertedValue;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>至此，参数解析器中对参数进行类型转化完成，接着后面会用反射调用方法，将这个作为转化后的值作为入参</p>
+<p>当然这个属于单个属性的转换，我们经常会用到使用一个类来接收我们需要的多个属性参数，这种情况就使用到了<code>BeanWrapperImpl</code>这个类了，它继承了<code>AbstractPropertyAccessor</code>，可以对类中属性进行操作，同时它也有个形参<code>conversionservice</code>，和实现了接口<code>PropertyEditorRegistry</code>接口，有了给我们注入自定义<code>PropertyEditor</code>的功能</p>
+<p>转换过程差不多，解析到参数为复杂类时，在创建<code>DataBinder</code>时，创建了内部变量<code>BindingResult</code>和它的内部变量<code>BeanWrapperImpl</code>，然后初始化注入自定义<code>PropertyEditor</code>和<code>conversionservice</code>，哦还有将这个参数类反射实例化通过构造方法传入<code>BeanWrapperImpl</code>，然后调用<code>BeanWrapperImpl</code>的<code>setProperty</code>将请求中参数名字和参数值设置到类中对应的属性，所以请求中参数名一定要和属性名相等</p>
+<p>在这个过程中，通过<code>BeanWrapperImpl</code>中的<code>cachedIntrospectionResults</code>获取所有属性的<code>PropertyDescriptor</code>对象，通过这个对象中的属性的<code>get</code>,<code>set</code>方法确认属性的具体类型，然后开始和我们上面一样的转换过程</p>
+<p>转换完之后调用<code>PropertyDescriptor</code>中属性的<code>set</code>方法将值注入类中</p>
+<p>循环完成之后就完成了对将请求中属性绑定到入参的类中</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/SpringMVC/" rel="tag"># SpringMVC</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/06/17/ReentrantReadWriteLock%E7%9A%84%E5%85%B1%E4%BA%AB%E9%94%81%E5%92%8C%E7%8B%AC%E4%BA%AB%E9%94%81/" rel="next" title="ReentrantReadWriteLock的共享锁和独享锁">
+                <i class="fa fa-chevron-left"></i> ReentrantReadWriteLock的共享锁和独享锁
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/06/17/SpringMvc%E4%B8%ADHandler%E6%96%B9%E6%B3%95%E7%9A%84%E6%89%A7%E8%A1%8C/" rel="prev" title="SpringMVC中Handler方法的执行">
+                SpringMVC中Handler方法的执行 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">sinaill</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">85</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#DataBinder"><span class="nav-number">1.</span> <span class="nav-text">DataBinder</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#注册自己的PropertyEditor"><span class="nav-number">2.</span> <span class="nav-text">注册自己的PropertyEditor</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#conversionservice"><span class="nav-number">3.</span> <span class="nav-text">conversionservice</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#转化过程"><span class="nav-number">4.</span> <span class="nav-text">转化过程</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">sinaill</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  <link rel="stylesheet" href="/lib/prettify/skins/desert.css" type="text/css">
+<script src="/lib/prettify/prettify.js" type="text/javascript"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+      $('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+      prettyPrint();
+  });
+</script>
+</body>
+</html>

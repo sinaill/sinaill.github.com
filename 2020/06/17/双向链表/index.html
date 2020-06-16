@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="数据结构," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="双向链表的结构 节点class Node&lt;T&gt;&amp;#123;	Node&lt;T&gt; pre;	Node&lt;T&gt; next;	T data;		public Node() &amp;#123;	&amp;#125;	public Node(T data) &amp;#123;		super();		this.data &#x3D; data;	&amp;#125;	public Node&lt;T&gt;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="双向链表">
+<meta property="og:url" content="http://yoursite.com/2020/06/17/%E5%8F%8C%E5%90%91%E9%93%BE%E8%A1%A8/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="双向链表的结构 节点class Node&lt;T&gt;&amp;#123;	Node&lt;T&gt; pre;	Node&lt;T&gt; next;	T data;		public Node() &amp;#123;	&amp;#125;	public Node(T data) &amp;#123;		super();		this.data &#x3D; data;	&amp;#125;	public Node&lt;T&gt;">
+<meta property="og:image" content="http://wx4.sinaimg.cn/large/96b7c0f4ly1fymvpeor3pj20qq0a2js6.jpg">
+<meta property="article:published_time" content="2020-06-16T17:43:37.255Z">
+<meta property="article:modified_time" content="2020-06-16T17:43:37.255Z">
+<meta property="article:author" content="sinaill">
+<meta property="article:tag" content="数据结构">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://wx4.sinaimg.cn/large/96b7c0f4ly1fymvpeor3pj20qq0a2js6.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/06/17/双向链表/"/>
+
+
+
+
+
+  <title>双向链表 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E5%8F%8C%E5%90%91%E9%93%BE%E8%A1%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">双向链表</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="双向链表的结构"><a href="#双向链表的结构" class="headerlink" title="双向链表的结构"></a>双向链表的结构</h3><p><img src="http://wx4.sinaimg.cn/large/96b7c0f4ly1fymvpeor3pj20qq0a2js6.jpg" alt=""></p>
+<h3 id="节点"><a href="#节点" class="headerlink" title="节点"></a>节点</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Node&lt;T&gt;&#123;</span><br><span class="line">	Node&lt;T&gt; pre;</span><br><span class="line">	Node&lt;T&gt; next;</span><br><span class="line">	T data;</span><br><span class="line">	</span><br><span class="line">	public Node() &#123;</span><br><span class="line">	&#125;</span><br><span class="line">	public Node(T data) &#123;</span><br><span class="line">		super();</span><br><span class="line">		this.data &#x3D; data;</span><br><span class="line">	&#125;</span><br><span class="line">	public Node&lt;T&gt; getPre() &#123;</span><br><span class="line">		return pre;</span><br><span class="line">	&#125;</span><br><span class="line">	public void setPre(Node&lt;T&gt; pre) &#123;</span><br><span class="line">		this.pre &#x3D; pre;</span><br><span class="line">	&#125;</span><br><span class="line">	public Node&lt;T&gt; getNext() &#123;</span><br><span class="line">		return next;</span><br><span class="line">	&#125;</span><br><span class="line">	public void setNext(Node&lt;T&gt; next) &#123;</span><br><span class="line">		this.next &#x3D; next;</span><br><span class="line">	&#125;</span><br><span class="line">	public T getData() &#123;</span><br><span class="line">		return data;</span><br><span class="line">	&#125;</span><br><span class="line">	public void setData(T data) &#123;</span><br><span class="line">		this.data &#x3D; data;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="头节点"><a href="#头节点" class="headerlink" title="头节点"></a>头节点</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class DoublyLinkedList&lt;T&gt; &#123;</span><br><span class="line"></span><br><span class="line">	private Node&lt;T&gt; first;&#x2F;&#x2F;指向第一个节点</span><br><span class="line">	private Node&lt;T&gt; last;&#x2F;&#x2F;指向最后一个节点</span><br><span class="line">	</span><br><span class="line">	</span><br><span class="line">	public Node&lt;T&gt; getFirst() &#123;</span><br><span class="line">		return first;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public void setFirst(Node&lt;T&gt; first) &#123;</span><br><span class="line">		this.first &#x3D; first;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public Node&lt;T&gt; getLast() &#123;</span><br><span class="line">		return last;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public void setLast(Node&lt;T&gt; last) &#123;</span><br><span class="line">		this.last &#x3D; last;</span><br><span class="line">	&#125;</span><br><span class="line">	·</span><br><span class="line">	·</span><br><span class="line">	·	</span><br><span class="line">	基本操作</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="基本操作"><a href="#基本操作" class="headerlink" title="基本操作"></a>基本操作</h3><h4 id="头插法"><a href="#头插法" class="headerlink" title="头插法"></a>头插法</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void insertNodeHead(Node&lt;T&gt; node)&#123;</span><br><span class="line">	if(first &#x3D;&#x3D; null)&#123;</span><br><span class="line">		first &#x3D; node;</span><br><span class="line">		last &#x3D; node;</span><br><span class="line">		return;</span><br><span class="line">	&#125;</span><br><span class="line">	first.setPre(node);&#x2F;&#x2F;将第一个节点的pre设为新增进来的节点</span><br><span class="line">	node.setNext(first);&#x2F;&#x2F;将第一个节点设为新增节点的next</span><br><span class="line">	first &#x3D; node;&#x2F;&#x2F;将第一个节点置换为新增进来的节点</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="尾插法"><a href="#尾插法" class="headerlink" title="尾插法"></a>尾插法</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void insertNodeTail(Node&lt;T&gt; node)&#123;</span><br><span class="line">	</span><br><span class="line">	Node&lt;T&gt; temp &#x3D; first;</span><br><span class="line">	</span><br><span class="line">	if(first &#x3D;&#x3D;  null)&#123;</span><br><span class="line">		first &#x3D; node;</span><br><span class="line">		last &#x3D; node;</span><br><span class="line">		return;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	while(temp.getNext() !&#x3D; null)&#123;</span><br><span class="line">		temp &#x3D; temp.getNext();</span><br><span class="line">	&#125;</span><br><span class="line">	temp.setNext(node);	</span><br><span class="line">	node.setPre(temp);</span><br><span class="line">	last &#x3D; node;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="删除第一个节点"><a href="#删除第一个节点" class="headerlink" title="删除第一个节点"></a>删除第一个节点</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void removeFirstNode()&#123;</span><br><span class="line">	if(isEmpty())&#123;</span><br><span class="line">		return;</span><br><span class="line">	&#125;</span><br><span class="line">	first.getNext().setPre(null);</span><br><span class="line">	first &#x3D; first.getNext();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="删除最后一个节点"><a href="#删除最后一个节点" class="headerlink" title="删除最后一个节点"></a>删除最后一个节点</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void removeFirstNode()&#123;</span><br><span class="line">	if(isEmpty())&#123;</span><br><span class="line">		return;</span><br><span class="line">	&#125;</span><br><span class="line">	first.getNext().setPre(null);</span><br><span class="line">	first &#x3D; first.getNext();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="清空双链表"><a href="#清空双链表" class="headerlink" title="清空双链表"></a>清空双链表</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void clear()&#123;</span><br><span class="line">	setFirst(null);</span><br><span class="line">	setLast(null);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="查看指定节点数据"><a href="#查看指定节点数据" class="headerlink" title="查看指定节点数据"></a>查看指定节点数据</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public T getData(int index)&#123;</span><br><span class="line">	if(isEmpty())&#123;</span><br><span class="line">		return null;</span><br><span class="line">	&#125;</span><br><span class="line">	Node&lt;T&gt; temp &#x3D; first;</span><br><span class="line">	while(temp !&#x3D; null &amp;&amp; --index &gt; 0)&#123;</span><br><span class="line">		temp &#x3D; temp.getNext();</span><br><span class="line">	&#125;</span><br><span class="line">	return temp.getData();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="删除指定节点"><a href="#删除指定节点" class="headerlink" title="删除指定节点"></a>删除指定节点</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void removeNodeByPos(int index)&#123;</span><br><span class="line">	if(isEmpty())&#123;</span><br><span class="line">		return;</span><br><span class="line">	&#125;</span><br><span class="line">	if(getLength()&#x3D;&#x3D;index)&#123;</span><br><span class="line">		removeLastNode();</span><br><span class="line">		return;</span><br><span class="line">	&#125;</span><br><span class="line">	Node&lt;T&gt; temp &#x3D; first;</span><br><span class="line">	while(temp !&#x3D; null &amp;&amp; --index &gt; 0)&#123;</span><br><span class="line">		temp &#x3D; temp.getNext();</span><br><span class="line">	&#125;</span><br><span class="line">	temp.getNext().setPre(temp.getPre());</span><br><span class="line">	temp.getPre().setNext(temp.getNext());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="指定位置插入节点"><a href="#指定位置插入节点" class="headerlink" title="指定位置插入节点"></a>指定位置插入节点</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void insertByPos(int index,Node&lt;T&gt; node)&#123;</span><br><span class="line">	Node&lt;T&gt; temp &#x3D; first;</span><br><span class="line">	if(isEmpty() || index &#x3D;&#x3D; 1)&#123;&#x2F;&#x2F;空链表或者插入第一个时用头插法</span><br><span class="line">		insertNodeHead(node);</span><br><span class="line">		return;</span><br><span class="line">	&#125;</span><br><span class="line">	if(getLength()+1 &#x3D;&#x3D; index)&#123;&#x2F;&#x2F;指定最后位置时用尾插法</span><br><span class="line">		insertNodeTail(node);</span><br><span class="line">		return;</span><br><span class="line">	&#125;</span><br><span class="line">	while(temp !&#x3D; null &amp;&amp; --index &gt; 0)&#123;</span><br><span class="line">		temp &#x3D; temp.getNext();</span><br><span class="line">	&#125;</span><br><span class="line">	node.setNext(temp);&#x2F;&#x2F;新节点的next指向当前节点</span><br><span class="line">	node.setPre(temp.getPre());&#x2F;&#x2F;新节点的pre指向上一个节点</span><br><span class="line">	temp.getPre().setNext(node);&#x2F;&#x2F;上一个节点的next指向新节点</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="倒置空链表"><a href="#倒置空链表" class="headerlink" title="倒置空链表"></a>倒置空链表</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void reverse()&#123;</span><br><span class="line">	if(isEmpty())&#123;</span><br><span class="line">		return;</span><br><span class="line">	&#125;</span><br><span class="line">	Node&lt;T&gt; newNode &#x3D; first;</span><br><span class="line">	Node&lt;T&gt; temp &#x3D; first;</span><br><span class="line">	setFirst(null);</span><br><span class="line">	setLast(null);</span><br><span class="line">	while(newNode !&#x3D; null)&#123;&#x2F;&#x2F;遍历双链表</span><br><span class="line">		temp &#x3D; newNode.getNext();</span><br><span class="line">		newNode.setPre(null);</span><br><span class="line">		newNode.setNext(null);&#x2F;&#x2F;置空前后节点作为新节点</span><br><span class="line">		insertNodeHead(newNode);&#x2F;&#x2F;头插法</span><br><span class="line">		newNode &#x3D; temp;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="是否为空链表"><a href="#是否为空链表" class="headerlink" title="是否为空链表"></a>是否为空链表</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public boolean isEmpty()&#123;</span><br><span class="line">	return Objects.isNull(first);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="查看双链表长度"><a href="#查看双链表长度" class="headerlink" title="查看双链表长度"></a>查看双链表长度</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public int getLength()&#123;</span><br><span class="line">	Node&lt;T&gt; temp &#x3D; first;</span><br><span class="line">	int length &#x3D; 0;</span><br><span class="line">	while(temp !&#x3D; null)&#123;</span><br><span class="line">		length++;</span><br><span class="line">		temp &#x3D; temp.getNext();</span><br><span class="line">	&#125;</span><br><span class="line">	return length;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="显示所有节点"><a href="#显示所有节点" class="headerlink" title="显示所有节点"></a>显示所有节点</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void display()&#123;</span><br><span class="line">	Node&lt;T&gt; temp &#x3D; first;</span><br><span class="line">	while(temp !&#x3D; null)&#123;</span><br><span class="line">		System.out.println(temp.getData());</span><br><span class="line">		temp &#x3D; temp.getNext();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag"># 数据结构</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/06/17/%E5%8F%8D%E5%B0%84%E5%9F%BA%E7%A1%80/" rel="next" title="反射基础">
+                <i class="fa fa-chevron-left"></i> 反射基础
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/06/17/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%BA%A4%E6%9B%BF%E8%BE%93%E5%87%BAABC/" rel="prev" title="多线程交替输出ABC">
+                多线程交替输出ABC <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">sinaill</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">85</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#双向链表的结构"><span class="nav-number">1.</span> <span class="nav-text">双向链表的结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#节点"><span class="nav-number">2.</span> <span class="nav-text">节点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#头节点"><span class="nav-number">3.</span> <span class="nav-text">头节点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基本操作"><span class="nav-number">4.</span> <span class="nav-text">基本操作</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#头插法"><span class="nav-number">4.1.</span> <span class="nav-text">头插法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#尾插法"><span class="nav-number">4.2.</span> <span class="nav-text">尾插法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#删除第一个节点"><span class="nav-number">4.3.</span> <span class="nav-text">删除第一个节点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#删除最后一个节点"><span class="nav-number">4.4.</span> <span class="nav-text">删除最后一个节点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#清空双链表"><span class="nav-number">4.5.</span> <span class="nav-text">清空双链表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查看指定节点数据"><span class="nav-number">4.6.</span> <span class="nav-text">查看指定节点数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#删除指定节点"><span class="nav-number">4.7.</span> <span class="nav-text">删除指定节点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#指定位置插入节点"><span class="nav-number">4.8.</span> <span class="nav-text">指定位置插入节点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#倒置空链表"><span class="nav-number">4.9.</span> <span class="nav-text">倒置空链表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#是否为空链表"><span class="nav-number">4.10.</span> <span class="nav-text">是否为空链表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查看双链表长度"><span class="nav-number">4.11.</span> <span class="nav-text">查看双链表长度</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#显示所有节点"><span class="nav-number">4.12.</span> <span class="nav-text">显示所有节点</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">sinaill</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  <link rel="stylesheet" href="/lib/prettify/skins/desert.css" type="text/css">
+<script src="/lib/prettify/prettify.js" type="text/javascript"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+      $('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+      prettyPrint();
+  });
+</script>
+</body>
+</html>

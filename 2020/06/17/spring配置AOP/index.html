@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Spring," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="AOP面向切面编程AOP的底层原理就是动态代理，就是对目标方法进行增强，将相同逻辑的重复代码横向抽取出来，使用动态代理技术将这些重复代码织入到目标对象方法中，实现和原来一样的功能，例如访问控制，事务管理以及日志记录 AOP 切面(Aspect)： 一些横跨多个类的公共模块，如日志，安全，事务等。简单地说，日志模块就是一个切面 连接点(Joint Point)： 目标类中插入代码的方法，在Sprin">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring配置AOP">
+<meta property="og:url" content="http://yoursite.com/2020/06/17/spring%E9%85%8D%E7%BD%AEAOP/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="AOP面向切面编程AOP的底层原理就是动态代理，就是对目标方法进行增强，将相同逻辑的重复代码横向抽取出来，使用动态代理技术将这些重复代码织入到目标对象方法中，实现和原来一样的功能，例如访问控制，事务管理以及日志记录 AOP 切面(Aspect)： 一些横跨多个类的公共模块，如日志，安全，事务等。简单地说，日志模块就是一个切面 连接点(Joint Point)： 目标类中插入代码的方法，在Sprin">
+<meta property="article:published_time" content="2020-06-16T17:43:37.251Z">
+<meta property="article:modified_time" content="2020-06-16T17:43:37.251Z">
+<meta property="article:author" content="sinaill">
+<meta property="article:tag" content="Spring">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/06/17/spring配置AOP/"/>
+
+
+
+
+
+  <title>Spring配置AOP | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/spring%E9%85%8D%E7%BD%AEAOP/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Spring配置AOP</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">框架</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="AOP面向切面编程"><a href="#AOP面向切面编程" class="headerlink" title="AOP面向切面编程"></a>AOP面向切面编程</h3><p>AOP的底层原理就是动态代理，就是对目标方法进行增强，<strong>将相同逻辑的重复代码横向抽取出来，使用动态代理技术将这些重复代码织入到目标对象方法中，实现和原来一样的功能</strong>，例如访问控制，事务管理以及日志记录</p>
+<h3 id="AOP"><a href="#AOP" class="headerlink" title="AOP"></a>AOP</h3><ul>
+<li>切面(Aspect)： 一些横跨多个类的公共模块，如日志，安全，事务等。简单地说，日志模块就是一个切面</li>
+<li>连接点(Joint Point)： 目标类中插入代码的方法，在<code>Spring AOP</code>中连接点为方法</li>
+<li>通知(Advice)： 在连接点插入的实际代码(即切面的方法)</li>
+<li>切点(Pointcut)： 定义了连接点的条件，匹配所有对应的<code>joint Point</code></li>
+<li>目标对象(target object): 目标对象(可以理解为连接点所在的类)</li>
+<li>代理对象(proxy object): 目标对象的代理对象</li>
+<li>织入(Weaving): 利用代理实现切面方法增强连接点方法的过程叫织入</li>
+</ul>
+<h4 id="Aspect"><a href="#Aspect" class="headerlink" title="Aspect"></a>Aspect</h4><p>声明一个切面有两种方法，一种是通过xml配置的方法</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;bean id&#x3D;&quot;myAspect&quot; class&#x3D;&quot;org.xyz.NotVeryUsefulAspect&quot;&gt;</span><br><span class="line">    &lt;!-- configure properties of the aspect here --&gt;</span><br><span class="line">&lt;&#x2F;bean&gt;</span><br></pre></td></tr></table></figure>
+
+<p>当然，配置的这个类上需要有<code>@Aspect</code>注解</p>
+<p>第二种就是注解配置的方法</p>
+<p>在需要声明为切面的类上配置<code>@Aspect</code>注解，但是，注意Spring文档中，However, note that the @Aspect annotation is not sufficient for autodetection in the classpath. For that purpose, you need to add a separate @Component annotation</p>
+<p>意思就是采用注解的方式声明，不仅需要<code>@Aspect</code>注解，还需要配置上<code>@Component</code>注解才行</p>
+<h4 id="Advice"><a href="#Advice" class="headerlink" title="Advice"></a>Advice</h4><p>总共有五种<code>Advice</code></p>
+<ul>
+<li>Before advice: 在执行连接点方法之前被调用，并且无法阻止方法执行，除非抛出异常</li>
+<li>After returning advice: 在连接点方法被完整执行之后，返回值并且没有抛出异常</li>
+<li>After throwing advice: 当方法执行后抛出异常之后被调用</li>
+<li>After advice: 在方法运行完之后，无论是正常执行或者抛出异常都被调用</li>
+<li>Around advice: 围绕连接点方法被调用，可以在执行连接点方法前后执行我们自定义的操作，干预方法例如修改返回值和修改方法的调用参数等</li>
+</ul>
+<h4 id="Pointcut"><a href="#Pointcut" class="headerlink" title="Pointcut"></a>Pointcut</h4><p><code>Pointcut</code>用来确定连接点，它的值通过<code>point designator</code>指定，规则如下</p>
+<ol>
+<li>execution</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Pointcut(&quot;execution(public String org.baeldung.dao.FooDao.findById(Long))&quot;)</span><br><span class="line"></span><br><span class="line">@Pointcut(&quot;execution(* org.baeldung.dao.FooDao.*(..))&quot;)</span><br></pre></td></tr></table></figure>
+
+<p>通过第一种指定特定方法或者第二种模糊匹配</p>
+<ol start="2">
+<li>within</li>
+</ol>
+<p>within是用来指定类型的，指定类型中的所有方法将被拦截</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Pointcut(&quot;within(org.baeldung.dao.FooDao)&quot;)</span><br><span class="line"></span><br><span class="line">@Pointcut(&quot;within(org.baeldung..*)&quot;)</span><br></pre></td></tr></table></figure>
+
+<p>指定某个类或者某个包下所有类的所有方法(子类型无效)</p>
+<ol start="3">
+<li>this and target</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Pointcut(&quot;target(org.baeldung.dao.BarDao)&quot;)</span><br><span class="line"></span><br><span class="line">@Pointcut(&quot;this(org.baeldung.dao.FooDao)&quot;)</span><br></pre></td></tr></table></figure>
+
+<p>其中target指代被代理的类(连接点方法所在的类)，this表示代理类，匹配条件为是给定值的类的实例</p>
+<ol start="4">
+<li>args</li>
+</ol>
+<p>args是用来匹配方法参数的</p>
+<ul>
+<li><code>args()</code>匹配任何不带参数的方法。</li>
+<li><code>args(java.lang.String)</code>匹配任何只带一个参数，而且这个参数的类型是<code>String</code>的方法。</li>
+<li><code>args(..)</code>带任意参数的方法。</li>
+<li><code>args(java.lang.String,..)</code>匹配带任意个参数，但是第一个参数的类型是<code>String</code>的方法。</li>
+<li><code>args(..,java.lang.String)</code>匹配带任意个参数，但是最后一个参数的类型是<code>String</code>的方法。</li>
+</ul>
+<ol start="5">
+<li>@target</li>
+</ol>
+<p>与上面的target是不同的，这个是指定目标类(子类无效)要有指定的注解才能匹配，</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Pointcut(&quot;@target(org.springframework.stereotype.Repository)&quot;)</span><br></pre></td></tr></table></figure>
+
+<ol start="6">
+<li>@args</li>
+</ol>
+<p>用来匹配参数带有指定注解的方法</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Pointcut(&quot;@args(com.elim.spring.support.MyAnnotation)&quot;)</span><br></pre></td></tr></table></figure>
+
+<ol start="7">
+<li>@within</li>
+</ol>
+<p>和<code>@target</code>差不多，但是<code>@within</code>范围更大，被注解类的子类中未被覆写的方法也匹配</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Pointcut(&quot;@target(org.springframework.stereotype.Repository)&quot;)</span><br></pre></td></tr></table></figure>
+
+
+<ol start="8">
+<li>@annotation</li>
+</ol>
+<p>@annotation用于匹配方法上拥有指定注解的情况。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Point(&quot;@annotation(com.elim.spring.support.MyAnnotation)&quot;)</span><br></pre></td></tr></table></figure>
+
+<h3 id="五种通知方法"><a href="#五种通知方法" class="headerlink" title="五种通知方法"></a>五种通知方法</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Aspect</span><br><span class="line">@Component</span><br><span class="line">public class Log &#123;</span><br><span class="line">	@Pointcut(&quot;execution(* crj.ssm.service.*.*(..))&quot;)</span><br><span class="line">	private void startLog() &#123;</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Before(&quot;startLog()&quot;)</span><br><span class="line">	public void beforeMethod(JoinPoint point) &#123;</span><br><span class="line">		System.out.println(&quot;@Before方法开始&quot;);</span><br><span class="line">		System.out.println(&quot;getSignature方法：&quot;+point.getSignature().getName());</span><br><span class="line">		&#x2F;&#x2F;获取目标方法的参数，返回的是Object[]</span><br><span class="line">		System.out.println(&quot;getArgs方法： &quot;+point.getArgs());</span><br><span class="line">		&#x2F;&#x2F;返回目标方法所在的类</span><br><span class="line">		System.out.println(&quot;getTarget方法：&quot;+point.getTarget());</span><br><span class="line">		&#x2F;&#x2F;也是返回目标方法所在的类</span><br><span class="line">		System.out.println(&quot;getThis方法&quot; +point.getThis());</span><br><span class="line">		System.out.println(&quot;@Before方法结束&quot;);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Around(&quot;startLog()&quot;)</span><br><span class="line">	public Object aroundMethod(ProceedingJoinPoint point) throws Throwable&#123;</span><br><span class="line">		System.out.println(&quot;@aroundMethod方法开始&quot;);</span><br><span class="line">		&#x2F;&#x2F;同上</span><br><span class="line">		System.out.println(point.getArgs());</span><br><span class="line">		Object object &#x3D; point.proceed(point.getArgs());</span><br><span class="line">		System.out.println(&quot;@aroundMethod方法结束&quot;);</span><br><span class="line">		return object;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@After(&quot;startLog()&quot;)</span><br><span class="line">	public void afterMethod(JoinPoint point) &#123;</span><br><span class="line">		System.out.println(&quot;@afterMethod方法开始&quot;);</span><br><span class="line">		System.out.println(&quot;this is after-method&quot;);</span><br><span class="line">		System.out.println(&quot;@afterMethod方法结束&quot;);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@AfterReturning(value &#x3D; &quot;startLog()&quot;, returning &#x3D; &quot;result&quot;)</span><br><span class="line">	public void afterReturningMethod(JoinPoint point, Object result) &#123;</span><br><span class="line">		System.out.println(&quot;@AfterReturning方法开始&quot;);</span><br><span class="line">		System.out.println(result);</span><br><span class="line">		System.out.println(&quot;@AfterReturning方法结束&quot;);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@AfterThrowing(value &#x3D; &quot;startLog()&quot;, throwing &#x3D; &quot;ex&quot;)</span><br><span class="line">	public void afterThrowingMethod(JoinPoint point, Throwable ex) &#123;</span><br><span class="line">		System.out.println(&quot;this is afterThrowing-method&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>执行顺序为</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">prehandle方法</span><br><span class="line">@aroundMethod方法开始</span><br><span class="line">getArgs方法[Ljava.lang.Object;@493d696c</span><br><span class="line">@Before方法开始</span><br><span class="line">getSignature方法：selectById</span><br><span class="line">getArgs方法： [Ljava.lang.Object;@72e6ef43</span><br><span class="line">getTarget方法：crj.ssm.service.impl.PersonServiceImpl@177185be</span><br><span class="line">getThis方法crj.ssm.service.impl.PersonServiceImpl@177185be</span><br><span class="line">@Before方法结束</span><br><span class="line">-----------------------------------------</span><br><span class="line">22:44:37.933 [http-bio-8080-exec-2] DEBUG org.mybatis.spring.SqlSessionUtils - Creating a new SqlSession</span><br><span class="line">22:44:37.946 [http-bio-8080-exec-2] DEBUG org.mybatis.spring.SqlSessionUtils - Registering transaction synchronization for SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@711b6130]</span><br><span class="line">22:44:37.960 [http-bio-8080-exec-2] DEBUG o.m.s.t.SpringManagedTransaction - JDBC Connection [com.mchange.v2.c3p0.impl.NewProxyConnection@21118e0c] will be managed by Spring</span><br><span class="line">22:44:37.967 [http-bio-8080-exec-2] DEBUG crj.ssm.dao.PersonDao.selectById - &#x3D;&#x3D;&gt;  Preparing: SELECT * from person where id &#x3D; ? </span><br><span class="line">22:44:38.029 [http-bio-8080-exec-2] DEBUG crj.ssm.dao.PersonDao.selectById - &#x3D;&#x3D;&gt; Parameters: 1(Integer)</span><br><span class="line">22:44:38.065 [http-bio-8080-exec-2] DEBUG crj.ssm.dao.PersonDao.selectById - &lt;&#x3D;&#x3D;      Total: 1</span><br><span class="line">22:44:38.078 [http-bio-8080-exec-2] DEBUG org.mybatis.spring.SqlSessionUtils - Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@711b6130]</span><br><span class="line">@aroundMethod方法结束</span><br><span class="line">@afterMethod方法开始</span><br><span class="line">this is after-method</span><br><span class="line">@afterMethod方法结束</span><br><span class="line">@AfterReturning方法开始</span><br><span class="line">crj.ssm.entity.Person@77e5c255</span><br><span class="line">@AfterReturning方法结束</span><br><span class="line">22:44:38.106 [http-bio-8080-exec-2] DEBUG org.mybatis.spring.SqlSessionUtils - Transaction synchronization committing SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@711b6130]</span><br><span class="line">22:44:38.108 [http-bio-8080-exec-2] DEBUG org.mybatis.spring.SqlSessionUtils - Transaction synchronization deregistering SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@711b6130]</span><br><span class="line">22:44:38.108 [http-bio-8080-exec-2] DEBUG org.mybatis.spring.SqlSessionUtils - Transaction synchronization closing SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@711b6130]</span><br><span class="line">postHandle方法</span><br><span class="line">afterCompletion方法</span><br></pre></td></tr></table></figure>
+
+<p>先执行<code>@Around</code>方法，直到调用proceed方法前，调用<code>@Before</code>方法，然后就是执行目标方法，执行完目标方法，开始执行<code>@AfterMethod</code>方法，然后<code>@Around</code>方法执行完proceed返回值，然后是<code>@AfterReturning</code>方法。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Spring/" rel="tag"># Spring</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/06/17/springmvc%E9%85%8D%E7%BD%AE%E6%8B%A6%E6%88%AA%E5%99%A8/" rel="next" title="SpringMVC配置拦截器">
+                <i class="fa fa-chevron-left"></i> SpringMVC配置拦截器
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/06/17/%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/" rel="prev" title="代理模式">
+                代理模式 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">sinaill</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">85</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#AOP面向切面编程"><span class="nav-number">1.</span> <span class="nav-text">AOP面向切面编程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AOP"><span class="nav-number">2.</span> <span class="nav-text">AOP</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Aspect"><span class="nav-number">2.1.</span> <span class="nav-text">Aspect</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Advice"><span class="nav-number">2.2.</span> <span class="nav-text">Advice</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Pointcut"><span class="nav-number">2.3.</span> <span class="nav-text">Pointcut</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#五种通知方法"><span class="nav-number">3.</span> <span class="nav-text">五种通知方法</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">sinaill</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  <link rel="stylesheet" href="/lib/prettify/skins/desert.css" type="text/css">
+<script src="/lib/prettify/prettify.js" type="text/javascript"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+      $('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+      prettyPrint();
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="多线程," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="共享锁和独享锁操作stateReentrantReadWriteLock中共享锁和独享锁对锁的操作还是共同操作一个变量state，那怎么区分这个state是共享锁取得锁还是独享锁取得锁呢 从ReentrantReadWriteLock的源码我们来看 static final int SHARED_SHIFT   &#x3D; 16static final int EXCLUSIVE_MASK &amp;#">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ReentrantReadWriteLock的共享锁和独享锁">
+<meta property="og:url" content="http://yoursite.com/2020/06/17/ReentrantReadWriteLock%E7%9A%84%E5%85%B1%E4%BA%AB%E9%94%81%E5%92%8C%E7%8B%AC%E4%BA%AB%E9%94%81/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="共享锁和独享锁操作stateReentrantReadWriteLock中共享锁和独享锁对锁的操作还是共同操作一个变量state，那怎么区分这个state是共享锁取得锁还是独享锁取得锁呢 从ReentrantReadWriteLock的源码我们来看 static final int SHARED_SHIFT   &#x3D; 16static final int EXCLUSIVE_MASK &amp;#">
+<meta property="article:published_time" content="2020-06-16T17:43:37.226Z">
+<meta property="article:modified_time" content="2020-06-16T17:43:37.226Z">
+<meta property="article:author" content="sinaill">
+<meta property="article:tag" content="多线程">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/06/17/ReentrantReadWriteLock的共享锁和独享锁/"/>
+
+
+
+
+
+  <title>ReentrantReadWriteLock的共享锁和独享锁 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/ReentrantReadWriteLock%E7%9A%84%E5%85%B1%E4%BA%AB%E9%94%81%E5%92%8C%E7%8B%AC%E4%BA%AB%E9%94%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">ReentrantReadWriteLock的共享锁和独享锁</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="共享锁和独享锁操作state"><a href="#共享锁和独享锁操作state" class="headerlink" title="共享锁和独享锁操作state"></a>共享锁和独享锁操作state</h3><p>ReentrantReadWriteLock中共享锁和独享锁对锁的操作还是共同操作一个变量<code>state</code>，那怎么区分这个<code>state</code>是共享锁取得锁还是独享锁取得锁呢</p>
+<p>从ReentrantReadWriteLock的源码我们来看</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">static final int SHARED_SHIFT   &#x3D; 16</span><br><span class="line"></span><br><span class="line">static final int EXCLUSIVE_MASK &#x3D; (1 &lt;&lt; SHARED_SHIFT) - 1</span><br><span class="line"></span><br><span class="line">&#x2F;** Returns the number of shared holds represented in count  *&#x2F;</span><br><span class="line">static int sharedCount(int c)    &#123; return c &gt;&gt;&gt; SHARED_SHIFT; &#125;</span><br><span class="line">&#x2F;** Returns the number of exclusive holds represented in count  *&#x2F;</span><br><span class="line">static int exclusiveCount(int c) &#123; return c &amp; EXCLUSIVE_MASK; &#125;</span><br></pre></td></tr></table></figure>
+
+<p>下面两个方法传入<code>state</code>，返回共享锁取得锁次数和独享锁取得锁次数</p>
+<p>其中获取共享锁次数的方式为将<code>state</code>无符号右移16位</p>
+<p>获取独享锁次数的方式为将<code>state</code>与<code>EXCLUSIVE_MASK</code>进行并运算，<code>EXCLUSIVE_MASK</code>为32位int型，前16位为0，后16位为1</p>
+<p>所以<code>state</code>区分独享锁和共享锁次数的方法为，将<code>state</code>32位一分为二，前16位用来表示共享锁获取次数，后16位用来表示独享锁获取次数</p>
+<h3 id="共享锁和独享锁在获取锁时的区别"><a href="#共享锁和独享锁在获取锁时的区别" class="headerlink" title="共享锁和独享锁在获取锁时的区别"></a>共享锁和独享锁在获取锁时的区别</h3><p>读锁用的就是共享锁，我们知道多个线程是可以同时获取读锁的</p>
+<p>读锁获取锁的源码如下</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public final void acquireShared(int arg) &#123;</span><br><span class="line">    if (tryAcquireShared(arg) &lt; 0)</span><br><span class="line">        doAcquireShared(arg);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>而写锁获取锁的源码如下</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public final void acquire(int arg) &#123;</span><br><span class="line">    if (!tryAcquire(arg) &amp;&amp;</span><br><span class="line">        acquireQueued(addWaiter(Node.EXCLUSIVE), arg))</span><br><span class="line">        selfInterrupt();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>都是一样的先尝试获取锁，失败之后放入<code>waitingqueue</code>等待唤醒</p>
+<p>我们看获取锁有什么区别，下面是获取独享锁</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">protected final boolean tryAcquire(int acquires) &#123;</span><br><span class="line">    &#x2F;*</span><br><span class="line">     * Walkthrough:</span><br><span class="line">     * 1. If read count nonzero or write count nonzero</span><br><span class="line">     *    and owner is a different thread, fail.</span><br><span class="line">     * 2. If count would saturate, fail. (This can only</span><br><span class="line">     *    happen if count is already nonzero.)</span><br><span class="line">     * 3. Otherwise, this thread is eligible for lock if</span><br><span class="line">     *    it is either a reentrant acquire or</span><br><span class="line">     *    queue policy allows it. If so, update state</span><br><span class="line">     *    and set owner.</span><br><span class="line">     *&#x2F;</span><br><span class="line">    Thread current &#x3D; Thread.currentThread();</span><br><span class="line">    int c &#x3D; getState();</span><br><span class="line">    int w &#x3D; exclusiveCount(c);</span><br><span class="line">    if (c !&#x3D; 0) &#123;</span><br><span class="line">        &#x2F;&#x2F; (Note: if c !&#x3D; 0 and w &#x3D;&#x3D; 0 then shared count !&#x3D; 0)</span><br><span class="line">        if (w &#x3D;&#x3D; 0 || current !&#x3D; getExclusiveOwnerThread())</span><br><span class="line">            return false;</span><br><span class="line">        if (w + exclusiveCount(acquires) &gt; MAX_COUNT)</span><br><span class="line">            throw new Error(&quot;Maximum lock count exceeded&quot;);</span><br><span class="line">        &#x2F;&#x2F; Reentrant acquire</span><br><span class="line">        setState(c + acquires);</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br><span class="line">    if (writerShouldBlock() ||</span><br><span class="line">        !compareAndSetState(c, c + acquires))</span><br><span class="line">        return false;</span><br><span class="line">    setExclusiveOwnerThread(current);</span><br><span class="line">    return true;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当c!=0且w==0时，说明存在线程获取了读锁，没有线程获取了写锁，此时想要获取写锁，则需要进入waitingqueue排队</p>
+<p>当c==0时，即没有线程获取写锁和读锁，线程直接获取写锁</p>
+<p>读锁想重入写锁需要进入waitingqueue</p>
+<p>下面是获取共享锁</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">protected final int tryAcquireShared(int unused) &#123;</span><br><span class="line">    &#x2F;*</span><br><span class="line">     * Walkthrough:</span><br><span class="line">     * 1. If write lock held by another thread, fail.</span><br><span class="line">     * 2. Otherwise, this thread is eligible for</span><br><span class="line">     *    lock wrt state, so ask if it should block</span><br><span class="line">     *    because of queue policy. If not, try</span><br><span class="line">     *    to grant by CASing state and updating count.</span><br><span class="line">     *    Note that step does not check for reentrant</span><br><span class="line">     *    acquires, which is postponed to full version</span><br><span class="line">     *    to avoid having to check hold count in</span><br><span class="line">     *    the more typical non-reentrant case.</span><br><span class="line">     * 3. If step 2 fails either because thread</span><br><span class="line">     *    apparently not eligible or CAS fails or count</span><br><span class="line">     *    saturated, chain to version with full retry loop.</span><br><span class="line">     *&#x2F;</span><br><span class="line">    Thread current &#x3D; Thread.currentThread();</span><br><span class="line">    int c &#x3D; getState();</span><br><span class="line">    if (exclusiveCount(c) !&#x3D; 0 &amp;&amp;</span><br><span class="line">        getExclusiveOwnerThread() !&#x3D; current)</span><br><span class="line">        return -1;</span><br><span class="line">    int r &#x3D; sharedCount(c);</span><br><span class="line">    if (!readerShouldBlock() &amp;&amp;</span><br><span class="line">        r &lt; MAX_COUNT &amp;&amp;</span><br><span class="line">        compareAndSetState(c, c + SHARED_UNIT)) &#123;</span><br><span class="line">        if (r &#x3D;&#x3D; 0) &#123;</span><br><span class="line">            firstReader &#x3D; current;</span><br><span class="line">            firstReaderHoldCount &#x3D; 1;</span><br><span class="line">        &#125; else if (firstReader &#x3D;&#x3D; current) &#123;</span><br><span class="line">            firstReaderHoldCount++;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            HoldCounter rh &#x3D; cachedHoldCounter;</span><br><span class="line">            if (rh &#x3D;&#x3D; null || rh.tid !&#x3D; getThreadId(current))</span><br><span class="line">                cachedHoldCounter &#x3D; rh &#x3D; readHolds.get();</span><br><span class="line">            else if (rh.count &#x3D;&#x3D; 0)</span><br><span class="line">                readHolds.set(rh);</span><br><span class="line">            rh.count++;</span><br><span class="line">        &#125;</span><br><span class="line">        return 1;</span><br><span class="line">    &#125;</span><br><span class="line">    return fullTryAcquireShared(current);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>共享锁对应的也先获取独享锁获取次数，如果已经有获取独享锁的线程了，那就进waitingqueue</p>
+<p>如果此时没有线程获取独享锁，且waitingqueue中也没有exclusive模式的Node在排队，直接获取读锁，并且因为不像独享锁，它的特性exclusive使得它可以用<code>state</code>来记录重入的次数，而共享锁可以多个线程同时获取锁，所以这里用了<code>ThreadLocal</code>在线程中存放每个读锁重入的次数</p>
+<p>如果是写锁要重入读锁，可以直接获取读锁</p>
+<p><strong>根据以上特性我们可以初步总结到，当没有线程获取到写锁时，多个线程都可以获取到读锁，并且不需要进入waitingqueue，但是当有线程尝试获取写锁时，由于已经有线程获取了读锁，所以它要进入waitingqueue，此时后续想要获取读锁的线程也只能进入waitingqueue</strong></p>
+<h3 id="共享锁和独享锁唤醒successor的区别"><a href="#共享锁和独享锁唤醒successor的区别" class="headerlink" title="共享锁和独享锁唤醒successor的区别"></a>共享锁和独享锁唤醒successor的区别</h3><h4 id="setHeadAndPropagate"><a href="#setHeadAndPropagate" class="headerlink" title="setHeadAndPropagate"></a>setHeadAndPropagate</h4><p>我们知道，独享锁只有在<code>unlock()</code>的时候才会唤醒下个被挂起的线程，而waitingqueue中共享锁模式的Node总共有两次换新下个被挂起的线程，一次在被唤醒获取到锁之后，一次是在<code>unlock()</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">private void setHeadAndPropagate(Node node, int propagate) &#123;</span><br><span class="line">    Node h &#x3D; head; &#x2F;&#x2F; Record old head for check below</span><br><span class="line">    setHead(node);</span><br><span class="line">    &#x2F;*</span><br><span class="line">     * Try to signal next queued node if:</span><br><span class="line">     *   Propagation was indicated by caller,</span><br><span class="line">     *     or was recorded (as h.waitStatus either before</span><br><span class="line">     *     or after setHead) by a previous operation</span><br><span class="line">     *     (note: this uses sign-check of waitStatus because</span><br><span class="line">     *      PROPAGATE status may transition to SIGNAL.)</span><br><span class="line">     * and</span><br><span class="line">     *   The next node is waiting in shared mode,</span><br><span class="line">     *     or we don&#39;t know, because it appears null</span><br><span class="line">     *</span><br><span class="line">     * The conservatism in both of these checks may cause</span><br><span class="line">     * unnecessary wake-ups, but only when there are multiple</span><br><span class="line">     * racing acquires&#x2F;releases, so most need signals now or soon</span><br><span class="line">     * anyway.</span><br><span class="line">     *&#x2F;</span><br><span class="line">    if (propagate &gt; 0 || h &#x3D;&#x3D; null || h.waitStatus &lt; 0 ||</span><br><span class="line">        (h &#x3D; head) &#x3D;&#x3D; null || h.waitStatus &lt; 0) &#123;</span><br><span class="line">        Node s &#x3D; node.next;</span><br><span class="line">        if (s &#x3D;&#x3D; null || s.isShared())</span><br><span class="line">            doReleaseShared();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当Node中线程获取到锁之后，会将自己设置为头节点Head，但是共享锁比起独享锁在这一步多了操作</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">private void setHeadAndPropagate(Node node, int propagate) &#123;</span><br><span class="line">    Node h &#x3D; head; &#x2F;&#x2F; Record old head for check below</span><br><span class="line">    setHead(node);</span><br><span class="line">    &#x2F;*</span><br><span class="line">     * Try to signal next queued node if:</span><br><span class="line">     *   Propagation was indicated by caller,</span><br><span class="line">     *     or was recorded (as h.waitStatus either before</span><br><span class="line">     *     or after setHead) by a previous operation</span><br><span class="line">     *     (note: this uses sign-check of waitStatus because</span><br><span class="line">     *      PROPAGATE status may transition to SIGNAL.)</span><br><span class="line">     * and</span><br><span class="line">     *   The next node is waiting in shared mode,</span><br><span class="line">     *     or we don&#39;t know, because it appears null</span><br><span class="line">     *</span><br><span class="line">     * The conservatism in both of these checks may cause</span><br><span class="line">     * unnecessary wake-ups, but only when there are multiple</span><br><span class="line">     * racing acquires&#x2F;releases, so most need signals now or soon</span><br><span class="line">     * anyway.</span><br><span class="line">     *&#x2F;</span><br><span class="line">    if (propagate &gt; 0 || h &#x3D;&#x3D; null || h.waitStatus &lt; 0 ||</span><br><span class="line">        (h &#x3D; head) &#x3D;&#x3D; null || h.waitStatus &lt; 0) &#123;</span><br><span class="line">        Node s &#x3D; node.next;</span><br><span class="line">        if (s &#x3D;&#x3D; null || s.isShared())</span><br><span class="line">            doReleaseShared();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到最后调用了<code>doReleaseShared()</code>方法，唤醒下一个节点如果这个节点模式也为<code>Shared</code></p>
+<p>而在<code>unlock()</code>中</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public final boolean releaseShared(int arg) &#123;</span><br><span class="line">    if (tryReleaseShared(arg)) &#123;</span><br><span class="line">        doReleaseShared();</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br><span class="line">    return false;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>也调用了<code>doReleaseShared()</code>方法唤醒下一个节点</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">private void doReleaseShared() &#123;</span><br><span class="line">    &#x2F;*</span><br><span class="line">     * Ensure that a release propagates, even if there are other</span><br><span class="line">     * in-progress acquires&#x2F;releases.  This proceeds in the usual</span><br><span class="line">     * way of trying to unparkSuccessor of head if it needs</span><br><span class="line">     * signal. But if it does not, status is set to PROPAGATE to</span><br><span class="line">     * ensure that upon release, propagation continues.</span><br><span class="line">     * Additionally, we must loop in case a new node is added</span><br><span class="line">     * while we are doing this. Also, unlike other uses of</span><br><span class="line">     * unparkSuccessor, we need to know if CAS to reset status</span><br><span class="line">     * fails, if so rechecking.</span><br><span class="line">     *&#x2F;</span><br><span class="line">    for (;;) &#123;</span><br><span class="line">        Node h &#x3D; head;</span><br><span class="line">        if (h !&#x3D; null &amp;&amp; h !&#x3D; tail) &#123;</span><br><span class="line">            int ws &#x3D; h.waitStatus;</span><br><span class="line">            if (ws &#x3D;&#x3D; Node.SIGNAL) &#123;</span><br><span class="line">                if (!compareAndSetWaitStatus(h, Node.SIGNAL, 0))</span><br><span class="line">                    continue;            &#x2F;&#x2F; loop to recheck cases</span><br><span class="line">                unparkSuccessor(h);</span><br><span class="line">            &#125;</span><br><span class="line">            else if (ws &#x3D;&#x3D; 0 &amp;&amp;</span><br><span class="line">                     !compareAndSetWaitStatus(h, 0, Node.PROPAGATE))</span><br><span class="line">                continue;                &#x2F;&#x2F; loop on failed CAS</span><br><span class="line">        &#125;</span><br><span class="line">        if (h &#x3D;&#x3D; head)                   &#x2F;&#x2F; loop if head changed</span><br><span class="line">            break;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这就是唤醒下一个节点的源码，是一个for循环，只有<code>h==head</code>才能跳出循环</p>
+<p>共享锁多出的这一步获取锁之后唤醒下一个模式为<code>shared</code>的节点的线程，目的应该是将多个连续的<code>shared</code>节点的线程都唤醒</p>
+<p>但是在这一步可能会出现的问题是，如果唤醒下一个<code>shared</code>，在它获取锁将自己设置为Head之前，此时来到<code>h==head</code>，则循环结束，正好是一个链式唤醒<br>如果在下一个<code>shared</code>获取锁将自己设置为Head之后，此时h!=head，这样会造成什么后果，多个线程在执行自己代码之前，循环唤醒下个节点，这叫”调用风暴”，这极大地加速了唤醒后继节点的速度，提升了效率，同时该方法内部的CAS操作又保证了多个线程同时唤醒一个节点时，只有一个线程能操作成功。<br>直到下一个<code>exclusive</code>，因为有线程持有读锁，所以唤醒的线程获取不了写锁，唤醒终止，此时<code>head</code>不变，<code>h==head</code>恒成立，所有<code>doReleaseShared</code>循环结束，获取读锁的线程执行自己代码</p>
+<h4 id="unlock"><a href="#unlock" class="headerlink" title="unlock"></a>unlock</h4><p>两种锁在这一步相似</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">protected final boolean tryReleaseShared(int unused) &#123;</span><br><span class="line">    Thread current &#x3D; Thread.currentThread();</span><br><span class="line">    if (firstReader &#x3D;&#x3D; current) &#123;</span><br><span class="line">        &#x2F;&#x2F; assert firstReaderHoldCount &gt; 0;</span><br><span class="line">        if (firstReaderHoldCount &#x3D;&#x3D; 1)</span><br><span class="line">            firstReader &#x3D; null;</span><br><span class="line">        else</span><br><span class="line">            firstReaderHoldCount--;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        HoldCounter rh &#x3D; cachedHoldCounter;</span><br><span class="line">        if (rh &#x3D;&#x3D; null || rh.tid !&#x3D; getThreadId(current))</span><br><span class="line">            rh &#x3D; readHolds.get();</span><br><span class="line">        int count &#x3D; rh.count;</span><br><span class="line">        if (count &lt;&#x3D; 1) &#123;</span><br><span class="line">            readHolds.remove();</span><br><span class="line">            if (count &lt;&#x3D; 0)</span><br><span class="line">                throw unmatchedUnlockException();</span><br><span class="line">        &#125;</span><br><span class="line">        --rh.count;</span><br><span class="line">    &#125;</span><br><span class="line">    for (;;) &#123;</span><br><span class="line">        int c &#x3D; getState();</span><br><span class="line">        int nextc &#x3D; c - SHARED_UNIT;</span><br><span class="line">        if (compareAndSetState(c, nextc))</span><br><span class="line">            &#x2F;&#x2F; Releasing the read lock has no effect on readers,</span><br><span class="line">            &#x2F;&#x2F; but it may allow waiting writers to proceed if</span><br><span class="line">            &#x2F;&#x2F; both read and write locks are now free.</span><br><span class="line">            return nextc &#x3D;&#x3D; 0;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>最后这个for循环作用，只用当读锁全部释放完，且没有线程占有写锁的情况下，共享锁会唤醒下一个节点</p>
+<p>为什么要强调没有线程占有写锁，我想可能是写锁重入读锁的问题，当写锁重入读锁，读锁<code>unlock()</code>的时候，也就是这一步，加这个条件，此时会尝试唤醒下一个线程，并且会改变<code>waitStatus</code>的状态为0(每次要唤醒下一个节点，都会把头节点<code>waitStatus</code>从<code>signal</code>变为0)，会导致什么后果呢</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public final boolean release(int arg) &#123;</span><br><span class="line">    if (tryRelease(arg)) &#123;</span><br><span class="line">        Node h &#x3D; head;</span><br><span class="line">        if (h !&#x3D; null &amp;&amp; h.waitStatus !&#x3D; 0)</span><br><span class="line">            unparkSuccessor(h);</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br><span class="line">    return false;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>waitStatus</code>变为0，这里无法唤醒下一个waitingqueue节点的线程</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag"># 多线程</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/06/17/Mysql%E8%AF%AD%E6%B3%95%E7%BB%83%E4%B9%A0/" rel="next" title="Mysql语法练习">
+                <i class="fa fa-chevron-left"></i> Mysql语法练习
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/06/17/SpringMVC%E4%B8%ADdataBinder%E5%85%A5%E5%8F%82%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2/" rel="prev" title="SpringMVC中DataBinder对入参类型转换">
+                SpringMVC中DataBinder对入参类型转换 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">sinaill</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">85</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#共享锁和独享锁操作state"><span class="nav-number">1.</span> <span class="nav-text">共享锁和独享锁操作state</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#共享锁和独享锁在获取锁时的区别"><span class="nav-number">2.</span> <span class="nav-text">共享锁和独享锁在获取锁时的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#共享锁和独享锁唤醒successor的区别"><span class="nav-number">3.</span> <span class="nav-text">共享锁和独享锁唤醒successor的区别</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#setHeadAndPropagate"><span class="nav-number">3.1.</span> <span class="nav-text">setHeadAndPropagate</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#unlock"><span class="nav-number">3.2.</span> <span class="nav-text">unlock</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">sinaill</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  <link rel="stylesheet" href="/lib/prettify/skins/desert.css" type="text/css">
+<script src="/lib/prettify/prettify.js" type="text/javascript"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+      $('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+      prettyPrint();
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="io," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="缓冲流的作用io中有几个带有缓冲功能的装饰类，BufferedInputStream，BufferedInputStream，BufferedReader，BufferedWriter，不带缓冲的操作，每读一个字节就要写入一个字节，由于涉及磁盘的IO操作相比内存的操作要慢很多，所以不带缓冲的流效率很低。带缓冲的流，可以一次读很多字节，但不向磁盘中写入，只是先放到内存里。等凑够了缓冲区大小的时候一次">
+<meta property="og:type" content="article">
+<meta property="og:title" content="io中的缓冲流">
+<meta property="og:url" content="http://yoursite.com/2020/06/17/io%E4%B8%AD%E7%9A%84%E7%BC%93%E5%86%B2%E6%B5%81/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="缓冲流的作用io中有几个带有缓冲功能的装饰类，BufferedInputStream，BufferedInputStream，BufferedReader，BufferedWriter，不带缓冲的操作，每读一个字节就要写入一个字节，由于涉及磁盘的IO操作相比内存的操作要慢很多，所以不带缓冲的流效率很低。带缓冲的流，可以一次读很多字节，但不向磁盘中写入，只是先放到内存里。等凑够了缓冲区大小的时候一次">
+<meta property="article:published_time" content="2020-06-16T17:43:37.239Z">
+<meta property="article:modified_time" content="2020-06-16T17:43:37.239Z">
+<meta property="article:author" content="sinaill">
+<meta property="article:tag" content="io">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/06/17/io中的缓冲流/"/>
+
+
+
+
+
+  <title>io中的缓冲流 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/io%E4%B8%AD%E7%9A%84%E7%BC%93%E5%86%B2%E6%B5%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">io中的缓冲流</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="缓冲流的作用"><a href="#缓冲流的作用" class="headerlink" title="缓冲流的作用"></a>缓冲流的作用</h3><p>io中有几个带有缓冲功能的装饰类，<code>BufferedInputStream</code>，<code>BufferedInputStream</code>，<code>BufferedReader</code>，BufferedWriter，不带缓冲的操作，每读一个字节就要写入一个字节，由于涉及磁盘的IO操作相比内存的操作要慢很多，所以不带缓冲的流效率很低。带缓冲的流，可以一次读很多字节，但不向磁盘中写入，只是先放到内存里。等凑够了缓冲区大小的时候一次性写入磁盘，这种方式可以减少磁盘操作次数，速度就会提高很多</p>
+<h3 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h3><p>实现缓冲的主要承载是数组，在带缓冲的字节流和字符流中分别为</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">protected volatile byte buf[]</span><br><span class="line">private char cb[];</span><br></pre></td></tr></table></figure>
+
+<p>他们的默认长度为</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">private static int DEFAULT_BUFFER_SIZE &#x3D; 8192;</span><br><span class="line">private static int defaultCharBufferSize &#x3D; 8192;</span><br></pre></td></tr></table></figure>
+
+<p>查看字节流中关于从输入流中读取数据的源码，如下</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * Reads a byte of data from this input stream. This method blocks</span><br><span class="line"> * if no input is yet available.</span><br><span class="line"> *</span><br><span class="line"> * @return     the next byte of data, or &lt;code&gt;-1&lt;&#x2F;code&gt; if the end of the</span><br><span class="line"> *             file is reached.</span><br><span class="line"> * @exception  IOException  if an I&#x2F;O error occurs.</span><br><span class="line"> *&#x2F;</span><br><span class="line">public int read() throws IOException &#123;</span><br><span class="line">    return read0();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private native int read0() throws IOException;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * Reads a subarray as a sequence of bytes.</span><br><span class="line"> * @param b the data to be written</span><br><span class="line"> * @param off the start offset in the data</span><br><span class="line"> * @param len the number of bytes that are written</span><br><span class="line"> * @exception IOException If an I&#x2F;O error has occurred.</span><br><span class="line"> *&#x2F;</span><br><span class="line">private native int readBytes(byte b[], int off, int len) throws IOException;</span><br></pre></td></tr></table></figure>
+
+<p><code>native</code>是用做java 和其他语言（如c++）进行协作时使用的，也就是<code>native</code> 后的函数的实现不是用java写的。从<br>文档中可以知道，<code>read0()</code>每次在输入流中读取一个字节的数据，而<code>readBytes(byte b[], int off, int len)</code>读取一段数据。</p>
+<p>查看字符流中关于从输入流中读取数据的源码，找到字节流转化为字符流的类<code>InputStreamReader</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * Reads a single character.</span><br><span class="line"> *</span><br><span class="line"> * @return The character read, or -1 if the end of the stream has been</span><br><span class="line"> *         reached</span><br><span class="line"> *</span><br><span class="line"> * @exception  IOException  If an I&#x2F;O error occurs</span><br><span class="line"> *&#x2F;</span><br><span class="line">public int read() throws IOException &#123;</span><br><span class="line">    return sd.read();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * Reads characters into a portion of an array.</span><br><span class="line"> *</span><br><span class="line"> * @param      cbuf     Destination buffer</span><br><span class="line"> * @param      offset   Offset at which to start storing characters</span><br><span class="line"> * @param      length   Maximum number of characters to read</span><br><span class="line"> *</span><br><span class="line"> * @return     The number of characters read, or -1 if the end of the</span><br><span class="line"> *             stream has been reached</span><br><span class="line"> *</span><br><span class="line"> * @exception  IOException  If an I&#x2F;O error occurs</span><br><span class="line"> *&#x2F;</span><br><span class="line">public int read(char cbuf[], int offset, int length) throws IOException &#123;</span><br><span class="line">    return sd.read(cbuf, offset, length);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>字节流转化为字符流依靠<code>StreamDecode</code>r这个类，创建<code>InputStreamRreader</code>时可以制定编码模式。可以看出两种方法也是同样分为了一次读取一个和一段的区别。</p>
+<p>对于输出流也一样，就不再写了。</p>
+<p>带缓冲作用的类在调用<code>read方</code>法的时候会首先从输入流读取默认长度8192字节或字符数据进入缓存数组中，即<code>read</code>方法中的<code>fill()</code>方法(当我们调用read方法一次获取字节或字符数据长度超过缓冲数组长度时，不使用缓冲数组，直接从输入流中获取我们需要的长度的数据，跳过<code>fill()</code>方法)，然后再从缓冲中取出我们需要的字节或字符数据。</p>
+<h3 id="效率比较"><a href="#效率比较" class="headerlink" title="效率比较"></a>效率比较</h3><p>用来测试的文件为tif格式，大小为549MB字节的图片</p>
+<ol>
+<li>仅仅使用字节流，且不使用数组接收(使用数组的话，会调用readBytes方法，一次从输入流读取多个数据)</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@org.junit.Test</span><br><span class="line">public void test() &#123;</span><br><span class="line">	FileInputStream fis &#x3D; null;</span><br><span class="line">	FileOutputStream fos &#x3D; null;</span><br><span class="line">	try &#123;</span><br><span class="line">		fis &#x3D; new FileInputStream(&quot;C:&#x2F;Users&#x2F;18813&#x2F;Desktop&#x2F;copy.tif&quot;);</span><br><span class="line">		fos &#x3D; new FileOutputStream(&quot;C:&#x2F;Users&#x2F;18813&#x2F;Desktop&#x2F;copy2.tif&quot;);</span><br><span class="line">		int b;</span><br><span class="line">		long start &#x3D; System.currentTimeMillis();</span><br><span class="line">		while((b&#x3D;fis.read()) !&#x3D; -1)&#123;</span><br><span class="line">			fos.write(b);</span><br><span class="line">		&#125;</span><br><span class="line">		long cost &#x3D; System.currentTimeMillis() - start;</span><br><span class="line">		System.out.println(&quot;耗时:&quot;+cost);</span><br><span class="line">	&#125; catch (Exception e) &#123;</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">		e.printStackTrace();</span><br><span class="line">	&#125;finally &#123;</span><br><span class="line">		try &#123;</span><br><span class="line">			fis.close();</span><br><span class="line">			fos.close();</span><br><span class="line">		&#125; catch (IOException e) &#123;</span><br><span class="line">			&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>耗时:2859775ms，约为47.66分钟，这种每次读取一个字节，然后写入一个字节的模式很耗时间</p>
+<ol start="2">
+<li>下面使用普通字节流，但使用数组读取写入(io效率提升，每次读取和写入都是调用readBytes和writeBytes方法，一次读写多个数据)</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@org.junit.Test</span><br><span class="line">public void test2()&#123;</span><br><span class="line">	FileInputStream fis &#x3D; null;</span><br><span class="line">	FileOutputStream fos &#x3D; null;</span><br><span class="line">	try &#123;</span><br><span class="line">		fis &#x3D; new FileInputStream(&quot;C:&#x2F;Users&#x2F;18813&#x2F;Desktop&#x2F;copy.tif&quot;);</span><br><span class="line">		fos &#x3D; new FileOutputStream(&quot;C:&#x2F;Users&#x2F;18813&#x2F;Desktop&#x2F;copy2.tif&quot;);</span><br><span class="line">		byte b[] &#x3D; new byte[4096];</span><br><span class="line">		long start &#x3D; System.currentTimeMillis();</span><br><span class="line">		while((fis.read(b)) !&#x3D; -1)&#123;</span><br><span class="line">			fos.write(b);</span><br><span class="line">		&#125;</span><br><span class="line">		long cost &#x3D; System.currentTimeMillis() - start;</span><br><span class="line">		System.out.println(&quot;耗时:&quot;+cost);</span><br><span class="line">	&#125; catch (Exception e) &#123;</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">		e.printStackTrace();</span><br><span class="line">	&#125;finally &#123;</span><br><span class="line">		try &#123;</span><br><span class="line">			fis.close();</span><br><span class="line">			fos.close();</span><br><span class="line">		&#125; catch (IOException e) &#123;</span><br><span class="line">			&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>耗时:1640ms，约为1.64秒，单看读写上的区别，第一种每次读写1个字节，第二种每次读写4096个字节，效率提升4096倍，但一次读写4096字节的数据花费时间也比读写1个字节多，所以实际只提升了1743倍。</p>
+<ol start="3">
+<li>下面使用带缓冲的字节流，默认缓冲长度8192，但每次向缓冲中只读写1个字节。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@org.junit.Test</span><br><span class="line">public void test3()&#123;</span><br><span class="line">	BufferedInputStream bis &#x3D; null;</span><br><span class="line">	BufferedOutputStream bos &#x3D; null;</span><br><span class="line">	try &#123;</span><br><span class="line">		bis &#x3D; new BufferedInputStream(new FileInputStream(&quot;C:&#x2F;Users&#x2F;18813&#x2F;Desktop&#x2F;copy.tif&quot;));</span><br><span class="line">		bos &#x3D; new BufferedOutputStream(new FileOutputStream(&quot;C:&#x2F;Users&#x2F;18813&#x2F;Desktop&#x2F;copy2.tif&quot;));</span><br><span class="line">		int b;</span><br><span class="line">		long start &#x3D; System.currentTimeMillis();</span><br><span class="line">		while((b&#x3D;bis.read()) !&#x3D; -1)&#123;</span><br><span class="line">			bos.write(b);</span><br><span class="line">		&#125;</span><br><span class="line">		long cost &#x3D; System.currentTimeMillis() - start;</span><br><span class="line">		System.out.println(&quot;耗时:&quot;+cost);</span><br><span class="line">	&#125; catch (Exception e) &#123;</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">		e.printStackTrace();</span><br><span class="line">	&#125;finally &#123;</span><br><span class="line">		try &#123;</span><br><span class="line">			bis.close();</span><br><span class="line">			bos.close();</span><br><span class="line">		&#125; catch (IOException e) &#123;</span><br><span class="line">			&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>耗时:21837ms，约为21.837秒，比起第二种方法多使用了20秒，从源码上看区别是，这种方法在读写过程中需要通过输入流缓冲数组，它先读取8192字节数据到缓冲数组，然后再从缓冲数组中取1字节数据(全部取完后，重新读取8192字节数组到输入流缓冲数组)，再将这个字节写入到8192个字节的输出流缓冲数组，输出流缓冲数组满了后将缓冲数组中所有数组一次写入输出流。而第二种方法是直接从输入流和输出流中一次读写4096字节数组。</p>
+<ol start="4">
+<li>将第三种方法改进，每次读写4096字节(8192字节的话，和默认缓冲数组长度相等，将不使用缓冲)</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@org.junit.Test</span><br><span class="line">public void test4()&#123;</span><br><span class="line">	BufferedInputStream bis &#x3D; null;</span><br><span class="line">	BufferedOutputStream bos &#x3D; null;</span><br><span class="line">	try &#123;</span><br><span class="line">		bis &#x3D; new BufferedInputStream(new FileInputStream(&quot;C:&#x2F;Users&#x2F;18813&#x2F;Desktop&#x2F;copy.tif&quot;));</span><br><span class="line">		bos &#x3D; new BufferedOutputStream(new FileOutputStream(&quot;C:&#x2F;Users&#x2F;18813&#x2F;Desktop&#x2F;copy2.tif&quot;));</span><br><span class="line">		byte b[] &#x3D; new byte[4096];</span><br><span class="line">		long start &#x3D; System.currentTimeMillis();</span><br><span class="line">		while((bis.read(b)) !&#x3D; -1)&#123;</span><br><span class="line">			bos.write(b);</span><br><span class="line">		&#125;</span><br><span class="line">		long cost &#x3D; System.currentTimeMillis() - start;</span><br><span class="line">		System.out.println(&quot;耗时:&quot;+cost);</span><br><span class="line">	&#125; catch (Exception e) &#123;</span><br><span class="line">		&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">		e.printStackTrace();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>耗时:1098ms，约为1s，时间比第二种短的原因在默认的缓冲数组的长度为8192，每次读写8192字节长度数据，并且每次从缓冲流的读写为4096字节。但如果第二种方法每次读取长度不是4096而是大于8192，即缓冲数组的长度，则第二种方法速度更快。这样看来第二种方法有种手动使用缓冲的意思。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/io/" rel="tag"># io</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/06/17/io%E4%B8%AD%E7%9A%84%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F/" rel="next" title="io中的装饰者模式">
+                <i class="fa fa-chevron-left"></i> io中的装饰者模式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/06/17/interface%20and%20adstract%20class/" rel="prev" title="接口与抽象类">
+                接口与抽象类 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">sinaill</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">85</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#缓冲流的作用"><span class="nav-number">1.</span> <span class="nav-text">缓冲流的作用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#源码分析"><span class="nav-number">2.</span> <span class="nav-text">源码分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#效率比较"><span class="nav-number">3.</span> <span class="nav-text">效率比较</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">sinaill</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  <link rel="stylesheet" href="/lib/prettify/skins/desert.css" type="text/css">
+<script src="/lib/prettify/prettify.js" type="text/javascript"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+      $('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+      prettyPrint();
+  });
+</script>
+</body>
+</html>

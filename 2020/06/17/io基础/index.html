@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="io," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="流的概念流是一种有顺序的，有起点和终点的字节集合，是对数据传输的总成或抽象。即数据在两设备之间的传输称之为流，流的本质是数据传输，根据数据传输的特性讲流抽象为各种类，方便更直观的进行数据操作。 ###io流的分类 根据数据处理类的不同分为：字符流和字节流。根据数据流向不同分为：输入流和输出流。 字符流和字节流实际上最根本的流都是字节流，因为计算机上数据存储的最终形式实际上都是字节。而字符流的由来是">
+<meta property="og:type" content="article">
+<meta property="og:title" content="io基础">
+<meta property="og:url" content="http://yoursite.com/2020/06/17/io%E5%9F%BA%E7%A1%80/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="流的概念流是一种有顺序的，有起点和终点的字节集合，是对数据传输的总成或抽象。即数据在两设备之间的传输称之为流，流的本质是数据传输，根据数据传输的特性讲流抽象为各种类，方便更直观的进行数据操作。 ###io流的分类 根据数据处理类的不同分为：字符流和字节流。根据数据流向不同分为：输入流和输出流。 字符流和字节流实际上最根本的流都是字节流，因为计算机上数据存储的最终形式实际上都是字节。而字符流的由来是">
+<meta property="og:image" content="http://wx4.sinaimg.cn/large/96b7c0f4gy1fzorzopl97j20j30l70tu.jpg">
+<meta property="article:published_time" content="2020-06-16T17:43:37.240Z">
+<meta property="article:modified_time" content="2020-06-16T17:43:37.240Z">
+<meta property="article:author" content="sinaill">
+<meta property="article:tag" content="io">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://wx4.sinaimg.cn/large/96b7c0f4gy1fzorzopl97j20j30l70tu.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/06/17/io基础/"/>
+
+
+
+
+
+  <title>io基础 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/io%E5%9F%BA%E7%A1%80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">io基础</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="流的概念"><a href="#流的概念" class="headerlink" title="流的概念"></a>流的概念</h3><p>流是一种有顺序的，有起点和终点的字节集合，是对数据传输的总成或抽象。即数据在两设备之间的传输称之为流，流的本质是数据传输，根据数据传输的特性讲流抽象为各种类，方便更直观的进行数据操作。</p>
+<p>###io流的分类</p>
+<p>根据数据处理类的不同分为：字符流和字节流。<br>根据数据流向不同分为：输入流和输出流。</p>
+<h3 id="字符流和字节流"><a href="#字符流和字节流" class="headerlink" title="字符流和字节流"></a>字符流和字节流</h3><p>实际上最根本的流都是字节流，因为计算机上数据存储的最终形式实际上都是字节。而字符流的由来是因为：不同文字的数据编码不同，所以才有了对字符进行高效操作的流对象。本质其实就是基于字节流读取时，去查了指定的码表。所以，字节流和字符流的区别在于：</p>
+<ol>
+<li>读写单位不同：字节流以字节（8bit）为单位，字符流以字符为单位，根据码表映射字符，一次可能读多个字节。</li>
+<li>处理对象不同：字节流能处理所有类型的数据（如图片、avi等），而字符流只能处理字符类型，即纯文本的数据。</li>
+</ol>
+<h3 id="java流类结构图"><a href="#java流类结构图" class="headerlink" title="java流类结构图"></a>java流类结构图</h3><p>通过一张关系图来了解一下Java中的IO流构成：</p>
+<p><img src="http://wx4.sinaimg.cn/large/96b7c0f4gy1fzorzopl97j20j30l70tu.jpg" alt=""></p>
+<h3 id="IO流的具体应用"><a href="#IO流的具体应用" class="headerlink" title="IO流的具体应用"></a>IO流的具体应用</h3><h4 id="FileinputStream-FileoutputStream"><a href="#FileinputStream-FileoutputStream" class="headerlink" title="FileinputStream/FileoutputStream"></a>FileinputStream/FileoutputStream</h4><p>从类名就看出是用来操作文件的字节流，将c盘中一张jpg格式的图片复制并更改文件名</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Copy &#123;</span><br><span class="line">	public static void main(String[] args)&#123;</span><br><span class="line">		InputStream in &#x3D; null;</span><br><span class="line">		OutputStream out &#x3D; null;</span><br><span class="line">		try &#123;</span><br><span class="line">			in &#x3D; new FileInputStream(&quot;c:&#x2F;1.jpg&quot;);</span><br><span class="line">			out &#x3D; new FileOutputStream(new File(&quot;c:&#x2F;2.jpg&quot;));</span><br><span class="line">			byte buffer[] &#x3D; new byte[20];</span><br><span class="line">			while(in.read(buffer) !&#x3D; -1)&#123;</span><br><span class="line">				out.write(buffer);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; catch (FileNotFoundException e) &#123;</span><br><span class="line">			&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;catch (IOException e) &#123;</span><br><span class="line">			&#x2F;&#x2F; TODO: handle exception</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;finally &#123;</span><br><span class="line">			try &#123;</span><br><span class="line">				in.close();</span><br><span class="line">				out.close();</span><br><span class="line">			&#125; catch (IOException e) &#123;</span><br><span class="line">				&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">				e.printStackTrace();</span><br><span class="line">			&#125;</span><br><span class="line">			</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="FileReader-FileWriter"><a href="#FileReader-FileWriter" class="headerlink" title="FileReader/FileWriter"></a>FileReader/FileWriter</h4><p>从类名能看出是操作文件的字符流(实际上是简单装饰了父类<code>InputStreamReader/OutputStreamWriter</code>，这两个字符流仅仅只有构造函数没有覆写方法，可以当作可接收字符流的<code>InputStreamReader/OutputStreamWriter</code>)，将一个txt文件的内容复制到一个新建的名为test2的txt文件里。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Copy2 &#123;</span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		Reader reader &#x3D; null;</span><br><span class="line">		Writer writer &#x3D; null;</span><br><span class="line">		try &#123;</span><br><span class="line">			reader &#x3D; new FileReader(&quot;c:&#x2F;test.txt&quot;);</span><br><span class="line">			writer &#x3D; new FileWriter(new File(&quot;c:&#x2F;test2.txt&quot;));</span><br><span class="line">			char buff[] &#x3D; new char[20];</span><br><span class="line">			while(reader.read(buff) !&#x3D; -1)&#123;</span><br><span class="line">				writer.write(buff);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; catch (Exception e) &#123;</span><br><span class="line">			&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;finally &#123;</span><br><span class="line">			try &#123;</span><br><span class="line">				reader.close();</span><br><span class="line">				writer.close();</span><br><span class="line">			&#125; catch (IOException e) &#123;</span><br><span class="line">				&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">				e.printStackTrace();</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="BufferedReader-BufferedWriter"><a href="#BufferedReader-BufferedWriter" class="headerlink" title="BufferedReader/BufferedWriter"></a>BufferedReader/BufferedWriter</h4><p>这两个类为带缓冲的字符流，采用装饰者模式对普通字符流进行装饰，构造方法传入一个<code>Reader/Writer</code>，内部维护一个8192长度的字符数组作为缓冲，当使用<code>public int read(char cbuf[], int offset, int length)</code>一次读取字符数超过缓冲默认长度8192，将不使用缓冲，直接读取到我们自定义的字符数组中(另一个输出流同理)。关闭输出流时，<code>close</code>方法清空缓冲并将缓冲中剩余字符写入。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class BufferCopy &#123;</span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		Reader reader &#x3D; null;</span><br><span class="line">		Writer writer &#x3D; null;</span><br><span class="line">		try &#123;</span><br><span class="line">			reader &#x3D; new BufferedReader(new FileReader(&quot;c:&#x2F;test.txt&quot;));</span><br><span class="line">			writer &#x3D; new BufferedWriter(new FileWriter(&quot;c:&#x2F;test2.txt&quot;));</span><br><span class="line">			int ch;</span><br><span class="line">			while((ch &#x3D; reader.read()) !&#x3D; -1)&#123;</span><br><span class="line">				writer.write(ch);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; catch (Exception e) &#123;</span><br><span class="line">			&#x2F;&#x2F; TODO: handle exception</span><br><span class="line">		&#125;finally &#123;</span><br><span class="line">			try &#123;</span><br><span class="line">				reader.close();</span><br><span class="line">				writer.close();</span><br><span class="line">			&#125; catch (IOException e) &#123;</span><br><span class="line">				&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">				e.printStackTrace();</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="BufferedInputStream-BufferedOutputStream"><a href="#BufferedInputStream-BufferedOutputStream" class="headerlink" title="BufferedInputStream/BufferedOutputStream"></a>BufferedInputStream/BufferedOutputStream</h4><p>带缓冲的字节流，采用装饰者模式对普通字节流进行装饰，构造方法传入一个<code>InputStream</code>，内部维护8192长度的字节数组作为缓冲，当使用<code>public synchronized int read(byte b[], int off, int len)</code>一次读取字节数超过8192个字节，将不使用缓冲，直接读取到我们自定义的字节数组中(另一个输出流同理)，关闭输出流时，<code>close</code>方法清空缓冲并将剩余字节写入。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class BufferCopy2 &#123;</span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		BufferedInputStream bis &#x3D; null;</span><br><span class="line">		BufferedOutputStream bos &#x3D; null;</span><br><span class="line">		try &#123;</span><br><span class="line">			bis &#x3D; new BufferedInputStream(new FileInputStream(&quot;c:&#x2F;test.txt&quot;));</span><br><span class="line">			bos &#x3D; new BufferedOutputStream(new FileOutputStream(&quot;c:&#x2F;test2.txt&quot;));</span><br><span class="line">			int b;</span><br><span class="line">			while((b&#x3D;bis.read()) !&#x3D; -1)&#123;</span><br><span class="line">				bos.write(b);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; catch (Exception e) &#123;</span><br><span class="line">			&#x2F;&#x2F; TODO: handle exception</span><br><span class="line">		&#125;finally &#123;</span><br><span class="line">			try &#123;</span><br><span class="line">				bis.close();</span><br><span class="line">				bos.close();</span><br><span class="line">			&#125; catch (IOException e) &#123;</span><br><span class="line">				&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">				e.printStackTrace();</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="InputStreamReader-OutputStreamWriter"><a href="#InputStreamReader-OutputStreamWriter" class="headerlink" title="InputStreamReader/OutputStreamWriter"></a>InputStreamReader/OutputStreamWriter</h4><p>这两个类是转化流，就是将字节流转化为字符流，通过构造函数传入的字节流和编码，使用<code>StreamDecoder/StreamEncode</code>将传进来的字节输入流/字节输出流编码为字符流。<code>StreamDecoder</code>的<code>read/write</code>实现字符的读写。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Transfer &#123;</span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		Reader isr &#x3D; null;</span><br><span class="line">		Writer osw &#x3D; null;</span><br><span class="line">		try &#123;</span><br><span class="line">			isr &#x3D; new InputStreamReader(new FileInputStream(&quot;c:&#x2F;test.txt&quot;));</span><br><span class="line">			osw &#x3D; new OutputStreamWriter(new FileOutputStream(&quot;c:&#x2F;test2.txt&quot;));</span><br><span class="line">			int ch;</span><br><span class="line">			while((ch &#x3D; isr.read()) !&#x3D; -1)&#123;</span><br><span class="line">				osw.write(ch);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; catch (Exception e) &#123;</span><br><span class="line">			&#x2F;&#x2F; TODO: handle exception</span><br><span class="line">		&#125;finally &#123;</span><br><span class="line">			try &#123;</span><br><span class="line">				isr.close();</span><br><span class="line">				osw.close();</span><br><span class="line">			&#125; catch (IOException e) &#123;</span><br><span class="line">				&#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">				e.printStackTrace();</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/io/" rel="tag"># io</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/06/17/java%E4%B8%AD%E7%9A%84Type/" rel="next" title="java中的Type">
+                <i class="fa fa-chevron-left"></i> java中的Type
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/06/17/mysql%20error%201045/" rel="prev" title="mysql error 1045">
+                mysql error 1045 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">sinaill</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">85</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#流的概念"><span class="nav-number">1.</span> <span class="nav-text">流的概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#字符流和字节流"><span class="nav-number">2.</span> <span class="nav-text">字符流和字节流</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#java流类结构图"><span class="nav-number">3.</span> <span class="nav-text">java流类结构图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IO流的具体应用"><span class="nav-number">4.</span> <span class="nav-text">IO流的具体应用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#FileinputStream-FileoutputStream"><span class="nav-number">4.1.</span> <span class="nav-text">FileinputStream&#x2F;FileoutputStream</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#FileReader-FileWriter"><span class="nav-number">4.2.</span> <span class="nav-text">FileReader&#x2F;FileWriter</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#BufferedReader-BufferedWriter"><span class="nav-number">4.3.</span> <span class="nav-text">BufferedReader&#x2F;BufferedWriter</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#BufferedInputStream-BufferedOutputStream"><span class="nav-number">4.4.</span> <span class="nav-text">BufferedInputStream&#x2F;BufferedOutputStream</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#InputStreamReader-OutputStreamWriter"><span class="nav-number">4.5.</span> <span class="nav-text">InputStreamReader&#x2F;OutputStreamWriter</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">sinaill</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  <link rel="stylesheet" href="/lib/prettify/skins/desert.css" type="text/css">
+<script src="/lib/prettify/prettify.js" type="text/javascript"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+      $('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+      prettyPrint();
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="SpringMVC," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="HandlerMappingurl和controller的映射方式  默认加载的三种HandlerMapping():  RequestMappingHandlerMapping:针对注解配置@RequestMapping BeanNameUrlHandlerMapping：通过对比url和bean的name找到对应的对象，使用例子 SimpleUrlHandlerMapping 也是直接配置ur">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringMVC大致运行流程">
+<meta property="og:url" content="http://yoursite.com/2020/06/17/springmvc%E5%A4%A7%E8%87%B4%E8%BF%90%E8%A1%8C%E6%B5%81%E7%A8%8B/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="HandlerMappingurl和controller的映射方式  默认加载的三种HandlerMapping():  RequestMappingHandlerMapping:针对注解配置@RequestMapping BeanNameUrlHandlerMapping：通过对比url和bean的name找到对应的对象，使用例子 SimpleUrlHandlerMapping 也是直接配置ur">
+<meta property="og:image" content="http://wx3.sinaimg.cn/large/96b7c0f4ly1g2blsrig3yj20bv04174a.jpg">
+<meta property="og:image" content="http://wx2.sinaimg.cn/large/96b7c0f4ly1g2bm2cj768j20dv042aa3.jpg">
+<meta property="og:image" content="http://wx4.sinaimg.cn/large/96b7c0f4ly1g2cfxsdnhfj20w20q878x.jpg">
+<meta property="article:published_time" content="2020-06-16T17:43:37.249Z">
+<meta property="article:modified_time" content="2020-06-16T17:43:37.249Z">
+<meta property="article:author" content="sinaill">
+<meta property="article:tag" content="SpringMVC">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://wx3.sinaimg.cn/large/96b7c0f4ly1g2blsrig3yj20bv04174a.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/06/17/springmvc大致运行流程/"/>
+
+
+
+
+
+  <title>SpringMVC大致运行流程 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/springmvc%E5%A4%A7%E8%87%B4%E8%BF%90%E8%A1%8C%E6%B5%81%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">SpringMVC大致运行流程</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">框架</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="HandlerMapping"><a href="#HandlerMapping" class="headerlink" title="HandlerMapping"></a>HandlerMapping</h3><p>url和controller的映射方式</p>
+<p><img src="http://wx3.sinaimg.cn/large/96b7c0f4ly1g2blsrig3yj20bv04174a.jpg" alt="HandlerMapping"></p>
+<p>默认加载的三种HandlerMapping():</p>
+<ul>
+<li>RequestMappingHandlerMapping:针对注解配置@RequestMapping</li>
+<li>BeanNameUrlHandlerMapping：通过对比url和bean的name找到对应的对象，<a href="https://www.tutorialspoint.com/springmvc/springmvc_beannameurlhandlermapping.htm" target="_blank" rel="noopener">使用例子</a></li>
+<li>SimpleUrlHandlerMapping 也是直接配置url和对应bean，<a href="https://www.tutorialspoint.com/springmvc/springmvc_simpleurlhandlermapping.htm" target="_blank" rel="noopener">使用例子</a></li>
+</ul>
+<h3 id="HandlerAdapter"><a href="#HandlerAdapter" class="headerlink" title="HandlerAdapter"></a>HandlerAdapter</h3><p>根据上面三种配置controller的方式决定HandlerAdapter，也就是调用controller目标方法的方式</p>
+<p><img src="http://wx2.sinaimg.cn/large/96b7c0f4ly1g2bm2cj768j20dv042aa3.jpg" alt="HandlerAdapter"></p>
+<p>默认加载的三种HandlerAdapter</p>
+<ul>
+<li>RequestMappingHandlerApapter:HandlerExecutionChain中的handler实际类型为<code>HandlerMethod</code></li>
+<li>HttpRequestHandlerAdapter：HandlerExecutionChain中的handler实际类型为<code>HttpRequestHandler</code></li>
+<li>SimpleControllerHandlerAdapter:HandlerExecutionChain中的handler实际类型为<code>Controller</code></li>
+</ul>
+<p><code>HandlerAdapter ha = getHandlerAdapter(mappedHandler.getHandler());</code></p>
+<p>HandlerAdapter由HandlerMapping中获取到的HandlerExecutionChain中的<code>private final Object handler</code>的实际类型决定</p>
+<p>配置controller方式-&gt;获取对应HandlerMapping-&gt;得到HandlerExecutionChain(HandlerMapping决定了HandlerExecutionChain中handler实际变量类型)-&gt;根据HandlerExecutionChain中handler实际变量类型获取对应HandlerAdapter-&gt;执行HandlerAdapter中的handler方法</p>
+<p><code>mv = ha.handle(processedRequest, response, mappedHandler.getHandler());</code></p>
+<p>适配器的作用</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;RequestMappingHandlerApapter</span><br><span class="line">@Override</span><br><span class="line">public final ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)</span><br><span class="line">		throws Exception &#123;</span><br><span class="line"></span><br><span class="line">	return handleInternal(request, response, (HandlerMethod) handler);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;HttpRequestHandlerAdapter</span><br><span class="line">@Override</span><br><span class="line">public ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)</span><br><span class="line">		throws Exception &#123;</span><br><span class="line"></span><br><span class="line">	((HttpRequestHandler) handler).handleRequest(request, response);</span><br><span class="line">	return null;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;SimpleControllerHandlerAdapter</span><br><span class="line">@Override</span><br><span class="line">public ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)</span><br><span class="line">		throws Exception &#123;</span><br><span class="line"></span><br><span class="line">	return ((Controller) handler).handleRequest(request, response);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="HandlerExecutionChain"><a href="#HandlerExecutionChain" class="headerlink" title="HandlerExecutionChain"></a>HandlerExecutionChain</h3><h3 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h3><p><img src="http://wx4.sinaimg.cn/large/96b7c0f4ly1g2cfxsdnhfj20w20q878x.jpg" alt="springmvc流程"></p>
+<ol>
+<li>得到最高优先级HandlerMapping和由它获得的HandlerExecutionChain</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">protected HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception &#123;</span><br><span class="line">	for (HandlerMapping hm : this.handlerMappings) &#123;</span><br><span class="line">		if (logger.isTraceEnabled()) &#123;</span><br><span class="line">			logger.trace(</span><br><span class="line">					&quot;Testing handler map [&quot; + hm + &quot;] in DispatcherServlet with name &#39;&quot; + getServletName() + &quot;&#39;&quot;);</span><br><span class="line">		&#125;</span><br><span class="line">		&#x2F;&#x2F;handler</span><br><span class="line">		HandlerExecutionChain handler &#x3D; hm.getHandler(request);</span><br><span class="line">		</span><br><span class="line">		if (handler !&#x3D; null) &#123;</span><br><span class="line">			return handler;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	return null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>HandlerExecutionChain中handler变量实际类型决定HandlerAdatper</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">protected HandlerAdapter getHandlerAdapter(Object handler) throws ServletException &#123;</span><br><span class="line">	for (HandlerAdapter ha : this.handlerAdapters) &#123;</span><br><span class="line">		if (logger.isTraceEnabled()) &#123;</span><br><span class="line">			logger.trace(&quot;Testing handler adapter [&quot; + ha + &quot;]&quot;);</span><br><span class="line">		&#125;</span><br><span class="line">		if (ha.supports(handler)) &#123;</span><br><span class="line">			return ha;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	throw new ServletException(&quot;No adapter for handler [&quot; + handler +</span><br><span class="line">			&quot;]: The DispatcherServlet configuration needs to include a HandlerAdapter that supports this handler&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>调用拦截器PreHandler方法</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">if (!mappedHandler.applyPreHandle(processedRequest, response)) &#123;</span><br><span class="line">	return;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>适配器调用controller目标方法返回ModelAndView对象</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mv &#x3D; ha.handle(processedRequest, response, mappedHandler.getHandler());</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>调用拦截器的postHandle方法</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mappedHandler.applyPostHandle(processedRequest, response, mv);</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;倒序调用</span><br><span class="line">void applyPostHandle(HttpServletRequest request, HttpServletResponse response, ModelAndView mv) throws Exception &#123;</span><br><span class="line">	HandlerInterceptor[] interceptors &#x3D; getInterceptors();</span><br><span class="line">	if (!ObjectUtils.isEmpty(interceptors)) &#123;</span><br><span class="line">		for (int i &#x3D; interceptors.length - 1; i &gt;&#x3D; 0; i--) &#123;</span><br><span class="line">			HandlerInterceptor interceptor &#x3D; interceptors[i];</span><br><span class="line">			interceptor.postHandle(request, response, this.handler, mv);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="6">
+<li>渲染视图</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">protected void render(ModelAndView mv, HttpServletRequest request, HttpServletResponse response) throws Exception &#123;</span><br><span class="line">	&#x2F;&#x2F; Determine locale for request and apply it to the response.</span><br><span class="line">	Locale locale &#x3D; this.localeResolver.resolveLocale(request);</span><br><span class="line">	response.setLocale(locale);</span><br><span class="line"></span><br><span class="line">	View view;</span><br><span class="line">	if (mv.isReference()) &#123;</span><br><span class="line">		&#x2F;&#x2F; 视图处理器处理得到视图</span><br><span class="line">		view &#x3D; resolveViewName(mv.getViewName(), mv.getModelInternal(), locale, request);</span><br><span class="line">		if (view &#x3D;&#x3D; null) &#123;</span><br><span class="line">			throw new ServletException(&quot;Could not resolve view with name &#39;&quot; + mv.getViewName() +</span><br><span class="line">					&quot;&#39; in servlet with name &#39;&quot; + getServletName() + &quot;&#39;&quot;);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	else &#123;</span><br><span class="line">		&#x2F;&#x2F; No need to lookup: the ModelAndView object contains the actual View object.</span><br><span class="line">		view &#x3D; mv.getView();</span><br><span class="line">		if (view &#x3D;&#x3D; null) &#123;</span><br><span class="line">			throw new ServletException(&quot;ModelAndView [&quot; + mv + &quot;] neither contains a view name nor a &quot; +</span><br><span class="line">					&quot;View object in servlet with name &#39;&quot; + getServletName() + &quot;&#39;&quot;);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F; Delegate to the View object for rendering.</span><br><span class="line">	if (logger.isDebugEnabled()) &#123;</span><br><span class="line">		logger.debug(&quot;Rendering view [&quot; + view + &quot;] in DispatcherServlet with name &#39;&quot; + getServletName() + &quot;&#39;&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">	try &#123;</span><br><span class="line">		&#x2F;&#x2F;开始渲染视图</span><br><span class="line">		view.render(mv.getModelInternal(), request, response);</span><br><span class="line">	&#125;</span><br><span class="line">	catch (Exception ex) &#123;</span><br><span class="line">		if (logger.isDebugEnabled()) &#123;</span><br><span class="line">			logger.debug(&quot;Error rendering view [&quot; + view + &quot;] in DispatcherServlet with name &#39;&quot; +</span><br><span class="line">					getServletName() + &quot;&#39;&quot;, ex);</span><br><span class="line">		&#125;</span><br><span class="line">		throw ex;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="7">
+<li>调用拦截器的afterCompletion方法</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">void triggerAfterCompletion(HttpServletRequest request, HttpServletResponse response, Exception ex)</span><br><span class="line">		throws Exception &#123;</span><br><span class="line"></span><br><span class="line">	HandlerInterceptor[] interceptors &#x3D; getInterceptors();</span><br><span class="line">	if (!ObjectUtils.isEmpty(interceptors)) &#123;</span><br><span class="line">		for (int i &#x3D; this.interceptorIndex; i &gt;&#x3D; 0; i--) &#123;</span><br><span class="line">			HandlerInterceptor interceptor &#x3D; interceptors[i];</span><br><span class="line">			try &#123;</span><br><span class="line">				interceptor.afterCompletion(request, response, this.handler, ex);</span><br><span class="line">			&#125;</span><br><span class="line">			catch (Throwable ex2) &#123;</span><br><span class="line">				logger.error(&quot;HandlerInterceptor.afterCompletion threw exception&quot;, ex2);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/SpringMVC/" rel="tag"># SpringMVC</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/06/17/shiro%E9%AA%8C%E8%AF%81%E6%8E%88%E6%9D%83%E6%90%AD%E5%BB%BA/" rel="next" title="shiro验证与授权搭建">
+                <i class="fa fa-chevron-left"></i> shiro验证与授权搭建
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/06/17/springmvc%E9%85%8D%E7%BD%AE%E6%8B%A6%E6%88%AA%E5%99%A8/" rel="prev" title="SpringMVC配置拦截器">
+                SpringMVC配置拦截器 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">sinaill</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">85</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#HandlerMapping"><span class="nav-number">1.</span> <span class="nav-text">HandlerMapping</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HandlerAdapter"><span class="nav-number">2.</span> <span class="nav-text">HandlerAdapter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HandlerExecutionChain"><span class="nav-number">3.</span> <span class="nav-text">HandlerExecutionChain</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#流程"><span class="nav-number">4.</span> <span class="nav-text">流程</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">sinaill</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  <link rel="stylesheet" href="/lib/prettify/skins/desert.css" type="text/css">
+<script src="/lib/prettify/prettify.js" type="text/javascript"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+      $('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+      prettyPrint();
+  });
+</script>
+</body>
+</html>

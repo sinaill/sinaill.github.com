@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="注解介绍RequiresAuthentication:  使用该注解标注的类，实例，方法在访问或调用时，当前Subject必须在当前session中已经过认证。RequiresGuest: 使用该注解标注的类，实例，方法在访问或调用时，当前Subject可以是“gust”身份，不需要经过认证或者在原先的session中存在记录。RequiresPermissions: 当前Subject需要拥有某">
+<meta property="og:type" content="article">
+<meta property="og:title" content="shiro授权三种用法">
+<meta property="og:url" content="http://yoursite.com/2020/06/17/%E6%8E%88%E6%9D%83%E7%9A%84%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="注解介绍RequiresAuthentication:  使用该注解标注的类，实例，方法在访问或调用时，当前Subject必须在当前session中已经过认证。RequiresGuest: 使用该注解标注的类，实例，方法在访问或调用时，当前Subject可以是“gust”身份，不需要经过认证或者在原先的session中存在记录。RequiresPermissions: 当前Subject需要拥有某">
+<meta property="article:published_time" content="2020-06-16T17:43:37.258Z">
+<meta property="article:modified_time" content="2020-06-16T17:43:37.258Z">
+<meta property="article:author" content="sinaill">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/06/17/授权的使用/"/>
+
+
+
+
+
+  <title>shiro授权三种用法 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E6%8E%88%E6%9D%83%E7%9A%84%E4%BD%BF%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">shiro授权三种用法</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/shiro/" itemprop="url" rel="index">
+                    <span itemprop="name">shiro</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="注解"><a href="#注解" class="headerlink" title="注解"></a>注解</h3><h4 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h4><p>RequiresAuthentication:</p>
+<ul>
+<li>使用该注解标注的类，实例，方法在访问或调用时，当前Subject必须在当前session中已经过认证。<br>RequiresGuest:</li>
+<li>使用该注解标注的类，实例，方法在访问或调用时，当前Subject可以是“gust”身份，不需要经过认证或者在原先的session中存在记录。<br>RequiresPermissions:</li>
+<li>当前Subject需要拥有某些特定的权限时，才能执行被该注解标注的方法。如果当前Subject不具有这样的权限，则方法不会被执行。<br>RequiresRoles:</li>
+<li>当前Subject必须拥有所有指定的角色时，才能访问被该注解标注的方法。如果当天Subject不同时拥有所有指定角色，则方法不会执行还会抛出AuthorizationException异常。<br>RequiresUser</li>
+<li>表示当前Subject已经进行身份验证或者通过“记住我”登录。</li>
+</ul>
+<h4 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;属于user角色</span><br><span class="line">@RequiresRoles(&quot;user&quot;)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;必须同时属于user和admin角色</span><br><span class="line">@RequiresRoles(&#123;&quot;user&quot;,&quot;admin&quot;&#125;)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;属于user或者admin之一;修改logical为OR 即可</span><br><span class="line">@RequiresRoles(value&#x3D;&#123;&quot;user&quot;,&quot;admin&quot;&#125;,logical&#x3D;Logical.OR)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;符合index:hello权限要求</span><br><span class="line">@RequiresPermissions(&quot;index:hello&quot;)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;必须同时复核index:hello和index:world权限要求</span><br><span class="line">@RequiresPermissions(&#123;&quot;index:hello&quot;,&quot;index:world&quot;&#125;)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;符合index:hello或index:world权限要求即可</span><br><span class="line">@RequiresPermissions(value&#x3D;&#123;&quot;index:hello&quot;,&quot;index:world&quot;&#125;,logical&#x3D;Logical.OR)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@RequiresAuthentication</span><br><span class="line">@RequiresUser</span><br><span class="line">@RequiresGusst</span><br></pre></td></tr></table></figure>
+
+<h3 id="api"><a href="#api" class="headerlink" title="api"></a>api</h3><h4 id="Role-Based-Authorization-角色验证"><a href="#Role-Based-Authorization-角色验证" class="headerlink" title="Role-Based Authorization(角色验证)"></a>Role-Based Authorization(角色验证)</h4><table>
+<thead>
+<tr>
+<th align="left">方法</th>
+<th align="right">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">hasRole(String roleName)</td>
+<td align="right">返回true，当前Subject（登陆工号）有该角色权限，false，没有</td>
+</tr>
+<tr>
+<td align="left">hasRoles(List<String> roleNames)</td>
+<td align="right">返回true，至少在集合中存在一个角色权限，false一个都没有</td>
+</tr>
+<tr>
+<td align="left">hasAllRoles(Collection<String> roleNames)</td>
+<td align="right">返回true，当前工号拥有列表所有角色，否则返回false</td>
+</tr>
+</tbody></table>
+<p>例子</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Subject currentUser &#x3D; SecurityUtils.getSubject();</span><br><span class="line"></span><br><span class="line">if (currentUser.hasRole(&quot;administrator&quot;)) &#123;</span><br><span class="line">    &#x2F;&#x2F;有权限处理业务逻辑</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    &#x2F;&#x2F;没权限处理业务逻辑</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="Role-Assertions-角色检查"><a href="#Role-Assertions-角色检查" class="headerlink" title="Role Assertions(角色检查)"></a>Role Assertions(角色检查)</h4><table>
+<thead>
+<tr>
+<th align="left">方法</th>
+<th align="right">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">checkRole(String roleName)</td>
+<td align="right">若当前Subject（工号）有该角色不抛出异常，若没有抛出AuthorizationException</td>
+</tr>
+<tr>
+<td align="left">checkRoles(Collection<String> roleNames)</td>
+<td align="right">若当前Subject（工号）拥有所有该集合角色不抛出异常，若没有抛出AuthorizationException</td>
+</tr>
+<tr>
+<td align="left">checkRoles(String… roleNames)</td>
+<td align="right">同上</td>
+</tr>
+</tbody></table>
+<p>例子</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Subject currentUser &#x3D; SecurityUtils.getSubject();</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;检查是否有该bankTeller权限，若没有抛出异常，继续往下执行</span><br><span class="line">currentUser.checkRole(&quot;bankTeller&quot;);</span><br></pre></td></tr></table></figure>
+
+<h4 id="Permission-Based-Authorization-权限校验"><a href="#Permission-Based-Authorization-权限校验" class="headerlink" title="Permission-Based Authorization(权限校验)"></a>Permission-Based Authorization(权限校验)</h4><table>
+<thead>
+<tr>
+<th align="left">项目</th>
+<th align="right">价格</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">isPermitted(Permission p)/isPermitted(String perm)</td>
+<td align="right">返回true，当前Subject（工号）拥有该权限，否则false</td>
+</tr>
+<tr>
+<td align="left">isPermitted(List<Permission> perms)/isPermitted(String… perms)</td>
+<td align="right">有集合中的一个以上，即返回true，否则false</td>
+</tr>
+<tr>
+<td align="left">isPermittedAll(Collection<Permission> perms)/isPermittedAll(String… perms)</td>
+<td align="right">有集合中的所有权限，才返回true，否则false</td>
+</tr>
+</tbody></table>
+<p>例子</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Subject currentUser &#x3D; SecurityUtils.getSubject();</span><br><span class="line"></span><br><span class="line">if (currentUser.isPermitted(&quot;printer:print:laserjet4400n&quot;)) &#123;</span><br><span class="line">    &#x2F;&#x2F;做有权限操作</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    &#x2F;&#x2F;做无权限操作</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="Permission-Assertions-权限检查"><a href="#Permission-Assertions-权限检查" class="headerlink" title="Permission Assertions(权限检查)"></a>Permission Assertions(权限检查)</h4><table>
+<thead>
+<tr>
+<th align="left">项目</th>
+<th align="right">价格</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">checkPermission(Permission p)</td>
+<td align="right">subject有该权限返回true，否则false</td>
+</tr>
+<tr>
+<td align="left">checkPermission(String perm)</td>
+<td align="right">同上</td>
+</tr>
+<tr>
+<td align="left">checkPermissions(Collection<Permission> perms)</td>
+<td align="right">拥有所有权限返回true，否则false</td>
+</tr>
+<tr>
+<td align="left">checkPermissions(String… perms)</td>
+<td align="right">同上</td>
+</tr>
+</tbody></table>
+<h3 id="jstl标签"><a href="#jstl标签" class="headerlink" title="jstl标签"></a>jstl标签</h3><p>导入标签库</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;%@taglib prefix&#x3D;&quot;shiro&quot; uri&#x3D;&quot;http:&#x2F;&#x2F;shiro.apache.org&#x2F;tags&quot; %&gt;</span><br><span class="line"></span><br><span class="line">&lt;shiro:guest&gt;&lt;&#x2F;shiro:guest&gt;   &#96;</span><br><span class="line"></span><br><span class="line">&lt;shiro:user&gt;&lt;&#x2F;shiro:user&gt;</span><br><span class="line"></span><br><span class="line">&lt;shiro:authenticated&gt;&lt;&#x2F;shiro:authenticated&gt;</span><br><span class="line"></span><br><span class="line">&lt;shiro:notAuthenticated&gt;未身份验证（包括记住我）&lt;&#x2F;shiro:notAuthenticated&gt;</span><br><span class="line"></span><br><span class="line">&lt;shiro: principal&#x2F;&gt;</span><br><span class="line"></span><br><span class="line">显示用户身份信息，默认调用Subject.getPrincipal()获取，即Primary Principal，获取的值为对象时，可以使用property属性指定</span><br><span class="line"></span><br><span class="line">&lt;shiro:hasRole name&#x3D;&quot;role&quot;&gt;&lt;&#x2F;shiro:hasRole&gt;</span><br><span class="line"></span><br><span class="line">&lt;shiro:hasAnyRoles name&#x3D;&quot;admin,user&quot;&gt;&lt;&#x2F;shiro:hasAnyRoles&gt;</span><br><span class="line"></span><br><span class="line">&lt;shiro:lacksRole name&#x3D;&quot;abc&quot;&gt;&lt;&#x2F;shiro:lacksRole&gt;</span><br><span class="line"></span><br><span class="line">&lt;shiro:hasPermission name&#x3D;&quot;user:create&quot;&gt;&lt;&#x2F;shiro:hasPermission&gt;</span><br><span class="line"></span><br><span class="line">&lt;shiro:lacksPermission name&#x3D;&quot;org:create&quot;&gt;&lt;&#x2F;shiro:lacksPermission&gt;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/06/17/%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/" rel="next" title="工厂模式">
+                <i class="fa fa-chevron-left"></i> 工厂模式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/06/17/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" rel="prev" title="排序算法">
+                排序算法 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">sinaill</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">85</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#注解"><span class="nav-number">1.</span> <span class="nav-text">注解</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#介绍"><span class="nav-number">1.1.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#示例"><span class="nav-number">1.2.</span> <span class="nav-text">示例</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#api"><span class="nav-number">2.</span> <span class="nav-text">api</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Role-Based-Authorization-角色验证"><span class="nav-number">2.1.</span> <span class="nav-text">Role-Based Authorization(角色验证)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Role-Assertions-角色检查"><span class="nav-number">2.2.</span> <span class="nav-text">Role Assertions(角色检查)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Permission-Based-Authorization-权限校验"><span class="nav-number">2.3.</span> <span class="nav-text">Permission-Based Authorization(权限校验)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Permission-Assertions-权限检查"><span class="nav-number">2.4.</span> <span class="nav-text">Permission Assertions(权限检查)</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#jstl标签"><span class="nav-number">3.</span> <span class="nav-text">jstl标签</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">sinaill</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  <link rel="stylesheet" href="/lib/prettify/skins/desert.css" type="text/css">
+<script src="/lib/prettify/prettify.js" type="text/javascript"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+      $('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+      prettyPrint();
+  });
+</script>
+</body>
+</html>
