@@ -2443,7 +2443,7 @@ class son extends father&#123;
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E6%B3%9B%E5%9E%8B/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E7%94%9F%E4%BA%A7%E8%80%85%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%9E%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="sinaill">
@@ -2462,7 +2462,7 @@ class son extends father&#123;
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/06/17/%E6%B3%9B%E5%9E%8B/" itemprop="url">泛型</a></h1>
+                <a class="post-title-link" href="/2020/06/17/%E7%94%9F%E4%BA%A7%E8%80%85%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%9E%8B/" itemprop="url">生产者消费者模型</a></h1>
         
 
         <div class="post-meta">
@@ -2536,174 +2536,236 @@ class son extends father&#123;
       
         
           
-            <h3 id="什么是泛型，为什么要使用泛型"><a href="#什么是泛型，为什么要使用泛型" class="headerlink" title="什么是泛型，为什么要使用泛型"></a>什么是泛型，为什么要使用泛型</h3><p>泛型，即“参数化类型”。一提到参数，最熟悉的就是定义方法时有形参，然后调用此方法时传递实参。那么参数化类型怎么理解呢？顾名思义，就是将类型由原来的具体的类型参数化，类似于方法中的变量参数，此时类型也定义成参数形式（可以称之为类型形参），然后在使用/调用时传入具体的类型（类型实参）。</p>
-<p>泛型的本质是为了参数化类型（在不创建新的类型的情况下，通过泛型指定的不同类型来控制形参具体限制的类型）。也就是说在泛型使用过程中，操作的数据类型被指定为一个参数，这种参数类型可以用在类、接口和方法中，分别被称为泛型类、泛型接口、泛型方法。</p>
-<p>如果你定义了一个泛型（类、接口），那么Java规定，你不能在所有的静态方法、静态初块等所有静态内容中使用泛型的类型参数</p>
-<h3 id="泛型类"><a href="#泛型类" class="headerlink" title="泛型类"></a>泛型类</h3><pre><code class="highlight plain">class generic&lt;T&gt;&#123;
-	T element;
-&#125;</code></pre>
-
-<p>创建对象时指定T的参数类型例如<code>new generic&lt;Integer&gt;</code>，将成员变量的类型参数化</p>
-<h3 id="泛型接口"><a href="#泛型接口" class="headerlink" title="泛型接口"></a>泛型接口</h3><pre><code class="highlight plain">interface generic&lt;T&gt;&#123;
-	public T get();
-&#125;</code></pre>
-
-<p>若实现类中确定了参数类型，在实现接口时可以指定，<code>class a implements generic&lt;Integer&gt;</code>，若不确定参数类型，<code>class a&lt;T&gt; implements generic&lt;T&gt;</code>，用法一样</p>
-<h3 id="泛型方法"><a href="#泛型方法" class="headerlink" title="泛型方法"></a>泛型方法</h3><p>在非泛型类中定义泛型方法，格式为：修饰符 返回值类型 方法名(形参列表)</p>
-<ul>
-<li>public 与 返回值中间<T>非常重要，可以理解为声明此方法为泛型方法</li>
-<li>只有声明了<T>的方法才是泛型方法，泛型类中的使用了泛型的成员方法并不是泛型方法</li>
-<li><T>表明该方法将使用泛型类型T，此时才可以在方法中使用泛型类型T</li>
-<li>与泛型类的定义一样，此处T可以随便写为任意标识，常见的如T、E、K、V等形式的参数常用于表示泛型</li>
-</ul>
-<pre><code class="highlight plain">class Method&#123;
-	public &lt;T&gt; void out(T a)&#123;
-		System.out.println(a.getClass().getName());
-	&#125;
-&#125;
-
-public class Generic&#123;
+            <h3 id="synchornized"><a href="#synchornized" class="headerlink" title="synchornized"></a>synchornized</h3><pre><code class="highlight plain">public class Threadpc &#123;
 	public static void main(String[] args) &#123;
-		Method m &#x3D; new Method();
-		m.out(&quot;sss&quot;);&#x2F;&#x2F;输出java.lang.String
-		m.out(1);&#x2F;&#x2F;输出java.lang.Integer
+		storage storage &#x3D; new storage();
+		new producer(&quot;生产者1&quot;,storage,50).start();
+		new producer(&quot;生产者2&quot;,storage,100).start();
+		new producer(&quot;生产者3&quot;,storage,60).start();
+		new consumer(&quot;消费者1&quot;, storage,20).start();
+		new consumer(&quot;消费者2&quot;, storage,40).start();
+		new consumer(&quot;消费者3&quot;, storage,60).start();
+		new consumer(&quot;消费者4&quot;, storage,30).start();
+		new consumer(&quot;消费者5&quot;, storage,50).start();
+		new consumer(&quot;消费者6&quot;, storage,10).start();
 	&#125;
-&#125;</code></pre>
-
-<h3 id="通配符"><a href="#通配符" class="headerlink" title="通配符"></a>通配符</h3><ul>
-<li>？表示类型参数赋予不确定值，任意类型</li>
-<li><strong>只能用在声明类型、方法参数上，不能用在定义泛型类上</strong></li>
-</ul>
-<pre><code class="highlight plain">public static void main(String[] args) &#123;
-	List&lt;Integer&gt; l1 &#x3D; new ArrayList&lt;Integer&gt;();
-	List&lt;String&gt; l2 &#x3D; new ArrayList&lt;String&gt;();
-	l1.add(1);
-	l1.add(2);
-	l2.add(&quot;aaa&quot;);
-	l2.add(&quot;bbb&quot;);
-	out1(l1);
-	out1(l2);
-	out2(l1);
-	out2(l2);&#x2F;&#x2F;报错
 &#125;
 
-public static void out1(List&lt;?&gt; list)&#123;
+class storage&#123;
+	private final int MAX_SIZE &#x3D; 100;
+	private LinkedList&lt;Object&gt; list &#x3D; new LinkedList&lt;Object&gt;();
+	public void consume(int num,String threadName)&#123;
+		synchronized (list) &#123;
+			while(list.size()&lt;num)&#123;&#x2F;&#x2F;库存小于要消费的数量
+				try &#123;
+					System.out.println(threadName+&quot;暂时无法进行消费,库存不足&quot;);
+					list.wait();
+				&#125; catch (InterruptedException e) &#123;
+					&#x2F;&#x2F; TODO Auto-generated catch block
+					e.printStackTrace();
+				&#125;
+			&#125;
+			for (int i &#x3D; 0; i &lt; num; i++) &#123;
+				list.remove();
+			&#125;
+			System.out.println(threadName+&quot;消费产品&quot;+num+&quot;,剩余库存:&quot;+list.size());
+			list.notifyAll();
+		&#125;
+
+	&#125;
+	
+	
+	public void produce(int num,String threadName)&#123;
+		synchronized (list) &#123;
+			while(num &gt; MAX_SIZE-list.size())&#123;&#x2F;&#x2F;生产数量超过库存限制
+				try &#123;
+					System.out.println(threadName+&quot;暂时无法进行生产,库存过多&quot;);
+					list.wait();
+				&#125; catch (InterruptedException e) &#123;
+					&#x2F;&#x2F; TODO Auto-generated catch block
+					e.printStackTrace();
+				&#125;
+			&#125;
+			for (int i &#x3D; 0; i &lt; num; i++) &#123;
+				list.add(new Object());
+			&#125;
+			System.out.println(threadName+&quot;生产产品&quot;+num+&quot;,剩余库存:&quot;+list.size());
+			list.notifyAll();
+		&#125;
+	&#125;
+&#125;
+
+class consumer extends Thread&#123;
+	private int num;
+	private storage storage;
+	public consumer(String name,storage storage,int num) &#123;
+		super(name);
+		&#x2F;&#x2F; TODO Auto-generated constructor stub
+		this.storage &#x3D; storage;
+		this.num &#x3D; num;
+	&#125;
+	@Override
+	public void run() &#123;
+		&#x2F;&#x2F; TODO Auto-generated method stub
+		super.run();
+		storage.consume(num, Thread.currentThread().getName());
+	&#125;
 	
 &#125;
-public static void out2(List&lt;Integer&gt; list)&#123;
+
+class producer extends Thread&#123;
+	private int num;
+	private storage storage;
+	public producer(String name,storage storage,int num) &#123;
+		super(name);
+		&#x2F;&#x2F; TODO Auto-generated constructor stub
+		this.storage &#x3D; storage;
+		this.num &#x3D; num;
+	&#125;
+	@Override
+	public void run() &#123;
+		&#x2F;&#x2F; TODO Auto-generated method stub
+		super.run();
+		storage.produce(num, Thread.currentThread().getName());
+	&#125;
 	
 &#125;</code></pre>
 
-<p>使用了通配符？定义的泛型变量和形参可以接受所有类型的同一泛型变量(不包括子类)，如下</p>
-<pre><code class="highlight plain">&#x2F;&#x2F; 用在形参上
-public static void test(List&lt;?&gt; list) &#123;
- 
- List&lt;?&gt; list2; &#x2F;&#x2F; 用在声明变量上
- list2 &#x3D; new ArrayList&lt;String&gt;();
- list2 &#x3D; new ArrayList&lt;Integer&gt;();
- list2 &#x3D; new ArrayList&lt;Object&gt;();
- 
-&#125;
- 
-public static void main(String[] args) &#123;
- test(new ArrayList&lt;String&gt;());
- test(new ArrayList&lt;Integer&gt;());
-&#125;</code></pre>
+<p>创建多个线程，<code>run</code>方法中调用共有的<code>storage</code>实例的<code>produce</code>和<code>consume</code>方法，在两个方法中使用<code>synchronized</code>代码块进行同步，使用<code>storage</code>中的共有的<code>list</code>的对象锁和<code>wait</code>和<code>notifyall</code>方法来调度生产者和消费者进程交替。输出如下：</p>
+<pre><code class="highlight plain">生产者2生产产品100,剩余库存:100
+生产者1暂时无法进行生产,库存过多
+生产者3暂时无法进行生产,库存过多
+消费者1消费产品20,剩余库存:80
+生产者3暂时无法进行生产,库存过多
+消费者4消费产品30,剩余库存:50
+消费者6消费产品10,剩余库存:40
+生产者1生产产品50,剩余库存:90
+消费者3消费产品60,剩余库存:30
+消费者2暂时无法进行消费,库存不足
+生产者3生产产品60,剩余库存:90
+消费者5消费产品50,剩余库存:40
+消费者2消费产品40,剩余库存:0</code></pre>
 
-<h3 id="泛型上下边界"><a href="#泛型上下边界" class="headerlink" title="泛型上下边界"></a>泛型上下边界</h3><p>在使用泛型的时候，我们还可以为传入的泛型类型实参进行上下边界的限制，如：类型实参只准传入某种类型的父类或某种类型的子类</p>
-<p>&lt;? extends T&gt;和&lt;? super T&gt;是Java泛型中的”通配符(Wildcards)”和”边界(Bounds)”的概念</p>
-<ul>
-<li>&lt;? extends T&gt;：是指 “上界通配符(Upper Bounds Wildcards)”，&lt;=</li>
-<li>&lt;? super T&gt;：是指 “下界通配符(Lower Bounds Wildcards)”，&gt;=</li>
-</ul>
-<ol>
-<li>定义泛型类时使用，限定参数范围</li>
-</ol>
-<pre><code class="highlight plain">public class Generic&lt;T extends Number&gt;&#123;
-    private T key;
+<h3 id="ReentrantLock"><a href="#ReentrantLock" class="headerlink" title="ReentrantLock"></a>ReentrantLock</h3><p><code>ReentrantLock</code>锁的粒度比<code>synchronized</code>小，在尝试使用<code>synchronized</code>进行同样的分组唤醒，即生产者唤醒消费者和消费者唤醒生产者，忽略了一个要点，无论是执行对象的<code>wait</code>、<code>notify</code>还是<code>notifyAll</code>方法，必须保证当前运行的线程取得了该对象的锁，否则会报<code>java.lang.IllegalMonitorStateException</code>异常，发生异常代码如下</p>
+<pre><code class="highlight plain">public void consume(int num,String threadName)&#123;
+	synchronized (o1) &#123;
+		System.out.println(threadName+&quot;获得锁&quot;);
+		while(list.size()&lt;num)&#123;&#x2F;&#x2F;库存小于要消费的数量
+			try &#123;
+				System.out.println(threadName+&quot;暂时无法进行消费,库存不足&quot;);
+				o1.wait();
+				&#x2F;&#x2F;list.wait();
+			&#125; catch (InterruptedException e) &#123;
+				&#x2F;&#x2F; TODO Auto-generated catch block
+				e.printStackTrace();
+			&#125;
+		&#125;
+		for (int i &#x3D; 0; i &lt; num; i++) &#123;
+			list.remove();
+		&#125;
+		System.out.println(threadName+&quot;消费产品&quot;+num+&quot;,剩余库存:&quot;+list.size());
+		o2.notifyAll();&#x2F;&#x2F;未取得o2对象锁，不能运行这个方法
+	&#125;</code></pre>
 
-    public Generic(T key) &#123;
-        this.key &#x3D; key;
-    &#125;
-
-    public T getKey()&#123;
-        return key;
-    &#125;
-&#125;</code></pre>
-
-<ol start="2">
-<li>作为变量时使用</li>
-</ol>
-<p><code>List</code>的<code>add</code>方法不能添加任何有意义的元素，但是可以接受现有的子类型<code>List</code>赋值</p>
-<pre><code class="highlight plain">List&lt;? extends Number&gt; list &#x3D; new ArrayList&lt;Integer&gt;();
-list.add(1);&#x2F;&#x2F;报错</code></pre>
-
-<ol start="3">
-<li>作为形参时使用</li>
-</ol>
-<pre><code class="highlight plain">class Method&#123;
-	public void out(List&lt;? extends Number&gt; a)&#123;
-		
+<p>下面用<code>ReentrantLock</code>来进行分组唤醒</p>
+<pre><code class="highlight plain">public class Threadpc &#123;
+	public static void main(String[] args) &#123;
+		storage storage &#x3D; new storage2();
+		new producer(&quot;生产者1&quot;,storage,50).start();
+		new producer(&quot;生产者2&quot;,storage,100).start();
+		new producer(&quot;生产者3&quot;,storage,60).start();
+		new consumer(&quot;消费者1&quot;, storage,20).start();
+		new consumer(&quot;消费者2&quot;, storage,40).start();
+		new consumer(&quot;消费者3&quot;, storage,60).start();
+		new consumer(&quot;消费者4&quot;, storage,30).start();
+		new consumer(&quot;消费者5&quot;, storage,50).start();
+		new consumer(&quot;消费者6&quot;, storage,10).start();
 	&#125;
-&#125;</code></pre>
 
-<h3 id="泛型的继承"><a href="#泛型的继承" class="headerlink" title="泛型的继承"></a>泛型的继承</h3><pre><code class="highlight plain">&#x2F;**
- * 泛型继承
- *
- * 保留父类泛型 ----》泛型子类 
- * 不保留父类泛型 -----》子类按需实现
- *
- * 子类重写父类的方法，泛型类型随父类而定 子类使用父类的属性，该属性类型随父类定义的泛型
- *
- * @author Administrator
- *
- * @param &lt;T1&gt;
- * @param &lt;T2&gt;
- *&#x2F;
-public abstract class Father&lt;T1, T2&gt; &#123;
-  T1 age;
- 
-  public abstract void test(T2 name);
 &#125;
- 
-&#x2F;&#x2F; 保留父类泛型 ----》泛型子类
-&#x2F;&#x2F; 1）全部保留
-class C1&lt;T1, T2&gt; extends Father&lt;T1, T2&gt; &#123;
- 
-  @Override
-  public void test(T2 name) &#123;
- 
-  &#125;
+
+class storage2&#123;
+	private int MAX_SIZE &#x3D; 100;
+	private ReentrantLock lock &#x3D; new ReentrantLock();
+	private Condition produce &#x3D; lock.newCondition();
+	private Condition consumer &#x3D; lock.newCondition();
+	private LinkedList&lt;Object&gt; list &#x3D; new LinkedList&lt;Object&gt;();
+	
+	public void consume(int num,String threadName)&#123;
+		lock.lock();
+		while(num &gt; list.size())&#123;
+			try &#123;
+				System.out.println(threadName+&quot;暂时无法消费,库存余量为:&quot;+list.size());
+				consumer.await();
+			&#125; catch (InterruptedException e) &#123;
+				&#x2F;&#x2F; TODO Auto-generated catch block
+				e.printStackTrace();
+			&#125;
+		&#125;
+		for (int i &#x3D; 0; i &lt; num; i++) &#123;
+			list.remove();
+		&#125;
+		System.out.println(threadName+&quot;消费库存&quot;+num+&quot;,库存余量为&quot;+list.size());
+		produce.signalAll();
+		lock.unlock();
+	&#125;
+	
+	public void produce(int num,String threadName)&#123;
+		lock.lock();
+		while(num+list.size()&gt;MAX_SIZE)&#123;
+			try &#123;
+				System.out.println(threadName+&quot;暂时无法生产,库存余量为:&quot;+list.size());
+				produce.await();
+			&#125; catch (InterruptedException e) &#123;
+				&#x2F;&#x2F; TODO Auto-generated catch block
+				e.printStackTrace();
+			&#125;
+		&#125;
+		for (int i &#x3D; 0; i &lt; num; i++) &#123;
+			list.add(new Object());
+		&#125;
+		System.out.println(threadName+&quot;生产库存&quot;+num+&quot;,库存余量为&quot;+list.size());
+		consumer.signalAll();
+		lock.unlock();
+	&#125;
+	
 &#125;
- 
-&#x2F;&#x2F; 2) 部分保留
-class C2&lt;T1&gt; extends Father&lt;T1, Integer&gt; &#123;
- 
-  @Override
-  public void test(Integer name) &#123;
- 
-  &#125;
+
+class producer2 extends Thread&#123;
+	
+	private storage storage;
+	private int num;
+	public producer(String name,storage storage,int num) &#123;
+		super(name);
+		&#x2F;&#x2F; TODO Auto-generated constructor stub
+		this.storage &#x3D; storage;
+		this.num &#x3D; num;
+	&#125;
+
+	@Override
+	public void run() &#123;
+		&#x2F;&#x2F; TODO Auto-generated method stub
+		super.run();
+		storage.produce(num, Thread.currentThread().getName());
+	&#125;
 &#125;
- 
-&#x2F;&#x2F; 不保留父类泛型 -----》子类按需实现
-&#x2F;&#x2F; 1)具体类型
-class C3 extends Father&lt;String, Integer&gt; &#123;
- 
-  @Override
-  public void test(Integer name) &#123;
- 
-  &#125;
-&#125;
- 
-&#x2F;&#x2F; 2)没有具体类型
-&#x2F;&#x2F; 泛型擦除：实现或继承父类的子类，没有指定类型，类似于Object
-class C4 extends Father &#123;
- 
-  @Override
-  public void test(Object name) &#123;
- 
-  &#125;
- 
+
+class consumer2 extends Thread&#123;
+	private storage storage;
+	private int num;
+	public consumer2(String name,storage storage,int num) &#123;
+		super(name);
+		&#x2F;&#x2F; TODO Auto-generated constructor stub
+		this.num &#x3D; num;
+		this.storage &#x3D; storage;
+	&#125;
+	@Override
+	public void run() &#123;
+		&#x2F;&#x2F; TODO Auto-generated method stub
+		super.run();
+		storage.consume(num, Thread.currentThread().getName());
+	&#125;
+	
 &#125;</code></pre>
           
         

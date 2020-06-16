@@ -523,167 +523,6 @@ assertCredentialsMatch(token, info);</code></pre>
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/set%E9%9B%86%E5%90%88/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/set%E9%9B%86%E5%90%88/" itemprop="url">set集合</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h3><p><code>Set</code>集合中的元素是唯一的，不可重复（取决于<code>hashCode和equals</code>方法），也就是说具有唯一性。</p>
-<p><code>Set</code>集合中元素不保证存取顺序，并不存在索引。</p>
-<h3 id="HashSet"><a href="#HashSet" class="headerlink" title="HashSet"></a>HashSet</h3><p><code>HashSet</code>实际上是基于<code>HashMap</code>实现的，HashSet中有一成员变量</p>
-<p><code>private transient HashMap&lt;E,Object&gt; map</code></p>
-<p><code>HashSet</code>使用了<code>HashMap</code>的<code>key</code>来存储集合元素，也就是说<code>HashSet</code>可以存储一个<code>null</code>元素，并且不能有重复元素</p>
-<pre><code class="highlight plain">private static final Object PRESENT &#x3D; new Object()
-
-   public boolean add(E e) &#123;
-       return map.put(e, PRESENT)&#x3D;&#x3D;null;
-   &#125;</code></pre>
-
-<p>由于<code>HashMap</code>的无序性，所以<code>HashSet</code>也是无序性的</p>
-<h3 id="LinkedHashSet"><a href="#LinkedHashSet" class="headerlink" title="LinkedHashSet"></a>LinkedHashSet</h3><p><code>LinkedHashSet</code>是<code>HashSet</code>的一个子类，<code>LinkedHashSet</code>也根据<code>HashCode</code>的值来决定元素的存储位置，但同时它还用一个链表来维护元素的插入顺序，插入的时候既要计算<code>hashCode</code>还要维护链表，而遍历的时候只需要按照链表来访问元素。</p>
-<p><code>LinkedHashSet</code>只有四个构造方法，构造方法调用了<code>HashSet</code>一个构造方法</p>
-<pre><code class="highlight plain">HashSet(int initialCapacity, float loadFactor, boolean dummy) &#123;
-    map &#x3D; new LinkedHashMap&lt;&gt;(initialCapacity, loadFactor);
-&#125;</code></pre>
-
-<p>可以看出，是基于<code>LinkedHashMap</code>实现，<code>HashSet</code>存储元素用的<code>HashMap</code>，而LinkedHashSet存储元素用的<code>LinkedHashMap</code>。</p>
-<h3 id="TreeSet"><a href="#TreeSet" class="headerlink" title="TreeSet"></a>TreeSet</h3><p><code>TreeSet</code>是一个有序集合，本质上属于二叉树，实现了<code>SortedSet</code>接口所以具有了对元素排序的功能，要实现对元素的排序，需要在构造方法中传入一个<code>comparator</code>或者元素实现了<code>comparable</code>接口。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/shiro%E6%8E%88%E6%9D%83/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -855,6 +694,313 @@ assertCredentialsMatch(token, info);</code></pre>
 	&#125;
 	return info;
 &#125;</code></pre>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/set%E9%9B%86%E5%90%88/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/set%E9%9B%86%E5%90%88/" itemprop="url">set集合</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h3><p><code>Set</code>集合中的元素是唯一的，不可重复（取决于<code>hashCode和equals</code>方法），也就是说具有唯一性。</p>
+<p><code>Set</code>集合中元素不保证存取顺序，并不存在索引。</p>
+<h3 id="HashSet"><a href="#HashSet" class="headerlink" title="HashSet"></a>HashSet</h3><p><code>HashSet</code>实际上是基于<code>HashMap</code>实现的，HashSet中有一成员变量</p>
+<p><code>private transient HashMap&lt;E,Object&gt; map</code></p>
+<p><code>HashSet</code>使用了<code>HashMap</code>的<code>key</code>来存储集合元素，也就是说<code>HashSet</code>可以存储一个<code>null</code>元素，并且不能有重复元素</p>
+<pre><code class="highlight plain">private static final Object PRESENT &#x3D; new Object()
+
+   public boolean add(E e) &#123;
+       return map.put(e, PRESENT)&#x3D;&#x3D;null;
+   &#125;</code></pre>
+
+<p>由于<code>HashMap</code>的无序性，所以<code>HashSet</code>也是无序性的</p>
+<h3 id="LinkedHashSet"><a href="#LinkedHashSet" class="headerlink" title="LinkedHashSet"></a>LinkedHashSet</h3><p><code>LinkedHashSet</code>是<code>HashSet</code>的一个子类，<code>LinkedHashSet</code>也根据<code>HashCode</code>的值来决定元素的存储位置，但同时它还用一个链表来维护元素的插入顺序，插入的时候既要计算<code>hashCode</code>还要维护链表，而遍历的时候只需要按照链表来访问元素。</p>
+<p><code>LinkedHashSet</code>只有四个构造方法，构造方法调用了<code>HashSet</code>一个构造方法</p>
+<pre><code class="highlight plain">HashSet(int initialCapacity, float loadFactor, boolean dummy) &#123;
+    map &#x3D; new LinkedHashMap&lt;&gt;(initialCapacity, loadFactor);
+&#125;</code></pre>
+
+<p>可以看出，是基于<code>LinkedHashMap</code>实现，<code>HashSet</code>存储元素用的<code>HashMap</code>，而LinkedHashSet存储元素用的<code>LinkedHashMap</code>。</p>
+<h3 id="TreeSet"><a href="#TreeSet" class="headerlink" title="TreeSet"></a>TreeSet</h3><p><code>TreeSet</code>是一个有序集合，本质上属于二叉树，实现了<code>SortedSet</code>接口所以具有了对元素排序的功能，要实现对元素的排序，需要在构造方法中传入一个<code>comparator</code>或者元素实现了<code>comparable</code>接口。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/only_full_group_by/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/only_full_group_by/" itemprop="url">group by关于sql_mode=only_full_group_by报错</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/mysql/" itemprop="url" rel="index">
+                    <span itemprop="name">mysql</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="group-by作用"><a href="#group-by作用" class="headerlink" title="group by作用"></a>group by作用</h3><p>根据指定数段对查询结果进行分组</p>
+<h3 id="sql-mode-only-full-group-by报错"><a href="#sql-mode-only-full-group-by报错" class="headerlink" title="sql_mode=only_full_group_by报错"></a>sql_mode=only_full_group_by报错</h3><p>对于GROUP BY聚合操作，如果在SELECT中的列，没有在GROUP BY中出现，那么这个SQL是不合法的，因为列不在GROUP BY从句中，也就是说查出来的列必须在group by后面出现否则就会报错，或者这个字段出现在聚合函数里面。</p>
+<p>解决方法：关闭 only_full_group_by 模式或者使用any()或者其它聚合函数作用于不在group by后的字段</p>
+<pre><code class="highlight plain">set @@sql_mode&#x3D;&#39;STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION&#39;;</code></pre>
+
+
           
         
       
@@ -1091,152 +1237,6 @@ private final T value;</code></pre>
 &#125;</code></pre>
 
 <p>value为空时抛出自定义异常，否则返回value，value和Supplier的get方法返回值都为空时抛出空指针异常</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/only_full_group_by/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/only_full_group_by/" itemprop="url">group by关于sql_mode=only_full_group_by报错</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/mysql/" itemprop="url" rel="index">
-                    <span itemprop="name">mysql</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="group-by作用"><a href="#group-by作用" class="headerlink" title="group by作用"></a>group by作用</h3><p>根据指定数段对查询结果进行分组</p>
-<h3 id="sql-mode-only-full-group-by报错"><a href="#sql-mode-only-full-group-by报错" class="headerlink" title="sql_mode=only_full_group_by报错"></a>sql_mode=only_full_group_by报错</h3><p>对于GROUP BY聚合操作，如果在SELECT中的列，没有在GROUP BY中出现，那么这个SQL是不合法的，因为列不在GROUP BY从句中，也就是说查出来的列必须在group by后面出现否则就会报错，或者这个字段出现在聚合函数里面。</p>
-<p>解决方法：关闭 only_full_group_by 模式或者使用any()或者其它聚合函数作用于不在group by后的字段</p>
-<pre><code class="highlight plain">set @@sql_mode&#x3D;&#39;STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION&#39;;</code></pre>
-
 
           
         
@@ -2328,7 +2328,7 @@ while(keyIterator.hasNext()) &#123;
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/mysql%E4%B8%AD%E7%9A%84%E8%87%AA%E5%AE%9A%E4%B9%89%E5%87%BD%E6%95%B0%E5%92%8C%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/mysql%20error%201045/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="sinaill">
@@ -2347,7 +2347,7 @@ while(keyIterator.hasNext()) &#123;
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/06/17/mysql%E4%B8%AD%E7%9A%84%E8%87%AA%E5%AE%9A%E4%B9%89%E5%87%BD%E6%95%B0%E5%92%8C%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B/" itemprop="url">mysql中的自定义函数和存储过程</a></h1>
+                <a class="post-title-link" href="/2020/06/17/mysql%20error%201045/" itemprop="url">mysql error 1045</a></h1>
         
 
         <div class="post-meta">
@@ -2421,118 +2421,16 @@ while(keyIterator.hasNext()) &#123;
       
         
           
-            <h3 id="自定义函数"><a href="#自定义函数" class="headerlink" title="自定义函数"></a>自定义函数</h3><h4 id="基本语法"><a href="#基本语法" class="headerlink" title="基本语法"></a>基本语法</h4><h5 id="创建函数"><a href="#创建函数" class="headerlink" title="创建函数"></a>创建函数</h5><pre><code class="highlight plain">　　delimiter 自定义符号　　-- 如果函数体只有一条语句, begin和end可以省略, 同时delimiter也可以省略
-
-　　create function 函数名(形参列表) returns 返回类型　　-- 注意是retruns
-
-　　begin
-
-　　　　函数体　　　　-- 函数内定义的变量如：set @x &#x3D; 1; 变量x为全局变量，在函数外面也可以使用
-
-　　　　返回值
-
-　　end
-
-　　自定义符号
-
-　　delimiter ;</code></pre>
-
-<h5 id="查看自定义函数"><a href="#查看自定义函数" class="headerlink" title="查看自定义函数"></a>查看自定义函数</h5><p><code>show function status [like &#39;pattern&#39;]</code>　　– 查看所有自定义函数, 自定义函数只能在本数据库使用</p>
-<p><code>show create function</code> 函数名 – 查看函数创建语句</p>
-<h5 id="删除函数"><a href="#删除函数" class="headerlink" title="删除函数"></a>删除函数</h5><p>drop function 函数名</p>
-<h4 id="综合应用"><a href="#综合应用" class="headerlink" title="综合应用"></a>综合应用</h4><h5 id="hello-world"><a href="#hello-world" class="headerlink" title="hello world"></a>hello world</h5><pre><code class="highlight plain">delimiter $$
-create function myfun(变量名 类型) returns varchar(20)
-begin
-    return &quot;hello world&quot;;
-end
-$$
-delimiter ;</code></pre>
-
-
-<h5 id="局部变量"><a href="#局部变量" class="headerlink" title="局部变量"></a>局部变量</h5><pre><code class="highlight plain">声明变量 DECLARE 变量名 类型 [default] [值]
-
-为变量赋值 select ··· into 变量名 或者 set 变量名 &#x3D; 值
-
-全局变量
-SET @变量名 &#x3D; 值</code></pre>
-
-
-<h5 id="流程控制"><a href="#流程控制" class="headerlink" title="流程控制"></a>流程控制</h5><h6 id="if语句"><a href="#if语句" class="headerlink" title="if语句"></a>if语句</h6><p>IF语句用来进行条件判断。根据是否满足条件，将执行不同的语句。其语法的基本形式如下：</p>
-<pre><code class="highlight plain">IF search_condition THEN statement_list
-[ELSEIF search_condition THEN statement_list] …
-[ELSE statement_list]
-END IF</code></pre>
-
-<h6 id="case语句"><a href="#case语句" class="headerlink" title="case语句"></a>case语句</h6><p>CASE语句也用来进行条件判断，其可以实现比IF语句更复杂的条件判断。CASE语句的基本形式如下：</p>
-<pre><code class="highlight plain">CASE case_value 
-WHEN when_value THEN statement_list 
-[WHEN when_value THEN statement_list] ... 
-[ELSE statement_list] 
-END CASE</code></pre>
-
-<p>CASE语句还有另一种形式。该形式的语法如下：</p>
-<pre><code class="highlight plain">CASE 
-WHEN search_condition THEN statement_list 
-[WHEN search_condition THEN statement_list] ... 
-[ELSE statement_list] 
-END CASE</code></pre>
-
-<h6 id="循环语句"><a href="#循环语句" class="headerlink" title="循环语句"></a>循环语句</h6><p>repeat:REPEAT语句是有条件控制的循环语句。当满足特定条件时，就会跳出循环语句。REPEAT语句的基本语法形式如下：</p>
-<pre><code class="highlight plain">[label:] REPEAT 
-statement_list 
-UNTIL condition 
-END REPEAT [label]</code></pre>
-
-<p>while:WHILE语句是当满足条件时，执行循环内的语句。</p>
-<pre><code class="highlight plain">[label:] WHILE search_condition DO 
-statement_list 
-END WHILE [label]</code></pre>
-
-<p>loop:LOOP语句可以使某些特定的语句重复执行，实现一个简单的循环，但是LOOP语句本身没有停止循环的语句，必须是遇到LEAVE语句等才能停止循环。</p>
-<p>LOOP语句的语法的基本形式如下：</p>
-<pre><code class="highlight plain">[label:] LOOP 
-statement_list 
-if condition THEN LEAVE label
-END LOOP [label]</code></pre>
-
-<p>ITERATE:ITERATE语句是跳出本次循环，然后直接进入下一次循环，和java中continue相同</p>
-<p><code>ITERATE label</code></p>
-<p>leave:LEAVE语句主要用于跳出循环控制。其语法形式如下：</p>
-<p><code>LEAVE label</code></p>
-<p>ITERATE和LEAVE除了和loop配合使用，还可以配合标签使用</p>
-<pre><code class="highlight plain">label1: BEGIN
-　　label2: BEGIN
-　　　　label3: BEGIN
-　　　　　　statements; 
-　　　　END label3 ;
-　　END label2;
-END label1</code></pre>
-
-<h3 id="存储过程"><a href="#存储过程" class="headerlink" title="存储过程"></a>存储过程</h3><p>SQL语句需要先编译然后执行，而存储过程（Stored Procedure）是一组为了完成特定功能的SQL语句集，经编译后存储在数据库中，用户通过指定存储过程的名字并给定参数（如果该存储过程带有参数）来调用执行它。</p>
-<h4 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h4><h5 id="创建存储过程"><a href="#创建存储过程" class="headerlink" title="创建存储过程"></a>创建存储过程</h5><pre><code class="highlight plain">CREATE PROCEDURE 存储过程名([[IN |OUT |INOUT ] 参数名 数据类形...])
-begin
-end</code></pre>
-
-<p>IN 输入参数：表示调用者向过程传入值（传入值可以是字面量或变量）</p>
-<p>OUT 输出参数：表示过程向调用者传出值(可以返回多个值)（传出值只能是变量）</p>
-<p>INOUT 输入输出参数：既表示调用者向过程传入值，又表示过程向调用者传出值（值只能是变量）</p>
-<p>向存储过程传入用户变量，IN能接收到，但其对传入的值修改影响不了原来的值，OUT接收不到传入的变量，但对传入的值修改可以改变原来的值(传入的OUT类型的变量接收结果，相当于return)。INOUT兼具。<a href="http://www.runoob.com/w3cnote/mysql-stored-procedure.html" target="_blank" rel="noopener">http://www.runoob.com/w3cnote/mysql-stored-procedure.html</a></p>
-<h5 id="调用"><a href="#调用" class="headerlink" title="调用"></a>调用</h5><p><code>CREATE PROCEDURE 存储过程名([[IN |OUT |INOUT ] 参数名 数据类形...])</code></p>
-<h5 id="查看存储过程"><a href="#查看存储过程" class="headerlink" title="查看存储过程"></a>查看存储过程</h5><p><code>show procedure status where db=&#39;数据库名&#39;;</code></p>
-<h5 id="综合应用-1"><a href="#综合应用-1" class="headerlink" title="综合应用"></a>综合应用</h5><p>hello world</p>
-<pre><code class="highlight plain">CREATE  PROCEDURE &#96;proc&#96;()
-BEGIN
-	SELECT &#39;hello world&#39;;
-	
-END</code></pre>
-
-<h5 id="其它"><a href="#其它" class="headerlink" title="其它"></a>其它</h5><p>与自定义函数相同</p>
-<h3 id="区别"><a href="#区别" class="headerlink" title="区别"></a>区别</h3><ol>
-<li>一般来说，存储过程实现的功能要复杂一点，而函数的实现的功能针对性比较强。存储过程，功能强大，可以执行包括修改表等一系列数据库操作；用户定义函数不能用于执行一组修改全局数据库状态的操作(insert，update，delete)。</li>
-<li>存储过程一般是作为一个独立的部分来执行（EXEC执行），而函数可以作为查询语句的一个部分来调用(SELECT调用)。</li>
-<li>自定义函数可以返回表变量</li>
-<li>存储过程可以返回结果集</li>
-</ol>
+            <p>解决方法如下：</p>
+<p>进入mysql的bin目录</p>
+<p>命令行运行mysqld –skip-grant-tables</p>
+<p>新建命令行mysql -u -root -p 空密码直接进入数据库</p>
+<p>登录成功后输入：update mysql.user set authentication_string=password(‘你的密码’) where user=’root’ and host=’localhost’;</p>
+<p>让设置的密码生效：flush privileges;</p>
+<p>输入\q退出mysql</p>
+<p>关闭第一个命令行窗口尝试开启mysql服务发生错误，mysql服务无法启动</p>
+<p>到任务管理器中结束mysqld.exe进程</p>
+<p>再次启动mysql服务成功</p>
 
           
         
