@@ -521,6 +521,193 @@ setArray(arrayOfObject2)</code></pre>
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/consumer/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/consumer/" itemprop="url">consumer接口</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="consumer"><a href="#consumer" class="headerlink" title="consumer"></a>consumer</h3><pre><code class="highlight plain">@FunctionalInterface
+public interface Consumer&lt;T&gt; &#123;
+
+    &#x2F;**
+     * Performs this operation on the given argument.
+     *
+     * @param t the input argument
+     *&#x2F;
+    void accept(T t);
+
+    &#x2F;**
+     * Returns a composed &#123;@code Consumer&#125; that performs, in sequence, this
+     * operation followed by the &#123;@code after&#125; operation. If performing either
+     * operation throws an exception, it is relayed to the caller of the
+     * composed operation.  If performing this operation throws an exception,
+     * the &#123;@code after&#125; operation will not be performed.
+     *
+     * @param after the operation to perform after this operation
+     * @return a composed &#123;@code Consumer&#125; that performs in sequence this
+     * operation followed by the &#123;@code after&#125; operation
+     * @throws NullPointerException if &#123;@code after&#125; is null
+     *&#x2F;
+    default Consumer&lt;T&gt; andThen(Consumer&lt;? super T&gt; after) &#123;
+        Objects.requireNonNull(after);
+        return (T t) -&gt; &#123; accept(t); after.accept(t); &#125;;
+    &#125;
+&#125;</code></pre>
+
+<p>consumer是一个函数式接口，可配合实现了Iterable的类和Iterator使用。</p>
+<pre><code class="highlight plain">List&lt;student&gt; a &#x3D; new ArrayList&lt;student&gt;();
+a.add(new student(1, &quot;aa&quot;));
+a.add(new student(2, &quot;bb&quot;));
+a.add(new student(3, &quot;cc&quot;));
+a.forEach(stu-&gt;stu.id&#x3D;4);
+a.forEach(stu-&gt;System.out::println)</code></pre>
+
+<p><code>4 4 4</code></p>
+<p>List继承自Collection，而Collection又实现了Iterable接口，接口的foreach方法如下：</p>
+<pre><code class="highlight plain">default void forEach(Consumer&lt;? super T&gt; action) &#123;
+    Objects.requireNonNull(action);
+    for (T t : this) &#123;
+        action.accept(t);
+    &#125;
+&#125;</code></pre>
+
+<p><strong>所以，此接口是用来处理集合中所有元素，Performs this operation on the given argument.</strong></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/comparable%20and%20comparator/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -732,7 +919,7 @@ users.forEach(u-&gt;System.out.println(u.getId()));</code></pre>
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/consumer/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/bit%20arithmetic/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="sinaill">
@@ -751,7 +938,7 @@ users.forEach(u-&gt;System.out.println(u.getId()));</code></pre>
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/06/17/consumer/" itemprop="url">consumer接口</a></h1>
+                <a class="post-title-link" href="/2020/06/17/bit%20arithmetic/" itemprop="url">java中的位运算</a></h1>
         
 
         <div class="post-meta">
@@ -825,229 +1012,45 @@ users.forEach(u-&gt;System.out.println(u.getId()));</code></pre>
       
         
           
-            <h3 id="consumer"><a href="#consumer" class="headerlink" title="consumer"></a>consumer</h3><pre><code class="highlight plain">@FunctionalInterface
-public interface Consumer&lt;T&gt; &#123;
+            <h3 id="原码，补码，反码"><a href="#原码，补码，反码" class="headerlink" title="原码，补码，反码"></a>原码，补码，反码</h3><h4 id="原码"><a href="#原码" class="headerlink" title="原码"></a>原码</h4><p>原码就是符号位加上真值的绝对值, 即用第一位表示符号, 其余位表示值. 比如如果是8位二进制:</p>
+<p>[+1]原 = 0000 0001</p>
+<p>[-1]原 = 1000 0001</p>
+<h4 id="补码"><a href="#补码" class="headerlink" title="补码"></a>补码</h4><p>正数的补码就是其本身，负数的补码是在其原码的基础上, 符号位不变, 其余各位取反, 最后+1. (即在反码的基础上+1),<strong>负数的补码转为原码也是符号位不变, 其余各位取反, 最后+1</strong></p>
+<p>[+1] = [00000001]原 = [00000001]反 = [00000001]补</p>
+<p>[-1] = [10000001]原 = [11111110]反 = [11111111]补</p>
+<h4 id="反码"><a href="#反码" class="headerlink" title="反码"></a>反码</h4><p>正数的反码是其本身，负数的反码是在其原码的基础上, 符号位不变，其余各个位取反。</p>
+<p>[+1] = [00000001]原 = [00000001]反</p>
+<p>[-1] = [10000001]原 = [11111110]反</p>
+<h3 id="或运算"><a href="#或运算" class="headerlink" title="或运算"></a>或运算</h3><p><code>System.out.println(3 | 4);</code></p>
+<p><code>7</code></p>
+<p>转化为2进制补码运算，0 1 1与 1 0 0 相或 结果为1 1 1，所以为7</p>
+<h3 id="与运算"><a href="#与运算" class="headerlink" title="与运算"></a>与运算</h3><p><code>System.out.println(3 &amp; 4);</code></p>
+<p><code>0</code></p>
+<p>转化为2进制补码运算，0 1 1与 1 0 0 相与，结果为0 0 0，所以为0</p>
+<h3 id="左移-lt-lt"><a href="#左移-lt-lt" class="headerlink" title="左移&lt;&lt;"></a>左移&lt;&lt;</h3><p><code>System.out.println(5&lt;&lt;2)</code></p>
+<p><code>20</code></p>
+<p>首先会将5转为2进制表示形式(java中，整数默认就是int类型,也就是32位):</p>
+<p>0000 0000 0000 0000 0000 0000 0000 0101           然后左移2位后，低位补0<br>0000 0000 0000 0000 0000 0000 0001 0100           换算成10进制为20</p>
+<p><code>System.out.println(-5 &lt;&lt; 2);</code></p>
+<p><code>-20</code></p>
+<p>1111 1111 1111 1111 1111 1111 1111 1011           然后左移2位后，低位也是补0<br>1111 1111 1111 1111 1111 1111 1110 1100           换算成10进制为-20</p>
+<h3 id="右移-gt-gt"><a href="#右移-gt-gt" class="headerlink" title="右移&gt;&gt;"></a>右移&gt;&gt;</h3><p><code>System.out.println(5&gt;&gt;2);</code></p>
+<p><code>1</code></p>
+<p>还是先将5转为2进制表示形式：<br>0000 0000 0000 0000 0000 0000 0000 0101           然后右移2位，高位补0：<br>0000 0000 0000 0000 0000 0000 0000 0001              换算成10进制为1</p>
+<p><code>System.out.println(-5&gt;&gt;3);</code></p>
+<p><code>-1</code></p>
+<p>-5换算成二进制:<br>1111 1111 1111 1111 1111 1111 1111 1011          然后右移三位，高位补1<br>1111 1111 1111 1111 1111 1111 1111 1111          换算成10进制为-1</p>
+<h3 id="无符号右移-gt-gt-gt"><a href="#无符号右移-gt-gt-gt" class="headerlink" title="无符号右移&gt;&gt;&gt;"></a>无符号右移&gt;&gt;&gt;</h3><p><code>System.out.println(5 &gt;&gt;&gt; 3);</code></p>
+<p><code>0</code></p>
+<p>5换算成二进制:<br>0000 0000 0000 0000 0000 0000 0000 0101          然后右移三位，高位补0<br>0000 0000 0000 0000 0000 0000 0000 0000          换算成10进制为0</p>
+<p><code>System.out.println(-5 &gt;&gt;&gt; 3);</code></p>
+<p><code>536870911</code></p>
+<p>-5换算成二进制:<br>1111 1111 1111 1111 1111 1111 1111 1011         带符号右移，高位补0<br>0001 1111 1111 1111 1111 1111 1111 1111         换算成10进制为536870911</p>
+<h3 id="位异或"><a href="#位异或" class="headerlink" title="位异或^"></a>位异或^</h3><p>位异或：第一个操作数的的第n位于第二个操作数的第n位 相反，那么结果的第n为也为1，否则为0</p>
+<p><code>System.out.println(5 ^ 3);</code></p>
+<p><code>6</code></p>
+<p>5转换为二进制：0000 0000 0000 0000 0000 0000 0000 0101<br>3转换为二进制：0000 0000 0000 0000 0000 0000 0000 0011<br>得：0000 0000 0000 0000 0000 0000 0000 0110</p>
 
-    &#x2F;**
-     * Performs this operation on the given argument.
-     *
-     * @param t the input argument
-     *&#x2F;
-    void accept(T t);
-
-    &#x2F;**
-     * Returns a composed &#123;@code Consumer&#125; that performs, in sequence, this
-     * operation followed by the &#123;@code after&#125; operation. If performing either
-     * operation throws an exception, it is relayed to the caller of the
-     * composed operation.  If performing this operation throws an exception,
-     * the &#123;@code after&#125; operation will not be performed.
-     *
-     * @param after the operation to perform after this operation
-     * @return a composed &#123;@code Consumer&#125; that performs in sequence this
-     * operation followed by the &#123;@code after&#125; operation
-     * @throws NullPointerException if &#123;@code after&#125; is null
-     *&#x2F;
-    default Consumer&lt;T&gt; andThen(Consumer&lt;? super T&gt; after) &#123;
-        Objects.requireNonNull(after);
-        return (T t) -&gt; &#123; accept(t); after.accept(t); &#125;;
-    &#125;
-&#125;</code></pre>
-
-<p>consumer是一个函数式接口，可配合实现了Iterable的类和Iterator使用。</p>
-<pre><code class="highlight plain">List&lt;student&gt; a &#x3D; new ArrayList&lt;student&gt;();
-a.add(new student(1, &quot;aa&quot;));
-a.add(new student(2, &quot;bb&quot;));
-a.add(new student(3, &quot;cc&quot;));
-a.forEach(stu-&gt;stu.id&#x3D;4);
-a.forEach(stu-&gt;System.out::println)</code></pre>
-
-<p><code>4 4 4</code></p>
-<p>List继承自Collection，而Collection又实现了Iterable接口，接口的foreach方法如下：</p>
-<pre><code class="highlight plain">default void forEach(Consumer&lt;? super T&gt; action) &#123;
-    Objects.requireNonNull(action);
-    for (T t : this) &#123;
-        action.accept(t);
-    &#125;
-&#125;</code></pre>
-
-<p><strong>所以，此接口是用来处理集合中所有元素，Performs this operation on the given argument.</strong></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/ajax%E4%B8%ADjson%E5%92%8Cspringmvc/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/ajax%E4%B8%ADjson%E5%92%8Cspringmvc/" itemprop="url">ajax中json和SpringMVC</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
-                    <span itemprop="name">框架</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="json"><a href="#json" class="headerlink" title="json"></a>json</h3><p>json对象格式:<code>{&quot;param&quot;:&quot;value&quot;,&quot;param&quot;:&quot;value&quot;}</code></p>
-<p>普通js对象:<code>{param:&quot;value&quot;,param:&quot;value&quot;}</code></p>
-<p>js对象转json对象:</p>
-<ul>
-<li>先将js转json字符串：<code>JSON.stringify()</code></li>
-<li>将json字符串转json对象:<code>JSON.parse()</code></li>
-</ul>
-<h3 id="ajax中的contentType"><a href="#ajax中的contentType" class="headerlink" title="ajax中的contentType"></a>ajax中的contentType</h3><p>ajax中，没有指定<code>contentType</code>的话，Jquery默认使用<code>application/x-www-form-urlencoded</code>类型，data使用json对象格式,<code>springmvc</code>可以<code>@RequestParam</code>接收数据(变量同名不需要)</p>
-<p>指定<code>contentType</code>为<code>application/json</code>时，data必须为json字符串格式，springmvc接收数据要用<code>@RequestBody</code>注解</p>
-<pre><code class="highlight plain">$.ajax(&#123;
-    type: &quot;post&quot;,
-    url:  &quot;mobile&#x2F;notice&#x2F;addMessageInfo.jspx&quot;,
-    contentType: &quot;application&#x2F;json&quot;,
-    data:&quot;&#123;&#39;name&#39;:&#39;zhangsan&#39;,&#39;age&#39;:&#39;15&#39;&#125;&quot;,
-    dataType: &quot;json&quot;,
-    success: function(data) &#123;
-        console.log(data);
-    &#125;,
-    error: function(msg) &#123;
-        console.log(msg)
-    &#125;
-&#125;)
-
-
-$.ajax(&#123;
-    type: &quot;post&quot;,
-    url:  &quot;mobile&#x2F;notice&#x2F;addMessageInfo.jspx&quot;,
-    data:&#123;name:&#39;zhangsan&#39;,age:&#39;15&#39;&#125;,
-    dataType: &quot;json&quot;,
-    success: function(data) &#123;
-        console.log(data);
-    &#125;,
-    error: function(msg) &#123;
-        console.log(msg)
-    &#125;
-&#125;)</code></pre>
           
         
       
@@ -1393,7 +1396,7 @@ private void doSignalAll(Node first) &#123;
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/bit%20arithmetic/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/ajax%E4%B8%ADjson%E5%92%8Cspringmvc/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="sinaill">
@@ -1412,7 +1415,7 @@ private void doSignalAll(Node first) &#123;
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/06/17/bit%20arithmetic/" itemprop="url">java中的位运算</a></h1>
+                <a class="post-title-link" href="/2020/06/17/ajax%E4%B8%ADjson%E5%92%8Cspringmvc/" itemprop="url">ajax中json和SpringMVC</a></h1>
         
 
         <div class="post-meta">
@@ -1447,8 +1450,8 @@ private void doSignalAll(Node first) &#123;
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
+                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">框架</span>
                   </a>
                 </span>
 
@@ -1486,220 +1489,42 @@ private void doSignalAll(Node first) &#123;
       
         
           
-            <h3 id="原码，补码，反码"><a href="#原码，补码，反码" class="headerlink" title="原码，补码，反码"></a>原码，补码，反码</h3><h4 id="原码"><a href="#原码" class="headerlink" title="原码"></a>原码</h4><p>原码就是符号位加上真值的绝对值, 即用第一位表示符号, 其余位表示值. 比如如果是8位二进制:</p>
-<p>[+1]原 = 0000 0001</p>
-<p>[-1]原 = 1000 0001</p>
-<h4 id="补码"><a href="#补码" class="headerlink" title="补码"></a>补码</h4><p>正数的补码就是其本身，负数的补码是在其原码的基础上, 符号位不变, 其余各位取反, 最后+1. (即在反码的基础上+1),<strong>负数的补码转为原码也是符号位不变, 其余各位取反, 最后+1</strong></p>
-<p>[+1] = [00000001]原 = [00000001]反 = [00000001]补</p>
-<p>[-1] = [10000001]原 = [11111110]反 = [11111111]补</p>
-<h4 id="反码"><a href="#反码" class="headerlink" title="反码"></a>反码</h4><p>正数的反码是其本身，负数的反码是在其原码的基础上, 符号位不变，其余各个位取反。</p>
-<p>[+1] = [00000001]原 = [00000001]反</p>
-<p>[-1] = [10000001]原 = [11111110]反</p>
-<h3 id="或运算"><a href="#或运算" class="headerlink" title="或运算"></a>或运算</h3><p><code>System.out.println(3 | 4);</code></p>
-<p><code>7</code></p>
-<p>转化为2进制补码运算，0 1 1与 1 0 0 相或 结果为1 1 1，所以为7</p>
-<h3 id="与运算"><a href="#与运算" class="headerlink" title="与运算"></a>与运算</h3><p><code>System.out.println(3 &amp; 4);</code></p>
-<p><code>0</code></p>
-<p>转化为2进制补码运算，0 1 1与 1 0 0 相与，结果为0 0 0，所以为0</p>
-<h3 id="左移-lt-lt"><a href="#左移-lt-lt" class="headerlink" title="左移&lt;&lt;"></a>左移&lt;&lt;</h3><p><code>System.out.println(5&lt;&lt;2)</code></p>
-<p><code>20</code></p>
-<p>首先会将5转为2进制表示形式(java中，整数默认就是int类型,也就是32位):</p>
-<p>0000 0000 0000 0000 0000 0000 0000 0101           然后左移2位后，低位补0<br>0000 0000 0000 0000 0000 0000 0001 0100           换算成10进制为20</p>
-<p><code>System.out.println(-5 &lt;&lt; 2);</code></p>
-<p><code>-20</code></p>
-<p>1111 1111 1111 1111 1111 1111 1111 1011           然后左移2位后，低位也是补0<br>1111 1111 1111 1111 1111 1111 1110 1100           换算成10进制为-20</p>
-<h3 id="右移-gt-gt"><a href="#右移-gt-gt" class="headerlink" title="右移&gt;&gt;"></a>右移&gt;&gt;</h3><p><code>System.out.println(5&gt;&gt;2);</code></p>
-<p><code>1</code></p>
-<p>还是先将5转为2进制表示形式：<br>0000 0000 0000 0000 0000 0000 0000 0101           然后右移2位，高位补0：<br>0000 0000 0000 0000 0000 0000 0000 0001              换算成10进制为1</p>
-<p><code>System.out.println(-5&gt;&gt;3);</code></p>
-<p><code>-1</code></p>
-<p>-5换算成二进制:<br>1111 1111 1111 1111 1111 1111 1111 1011          然后右移三位，高位补1<br>1111 1111 1111 1111 1111 1111 1111 1111          换算成10进制为-1</p>
-<h3 id="无符号右移-gt-gt-gt"><a href="#无符号右移-gt-gt-gt" class="headerlink" title="无符号右移&gt;&gt;&gt;"></a>无符号右移&gt;&gt;&gt;</h3><p><code>System.out.println(5 &gt;&gt;&gt; 3);</code></p>
-<p><code>0</code></p>
-<p>5换算成二进制:<br>0000 0000 0000 0000 0000 0000 0000 0101          然后右移三位，高位补0<br>0000 0000 0000 0000 0000 0000 0000 0000          换算成10进制为0</p>
-<p><code>System.out.println(-5 &gt;&gt;&gt; 3);</code></p>
-<p><code>536870911</code></p>
-<p>-5换算成二进制:<br>1111 1111 1111 1111 1111 1111 1111 1011         带符号右移，高位补0<br>0001 1111 1111 1111 1111 1111 1111 1111         换算成10进制为536870911</p>
-<h3 id="位异或"><a href="#位异或" class="headerlink" title="位异或^"></a>位异或^</h3><p>位异或：第一个操作数的的第n位于第二个操作数的第n位 相反，那么结果的第n为也为1，否则为0</p>
-<p><code>System.out.println(5 ^ 3);</code></p>
-<p><code>6</code></p>
-<p>5转换为二进制：0000 0000 0000 0000 0000 0000 0000 0101<br>3转换为二进制：0000 0000 0000 0000 0000 0000 0000 0011<br>得：0000 0000 0000 0000 0000 0000 0000 0110</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
+            <h3 id="json"><a href="#json" class="headerlink" title="json"></a>json</h3><p>json对象格式:<code>{&quot;param&quot;:&quot;value&quot;,&quot;param&quot;:&quot;value&quot;}</code></p>
+<p>普通js对象:<code>{param:&quot;value&quot;,param:&quot;value&quot;}</code></p>
+<p>js对象转json对象:</p>
+<ul>
+<li>先将js转json字符串：<code>JSON.stringify()</code></li>
+<li>将json字符串转json对象:<code>JSON.parse()</code></li>
+</ul>
+<h3 id="ajax中的contentType"><a href="#ajax中的contentType" class="headerlink" title="ajax中的contentType"></a>ajax中的contentType</h3><p>ajax中，没有指定<code>contentType</code>的话，Jquery默认使用<code>application/x-www-form-urlencoded</code>类型，data使用json对象格式,<code>springmvc</code>可以<code>@RequestParam</code>接收数据(变量同名不需要)</p>
+<p>指定<code>contentType</code>为<code>application/json</code>时，data必须为json字符串格式，springmvc接收数据要用<code>@RequestBody</code>注解</p>
+<pre><code class="highlight plain">$.ajax(&#123;
+    type: &quot;post&quot;,
+    url:  &quot;mobile&#x2F;notice&#x2F;addMessageInfo.jspx&quot;,
+    contentType: &quot;application&#x2F;json&quot;,
+    data:&quot;&#123;&#39;name&#39;:&#39;zhangsan&#39;,&#39;age&#39;:&#39;15&#39;&#125;&quot;,
+    dataType: &quot;json&quot;,
+    success: function(data) &#123;
+        console.log(data);
+    &#125;,
+    error: function(msg) &#123;
+        console.log(msg)
+    &#125;
+&#125;)
 
 
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/String%20and%20constant%20pool/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/String%20and%20constant%20pool/" itemprop="url">String与常量池</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="创建方法"><a href="#创建方法" class="headerlink" title="创建方法"></a>创建方法</h3><p><code>String str=new String(&quot;abc&quot;)</code></p>
-<p><strong>一共创建两个对象，其中new方法在堆中创建一个String对象，””为String特有的创建对象的方法，这行代码被执行的时候，JAVA虚拟机首先在字符串池中查找是否已经存在了值为”abc”的这么一个对象，它的判断依据是String类equals(Object obj)方法的返回值。如果有，则不再创建新的对象，直接返回已存在对象的引用；如果没有，则先创建这个对象，然后把它加入到字符串池中，再将它的引用返回</strong></p>
-<pre><code class="highlight plain">String str1 &#x3D; &quot;abc&quot;;
-String str2 &#x3D; new String(&quot;abc&quot;);
-System.out.println(str1 &#x3D;&#x3D; str2);</code></pre>
-
-<p><code>false</code></p>
-<p><strong>str2指向堆中的对象，str1指向常量池中的对象</strong></p>
-<h3 id="intern方法"><a href="#intern方法" class="headerlink" title="intern方法"></a>intern方法</h3><p><code>string.intern()</code></p>
-<p>实例1：</p>
-<pre><code class="highlight plain">String str1 &#x3D; &quot;abc&quot;;
-String str2 &#x3D; new String(&quot;abc&quot;);
-str2 &#x3D; &quot;abc&quot;.intern();
-System.out.println(str1 &#x3D;&#x3D; str2);</code></pre>
-
-<p><code>true</code></p>
-<p><strong>会检查常量池中是否存在string，存在则返回池里的字符串引用；如果不存在则将string引用放入常量池中(jdk1.7后)。这样做可以避免在堆中不断的创建字符串对象，起到节省空间的作用。</strong></p>
-<p>实例2：</p>
-<pre><code class="highlight plain">String s3 &#x3D; new String(&quot;1&quot;) + new String(&quot;1&quot;);  
-s3.intern();  
-String s4 &#x3D; &quot;11&quot;;  
-System.out.println(s3 &#x3D;&#x3D; s4);</code></pre>
-
-<p><code>true</code></p>
-<p>实例3：</p>
-<pre><code class="highlight plain">String s3 &#x3D; new String(&quot;1&quot;) + new String(&quot;1&quot;);  
-String s4 &#x3D; &quot;11&quot;;  
-s3.intern();  
-System.out.println(s3 &#x3D;&#x3D; s4);</code></pre>
-
-<p><code>false</code></p>
-<p><strong>调换顺序后出现不同结果的原因</strong></p>
-<p><strong>1.String s3 = new String(“1”) + new String(“1”)，字符串常量池中生成“1” ，并在堆空间中生成s3引用指向的对象（内容为”11”）。注意此时常量池中是没有 “11”对象的</strong></p>
-<p><strong>2.实例2中s3.intern()，此时常量池中没有”11”对象，所以在常量池中存储s3引用(jdk1.7以后)，String s4 = “11”,首先从常量池中查看(equals方法)有无”11”对象，所以将s3引用传回去，所以结果true，而在实例3中，String s4 = “11”在s3.intern()方法前，此时常量池中已经有”11”对象，s3.intern()无效，所以s3还是指向堆中对象，所以结果false</strong></p>
-
+$.ajax(&#123;
+    type: &quot;post&quot;,
+    url:  &quot;mobile&#x2F;notice&#x2F;addMessageInfo.jspx&quot;,
+    data:&#123;name:&#39;zhangsan&#39;,age:&#39;15&#39;&#125;,
+    dataType: &quot;json&quot;,
+    success: function(data) &#123;
+        console.log(data);
+    &#125;,
+    error: function(msg) &#123;
+        console.log(msg)
+    &#125;
+&#125;)</code></pre>
           
         
       
@@ -1963,7 +1788,7 @@ ThreadLocalMap(ThreadLocal&lt;?&gt; firstKey, Object firstValue) &#123;
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/Spring%E4%B8%AD%E4%BE%9D%E8%B5%96%E7%9A%84%E6%B3%A8%E5%85%A5%E6%96%B9%E5%BC%8F/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/String%20and%20constant%20pool/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="sinaill">
@@ -1982,7 +1807,7 @@ ThreadLocalMap(ThreadLocal&lt;?&gt; firstKey, Object firstValue) &#123;
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/06/17/Spring%E4%B8%AD%E4%BE%9D%E8%B5%96%E7%9A%84%E6%B3%A8%E5%85%A5%E6%96%B9%E5%BC%8F/" itemprop="url">Spring中依赖的注入方式</a></h1>
+                <a class="post-title-link" href="/2020/06/17/String%20and%20constant%20pool/" itemprop="url">String与常量池</a></h1>
         
 
         <div class="post-meta">
@@ -2017,8 +1842,8 @@ ThreadLocalMap(ThreadLocal&lt;?&gt; firstKey, Object firstValue) &#123;
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
-                    <span itemprop="name">框架</span>
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
                   </a>
                 </span>
 
@@ -2056,69 +1881,40 @@ ThreadLocalMap(ThreadLocal&lt;?&gt; firstKey, Object firstValue) &#123;
       
         
           
-            <h3 id="构造器注入"><a href="#构造器注入" class="headerlink" title="构造器注入"></a>构造器注入</h3><p>构造器注入作用在第二次后置处理器调用，找到合适构造器后，用它实例化类的同时，注入依赖属性</p>
-<pre><code class="highlight plain">public class userServiceImpl implements userService&#123;
+            <h3 id="创建方法"><a href="#创建方法" class="headerlink" title="创建方法"></a>创建方法</h3><p><code>String str=new String(&quot;abc&quot;)</code></p>
+<p><strong>一共创建两个对象，其中new方法在堆中创建一个String对象，””为String特有的创建对象的方法，这行代码被执行的时候，JAVA虚拟机首先在字符串池中查找是否已经存在了值为”abc”的这么一个对象，它的判断依据是String类equals(Object obj)方法的返回值。如果有，则不再创建新的对象，直接返回已存在对象的引用；如果没有，则先创建这个对象，然后把它加入到字符串池中，再将它的引用返回</strong></p>
+<pre><code class="highlight plain">String str1 &#x3D; &quot;abc&quot;;
+String str2 &#x3D; new String(&quot;abc&quot;);
+System.out.println(str1 &#x3D;&#x3D; str2);</code></pre>
 
-	private userDao userdao;
-	@Autowired
-	public userServiceImpl(userDao userdao)&#123;
-		this.userdao &#x3D; userdao;
-	&#125;
+<p><code>false</code></p>
+<p><strong>str2指向堆中的对象，str1指向常量池中的对象</strong></p>
+<h3 id="intern方法"><a href="#intern方法" class="headerlink" title="intern方法"></a>intern方法</h3><p><code>string.intern()</code></p>
+<p>实例1：</p>
+<pre><code class="highlight plain">String str1 &#x3D; &quot;abc&quot;;
+String str2 &#x3D; new String(&quot;abc&quot;);
+str2 &#x3D; &quot;abc&quot;.intern();
+System.out.println(str1 &#x3D;&#x3D; str2);</code></pre>
 
-	@Override
-	public void query() &#123;
-		userdao.query();
-	&#125;
-&#125;</code></pre>
+<p><code>true</code></p>
+<p><strong>会检查常量池中是否存在string，存在则返回池里的字符串引用；如果不存在则将string引用放入常量池中(jdk1.7后)。这样做可以避免在堆中不断的创建字符串对象，起到节省空间的作用。</strong></p>
+<p>实例2：</p>
+<pre><code class="highlight plain">String s3 &#x3D; new String(&quot;1&quot;) + new String(&quot;1&quot;);  
+s3.intern();  
+String s4 &#x3D; &quot;11&quot;;  
+System.out.println(s3 &#x3D;&#x3D; s4);</code></pre>
 
-<p><code>Autowired</code>注解可省略，当不需要无参构造函数时</p>
-<h3 id="set方法注入"><a href="#set方法注入" class="headerlink" title="set方法注入"></a>set方法注入</h3><pre><code class="highlight plain">public class userServiceImpl implements userService&#123;
+<p><code>true</code></p>
+<p>实例3：</p>
+<pre><code class="highlight plain">String s3 &#x3D; new String(&quot;1&quot;) + new String(&quot;1&quot;);  
+String s4 &#x3D; &quot;11&quot;;  
+s3.intern();  
+System.out.println(s3 &#x3D;&#x3D; s4);</code></pre>
 
-	private userDao userdao;
-	@Override
-	public void query() &#123;
-		userdao.query();
-	&#125;
-	@Autowired
-	public void setuserDao(userDao userdao)&#123;
-		this.userdao &#x3D; userdao;
-	&#125;
-
-
-&#125;</code></pre>
-
-<h3 id="普通属性注入"><a href="#普通属性注入" class="headerlink" title="普通属性注入"></a>普通属性注入</h3><p>使用<code>@Value</code>注解</p>
-<h3 id="Method-Injection方法注入"><a href="#Method-Injection方法注入" class="headerlink" title="Method Injection方法注入"></a>Method Injection方法注入</h3><p>Spring文档</p>
-<p>In most application scenarios, most beans in the container are singletons. When a singleton bean needs to collaborate with another singleton bean or a non-singleton bean needs to collaborate with another non-singleton bean, you typically handle the dependency by defining one bean as a property of the other. A problem arises when the bean lifecycles are different. Suppose singleton bean A needs to use non-singleton (prototype) bean B, perhaps on each method invocation on A. The container creates the singleton bean A only once, and thus only gets one opportunity to set the properties. The container cannot provide bean A with a new instance of bean B every time one is needed.</p>
-<p>当一个singleton的Bean A，内部依赖为prototype的Bean B，因为A只初始化一次，所以它的内部依赖B始终为同一个实例，如果要使每次用到B时都是新实例，就需要用到Method Injection</p>
-<p>文档要我们实现<code>ApplicationContextAware</code>接口，从而获得容器对象</p>
-<pre><code class="highlight plain">public class CommandManager implements ApplicationContextAware &#123;
-
-    private ApplicationContext applicationContext;
-
-    public Object process(Map commandState) &#123;
-        &#x2F;&#x2F; grab a new instance of the appropriate Command
-        Command command &#x3D; createCommand();
-        &#x2F;&#x2F; set the state on the (hopefully brand new) Command instance
-        command.setState(commandState);
-        return command.execute();
-    &#125;
-
-    protected Command createCommand() &#123;
-        &#x2F;&#x2F; notice the Spring API dependency!
-        return this.applicationContext.getBean(&quot;command&quot;, Command.class);
-    &#125;
-
-    public void setApplicationContext(
-            ApplicationContext applicationContext) throws BeansException &#123;
-        this.applicationContext &#x3D; applicationContext;
-    &#125;
-&#125;</code></pre>
-
-<p>官方例子中，实现接口，获取容器对象，每次使用这个类时都手动从容器获取这个对象的实例，从而每次都是新的实例B</p>
-<h3 id="depends-on"><a href="#depends-on" class="headerlink" title="depends-on"></a>depends-on</h3><p>文档中</p>
-<p>The depends-on attribute can explicitly force one or more beans to be initialized before the bean using this element is initialized</p>
-<p>depends-on属性可以强制在初始化使用这个元素的类之前初始化一个指定的类</p>
+<p><code>false</code></p>
+<p><strong>调换顺序后出现不同结果的原因</strong></p>
+<p><strong>1.String s3 = new String(“1”) + new String(“1”)，字符串常量池中生成“1” ，并在堆空间中生成s3引用指向的对象（内容为”11”）。注意此时常量池中是没有 “11”对象的</strong></p>
+<p><strong>2.实例2中s3.intern()，此时常量池中没有”11”对象，所以在常量池中存储s3引用(jdk1.7以后)，String s4 = “11”,首先从常量池中查看(equals方法)有无”11”对象，所以将s3引用传回去，所以结果true，而在实例3中，String s4 = “11”在s3.intern()方法前，此时常量池中已经有”11”对象，s3.intern()无效，所以s3还是指向堆中对象，所以结果false</strong></p>
 
           
         
@@ -2828,6 +2624,210 @@ public Object applyBeanPostProcessorsAfterInitialization(Object existingBean, St
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/Spring%E4%B8%AD%E4%BE%9D%E8%B5%96%E7%9A%84%E6%B3%A8%E5%85%A5%E6%96%B9%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/Spring%E4%B8%AD%E4%BE%9D%E8%B5%96%E7%9A%84%E6%B3%A8%E5%85%A5%E6%96%B9%E5%BC%8F/" itemprop="url">Spring中依赖的注入方式</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">框架</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="构造器注入"><a href="#构造器注入" class="headerlink" title="构造器注入"></a>构造器注入</h3><p>构造器注入作用在第二次后置处理器调用，找到合适构造器后，用它实例化类的同时，注入依赖属性</p>
+<pre><code class="highlight plain">public class userServiceImpl implements userService&#123;
+
+	private userDao userdao;
+	@Autowired
+	public userServiceImpl(userDao userdao)&#123;
+		this.userdao &#x3D; userdao;
+	&#125;
+
+	@Override
+	public void query() &#123;
+		userdao.query();
+	&#125;
+&#125;</code></pre>
+
+<p><code>Autowired</code>注解可省略，当不需要无参构造函数时</p>
+<h3 id="set方法注入"><a href="#set方法注入" class="headerlink" title="set方法注入"></a>set方法注入</h3><pre><code class="highlight plain">public class userServiceImpl implements userService&#123;
+
+	private userDao userdao;
+	@Override
+	public void query() &#123;
+		userdao.query();
+	&#125;
+	@Autowired
+	public void setuserDao(userDao userdao)&#123;
+		this.userdao &#x3D; userdao;
+	&#125;
+
+
+&#125;</code></pre>
+
+<h3 id="普通属性注入"><a href="#普通属性注入" class="headerlink" title="普通属性注入"></a>普通属性注入</h3><p>使用<code>@Value</code>注解</p>
+<h3 id="Method-Injection方法注入"><a href="#Method-Injection方法注入" class="headerlink" title="Method Injection方法注入"></a>Method Injection方法注入</h3><p>Spring文档</p>
+<p>In most application scenarios, most beans in the container are singletons. When a singleton bean needs to collaborate with another singleton bean or a non-singleton bean needs to collaborate with another non-singleton bean, you typically handle the dependency by defining one bean as a property of the other. A problem arises when the bean lifecycles are different. Suppose singleton bean A needs to use non-singleton (prototype) bean B, perhaps on each method invocation on A. The container creates the singleton bean A only once, and thus only gets one opportunity to set the properties. The container cannot provide bean A with a new instance of bean B every time one is needed.</p>
+<p>当一个singleton的Bean A，内部依赖为prototype的Bean B，因为A只初始化一次，所以它的内部依赖B始终为同一个实例，如果要使每次用到B时都是新实例，就需要用到Method Injection</p>
+<p>文档要我们实现<code>ApplicationContextAware</code>接口，从而获得容器对象</p>
+<pre><code class="highlight plain">public class CommandManager implements ApplicationContextAware &#123;
+
+    private ApplicationContext applicationContext;
+
+    public Object process(Map commandState) &#123;
+        &#x2F;&#x2F; grab a new instance of the appropriate Command
+        Command command &#x3D; createCommand();
+        &#x2F;&#x2F; set the state on the (hopefully brand new) Command instance
+        command.setState(commandState);
+        return command.execute();
+    &#125;
+
+    protected Command createCommand() &#123;
+        &#x2F;&#x2F; notice the Spring API dependency!
+        return this.applicationContext.getBean(&quot;command&quot;, Command.class);
+    &#125;
+
+    public void setApplicationContext(
+            ApplicationContext applicationContext) throws BeansException &#123;
+        this.applicationContext &#x3D; applicationContext;
+    &#125;
+&#125;</code></pre>
+
+<p>官方例子中，实现接口，获取容器对象，每次使用这个类时都手动从容器获取这个对象的实例，从而每次都是新的实例B</p>
+<h3 id="depends-on"><a href="#depends-on" class="headerlink" title="depends-on"></a>depends-on</h3><p>文档中</p>
+<p>The depends-on attribute can explicitly force one or more beans to be initialized before the bean using this element is initialized</p>
+<p>depends-on属性可以强制在初始化使用这个元素的类之前初始化一个指定的类</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
@@ -3118,7 +3118,7 @@ public Object applyBeanPostProcessorsAfterInitialization(Object existingBean, St
 
   
 
-  <link rel="stylesheet" href="/lib/prettify/skins/sunburst.css" type="text/css">
+  <link rel="stylesheet" href="/lib/prettify/skins/desert.css" type="text/css">
 <script src="/lib/prettify/prettify.js" type="text/javascript"></script>
 <script type="text/javascript">
   $(document).ready(function() {

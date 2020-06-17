@@ -1849,6 +1849,273 @@ public void exch(int n[],int a,int b) &#123;
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E6%89%8B%E5%8A%A8%E5%AE%9E%E7%8E%B0%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/%E6%89%8B%E5%8A%A8%E5%AE%9E%E7%8E%B0%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8/" itemprop="url">手动实现线程安全</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="自旋锁"><a href="#自旋锁" class="headerlink" title="自旋锁"></a>自旋锁</h3><pre><code class="highlight plain">import java.util.concurrent.atomic.AtomicReference;
+public class SpinLock &#123;
+   private AtomicReference&lt;Thread&gt; owner &#x3D; new AtomicReference&lt;Thread&gt;();
+   public void lock() &#123;
+       Thread currentThread &#x3D; Thread.currentThread();
+        &#x2F;&#x2F; 如果锁未被占用，则设置当前线程为锁的拥有者
+       while (!owner.compareAndSet(null, currentThread)) &#123;&#125;
+   &#125;
+
+   public void unlock() &#123;
+       Thread currentThread &#x3D; Thread.currentThread();
+        &#x2F;&#x2F; 只有锁的拥有者才能释放锁
+       owner.compareAndSet(currentThread, null);
+   &#125;
+&#125;</code></pre>
+
+<p>利用CAS第一个线程<code>owner.compareAndSet(null, currentThread)</code>抢到执行权，后面的线程则进入循环，直到第一个线程释放锁<code>owner.compareAndSet(currentThread, null)</code>，接着下一个线程抢到执行权，依次运行下去</p>
+<h3 id="公平自旋锁"><a href="#公平自旋锁" class="headerlink" title="公平自旋锁"></a>公平自旋锁</h3><p>我们第一个自旋锁所有线程一起抢执行权，如果要执行FIFO原则，如以下</p>
+<pre><code class="highlight plain">import java.util.concurrent.atomic.AtomicInteger;
+
+public class FairSpinLock &#123;
+   private AtomicInteger serviceNum &#x3D; new AtomicInteger(); &#x2F;&#x2F; 服务号
+   private AtomicInteger ticketNum &#x3D; new AtomicInteger(); &#x2F;&#x2F; 排队号
+
+   public int lock() &#123;
+       &#x2F;&#x2F; 首先原子性地获得一个排队号
+       int myTicketNum &#x3D; ticketNum.getAndIncrement();
+       &#x2F;&#x2F; 只要当前服务号不是自己的就不断轮询
+       while (serviceNum.get() !&#x3D; myTicketNum) &#123;
+       &#125;
+       return myTicketNum;
+    &#125;
+
+    public void unlock(int myTicket) &#123;
+        &#x2F;&#x2F; 只有当前线程拥有者才能释放锁
+        int next &#x3D; myTicket + 1;
+        serviceNum.compareAndSet(myTicket, next);
+    &#125;
+&#125;</code></pre>
+
+<p>每个线程分配一个<code>myTicketNum</code>，每一次<code>unlock</code>将<code>serviceNum</code>自增，让下一个持<code>myTicketNum</code>与<code>serviceNum</code>相等的线程跳出循环，开始业务</p>
+<h3 id="MCS自旋锁"><a href="#MCS自旋锁" class="headerlink" title="MCS自旋锁"></a>MCS自旋锁</h3><pre><code class="highlight plain">import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
+public class MCSLock &#123;
+    public static class MCSNode &#123;
+        volatile MCSNode next;
+        volatile boolean isWaiting &#x3D; true; &#x2F;&#x2F; 默认是在等待锁
+    &#125;
+    volatile MCSNode queue;&#x2F;&#x2F; 指向最后一个申请锁的MCSNode
+    private static final AtomicReferenceFieldUpdater&lt;MCSLock, MCSNode&gt; UPDATER &#x3D; AtomicReferenceFieldUpdater
+            .newUpdater(MCSLock.class, MCSNode.class, &quot;queue&quot;);
+
+    public void lock(MCSNode currentThread) &#123;
+        MCSNode predecessor &#x3D; UPDATER.getAndSet(this, currentThread);&#x2F;&#x2F; step 1
+        if (predecessor !&#x3D; null) &#123;
+            predecessor.next &#x3D; currentThread;&#x2F;&#x2F; step 2
+            while (currentThread.isWaiting) &#123;&#x2F;&#x2F; step 3
+            &#125;
+        &#125; else &#123; &#x2F;&#x2F; 只有一个线程在使用锁，没有前驱来通知它，所以得自己标记自己已获得锁
+            currentThread.isWaiting &#x3D; false;
+        &#125;
+    &#125;
+
+    public void unlock(MCSNode currentThread) &#123;
+        if (currentThread.isWaiting) &#123;&#x2F;&#x2F; 锁拥有者进行释放锁才有意义
+            return;
+        &#125;
+
+        if (currentThread.next &#x3D;&#x3D; null) &#123;&#x2F;&#x2F; 检查是否有人排在自己后面
+            if (UPDATER.compareAndSet(this, currentThread, null)) &#123;&#x2F;&#x2F; step 4
+                &#x2F;&#x2F; compareAndSet返回true表示确实没有人排在自己后面
+                return;
+            &#125; else &#123;
+                &#x2F;&#x2F; 突然有人排在自己后面了，可能还不知道是谁，下面是等待后续者
+                &#x2F;&#x2F; 这里之所以要忙等是因为：step 1执行完后，step 2可能还没执行完
+                while (currentThread.next &#x3D;&#x3D; null) &#123; &#x2F;&#x2F; step 5
+                &#125;
+            &#125;
+        &#125;
+        currentThread.next.isWaiting &#x3D; false;
+        currentThread.next &#x3D; null;&#x2F;&#x2F; for GC
+    &#125;
+&#125;</code></pre>
+
+<p>利用CAS特性，<code>UPDATER.getAndSet(this, currentThread)</code>在多线程访问情况下将所有节点连成一个虚拟队列，然后将前后节点链成链表结构，每个申请锁的线程都是链表上的一个节点，这些线程会一直轮询自己的本地变量，来知道它自己是否获得了锁。已经获得了锁的线程在释放锁的时候，负责通知其它线程，这样 CPU 之间缓存的同步操作就减少了很多，仅在线程通知另外一个线程的时候发生，降低了系统总线和内存的开销。</p>
+<h3 id="CLH-自旋锁"><a href="#CLH-自旋锁" class="headerlink" title="CLH 自旋锁"></a>CLH 自旋锁</h3><p>CLH 锁与 MCS 锁的原理大致相同，都是各个线程轮询各自关注的变量，来避免多个线程对同一个变量的轮询，从而从 CPU 缓存一致性的角度上减少了系统的消耗。<br>CLH 锁的名字也与他们的发明人的名字相关：Craig，Landin and Hagersten。<br>CLH 锁与 MCS 锁最大的不同是，MCS 轮询的是当前队列节点的变量，而 CLH 轮询的是当前节点的前驱节点的变量，来判断前一个线程是否释放了锁。</p>
+<pre><code class="highlight plain">import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
+public class CLHLock &#123;
+    public static class CLHNode &#123;
+        private volatile boolean isWaiting &#x3D; true; &#x2F;&#x2F; 默认是在等待锁
+    &#125;
+    private volatile CLHNode tail ;
+    private static final AtomicReferenceFieldUpdater&lt;CLHLock, CLHNode&gt; UPDATER &#x3D; AtomicReferenceFieldUpdater
+            . newUpdater(CLHLock.class, CLHNode .class , &quot;tail&quot; );
+    public void lock(CLHNode currentThread) &#123;
+        CLHNode preNode &#x3D; UPDATER.getAndSet( this, currentThread);
+        if(preNode !&#x3D; null) &#123;&#x2F;&#x2F;已有线程占用了锁，进入自旋
+            while(preNode.isWaiting ) &#123;
+            &#125;
+        &#125;
+    &#125;
+
+    public void unlock(CLHNode currentThread) &#123;
+        &#x2F;&#x2F; 如果队列里只有当前线程，则释放对当前线程的引用（for GC）。
+        if (!UPDATER .compareAndSet(this, currentThread, null)) &#123;
+            &#x2F;&#x2F; 还有后续线程
+            currentThread.isWaiting &#x3D; false ;&#x2F;&#x2F; 改变状态，让后续线程结束自旋
+        &#125;
+    &#125;
+&#125;</code></pre>
+
+<p>CLH 锁与 MCS 锁的原理大致相同，都是各个线程轮询各自关注的变量，来避免多个线程对同一个变量的轮询，从而从 CPU 缓存一致性的角度上减少了系统的消耗。CLH 锁与 MCS 锁最大的不同是，MCS 轮询的是当前队列节点的变量，而 CLH 轮询的是当前节点的前驱节点的变量，来判断前一个线程是否释放了锁。</p>
+<h3 id="semaphore"><a href="#semaphore" class="headerlink" title="semaphore"></a>semaphore</h3><pre><code class="highlight plain">class Store&#123;
+    private static int storage &#x3D; 0;
+    Semaphore semaphore &#x3D; new Semaphore(1);
+    public void add(int n) throws InterruptedException &#123;
+        semaphore.acquire();
+        storage +&#x3D; n;
+        semaphore.release();
+    &#125;
+
+    public void out()&#123;
+        System.out.println(storage);
+    &#125;
+&#125;</code></pre>
+
+<p>设置信号量为1，这样可以保证多线程并发调用<code>add</code>方法时，只能单个线程运行，起到加锁效果</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2141,273 +2408,6 @@ public class AK_Factory implements Factory&#123;
     &#125;
 
 &#125;</code></pre>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E6%89%8B%E5%8A%A8%E5%AE%9E%E7%8E%B0%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/%E6%89%8B%E5%8A%A8%E5%AE%9E%E7%8E%B0%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8/" itemprop="url">手动实现线程安全</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="自旋锁"><a href="#自旋锁" class="headerlink" title="自旋锁"></a>自旋锁</h3><pre><code class="highlight plain">import java.util.concurrent.atomic.AtomicReference;
-public class SpinLock &#123;
-   private AtomicReference&lt;Thread&gt; owner &#x3D; new AtomicReference&lt;Thread&gt;();
-   public void lock() &#123;
-       Thread currentThread &#x3D; Thread.currentThread();
-        &#x2F;&#x2F; 如果锁未被占用，则设置当前线程为锁的拥有者
-       while (!owner.compareAndSet(null, currentThread)) &#123;&#125;
-   &#125;
-
-   public void unlock() &#123;
-       Thread currentThread &#x3D; Thread.currentThread();
-        &#x2F;&#x2F; 只有锁的拥有者才能释放锁
-       owner.compareAndSet(currentThread, null);
-   &#125;
-&#125;</code></pre>
-
-<p>利用CAS第一个线程<code>owner.compareAndSet(null, currentThread)</code>抢到执行权，后面的线程则进入循环，直到第一个线程释放锁<code>owner.compareAndSet(currentThread, null)</code>，接着下一个线程抢到执行权，依次运行下去</p>
-<h3 id="公平自旋锁"><a href="#公平自旋锁" class="headerlink" title="公平自旋锁"></a>公平自旋锁</h3><p>我们第一个自旋锁所有线程一起抢执行权，如果要执行FIFO原则，如以下</p>
-<pre><code class="highlight plain">import java.util.concurrent.atomic.AtomicInteger;
-
-public class FairSpinLock &#123;
-   private AtomicInteger serviceNum &#x3D; new AtomicInteger(); &#x2F;&#x2F; 服务号
-   private AtomicInteger ticketNum &#x3D; new AtomicInteger(); &#x2F;&#x2F; 排队号
-
-   public int lock() &#123;
-       &#x2F;&#x2F; 首先原子性地获得一个排队号
-       int myTicketNum &#x3D; ticketNum.getAndIncrement();
-       &#x2F;&#x2F; 只要当前服务号不是自己的就不断轮询
-       while (serviceNum.get() !&#x3D; myTicketNum) &#123;
-       &#125;
-       return myTicketNum;
-    &#125;
-
-    public void unlock(int myTicket) &#123;
-        &#x2F;&#x2F; 只有当前线程拥有者才能释放锁
-        int next &#x3D; myTicket + 1;
-        serviceNum.compareAndSet(myTicket, next);
-    &#125;
-&#125;</code></pre>
-
-<p>每个线程分配一个<code>myTicketNum</code>，每一次<code>unlock</code>将<code>serviceNum</code>自增，让下一个持<code>myTicketNum</code>与<code>serviceNum</code>相等的线程跳出循环，开始业务</p>
-<h3 id="MCS自旋锁"><a href="#MCS自旋锁" class="headerlink" title="MCS自旋锁"></a>MCS自旋锁</h3><pre><code class="highlight plain">import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
-public class MCSLock &#123;
-    public static class MCSNode &#123;
-        volatile MCSNode next;
-        volatile boolean isWaiting &#x3D; true; &#x2F;&#x2F; 默认是在等待锁
-    &#125;
-    volatile MCSNode queue;&#x2F;&#x2F; 指向最后一个申请锁的MCSNode
-    private static final AtomicReferenceFieldUpdater&lt;MCSLock, MCSNode&gt; UPDATER &#x3D; AtomicReferenceFieldUpdater
-            .newUpdater(MCSLock.class, MCSNode.class, &quot;queue&quot;);
-
-    public void lock(MCSNode currentThread) &#123;
-        MCSNode predecessor &#x3D; UPDATER.getAndSet(this, currentThread);&#x2F;&#x2F; step 1
-        if (predecessor !&#x3D; null) &#123;
-            predecessor.next &#x3D; currentThread;&#x2F;&#x2F; step 2
-            while (currentThread.isWaiting) &#123;&#x2F;&#x2F; step 3
-            &#125;
-        &#125; else &#123; &#x2F;&#x2F; 只有一个线程在使用锁，没有前驱来通知它，所以得自己标记自己已获得锁
-            currentThread.isWaiting &#x3D; false;
-        &#125;
-    &#125;
-
-    public void unlock(MCSNode currentThread) &#123;
-        if (currentThread.isWaiting) &#123;&#x2F;&#x2F; 锁拥有者进行释放锁才有意义
-            return;
-        &#125;
-
-        if (currentThread.next &#x3D;&#x3D; null) &#123;&#x2F;&#x2F; 检查是否有人排在自己后面
-            if (UPDATER.compareAndSet(this, currentThread, null)) &#123;&#x2F;&#x2F; step 4
-                &#x2F;&#x2F; compareAndSet返回true表示确实没有人排在自己后面
-                return;
-            &#125; else &#123;
-                &#x2F;&#x2F; 突然有人排在自己后面了，可能还不知道是谁，下面是等待后续者
-                &#x2F;&#x2F; 这里之所以要忙等是因为：step 1执行完后，step 2可能还没执行完
-                while (currentThread.next &#x3D;&#x3D; null) &#123; &#x2F;&#x2F; step 5
-                &#125;
-            &#125;
-        &#125;
-        currentThread.next.isWaiting &#x3D; false;
-        currentThread.next &#x3D; null;&#x2F;&#x2F; for GC
-    &#125;
-&#125;</code></pre>
-
-<p>利用CAS特性，<code>UPDATER.getAndSet(this, currentThread)</code>在多线程访问情况下将所有节点连成一个虚拟队列，然后将前后节点链成链表结构，每个申请锁的线程都是链表上的一个节点，这些线程会一直轮询自己的本地变量，来知道它自己是否获得了锁。已经获得了锁的线程在释放锁的时候，负责通知其它线程，这样 CPU 之间缓存的同步操作就减少了很多，仅在线程通知另外一个线程的时候发生，降低了系统总线和内存的开销。</p>
-<h3 id="CLH-自旋锁"><a href="#CLH-自旋锁" class="headerlink" title="CLH 自旋锁"></a>CLH 自旋锁</h3><p>CLH 锁与 MCS 锁的原理大致相同，都是各个线程轮询各自关注的变量，来避免多个线程对同一个变量的轮询，从而从 CPU 缓存一致性的角度上减少了系统的消耗。<br>CLH 锁的名字也与他们的发明人的名字相关：Craig，Landin and Hagersten。<br>CLH 锁与 MCS 锁最大的不同是，MCS 轮询的是当前队列节点的变量，而 CLH 轮询的是当前节点的前驱节点的变量，来判断前一个线程是否释放了锁。</p>
-<pre><code class="highlight plain">import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
-public class CLHLock &#123;
-    public static class CLHNode &#123;
-        private volatile boolean isWaiting &#x3D; true; &#x2F;&#x2F; 默认是在等待锁
-    &#125;
-    private volatile CLHNode tail ;
-    private static final AtomicReferenceFieldUpdater&lt;CLHLock, CLHNode&gt; UPDATER &#x3D; AtomicReferenceFieldUpdater
-            . newUpdater(CLHLock.class, CLHNode .class , &quot;tail&quot; );
-    public void lock(CLHNode currentThread) &#123;
-        CLHNode preNode &#x3D; UPDATER.getAndSet( this, currentThread);
-        if(preNode !&#x3D; null) &#123;&#x2F;&#x2F;已有线程占用了锁，进入自旋
-            while(preNode.isWaiting ) &#123;
-            &#125;
-        &#125;
-    &#125;
-
-    public void unlock(CLHNode currentThread) &#123;
-        &#x2F;&#x2F; 如果队列里只有当前线程，则释放对当前线程的引用（for GC）。
-        if (!UPDATER .compareAndSet(this, currentThread, null)) &#123;
-            &#x2F;&#x2F; 还有后续线程
-            currentThread.isWaiting &#x3D; false ;&#x2F;&#x2F; 改变状态，让后续线程结束自旋
-        &#125;
-    &#125;
-&#125;</code></pre>
-
-<p>CLH 锁与 MCS 锁的原理大致相同，都是各个线程轮询各自关注的变量，来避免多个线程对同一个变量的轮询，从而从 CPU 缓存一致性的角度上减少了系统的消耗。CLH 锁与 MCS 锁最大的不同是，MCS 轮询的是当前队列节点的变量，而 CLH 轮询的是当前节点的前驱节点的变量，来判断前一个线程是否释放了锁。</p>
-<h3 id="semaphore"><a href="#semaphore" class="headerlink" title="semaphore"></a>semaphore</h3><pre><code class="highlight plain">class Store&#123;
-    private static int storage &#x3D; 0;
-    Semaphore semaphore &#x3D; new Semaphore(1);
-    public void add(int n) throws InterruptedException &#123;
-        semaphore.acquire();
-        storage +&#x3D; n;
-        semaphore.release();
-    &#125;
-
-    public void out()&#123;
-        System.out.println(storage);
-    &#125;
-&#125;</code></pre>
-
-<p>设置信号量为1，这样可以保证多线程并发调用<code>add</code>方法时，只能单个线程运行，起到加锁效果</p>
-
           
         
       
@@ -3296,7 +3296,7 @@ class ThreadReen extends Thread&#123;
 
   
 
-  <link rel="stylesheet" href="/lib/prettify/skins/sunburst.css" type="text/css">
+  <link rel="stylesheet" href="/lib/prettify/skins/desert.css" type="text/css">
 <script src="/lib/prettify/prettify.js" type="text/javascript"></script>
 <script type="text/javascript">
   $(document).ready(function() {

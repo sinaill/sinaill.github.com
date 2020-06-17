@@ -1192,243 +1192,6 @@ assertCredentialsMatch(token, info);</code></pre>
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/optional/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/optional/" itemprop="url">option接口</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>Optional是Java8提供的为了解决null安全问题的一个API，与String类似，也是final类型</p>
-<h3 id="成员变量"><a href="#成员变量" class="headerlink" title="成员变量"></a>成员变量</h3><pre><code class="highlight plain">&#x2F;**
- * Common instance for &#123;@code empty()&#125;.
- *&#x2F;
-private static final Optional&lt;?&gt; EMPTY &#x3D; new Optional&lt;&gt;();</code></pre>
-<p>值为空的Optional共享此实例</p>
-<pre><code class="highlight plain">&#x2F;**
- * If non-null, the value; if null, indicates no value is present
- *&#x2F;
-private final T value;</code></pre>
-
-<p>Optional类中用来存储值得变量</p>
-<h3 id="成员方法"><a href="#成员方法" class="headerlink" title="成员方法"></a>成员方法</h3><h4 id="empty"><a href="#empty" class="headerlink" title="empty"></a>empty</h4><pre><code class="highlight plain">public static&lt;T&gt; Optional&lt;T&gt; empty() &#123;
-    @SuppressWarnings(&quot;unchecked&quot;)
-    Optional&lt;T&gt; t &#x3D; (Optional&lt;T&gt;) EMPTY;
-    return t;
-&#125;</code></pre>
-
-<p>返回类中定义好的空的Optional实例</p>
-<h4 id="of"><a href="#of" class="headerlink" title="of"></a>of</h4><pre><code class="highlight plain">public static &lt;T&gt; Optional&lt;T&gt; of(T value) &#123;
-    return new Optional&lt;&gt;(value);
-&#125;</code></pre>
-
-<p>指定value返回一个Optional实例，若value为空，抛出空指针异常</p>
-<h4 id="ofNullable"><a href="#ofNullable" class="headerlink" title="ofNullable"></a>ofNullable</h4><pre><code class="highlight plain">public static &lt;T&gt; Optional&lt;T&gt; ofNullable(T value) &#123;
-    return value &#x3D;&#x3D; null ? empty() : of(value);
-&#125;</code></pre>
-
-<p>指定value返回一个Optional实例，若value为空，则返回类中定义好的空的optional实例</p>
-<h4 id="get"><a href="#get" class="headerlink" title="get"></a>get</h4><pre><code class="highlight plain">public T get() &#123;
-    if (value &#x3D;&#x3D; null) &#123;
-        throw new NoSuchElementException(&quot;No value present&quot;);
-    &#125;
-    return value;
-&#125;</code></pre>
-
-<p>如果 Optional中存在值，则返回值，否则抛出 NoSuchElementException </p>
-<h4 id="isPresent"><a href="#isPresent" class="headerlink" title="isPresent"></a>isPresent</h4><pre><code class="highlight plain">public boolean isPresent() &#123;
-    return value !&#x3D; null;
-&#125;</code></pre>
-
-<p>值不为空时返回true，否则返回false</p>
-<h4 id="ifPresent"><a href="#ifPresent" class="headerlink" title="ifPresent"></a>ifPresent</h4><pre><code class="highlight plain">public void ifPresent(Consumer&lt;? super T&gt; consumer) &#123;
-    if (value !&#x3D; null)
-        consumer.accept(value);
-&#125;</code></pre>
-
-<p>使用consumer处理value，若consumer为空，抛出空指针异常</p>
-<h4 id="filter"><a href="#filter" class="headerlink" title="filter"></a>filter</h4><pre><code class="highlight plain">public Optional&lt;T&gt; filter(Predicate&lt;? super T&gt; predicate) &#123;
-    Objects.requireNonNull(predicate);
-    if (!isPresent())
-        return this;
-    else
-        return predicate.test(value) ? this : empty();
-&#125;</code></pre>
-
-<p>predicate接口处理value，返回true时，filter方法返回自身，返回false时，filter返回Optional中定义的空实例</p>
-<h4 id="map"><a href="#map" class="headerlink" title="map"></a>map</h4><pre><code class="highlight plain">public&lt;U&gt; Optional&lt;U&gt; map(Function&lt;? super T, ? extends U&gt; mapper) &#123;
-    Objects.requireNonNull(mapper);
-    if (!isPresent())
-        return empty();
-    else &#123;
-        return Optional.ofNullable(mapper.apply(value));
-    &#125;
-&#125;</code></pre>
-
-<p>Function接口处理value，value为空时，返回Optional中定义的空实例。value不为空时，当Function中apply返回值为空时，也是返回空实例，否则以apply返回值创建Optional实例</p>
-<pre><code class="highlight plain">public&lt;U&gt; Optional&lt;U&gt; flatMap(Function&lt;? super T, Optional&lt;U&gt;&gt; mapper) &#123;
-    Objects.requireNonNull(mapper);
-    if (!isPresent())
-        return empty();
-    else &#123;
-        return Objects.requireNonNull(mapper.apply(value));
-    &#125;
-&#125;</code></pre>
-
-<p>与map方法类似，区别在于Function返回值，apply方法直接返回Optional实例</p>
-<h4 id="orElse"><a href="#orElse" class="headerlink" title="orElse"></a>orElse</h4><pre><code class="highlight plain">public T orElse(T other) &#123;
-    return value !&#x3D; null ? value : other;
-&#125;</code></pre>
-
-<p>value为空则返回other，否则返回value</p>
-<h4 id="orElseGet"><a href="#orElseGet" class="headerlink" title="orElseGet"></a>orElseGet</h4><pre><code class="highlight plain">public T orElseGet(Supplier&lt;? extends T&gt; other) &#123;
-    return value !&#x3D; null ? value : other.get();
-&#125;</code></pre>
-
-<p>与orElse方法相同，参数变为Supplier接口实现。Optional.orElse(new class)与Optional.orElseGet(class:new)区别在于，orElseGet在value为空时才创建对象，而orElse一开始就创建了对象</p>
-<h4 id="orElseThrow"><a href="#orElseThrow" class="headerlink" title="orElseThrow"></a>orElseThrow</h4><pre><code class="highlight plain">public &lt;X extends Throwable&gt; T orElseThrow(Supplier&lt;? extends X&gt; exceptionSupplier) throws X &#123;
-    if (value !&#x3D; null) &#123;
-        return value;
-    &#125; else &#123;
-        throw exceptionSupplier.get();
-    &#125;
-&#125;</code></pre>
-
-<p>value为空时抛出自定义异常，否则返回value，value和Supplier的get方法返回值都为空时抛出空指针异常</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/only_full_group_by/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1830,7 +1593,7 @@ public class Test &#123;
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/mysql%E4%BA%8B%E5%8A%A1%E5%92%8C%E9%94%81/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/optional/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="sinaill">
@@ -1849,7 +1612,7 @@ public class Test &#123;
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/06/17/mysql%E4%BA%8B%E5%8A%A1%E5%92%8C%E9%94%81/" itemprop="url">mysql事务和锁</a></h1>
+                <a class="post-title-link" href="/2020/06/17/optional/" itemprop="url">option接口</a></h1>
         
 
         <div class="post-meta">
@@ -1884,8 +1647,8 @@ public class Test &#123;
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/mysql/" itemprop="url" rel="index">
-                    <span itemprop="name">mysql</span>
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
                   </a>
                 </span>
 
@@ -1923,54 +1686,102 @@ public class Test &#123;
       
         
           
-            <h3 id="事务的基本要素-acid"><a href="#事务的基本要素-acid" class="headerlink" title="事务的基本要素(acid)"></a>事务的基本要素(acid)</h3><ol>
-<li>原子性（Atomicity）：事务开始后所有操作，要么全部做完，要么全部不做，不可能停滞在中间环节。事务执行过程中出错，会回滚到事务开始前的状态，所有的操作就像没有发生一样。也就是说事务是一个不可分割的整体，就像化学中学过的原子，是物质构成的基本单位。</li>
-<li>一致性（Consistency）：事务开始前和结束后，数据库的完整性约束没有被破坏 。比如A向B转账，不可能A扣了钱，B却没收到。</li>
-<li>隔离性（Isolation）：同一时间，只允许一个事务请求同一数据，不同的事务之间彼此没有任何干扰。比如A正在从一张银行卡中取钱，在A取钱的过程结束前，B不能向这张卡转账。</li>
-<li>持久性（Durability）：事务完成后，事务对数据库的所有更新将被保存到数据库，不能回滚。</li>
-</ol>
-<h3 id="事务的并发问题"><a href="#事务的并发问题" class="headerlink" title="事务的并发问题"></a>事务的并发问题</h3><ol>
-<li>脏读：脏读意味着一个事务读取了另一个事务未提交的数据,而这个数据是有可能回滚</li>
-<li>不可重复读：不可重复读意味着，在数据库访问中，一个事务范围内两个相同的查询却返回了不同数据。这是由于查询时系统中其他事务修改的提交而引起的。</li>
-<li>幻读：是指当事务不是独立执行时发生的一种现象，例如第一个事务对一个表中的数据进行了修改，这种修改涉及到表中的全部数据行。同时，第二个事务也修改这个表中的数据，这种修改是向表中插入一行新数据。那么，以后就会发生操作第一个事务的用户发现表中还有没有修改的数据行，就好象发生了幻觉一样.<br>不可重复读的和幻读很容易混淆，不可重复读侧重于修改，幻读侧重于新增或删除。解决不可重复读的问题只需锁住满足条件的行，解决幻读需要锁表</li>
-</ol>
-<h3 id="mysql事务隔离级别"><a href="#mysql事务隔离级别" class="headerlink" title="mysql事务隔离级别"></a>mysql事务隔离级别</h3><p>mysql的事务默认级别是可重复读</p>
-<table>
-<thead>
-<tr>
-<th>事务隔离级别</th>
-<th>脏读</th>
-<th>不可重复读</th>
-<th>幻读</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>读未提交(read-uncommitted)</td>
-<td>是</td>
-<td>是</td>
-<td>是</td>
-</tr>
-<tr>
-<td>不可重复读(read-committed)</td>
-<td>否</td>
-<td>是</td>
-<td>是</td>
-</tr>
-<tr>
-<td>可重复读(repeatable-read)</td>
-<td>否</td>
-<td>否</td>
-<td>是</td>
-</tr>
-<tr>
-<td>串行化(serializable)</td>
-<td>否</td>
-<td>否</td>
-<td>否</td>
-</tr>
-</tbody></table>
-<p><a href="https://www.liaoxuefeng.com/wiki/1177760294764384/1219071817284064" target="_blank" rel="noopener">四种隔离级别测试</a></p>
-<h3 id="锁"><a href="#锁" class="headerlink" title="锁"></a>锁</h3><p><a href="https://www.letiantian.me/mysql-innodb-rr-x-lock-example/" target="_blank" rel="noopener">共享锁，排他锁与事务</a></p>
+            <p>Optional是Java8提供的为了解决null安全问题的一个API，与String类似，也是final类型</p>
+<h3 id="成员变量"><a href="#成员变量" class="headerlink" title="成员变量"></a>成员变量</h3><pre><code class="highlight plain">&#x2F;**
+ * Common instance for &#123;@code empty()&#125;.
+ *&#x2F;
+private static final Optional&lt;?&gt; EMPTY &#x3D; new Optional&lt;&gt;();</code></pre>
+<p>值为空的Optional共享此实例</p>
+<pre><code class="highlight plain">&#x2F;**
+ * If non-null, the value; if null, indicates no value is present
+ *&#x2F;
+private final T value;</code></pre>
+
+<p>Optional类中用来存储值得变量</p>
+<h3 id="成员方法"><a href="#成员方法" class="headerlink" title="成员方法"></a>成员方法</h3><h4 id="empty"><a href="#empty" class="headerlink" title="empty"></a>empty</h4><pre><code class="highlight plain">public static&lt;T&gt; Optional&lt;T&gt; empty() &#123;
+    @SuppressWarnings(&quot;unchecked&quot;)
+    Optional&lt;T&gt; t &#x3D; (Optional&lt;T&gt;) EMPTY;
+    return t;
+&#125;</code></pre>
+
+<p>返回类中定义好的空的Optional实例</p>
+<h4 id="of"><a href="#of" class="headerlink" title="of"></a>of</h4><pre><code class="highlight plain">public static &lt;T&gt; Optional&lt;T&gt; of(T value) &#123;
+    return new Optional&lt;&gt;(value);
+&#125;</code></pre>
+
+<p>指定value返回一个Optional实例，若value为空，抛出空指针异常</p>
+<h4 id="ofNullable"><a href="#ofNullable" class="headerlink" title="ofNullable"></a>ofNullable</h4><pre><code class="highlight plain">public static &lt;T&gt; Optional&lt;T&gt; ofNullable(T value) &#123;
+    return value &#x3D;&#x3D; null ? empty() : of(value);
+&#125;</code></pre>
+
+<p>指定value返回一个Optional实例，若value为空，则返回类中定义好的空的optional实例</p>
+<h4 id="get"><a href="#get" class="headerlink" title="get"></a>get</h4><pre><code class="highlight plain">public T get() &#123;
+    if (value &#x3D;&#x3D; null) &#123;
+        throw new NoSuchElementException(&quot;No value present&quot;);
+    &#125;
+    return value;
+&#125;</code></pre>
+
+<p>如果 Optional中存在值，则返回值，否则抛出 NoSuchElementException </p>
+<h4 id="isPresent"><a href="#isPresent" class="headerlink" title="isPresent"></a>isPresent</h4><pre><code class="highlight plain">public boolean isPresent() &#123;
+    return value !&#x3D; null;
+&#125;</code></pre>
+
+<p>值不为空时返回true，否则返回false</p>
+<h4 id="ifPresent"><a href="#ifPresent" class="headerlink" title="ifPresent"></a>ifPresent</h4><pre><code class="highlight plain">public void ifPresent(Consumer&lt;? super T&gt; consumer) &#123;
+    if (value !&#x3D; null)
+        consumer.accept(value);
+&#125;</code></pre>
+
+<p>使用consumer处理value，若consumer为空，抛出空指针异常</p>
+<h4 id="filter"><a href="#filter" class="headerlink" title="filter"></a>filter</h4><pre><code class="highlight plain">public Optional&lt;T&gt; filter(Predicate&lt;? super T&gt; predicate) &#123;
+    Objects.requireNonNull(predicate);
+    if (!isPresent())
+        return this;
+    else
+        return predicate.test(value) ? this : empty();
+&#125;</code></pre>
+
+<p>predicate接口处理value，返回true时，filter方法返回自身，返回false时，filter返回Optional中定义的空实例</p>
+<h4 id="map"><a href="#map" class="headerlink" title="map"></a>map</h4><pre><code class="highlight plain">public&lt;U&gt; Optional&lt;U&gt; map(Function&lt;? super T, ? extends U&gt; mapper) &#123;
+    Objects.requireNonNull(mapper);
+    if (!isPresent())
+        return empty();
+    else &#123;
+        return Optional.ofNullable(mapper.apply(value));
+    &#125;
+&#125;</code></pre>
+
+<p>Function接口处理value，value为空时，返回Optional中定义的空实例。value不为空时，当Function中apply返回值为空时，也是返回空实例，否则以apply返回值创建Optional实例</p>
+<pre><code class="highlight plain">public&lt;U&gt; Optional&lt;U&gt; flatMap(Function&lt;? super T, Optional&lt;U&gt;&gt; mapper) &#123;
+    Objects.requireNonNull(mapper);
+    if (!isPresent())
+        return empty();
+    else &#123;
+        return Objects.requireNonNull(mapper.apply(value));
+    &#125;
+&#125;</code></pre>
+
+<p>与map方法类似，区别在于Function返回值，apply方法直接返回Optional实例</p>
+<h4 id="orElse"><a href="#orElse" class="headerlink" title="orElse"></a>orElse</h4><pre><code class="highlight plain">public T orElse(T other) &#123;
+    return value !&#x3D; null ? value : other;
+&#125;</code></pre>
+
+<p>value为空则返回other，否则返回value</p>
+<h4 id="orElseGet"><a href="#orElseGet" class="headerlink" title="orElseGet"></a>orElseGet</h4><pre><code class="highlight plain">public T orElseGet(Supplier&lt;? extends T&gt; other) &#123;
+    return value !&#x3D; null ? value : other.get();
+&#125;</code></pre>
+
+<p>与orElse方法相同，参数变为Supplier接口实现。Optional.orElse(new class)与Optional.orElseGet(class:new)区别在于，orElseGet在value为空时才创建对象，而orElse一开始就创建了对象</p>
+<h4 id="orElseThrow"><a href="#orElseThrow" class="headerlink" title="orElseThrow"></a>orElseThrow</h4><pre><code class="highlight plain">public &lt;X extends Throwable&gt; T orElseThrow(Supplier&lt;? extends X&gt; exceptionSupplier) throws X &#123;
+    if (value !&#x3D; null) &#123;
+        return value;
+    &#125; else &#123;
+        throw exceptionSupplier.get();
+    &#125;
+&#125;</code></pre>
+
+<p>value为空时抛出自定义异常，否则返回value，value和Supplier的get方法返回值都为空时抛出空指针异常</p>
 
           
         
@@ -2322,6 +2133,195 @@ public class Test &#123;
 &#125;</code></pre>
 
 <h3 id="nio非阻塞特性"><a href="#nio非阻塞特性" class="headerlink" title="nio非阻塞特性"></a>nio非阻塞特性</h3><p>不用像io一样，因为读写都是阻塞的，所以对每个客户端连接都要建一个线程来监听，而nio只需要一个线程使用selector监听所有channel，减轻服务器负担</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/mysql%E4%BA%8B%E5%8A%A1%E5%92%8C%E9%94%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/mysql%E4%BA%8B%E5%8A%A1%E5%92%8C%E9%94%81/" itemprop="url">mysql事务和锁</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/mysql/" itemprop="url" rel="index">
+                    <span itemprop="name">mysql</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="事务的基本要素-acid"><a href="#事务的基本要素-acid" class="headerlink" title="事务的基本要素(acid)"></a>事务的基本要素(acid)</h3><ol>
+<li>原子性（Atomicity）：事务开始后所有操作，要么全部做完，要么全部不做，不可能停滞在中间环节。事务执行过程中出错，会回滚到事务开始前的状态，所有的操作就像没有发生一样。也就是说事务是一个不可分割的整体，就像化学中学过的原子，是物质构成的基本单位。</li>
+<li>一致性（Consistency）：事务开始前和结束后，数据库的完整性约束没有被破坏 。比如A向B转账，不可能A扣了钱，B却没收到。</li>
+<li>隔离性（Isolation）：同一时间，只允许一个事务请求同一数据，不同的事务之间彼此没有任何干扰。比如A正在从一张银行卡中取钱，在A取钱的过程结束前，B不能向这张卡转账。</li>
+<li>持久性（Durability）：事务完成后，事务对数据库的所有更新将被保存到数据库，不能回滚。</li>
+</ol>
+<h3 id="事务的并发问题"><a href="#事务的并发问题" class="headerlink" title="事务的并发问题"></a>事务的并发问题</h3><ol>
+<li>脏读：脏读意味着一个事务读取了另一个事务未提交的数据,而这个数据是有可能回滚</li>
+<li>不可重复读：不可重复读意味着，在数据库访问中，一个事务范围内两个相同的查询却返回了不同数据。这是由于查询时系统中其他事务修改的提交而引起的。</li>
+<li>幻读：是指当事务不是独立执行时发生的一种现象，例如第一个事务对一个表中的数据进行了修改，这种修改涉及到表中的全部数据行。同时，第二个事务也修改这个表中的数据，这种修改是向表中插入一行新数据。那么，以后就会发生操作第一个事务的用户发现表中还有没有修改的数据行，就好象发生了幻觉一样.<br>不可重复读的和幻读很容易混淆，不可重复读侧重于修改，幻读侧重于新增或删除。解决不可重复读的问题只需锁住满足条件的行，解决幻读需要锁表</li>
+</ol>
+<h3 id="mysql事务隔离级别"><a href="#mysql事务隔离级别" class="headerlink" title="mysql事务隔离级别"></a>mysql事务隔离级别</h3><p>mysql的事务默认级别是可重复读</p>
+<table>
+<thead>
+<tr>
+<th>事务隔离级别</th>
+<th>脏读</th>
+<th>不可重复读</th>
+<th>幻读</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>读未提交(read-uncommitted)</td>
+<td>是</td>
+<td>是</td>
+<td>是</td>
+</tr>
+<tr>
+<td>不可重复读(read-committed)</td>
+<td>否</td>
+<td>是</td>
+<td>是</td>
+</tr>
+<tr>
+<td>可重复读(repeatable-read)</td>
+<td>否</td>
+<td>否</td>
+<td>是</td>
+</tr>
+<tr>
+<td>串行化(serializable)</td>
+<td>否</td>
+<td>否</td>
+<td>否</td>
+</tr>
+</tbody></table>
+<p><a href="https://www.liaoxuefeng.com/wiki/1177760294764384/1219071817284064" target="_blank" rel="noopener">四种隔离级别测试</a></p>
+<h3 id="锁"><a href="#锁" class="headerlink" title="锁"></a>锁</h3><p><a href="https://www.letiantian.me/mysql-innodb-rr-x-lock-example/" target="_blank" rel="noopener">共享锁，排他锁与事务</a></p>
 
           
         
@@ -2895,7 +2895,7 @@ while(keyIterator.hasNext()) &#123;
 
   
 
-  <link rel="stylesheet" href="/lib/prettify/skins/sunburst.css" type="text/css">
+  <link rel="stylesheet" href="/lib/prettify/skins/desert.css" type="text/css">
 <script src="/lib/prettify/prettify.js" type="text/javascript"></script>
 <script type="text/javascript">
   $(document).ready(function() {

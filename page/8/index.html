@@ -2329,6 +2329,177 @@ System.out.println(c&#x3D;&#x3D;d);</code></pre>
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/Function%20and%20Predicate/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/Function%20and%20Predicate/" itemprop="url">Predicate和Function</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="Predicate"><a href="#Predicate" class="headerlink" title="Predicate"></a>Predicate</h3><p>Predicate接口为函数式接口</p>
+<pre><code class="highlight plain">&#x2F;**
+ * Evaluates this predicate on the given argument.
+ *
+ * @param t the input argument
+ * @return &#123;@code true&#125; if the input argument matches the predicate,
+ * otherwise &#123;@code false&#125;
+ *&#x2F;
+boolean test(T t);</code></pre>
+<h3 id="Function"><a href="#Function" class="headerlink" title="Function"></a>Function</h3><p>Function接口为函数式接口</p>
+<pre><code class="highlight plain">&#x2F;**
+ * Applies this function to the given argument.
+ *
+ * @param t the function argument
+ * @return the function result
+ *&#x2F;
+R apply(T t);</code></pre>
+
+<p>与Consumer接口类似，但Function的抽象方法有返回值</p>
+<pre><code class="highlight plain">&#x2F;**
+ * Returns a function that always returns its input argument.
+ *
+ * @param &lt;T&gt; the type of the input and output objects to the function
+ * @return a function that always returns its input argument
+ *&#x2F;
+static &lt;T&gt; Function&lt;T, T&gt; identity() &#123;
+    return t -&gt; t;
+&#125;</code></pre>
+
+<p>相当于用lambda实现apply抽象方法：u-&gt;u</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/HashMap%20and%20HashTable/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2488,177 +2659,6 @@ a.forEach((c,d)-&gt;System.out.println(c+&quot; &quot;+d));
 <p>确实没有抛出ConcurrentModificationException，Enumerator是一个fail-safe迭代器</p>
 <p>4.HashMap允许null作为key或value</p>
 <p>5.HashMap默认容量16，Hashtable默认容量11</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/Function%20and%20Predicate/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/Function%20and%20Predicate/" itemprop="url">Predicate和Function</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Predicate"><a href="#Predicate" class="headerlink" title="Predicate"></a>Predicate</h3><p>Predicate接口为函数式接口</p>
-<pre><code class="highlight plain">&#x2F;**
- * Evaluates this predicate on the given argument.
- *
- * @param t the input argument
- * @return &#123;@code true&#125; if the input argument matches the predicate,
- * otherwise &#123;@code false&#125;
- *&#x2F;
-boolean test(T t);</code></pre>
-<h3 id="Function"><a href="#Function" class="headerlink" title="Function"></a>Function</h3><p>Function接口为函数式接口</p>
-<pre><code class="highlight plain">&#x2F;**
- * Applies this function to the given argument.
- *
- * @param t the function argument
- * @return the function result
- *&#x2F;
-R apply(T t);</code></pre>
-
-<p>与Consumer接口类似，但Function的抽象方法有返回值</p>
-<pre><code class="highlight plain">&#x2F;**
- * Returns a function that always returns its input argument.
- *
- * @param &lt;T&gt; the type of the input and output objects to the function
- * @return a function that always returns its input argument
- *&#x2F;
-static &lt;T&gt; Function&lt;T, T&gt; identity() &#123;
-    return t -&gt; t;
-&#125;</code></pre>
-
-<p>相当于用lambda实现apply抽象方法：u-&gt;u</p>
 
           
         
@@ -2984,7 +2984,7 @@ static &lt;T&gt; Function&lt;T, T&gt; identity() &#123;
 
   
 
-  <link rel="stylesheet" href="/lib/prettify/skins/sunburst.css" type="text/css">
+  <link rel="stylesheet" href="/lib/prettify/skins/desert.css" type="text/css">
 <script src="/lib/prettify/prettify.js" type="text/javascript"></script>
 <script type="text/javascript">
   $(document).ready(function() {
