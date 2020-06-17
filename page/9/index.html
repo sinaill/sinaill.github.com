@@ -1200,6 +1200,175 @@ public void test3() throws Exception{
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/@PathVariable%E5%8F%82%E4%B8%8E%E5%88%B0%E5%B0%86%E5%8F%82%E6%95%B0%E7%BB%91%E5%AE%9A%E5%88%B0%E5%85%A5%E5%8F%82Bean/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/@PathVariable%E5%8F%82%E4%B8%8E%E5%88%B0%E5%B0%86%E5%8F%82%E6%95%B0%E7%BB%91%E5%AE%9A%E5%88%B0%E5%85%A5%E5%8F%82Bean/" itemprop="url">注解@PathVariable参与到将参数绑定到入参Bean</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">框架</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>在参数为复杂类时，处理参数的参数处理器为<code>ModelAttributeMethodProcessor</code></p>
+<pre><code>public void bind(ServletRequest request) {
+    MutablePropertyValues mpvs = new ServletRequestParameterPropertyValues(request);
+    MultipartRequest multipartRequest = WebUtils.getNativeRequest(request, MultipartRequest.class);
+    if (multipartRequest != null) {
+        bindMultipart(multipartRequest.getMultiFileMap(), mpvs);
+    }
+    addBindValues(mpvs, request);
+    doBind(mpvs);
+}</code></pre><p>创建要绑定到类中变量的所有参数的key和value集合mpvs，构造函数中先从请求中获取所有变量名和值，不包括PathVariable变量，然后通过<code>addBindValues(mpvs, request)</code></p>
+<pre><code>protected void addBindValues(MutablePropertyValues mpvs, ServletRequest request) {
+    String attr = HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE;
+    Map&lt;String, String&gt; uriVars = (Map&lt;String, String&gt;) request.getAttribute(attr);
+    if (uriVars != null) {
+        for (Entry&lt;String, String&gt; entry : uriVars.entrySet()) {
+            if (mpvs.contains(entry.getKey())) {
+                logger.warn(&quot;Skipping URI variable &#39;&quot; + entry.getKey()
+                        + &quot;&#39; since the request contains a bind value with the same name.&quot;);
+            }
+            else {
+                mpvs.addPropertyValue(entry.getKey(), entry.getValue());
+            }
+        }
+    }
+}</code></pre><p>首先获取了所有PathVariable变量<code>uriVars</code></p>
+<p>当<code>uriVars</code>的key值不与<code>mpvs</code>中的任意key相同时，将PathVariable变量也绑入mpvs中。</p>
+<p>然后将<code>mpvs</code>绑定到对应入参<code>Bean</code></p>
+<p>所以也可以通过<code>@PathVariable</code>的方法将PathVariable绑入入参<code>Bean</code>中，当然参数名字和PathVariable的名字要对上</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/@PathVariable%E6%B3%A8%E8%A7%A3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1435,175 +1604,6 @@ public Map&lt;String, String&gt; extractUriTemplateVariables(String pattern, Str
 }</code></pre><p>返回的一个<code>java.util.Map&lt;String,String&gt;</code>类型的变量，存放了PathVariable的变量名和值</p>
 <p>然后进行url解码</p>
 <pre><code>decodedUriVariables = getUrlPathHelper().decodePathVariables(request, uriVariables);</code></pre><p>解码后将它以<code>HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE</code>为变量名调用<code>Requrest</code>的<code>SetAttribute</code>方法放入请求中</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/@PathVariable%E5%8F%82%E4%B8%8E%E5%88%B0%E5%B0%86%E5%8F%82%E6%95%B0%E7%BB%91%E5%AE%9A%E5%88%B0%E5%85%A5%E5%8F%82Bean/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/@PathVariable%E5%8F%82%E4%B8%8E%E5%88%B0%E5%B0%86%E5%8F%82%E6%95%B0%E7%BB%91%E5%AE%9A%E5%88%B0%E5%85%A5%E5%8F%82Bean/" itemprop="url">注解@PathVariable参与到将参数绑定到入参Bean</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
-                    <span itemprop="name">框架</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>在参数为复杂类时，处理参数的参数处理器为<code>ModelAttributeMethodProcessor</code></p>
-<pre><code>public void bind(ServletRequest request) {
-    MutablePropertyValues mpvs = new ServletRequestParameterPropertyValues(request);
-    MultipartRequest multipartRequest = WebUtils.getNativeRequest(request, MultipartRequest.class);
-    if (multipartRequest != null) {
-        bindMultipart(multipartRequest.getMultiFileMap(), mpvs);
-    }
-    addBindValues(mpvs, request);
-    doBind(mpvs);
-}</code></pre><p>创建要绑定到类中变量的所有参数的key和value集合mpvs，构造函数中先从请求中获取所有变量名和值，不包括PathVariable变量，然后通过<code>addBindValues(mpvs, request)</code></p>
-<pre><code>protected void addBindValues(MutablePropertyValues mpvs, ServletRequest request) {
-    String attr = HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE;
-    Map&lt;String, String&gt; uriVars = (Map&lt;String, String&gt;) request.getAttribute(attr);
-    if (uriVars != null) {
-        for (Entry&lt;String, String&gt; entry : uriVars.entrySet()) {
-            if (mpvs.contains(entry.getKey())) {
-                logger.warn(&quot;Skipping URI variable &#39;&quot; + entry.getKey()
-                        + &quot;&#39; since the request contains a bind value with the same name.&quot;);
-            }
-            else {
-                mpvs.addPropertyValue(entry.getKey(), entry.getValue());
-            }
-        }
-    }
-}</code></pre><p>首先获取了所有PathVariable变量<code>uriVars</code></p>
-<p>当<code>uriVars</code>的key值不与<code>mpvs</code>中的任意key相同时，将PathVariable变量也绑入mpvs中。</p>
-<p>然后将<code>mpvs</code>绑定到对应入参<code>Bean</code></p>
-<p>所以也可以通过<code>@PathVariable</code>的方法将PathVariable绑入入参<code>Bean</code>中，当然参数名字和PathVariable的名字要对上</p>
 
           
         
