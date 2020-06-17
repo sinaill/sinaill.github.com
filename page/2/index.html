@@ -928,213 +928,6 @@ class consumer2 extends Thread&#123;
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E6%9E%9A%E4%B8%BE/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/%E6%9E%9A%E4%B8%BE/" itemprop="url">枚举</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="理解枚举类型"><a href="#理解枚举类型" class="headerlink" title="理解枚举类型"></a>理解枚举类型</h3><p>枚举类型是Java 5中新增特性的一部分，它是一种特殊的数据类型，之所以特殊是因为它既是一种类(class)类型却又比类类型多了些特殊的约束，但是这些约束的存在也造就了枚举类型的简洁性、安全性以及便捷性</p>
-<h3 id="枚举用来定义常量"><a href="#枚举用来定义常量" class="headerlink" title="枚举用来定义常量"></a>枚举用来定义常量</h3><p><strong>枚举常量、类常量与静态常量</strong></p>
-<p>平常我们定义普通常量的时候</p>
-<pre><code class="highlight plain">public class Demo&#123;
-	public static final int OPEN &#x3D;1;
-	public static final int CLOSE&#x3D;2;
-&#125;</code></pre>
-
-<p>上述的常量定义常量的方式称为int枚举模式，这样的定义方式并没有什么错，但它存在许多不足，如在类型安全和使用方便性上并没有多少好处，如果存在定义int值相同的变量，混淆的几率还是很大的，编译器也不会提出任何警告，因此这种方式在枚举出现后并不提倡，现在我们利用枚举类型来重新定义上述的常量，同时也感受一把枚举定义的方式</p>
-<pre><code class="highlight plain">enum Demo&#123;
-	OPEN,CLOSE
-&#125;</code></pre>
-
-<p>用普通常量的方式定义的话，值为<code>int</code>类型，用枚举来定义的话，取值<code>Demo.OPEN</code>输出为我们定义的枚举类型</p>
-<h3 id="枚举的构造函数"><a href="#枚举的构造函数" class="headerlink" title="枚举的构造函数"></a>枚举的构造函数</h3><p>测试Demo</p>
-<pre><code class="highlight plain">enum fruit&#123;
-	apple(&quot;苹果&quot;),melon(&quot;西瓜&quot;);
-	private String chinese;
-	private fruit(String chinese) &#123;
-		this.chinese &#x3D; chinese;
-	&#125;
-	public String getChinese() &#123;
-		return chinese;
-	&#125;
-	public void setChinese(String chinese) &#123;
-		this.chinese &#x3D; chinese;
-	&#125;
-	
-	
-&#125;
-
-
-	@Test
-	void test3() &#123;
-		System.out.println(fruit.apple);
-		&#x2F;&#x2F;输出为apple
-	&#125;
-
-	@Test
-	void test3() &#123;
-		System.out.println(fruit.apple.getClass());
-		&#x2F;&#x2F;输出为class 本包.fruit，为自定义的枚举类型
-	&#125;
-
-	&#x2F;&#x2F;调用函数
-	@Test
-	void test3() &#123;
-		System.out.println(fruit.apple.getChinese);
-		&#x2F;&#x2F;输出苹果
-	&#125;
-	
-	&#x2F;&#x2F;遍历枚举
-	@Test
-	void test3() &#123;
-		for(fruit f:fruit.values()) &#123;
-			System.out.println(f.getChinese());
-		&#125;
-	&#125;</code></pre>
-
-
-
-
-
-<h3 id="其他特性"><a href="#其他特性" class="headerlink" title="其他特性"></a>其他特性</h3><p>枚举可以定义静态方法和非静态方法</p>
-<p>枚举不能有继承</p>
-<p>可以用在switch中</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E6%8E%A5%E5%8F%A3%E4%B8%AD%E7%9A%84default%E6%96%B9%E6%B3%95/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1327,7 +1120,7 @@ default Stream&lt;E&gt; stream() &#123;
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E6%9E%9A%E4%B8%BE/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="sinaill">
@@ -1346,7 +1139,7 @@ default Stream&lt;E&gt; stream() &#123;
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/06/17/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" itemprop="url">排序算法</a></h1>
+                <a class="post-title-link" href="/2020/06/17/%E6%9E%9A%E4%B8%BE/" itemprop="url">枚举</a></h1>
         
 
         <div class="post-meta">
@@ -1420,83 +1213,72 @@ default Stream&lt;E&gt; stream() &#123;
       
         
           
-            <h3 id="冒泡法"><a href="#冒泡法" class="headerlink" title="冒泡法"></a>冒泡法</h3><p>关键排序代码如下</p>
-<pre><code class="highlight plain">public void bubble(int[] i)&#123;
-	int temp;
-	for(int j &#x3D; 0;j &lt; i.length-1; j++)&#123;
-		for(int k &#x3D; 0; k &lt; i.length - j -1; k++)&#123;
-			if(i[k] &gt; i[k+1])&#123;
-				temp &#x3D; i[k];
-				i[k] &#x3D; i[k+1];
-				i[k+1] &#x3D; temp;
-			&#125;
-		&#125;
-	&#125;
+            <h3 id="理解枚举类型"><a href="#理解枚举类型" class="headerlink" title="理解枚举类型"></a>理解枚举类型</h3><p>枚举类型是Java 5中新增特性的一部分，它是一种特殊的数据类型，之所以特殊是因为它既是一种类(class)类型却又比类类型多了些特殊的约束，但是这些约束的存在也造就了枚举类型的简洁性、安全性以及便捷性</p>
+<h3 id="枚举用来定义常量"><a href="#枚举用来定义常量" class="headerlink" title="枚举用来定义常量"></a>枚举用来定义常量</h3><p><strong>枚举常量、类常量与静态常量</strong></p>
+<p>平常我们定义普通常量的时候</p>
+<pre><code class="highlight plain">public class Demo&#123;
+	public static final int OPEN &#x3D;1;
+	public static final int CLOSE&#x3D;2;
 &#125;</code></pre>
 
-<p>用来对一万个10000内随机数进行排序，所消耗时间为 <strong>耗时：14329ms</strong></p>
-<h3 id="选择排序"><a href="#选择排序" class="headerlink" title="选择排序"></a>选择排序</h3><p>关键代码如下</p>
-<pre><code class="highlight plain">public void selectionSort(int n[]) &#123;
-	for (int i &#x3D; 0; i &lt; n.length - 1; i++) &#123;
-		int max &#x3D; 0;
-		for (int j &#x3D; 0; j &lt; n.length - i - 1; j++) &#123;
-			if(n[max] &lt; n[j+1])&#123;
-				max &#x3D; j+1;
-			&#125;
-		&#125;
-		if (max !&#x3D; n.length-1-i) &#123;
-			int temp;
-			temp &#x3D; n[max];
-			n[max] &#x3D; n[n.length-1-i];
-			n[n.length-1-i] &#x3D; temp;
-		&#125;
-	&#125;
+<p>上述的常量定义常量的方式称为int枚举模式，这样的定义方式并没有什么错，但它存在许多不足，如在类型安全和使用方便性上并没有多少好处，如果存在定义int值相同的变量，混淆的几率还是很大的，编译器也不会提出任何警告，因此这种方式在枚举出现后并不提倡，现在我们利用枚举类型来重新定义上述的常量，同时也感受一把枚举定义的方式</p>
+<pre><code class="highlight plain">enum Demo&#123;
+	OPEN,CLOSE
 &#125;</code></pre>
 
-<p>用来对一万个10000内随机数进行排序，所消耗时间为 <strong>耗时：2657ms</strong></p>
-<h3 id="插入排序"><a href="#插入排序" class="headerlink" title="插入排序"></a>插入排序</h3><p>关键代码如下</p>
-<pre><code class="highlight plain">public void Insert(int n[]) &#123;
-	for (int i &#x3D; 1; i &lt; n.length; i++) &#123;
-		int temp &#x3D; i;
-		for (int j &#x3D; i -1; j &gt;&#x3D; 0 &amp;&amp; n[j] &gt; n[temp]; j--) &#123;
-			exch(n, j, temp);
-			temp &#x3D; j;
-		&#125;
+<p>用普通常量的方式定义的话，值为<code>int</code>类型，用枚举来定义的话，取值<code>Demo.OPEN</code>输出为我们定义的枚举类型</p>
+<h3 id="枚举的构造函数"><a href="#枚举的构造函数" class="headerlink" title="枚举的构造函数"></a>枚举的构造函数</h3><p>测试Demo</p>
+<pre><code class="highlight plain">enum fruit&#123;
+	apple(&quot;苹果&quot;),melon(&quot;西瓜&quot;);
+	private String chinese;
+	private fruit(String chinese) &#123;
+		this.chinese &#x3D; chinese;
 	&#125;
+	public String getChinese() &#123;
+		return chinese;
+	&#125;
+	public void setChinese(String chinese) &#123;
+		this.chinese &#x3D; chinese;
+	&#125;
+	
+	
 &#125;
-public void exch(int n[],int a,int b) &#123;
-	int temp &#x3D; n[a];
-	n[a] &#x3D; n[b];
-	n[b] &#x3D; temp;
-&#125;</code></pre>
 
-<p>用来对一万个10000内随机数进行排序，所消耗时间为 <strong>耗时：3107ms</strong></p>
-<h3 id="快速排序"><a href="#快速排序" class="headerlink" title="快速排序"></a>快速排序</h3><p>关键代码如下</p>
-<pre><code class="highlight plain">	public void Quick(int n[],int left,int right) &#123;
-		if(left &gt;&#x3D; right)&#123;
-			return;
-		&#125;
-		int key &#x3D; PartSort(n, left, right);
-		Quick(n, left, key);
-		Quick(n, key+1, right);
+
+	@Test
+	void test3() &#123;
+		System.out.println(fruit.apple);
+		&#x2F;&#x2F;输出为apple
 	&#125;
-	public int PartSort(int n[],int left,int right) &#123;
-		int key &#x3D; n[left];
-		while(left &lt; right)&#123;
-			while (left &lt; right &amp;&amp; n[right] &gt;&#x3D; key) &#123;
-				right--;
-			&#125;
-			n[left] &#x3D; n[right];
-			while (left &lt; right &amp;&amp; n[left] &lt;&#x3D; key) &#123;
-				left++;
-			&#125;
-			n[right] &#x3D; n[left];
-		&#125;
-		n[left] &#x3D; key;
-		return left;
+
+	@Test
+	void test3() &#123;
+		System.out.println(fruit.apple.getClass());
+		&#x2F;&#x2F;输出为class 本包.fruit，为自定义的枚举类型
 	&#125;
-&#125;</code></pre>
-<p>用来对一万个10000内随机数进行排序，所消耗时间为 <strong>耗时：16ms</strong></p>
+
+	&#x2F;&#x2F;调用函数
+	@Test
+	void test3() &#123;
+		System.out.println(fruit.apple.getChinese);
+		&#x2F;&#x2F;输出苹果
+	&#125;
+	
+	&#x2F;&#x2F;遍历枚举
+	@Test
+	void test3() &#123;
+		for(fruit f:fruit.values()) &#123;
+			System.out.println(f.getChinese());
+		&#125;
+	&#125;</code></pre>
+
+
+
+
+
+<h3 id="其他特性"><a href="#其他特性" class="headerlink" title="其他特性"></a>其他特性</h3><p>枚举可以定义静态方法和非静态方法</p>
+<p>枚举不能有继承</p>
+<p>可以用在switch中</p>
 
           
         
@@ -1802,6 +1584,224 @@ if (currentUser.isPermitted(&quot;printer:print:laserjet4400n&quot;)) &#123;
 &lt;shiro:hasPermission name&#x3D;&quot;user:create&quot;&gt;&lt;&#x2F;shiro:hasPermission&gt;
 
 &lt;shiro:lacksPermission name&#x3D;&quot;org:create&quot;&gt;&lt;&#x2F;shiro:lacksPermission&gt;</code></pre>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" itemprop="url">排序算法</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="冒泡法"><a href="#冒泡法" class="headerlink" title="冒泡法"></a>冒泡法</h3><p>关键排序代码如下</p>
+<pre><code class="highlight plain">public void bubble(int[] i)&#123;
+	int temp;
+	for(int j &#x3D; 0;j &lt; i.length-1; j++)&#123;
+		for(int k &#x3D; 0; k &lt; i.length - j -1; k++)&#123;
+			if(i[k] &gt; i[k+1])&#123;
+				temp &#x3D; i[k];
+				i[k] &#x3D; i[k+1];
+				i[k+1] &#x3D; temp;
+			&#125;
+		&#125;
+	&#125;
+&#125;</code></pre>
+
+<p>用来对一万个10000内随机数进行排序，所消耗时间为 <strong>耗时：14329ms</strong></p>
+<h3 id="选择排序"><a href="#选择排序" class="headerlink" title="选择排序"></a>选择排序</h3><p>关键代码如下</p>
+<pre><code class="highlight plain">public void selectionSort(int n[]) &#123;
+	for (int i &#x3D; 0; i &lt; n.length - 1; i++) &#123;
+		int max &#x3D; 0;
+		for (int j &#x3D; 0; j &lt; n.length - i - 1; j++) &#123;
+			if(n[max] &lt; n[j+1])&#123;
+				max &#x3D; j+1;
+			&#125;
+		&#125;
+		if (max !&#x3D; n.length-1-i) &#123;
+			int temp;
+			temp &#x3D; n[max];
+			n[max] &#x3D; n[n.length-1-i];
+			n[n.length-1-i] &#x3D; temp;
+		&#125;
+	&#125;
+&#125;</code></pre>
+
+<p>用来对一万个10000内随机数进行排序，所消耗时间为 <strong>耗时：2657ms</strong></p>
+<h3 id="插入排序"><a href="#插入排序" class="headerlink" title="插入排序"></a>插入排序</h3><p>关键代码如下</p>
+<pre><code class="highlight plain">public void Insert(int n[]) &#123;
+	for (int i &#x3D; 1; i &lt; n.length; i++) &#123;
+		int temp &#x3D; i;
+		for (int j &#x3D; i -1; j &gt;&#x3D; 0 &amp;&amp; n[j] &gt; n[temp]; j--) &#123;
+			exch(n, j, temp);
+			temp &#x3D; j;
+		&#125;
+	&#125;
+&#125;
+public void exch(int n[],int a,int b) &#123;
+	int temp &#x3D; n[a];
+	n[a] &#x3D; n[b];
+	n[b] &#x3D; temp;
+&#125;</code></pre>
+
+<p>用来对一万个10000内随机数进行排序，所消耗时间为 <strong>耗时：3107ms</strong></p>
+<h3 id="快速排序"><a href="#快速排序" class="headerlink" title="快速排序"></a>快速排序</h3><p>关键代码如下</p>
+<pre><code class="highlight plain">	public void Quick(int n[],int left,int right) &#123;
+		if(left &gt;&#x3D; right)&#123;
+			return;
+		&#125;
+		int key &#x3D; PartSort(n, left, right);
+		Quick(n, left, key);
+		Quick(n, key+1, right);
+	&#125;
+	public int PartSort(int n[],int left,int right) &#123;
+		int key &#x3D; n[left];
+		while(left &lt; right)&#123;
+			while (left &lt; right &amp;&amp; n[right] &gt;&#x3D; key) &#123;
+				right--;
+			&#125;
+			n[left] &#x3D; n[right];
+			while (left &lt; right &amp;&amp; n[left] &lt;&#x3D; key) &#123;
+				left++;
+			&#125;
+			n[right] &#x3D; n[left];
+		&#125;
+		n[left] &#x3D; key;
+		return left;
+	&#125;
+&#125;</code></pre>
+<p>用来对一万个10000内随机数进行排序，所消耗时间为 <strong>耗时：16ms</strong></p>
+
           
         
       

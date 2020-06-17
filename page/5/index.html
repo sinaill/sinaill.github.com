@@ -937,6 +937,315 @@ END</code></pre>
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/java%E4%B8%AD%E7%9A%84Type/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/java%E4%B8%AD%E7%9A%84Type/" itemprop="url">java中的Type</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="什么是Type"><a href="#什么是Type" class="headerlink" title="什么是Type"></a>什么是Type</h3><p>在Java中，泛型与反射是两个重要的概念，我们几乎能够经常的使用到它们。而谈起Type，如果有人还比较陌生的话 ，那么说起一个它的直接实现类——Class的话，大家都应该明白了。Type是Java语言中所有类型的公共父接口。</p>
+<p><img src="https://raw.githubusercontent.com/sinaill/pic/master/Type.jpg" alt=""></p>
+<p>其实在jdk1.5之前Java中只有原始类型而没有泛型类型，而在JDK 1.5 之后引入泛型，但是这种泛型仅仅存在于编译阶段，当在JVM运行的过程中，与泛型相关的信息将会被擦除，如List与List都将会在运行时被擦除成为List这个类型。而类型擦除机制存在的原因正是因为如果在运行时存在泛型，那么将要修改JVM指令集，这是非常致命的。<br>此外，<strong>原始类型在会生成字节码文件对象，而泛型类型相关的类型并不会生成与其相对应的字节码文件(因为泛型类型将会被擦除)，因此，无法将泛型相关的新类型与class相统一。因此，为了程序的扩展性以及为了开发需要去反射操作这些类型，就引入了Type这个类型</strong>，并且新增了ParameterizedType, TypeVariable, GenericArrayType, WildcardType四个表示泛型相关的类型，再加上Class，这样就可以用Type类型的参数来接受以上五种子类的实参或者返回值类型就是Type类型的参数。统一了与泛型有关的类型和原始类型Class。而且这样一来，我们也可以通过反射获取泛型类型参数<br>。</p>
+<h3 id="四个子类"><a href="#四个子类" class="headerlink" title="四个子类"></a>四个子类</h3><h4 id="ParameterizedType：参数化类型"><a href="#ParameterizedType：参数化类型" class="headerlink" title="ParameterizedType：参数化类型"></a>ParameterizedType：参数化类型</h4><p>参数化类型即我们通常所说的泛型类型，一提到参数，最熟悉的就是定义方法时有形参，然后调用此方法时传递实参。那么参数化类型怎么理解呢？顾名思义，就是将类型由原来的具体的类型参数化，类似于方法中的变量参数，此时类型也定义成参数形式（可以称之为类型形参），然后在使用/调用时传入具体的类型（类型实参）。那么我们的ParameterizedType就是这样一个类型，下面我们来看看它的三个重要的方法：</p>
+<ul>
+<li>Type getRawType();</li>
+</ul>
+<p>该方法的作用是返回当前的ParameterizedType的类型。如一个List，返回的是List的Type，即返回当前参数化类型本身的Type。</p>
+<ul>
+<li>Type getOwnerType();</li>
+</ul>
+<p>返回ParameterizedType类型所在的类的Type。如Map.Entry&lt;String, Object&gt;这个参数化类型返回的事Map(因为Map.Entry这个类型所在的类是Map)的类型。</p>
+<ul>
+<li>Type[] getActualTypeArguments();</li>
+</ul>
+<p>该方法返回参数化类型&lt;&gt;中的实际参数类型， 如 Map&lt;String,Person&gt; map 这个 ParameterizedType 返回的是 String 类,Person 类的全限定类名的 Type Array。注意: 该方法只返回最外层的&lt;&gt;中的类型，无论该&lt;&gt;内有多少个&lt;&gt;。</p>
+<pre><code class="highlight plain">class testType&#123;
+	HashMap&lt;String,Object&gt; map;
+	List&lt;Integer&gt; list;
+	String str;
+&#125;
+
+@Test
+public void testType() &#123;
+	Field fields[] &#x3D; testType.class.getDeclaredFields();
+	for(Field field:fields) &#123;
+		System.out.println(&quot;Field : &quot;+field.getName() + &quot; is parameterizedType :&quot;+(field.getGenericType() instanceof ParameterizedType));
+		
+		if(field.getGenericType() instanceof ParameterizedType) &#123;
+			System.out.println(&quot;getRawType: &quot;+((ParameterizedType)field.getGenericType()).getRawType());
+			for(Type type:((ParameterizedType)field.getGenericType()).getActualTypeArguments())
+			&#x2F;&#x2F;getActualTypeArguments返回的类型为TypeVariable
+			System.out.println(&quot;getActualTypeArguments: &quot;+type.getTypeName());
+		&#125;
+	&#125;
+&#125;
+
+
+Field : map is parameterizedType :true
+getRawType: class java.util.HashMap
+getActualTypeArguments: java.lang.String
+getActualTypeArguments: java.lang.Object
+Field : list is parameterizedType :true
+getRawType: interface java.util.List
+getActualTypeArguments: java.lang.Integer
+Field : str is parameterizedType :false</code></pre>
+
+<h4 id="TypeVariable"><a href="#TypeVariable" class="headerlink" title="TypeVariable"></a>TypeVariable</h4><p>类型变量，即泛型中的变量；例如：T、K、V等变量，可以表示任何类；在这需要强调的是，TypeVariable代表着泛型中的变量，而ParameterizedType则代表整个泛型；</p>
+<ul>
+<li>Type[] getBounds();</li>
+</ul>
+<p>返回当前类型的上边界，如果没有指定上边界，则默认为Object</p>
+<ul>
+<li>D getGenericDeclaration();</li>
+</ul>
+<p>返回当前类型所在的类的Type</p>
+<ul>
+<li>String getName();</li>
+</ul>
+<p>返回当前类型的类名</p>
+<pre><code class="highlight plain">class testType&lt;k extends Number,T&gt;&#123;
+	HashMap&lt;String,Object&gt; map;
+	List&lt;Integer&gt; list;
+	String str;
+&#125;
+
+@Test
+public void testTypeVariable()&#123;
+	 Type types[] &#x3D; testType.class.getTypeParameters();
+	 &#x2F;&#x2F;返回的数组包含泛型表示的类型变量K,T
+	 for(Type type:types) &#123;
+		 &#x2F;&#x2F;遍历K,T
+		 TypeVariable t &#x3D; (TypeVariable)type;
+		 int index &#x3D; t.getBounds().length-1;
+         &#x2F;&#x2F;返回的表示上边界的是一个数组
+		 System.out.println(&quot;getBounds: &quot;+t.getBounds()[index]);
+		 System.out.println(&quot;getName: &quot;+t.getName());
+         &#x2F;&#x2F;表示泛型变量所在的类
+		 System.out.println(&quot;getGenericDeclaration: &quot;+t.getGenericDeclaration());
+	 &#125;
+&#125;
+
+
+getBounds: class java.lang.Number
+getName: K
+getGenericDeclaration: class test.testType
+getBounds: class java.lang.Object
+getName: T
+getGenericDeclaration: class test.testType</code></pre>
+
+<h4 id="GenericArrayType"><a href="#GenericArrayType" class="headerlink" title="GenericArrayType"></a>GenericArrayType</h4><p>泛型数组类型，用来描述ParameterizedType、TypeVariable类型的数组；即List<T>[] 、T[]等</p>
+<pre><code class="highlight plain">class testType&lt;K,T&gt;&#123;
+	HashMap&lt;K,T&gt;[] map;
+	List&lt;K&gt;[] list;
+	T Array[];
+&#125;
+
+@Test
+public void testGenericArrayType() &#123;
+	Field fields[] &#x3D; testType.class.getDeclaredFields();
+	for(Field field:fields) &#123;
+		System.out.println(field.getName()+&quot; instance of GenericArrayType: &quot;+(field.getGenericType() instanceof GenericArrayType));
+		System.out.println(field.getName()+&quot; instance of GenericArrayType: &quot;+(field.getGenericType() instanceof ParameterizedType));
+		&#x2F;&#x2F;对于getGenericComponentType
+        &#x2F;&#x2F;如果是参数化类型数组，则这里返回的是parameterizedType类型
+		&#x2F;&#x2F;普通泛型数组，返回的TypeVariable类型
+		System.out.println(field.getName()+&quot;:getGenericComponentType &quot;+((GenericArrayType)field.getGenericType()).getGenericComponentType());
+	&#125;
+&#125;
+
+
+map instance of GenericArrayType: true
+map instance of GenericArrayType: false
+map:getGenericComponentType java.util.HashMap&lt;K, T&gt;
+list instance of GenericArrayType: true
+list instance of GenericArrayType: false
+list:getGenericComponentType java.util.List&lt;K&gt;
+Array instance of GenericArrayType: true
+Array instance of GenericArrayType: false
+Array:getGenericComponentType T</code></pre>
+
+
+<h4 id="WildcardType"><a href="#WildcardType" class="headerlink" title="WildcardType"></a>WildcardType</h4><p>表示通配符类型，比如 &lt;?&gt;, &lt;? Extends Number&gt;等</p>
+<ul>
+<li>Type[] getUpperBounds()</li>
+</ul>
+<p>得到上边界的type数组</p>
+<ul>
+<li>Type[] getLowerBounds();</li>
+</ul>
+<p>得到下边界的type数组</p>
+<p><strong>如果没有指定上边界，则默认为Object，如果没有指定下边界，则默认为String</strong></p>
+<pre><code class="highlight plain">class testWildcardType&#123;
+	List&lt;? extends Number&gt; listNum;
+	List&lt;? super String&gt; listStr;
+&#125;
+
+@Test
+public void testWildcardType() &#123;
+	Field fields[] &#x3D; testWildcardType.class.getDeclaredFields();
+	for(Field field:fields) &#123;
+		
+		ParameterizedType t &#x3D; (ParameterizedType) field.getGenericType();
+		System.out.println(t.getTypeName());
+		Type[] Type &#x3D; t.getActualTypeArguments();
+		System.out.println(field.getName()+&quot;.getGenericType.getActualTypeArguments(): instance of WildcardType is &quot;+(Type[0] instanceof WildcardType));
+		WildcardType wildcardType &#x3D; (WildcardType) Type[0];
+		if(wildcardType.getUpperBounds().length&gt;0) &#123;
+			
+			System.out.println(&quot;getUpperBounds: &quot;+wildcardType.getUpperBounds()[0].getTypeName());
+		&#125;
+		if(wildcardType.getLowerBounds().length&gt;0) &#123;
+			
+			System.out.println(&quot;getLowerBouds: &quot;+wildcardType.getLowerBounds()[0].getTypeName());
+		&#125;
+	&#125;
+&#125;
+
+java.util.List&lt;? extends java.lang.Number&gt;
+listNum.getGenericType.getActualTypeArguments(): instance of WildcardType is true
+getUpperBounds: java.lang.Number
+java.util.List&lt;? super java.lang.String&gt;
+listStr.getGenericType.getActualTypeArguments(): instance of WildcardType is true
+getUpperBounds: java.lang.Object
+getLowerBouds: java.lang.String</code></pre>
+
+<p>相关链接</p>
+<p><a href="https://juejin.im/post/5adefaba518825670e5cb44d" target="_blank" rel="noopener">参考一</a><br><a href="https://blog.csdn.net/ZytheMoon/article/details/79241988" target="_blank" rel="noopener">参考二</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/java8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1299,315 +1608,6 @@ public interface Supplier&lt;T&gt; &#123;
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/java%E4%B8%AD%E7%9A%84Type/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/java%E4%B8%AD%E7%9A%84Type/" itemprop="url">java中的Type</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="什么是Type"><a href="#什么是Type" class="headerlink" title="什么是Type"></a>什么是Type</h3><p>在Java中，泛型与反射是两个重要的概念，我们几乎能够经常的使用到它们。而谈起Type，如果有人还比较陌生的话 ，那么说起一个它的直接实现类——Class的话，大家都应该明白了。Type是Java语言中所有类型的公共父接口。</p>
-<p><img src="https://raw.githubusercontent.com/sinaill/pic/master/Type.jpg" alt=""></p>
-<p>其实在jdk1.5之前Java中只有原始类型而没有泛型类型，而在JDK 1.5 之后引入泛型，但是这种泛型仅仅存在于编译阶段，当在JVM运行的过程中，与泛型相关的信息将会被擦除，如List与List都将会在运行时被擦除成为List这个类型。而类型擦除机制存在的原因正是因为如果在运行时存在泛型，那么将要修改JVM指令集，这是非常致命的。<br>此外，<strong>原始类型在会生成字节码文件对象，而泛型类型相关的类型并不会生成与其相对应的字节码文件(因为泛型类型将会被擦除)，因此，无法将泛型相关的新类型与class相统一。因此，为了程序的扩展性以及为了开发需要去反射操作这些类型，就引入了Type这个类型</strong>，并且新增了ParameterizedType, TypeVariable, GenericArrayType, WildcardType四个表示泛型相关的类型，再加上Class，这样就可以用Type类型的参数来接受以上五种子类的实参或者返回值类型就是Type类型的参数。统一了与泛型有关的类型和原始类型Class。而且这样一来，我们也可以通过反射获取泛型类型参数<br>。</p>
-<h3 id="四个子类"><a href="#四个子类" class="headerlink" title="四个子类"></a>四个子类</h3><h4 id="ParameterizedType：参数化类型"><a href="#ParameterizedType：参数化类型" class="headerlink" title="ParameterizedType：参数化类型"></a>ParameterizedType：参数化类型</h4><p>参数化类型即我们通常所说的泛型类型，一提到参数，最熟悉的就是定义方法时有形参，然后调用此方法时传递实参。那么参数化类型怎么理解呢？顾名思义，就是将类型由原来的具体的类型参数化，类似于方法中的变量参数，此时类型也定义成参数形式（可以称之为类型形参），然后在使用/调用时传入具体的类型（类型实参）。那么我们的ParameterizedType就是这样一个类型，下面我们来看看它的三个重要的方法：</p>
-<ul>
-<li>Type getRawType();</li>
-</ul>
-<p>该方法的作用是返回当前的ParameterizedType的类型。如一个List，返回的是List的Type，即返回当前参数化类型本身的Type。</p>
-<ul>
-<li>Type getOwnerType();</li>
-</ul>
-<p>返回ParameterizedType类型所在的类的Type。如Map.Entry&lt;String, Object&gt;这个参数化类型返回的事Map(因为Map.Entry这个类型所在的类是Map)的类型。</p>
-<ul>
-<li>Type[] getActualTypeArguments();</li>
-</ul>
-<p>该方法返回参数化类型&lt;&gt;中的实际参数类型， 如 Map&lt;String,Person&gt; map 这个 ParameterizedType 返回的是 String 类,Person 类的全限定类名的 Type Array。注意: 该方法只返回最外层的&lt;&gt;中的类型，无论该&lt;&gt;内有多少个&lt;&gt;。</p>
-<pre><code class="highlight plain">class testType&#123;
-	HashMap&lt;String,Object&gt; map;
-	List&lt;Integer&gt; list;
-	String str;
-&#125;
-
-@Test
-public void testType() &#123;
-	Field fields[] &#x3D; testType.class.getDeclaredFields();
-	for(Field field:fields) &#123;
-		System.out.println(&quot;Field : &quot;+field.getName() + &quot; is parameterizedType :&quot;+(field.getGenericType() instanceof ParameterizedType));
-		
-		if(field.getGenericType() instanceof ParameterizedType) &#123;
-			System.out.println(&quot;getRawType: &quot;+((ParameterizedType)field.getGenericType()).getRawType());
-			for(Type type:((ParameterizedType)field.getGenericType()).getActualTypeArguments())
-			&#x2F;&#x2F;getActualTypeArguments返回的类型为TypeVariable
-			System.out.println(&quot;getActualTypeArguments: &quot;+type.getTypeName());
-		&#125;
-	&#125;
-&#125;
-
-
-Field : map is parameterizedType :true
-getRawType: class java.util.HashMap
-getActualTypeArguments: java.lang.String
-getActualTypeArguments: java.lang.Object
-Field : list is parameterizedType :true
-getRawType: interface java.util.List
-getActualTypeArguments: java.lang.Integer
-Field : str is parameterizedType :false</code></pre>
-
-<h4 id="TypeVariable"><a href="#TypeVariable" class="headerlink" title="TypeVariable"></a>TypeVariable</h4><p>类型变量，即泛型中的变量；例如：T、K、V等变量，可以表示任何类；在这需要强调的是，TypeVariable代表着泛型中的变量，而ParameterizedType则代表整个泛型；</p>
-<ul>
-<li>Type[] getBounds();</li>
-</ul>
-<p>返回当前类型的上边界，如果没有指定上边界，则默认为Object</p>
-<ul>
-<li>D getGenericDeclaration();</li>
-</ul>
-<p>返回当前类型所在的类的Type</p>
-<ul>
-<li>String getName();</li>
-</ul>
-<p>返回当前类型的类名</p>
-<pre><code class="highlight plain">class testType&lt;k extends Number,T&gt;&#123;
-	HashMap&lt;String,Object&gt; map;
-	List&lt;Integer&gt; list;
-	String str;
-&#125;
-
-@Test
-public void testTypeVariable()&#123;
-	 Type types[] &#x3D; testType.class.getTypeParameters();
-	 &#x2F;&#x2F;返回的数组包含泛型表示的类型变量K,T
-	 for(Type type:types) &#123;
-		 &#x2F;&#x2F;遍历K,T
-		 TypeVariable t &#x3D; (TypeVariable)type;
-		 int index &#x3D; t.getBounds().length-1;
-         &#x2F;&#x2F;返回的表示上边界的是一个数组
-		 System.out.println(&quot;getBounds: &quot;+t.getBounds()[index]);
-		 System.out.println(&quot;getName: &quot;+t.getName());
-         &#x2F;&#x2F;表示泛型变量所在的类
-		 System.out.println(&quot;getGenericDeclaration: &quot;+t.getGenericDeclaration());
-	 &#125;
-&#125;
-
-
-getBounds: class java.lang.Number
-getName: K
-getGenericDeclaration: class test.testType
-getBounds: class java.lang.Object
-getName: T
-getGenericDeclaration: class test.testType</code></pre>
-
-<h4 id="GenericArrayType"><a href="#GenericArrayType" class="headerlink" title="GenericArrayType"></a>GenericArrayType</h4><p>泛型数组类型，用来描述ParameterizedType、TypeVariable类型的数组；即List<T>[] 、T[]等</p>
-<pre><code class="highlight plain">class testType&lt;K,T&gt;&#123;
-	HashMap&lt;K,T&gt;[] map;
-	List&lt;K&gt;[] list;
-	T Array[];
-&#125;
-
-@Test
-public void testGenericArrayType() &#123;
-	Field fields[] &#x3D; testType.class.getDeclaredFields();
-	for(Field field:fields) &#123;
-		System.out.println(field.getName()+&quot; instance of GenericArrayType: &quot;+(field.getGenericType() instanceof GenericArrayType));
-		System.out.println(field.getName()+&quot; instance of GenericArrayType: &quot;+(field.getGenericType() instanceof ParameterizedType));
-		&#x2F;&#x2F;对于getGenericComponentType
-        &#x2F;&#x2F;如果是参数化类型数组，则这里返回的是parameterizedType类型
-		&#x2F;&#x2F;普通泛型数组，返回的TypeVariable类型
-		System.out.println(field.getName()+&quot;:getGenericComponentType &quot;+((GenericArrayType)field.getGenericType()).getGenericComponentType());
-	&#125;
-&#125;
-
-
-map instance of GenericArrayType: true
-map instance of GenericArrayType: false
-map:getGenericComponentType java.util.HashMap&lt;K, T&gt;
-list instance of GenericArrayType: true
-list instance of GenericArrayType: false
-list:getGenericComponentType java.util.List&lt;K&gt;
-Array instance of GenericArrayType: true
-Array instance of GenericArrayType: false
-Array:getGenericComponentType T</code></pre>
-
-
-<h4 id="WildcardType"><a href="#WildcardType" class="headerlink" title="WildcardType"></a>WildcardType</h4><p>表示通配符类型，比如 &lt;?&gt;, &lt;? Extends Number&gt;等</p>
-<ul>
-<li>Type[] getUpperBounds()</li>
-</ul>
-<p>得到上边界的type数组</p>
-<ul>
-<li>Type[] getLowerBounds();</li>
-</ul>
-<p>得到下边界的type数组</p>
-<p><strong>如果没有指定上边界，则默认为Object，如果没有指定下边界，则默认为String</strong></p>
-<pre><code class="highlight plain">class testWildcardType&#123;
-	List&lt;? extends Number&gt; listNum;
-	List&lt;? super String&gt; listStr;
-&#125;
-
-@Test
-public void testWildcardType() &#123;
-	Field fields[] &#x3D; testWildcardType.class.getDeclaredFields();
-	for(Field field:fields) &#123;
-		
-		ParameterizedType t &#x3D; (ParameterizedType) field.getGenericType();
-		System.out.println(t.getTypeName());
-		Type[] Type &#x3D; t.getActualTypeArguments();
-		System.out.println(field.getName()+&quot;.getGenericType.getActualTypeArguments(): instance of WildcardType is &quot;+(Type[0] instanceof WildcardType));
-		WildcardType wildcardType &#x3D; (WildcardType) Type[0];
-		if(wildcardType.getUpperBounds().length&gt;0) &#123;
-			
-			System.out.println(&quot;getUpperBounds: &quot;+wildcardType.getUpperBounds()[0].getTypeName());
-		&#125;
-		if(wildcardType.getLowerBounds().length&gt;0) &#123;
-			
-			System.out.println(&quot;getLowerBouds: &quot;+wildcardType.getLowerBounds()[0].getTypeName());
-		&#125;
-	&#125;
-&#125;
-
-java.util.List&lt;? extends java.lang.Number&gt;
-listNum.getGenericType.getActualTypeArguments(): instance of WildcardType is true
-getUpperBounds: java.lang.Number
-java.util.List&lt;? super java.lang.String&gt;
-listStr.getGenericType.getActualTypeArguments(): instance of WildcardType is true
-getUpperBounds: java.lang.Object
-getLowerBouds: java.lang.String</code></pre>
-
-<p>相关链接</p>
-<p><a href="https://juejin.im/post/5adefaba518825670e5cb44d" target="_blank" rel="noopener">参考一</a><br><a href="https://blog.csdn.net/ZytheMoon/article/details/79241988" target="_blank" rel="noopener">参考二</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/interface%20and%20adstract%20class/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1713,6 +1713,253 @@ getLowerBouds: java.lang.String</code></pre>
 <p>3.抽象方法修饰符可以为public,protected,default，而接口中方法要么为public，要么为有方法体的default</p>
 <p>4.接口与普通类不同，不能有Main方法，抽象类可以</p>
 <p>5.接口不能继承抽象类，抽象类可以实现接口</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/io%E4%B8%AD%E7%9A%84%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/io%E4%B8%AD%E7%9A%84%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F/" itemprop="url">io中的装饰者模式</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="java-io中的装饰者模式"><a href="#java-io中的装饰者模式" class="headerlink" title="java io中的装饰者模式"></a>java io中的装饰者模式</h3><p>以<code>inputStream</code>输入流为例，<code>inputStream</code>中的装饰者模式结构图：</p>
+<p><img src="http://wx1.sinaimg.cn/large/96b7c0f4gy1g0aqr1yy2fj20ge06j74k.jpg" alt=""></p>
+<p><strong>装饰者模式的各个角色</strong>:</p>
+<p><strong>抽象构件（Component）角色</strong>：由<code>InputStream</code>扮演。这是一个抽象类，为各种子类型流处理器提供统一的接口。<br><strong>具体构件（ConcreteComponent）角色</strong>：由<code>ByteArrayInputStream</code>、<code>FileInputStream</code>、PipedInputStream以及StringBufferInputStream等原始流处理器扮演。他们实现了抽象构件角色所规定的接口，可以被链接流处理器所装饰。<br><strong>抽象装饰（Decorator）角色</strong>：由<code>FilterInputStream</code>扮演。它实现了<code>InputStream</code>所规定的接口。<br><strong>具体装饰（ConcreteDecorator）角色</strong>：由几个类扮演，分别是<code>DataInputStream</code>、<code>BufferInputStream</code>以及两个不常用的类<code>LineNumberInputStream</code>和<code>PushBackInputStream</code>。</p>
+<hr>
+<p>得到这样一个结构图就能更好的理解io，以装饰类<code>BufferedInputStream</code>为例，如果使用继承的方法，那么要为具体构件例如<code>ByteArrayInputStream</code>，<code>FileInputStream</code>等都添加缓冲功能，需要为他们都设计一个子类，而现在，只需要将他们传入<code>BufferedInputStream</code>中，就能获取相应的带缓冲的流。</p>
+<p>首先看构造方法，需要传入一个普通字节输入流</p>
+<pre><code class="highlight plain">public BufferedInputStream(InputStream in) &#123;
+    this(in, DEFAULT_BUFFER_SIZE);
+&#125;
+
+public BufferedInputStream(InputStream in, int size) &#123;
+    super(in);
+    if (size &lt;&#x3D; 0) &#123;
+        throw new IllegalArgumentException(&quot;Buffer size &lt;&#x3D; 0&quot;);
+    &#125;
+    buf &#x3D; new byte[size];
+&#125;</code></pre>
+
+<p>接着，装饰类中新定义一个字节数组作为缓冲区</p>
+<p><code>protected volatile byte buf[]</code></p>
+<p>接下来我们看装饰类是怎么让普通的输入流用上缓冲的,这是装饰类中的read方法，在调用普通输入流的read方法前后进行了一系列操作(对read方法进行修饰)。</p>
+<pre><code class="highlight plain">public synchronized int read(byte b[], int off, int len)
+    throws IOException
+&#123;
+    getBufIfOpen(); &#x2F;&#x2F; Check for closed stream
+    if ((off | len | (off + len) | (b.length - (off + len))) &lt; 0) &#123;
+        throw new IndexOutOfBoundsException();
+    &#125; else if (len &#x3D;&#x3D; 0) &#123;
+        return 0;
+    &#125;
+
+    int n &#x3D; 0;
+    for (;;) &#123;
+        int nread &#x3D; read1(b, off + n, len - n);&#x2F;&#x2F;此处跳入read1方法
+        if (nread &lt;&#x3D; 0)
+            return (n &#x3D;&#x3D; 0) ? nread : n;
+        n +&#x3D; nread;
+        if (n &gt;&#x3D; len)
+            return n;
+        &#x2F;&#x2F; if not closed but no bytes available, return
+        InputStream input &#x3D; in;
+        if (input !&#x3D; null &amp;&amp; input.available() &lt;&#x3D; 0)
+            return n;
+    &#125;
+&#125;
+
+private int read1(byte[] b, int off, int len) throws IOException &#123;
+    int avail &#x3D; count - pos;
+    if (avail &lt;&#x3D; 0) &#123;
+        &#x2F;* If the requested length is at least as large as the buffer, and
+           if there is no mark&#x2F;reset activity, do not bother to copy the
+           bytes into the local buffer.  In this way buffered streams will
+           cascade harmlessly. *&#x2F;
+        if (len &gt;&#x3D; getBufIfOpen().length &amp;&amp; markpos &lt; 0) &#123;
+            return getInIfOpen().read(b, off, len);&#x2F;&#x2F;这里调用了普通输入流的read方法，读取长度超过缓冲默认长度时，不使用缓冲直接读取。
+        &#125;
+        fill();&#x2F;&#x2F;填充缓冲区，进入这个方法
+        avail &#x3D; count - pos;
+        if (avail &lt;&#x3D; 0) return -1;
+    &#125;
+    int cnt &#x3D; (avail &lt; len) ? avail : len;
+    System.arraycopy(getBufIfOpen(), pos, b, off, cnt);
+    pos +&#x3D; cnt;
+    return cnt;
+&#125;
+
+
+private void fill() throws IOException &#123;
+    byte[] buffer &#x3D; getBufIfOpen();
+    if (markpos &lt; 0)
+        pos &#x3D; 0;            &#x2F;* no mark: throw away the buffer *&#x2F;
+    else if (pos &gt;&#x3D; buffer.length)  &#x2F;* no room left in buffer *&#x2F;
+        if (markpos &gt; 0) &#123;  &#x2F;* can throw away early part of the buffer *&#x2F;
+            int sz &#x3D; pos - markpos;
+            System.arraycopy(buffer, markpos, buffer, 0, sz);
+            pos &#x3D; sz;
+            markpos &#x3D; 0;
+        &#125; else if (buffer.length &gt;&#x3D; marklimit) &#123;
+            markpos &#x3D; -1;   &#x2F;* buffer got too big, invalidate mark *&#x2F;
+            pos &#x3D; 0;        &#x2F;* drop buffer contents *&#x2F;
+        &#125; else if (buffer.length &gt;&#x3D; MAX_BUFFER_SIZE) &#123;
+            throw new OutOfMemoryError(&quot;Required array size too large&quot;);
+        &#125; else &#123;            &#x2F;* grow buffer *&#x2F;
+            int nsz &#x3D; (pos &lt;&#x3D; MAX_BUFFER_SIZE - pos) ?
+                    pos * 2 : MAX_BUFFER_SIZE;
+            if (nsz &gt; marklimit)
+                nsz &#x3D; marklimit;
+            byte nbuf[] &#x3D; new byte[nsz];
+            System.arraycopy(buffer, 0, nbuf, 0, pos);
+            if (!bufUpdater.compareAndSet(this, buffer, nbuf)) &#123;
+                &#x2F;&#x2F; Can&#39;t replace buf if there was an async close.
+                &#x2F;&#x2F; Note: This would need to be changed if fill()
+                &#x2F;&#x2F; is ever made accessible to multiple threads.
+                &#x2F;&#x2F; But for now, the only way CAS can fail is via close.
+                &#x2F;&#x2F; assert buf &#x3D;&#x3D; null;
+                throw new IOException(&quot;Stream closed&quot;);
+            &#125;
+            buffer &#x3D; nbuf;
+        &#125;
+    count &#x3D; pos;
+    int n &#x3D; getInIfOpen().read(buffer, pos, buffer.length - pos);&#x2F;&#x2F;在这个地方又再次调用普通输入流的read方法，一次读取默认长度8192个长度的数据到缓冲区
+    if (n &gt; 0)
+        count &#x3D; n + pos;
+&#125;</code></pre>
+<p>就这样，BufferedInputStream就成了带缓冲区的字节输入流，通过使用装饰者模式，对普通输入流的read方法添加修改，扩充了普通输入流的功能。</p>
 
           
         
@@ -2088,7 +2335,7 @@ public void test4()&#123;
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/io%E4%B8%AD%E7%9A%84%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/final/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="sinaill">
@@ -2107,7 +2354,7 @@ public void test4()&#123;
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/06/17/io%E4%B8%AD%E7%9A%84%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F/" itemprop="url">io中的装饰者模式</a></h1>
+                <a class="post-title-link" href="/2020/06/17/final/" itemprop="url">final关键字</a></h1>
         
 
         <div class="post-meta">
@@ -2181,385 +2428,46 @@ public void test4()&#123;
       
         
           
-            <h3 id="java-io中的装饰者模式"><a href="#java-io中的装饰者模式" class="headerlink" title="java io中的装饰者模式"></a>java io中的装饰者模式</h3><p>以<code>inputStream</code>输入流为例，<code>inputStream</code>中的装饰者模式结构图：</p>
-<p><img src="http://wx1.sinaimg.cn/large/96b7c0f4gy1g0aqr1yy2fj20ge06j74k.jpg" alt=""></p>
-<p><strong>装饰者模式的各个角色</strong>:</p>
-<p><strong>抽象构件（Component）角色</strong>：由<code>InputStream</code>扮演。这是一个抽象类，为各种子类型流处理器提供统一的接口。<br><strong>具体构件（ConcreteComponent）角色</strong>：由<code>ByteArrayInputStream</code>、<code>FileInputStream</code>、PipedInputStream以及StringBufferInputStream等原始流处理器扮演。他们实现了抽象构件角色所规定的接口，可以被链接流处理器所装饰。<br><strong>抽象装饰（Decorator）角色</strong>：由<code>FilterInputStream</code>扮演。它实现了<code>InputStream</code>所规定的接口。<br><strong>具体装饰（ConcreteDecorator）角色</strong>：由几个类扮演，分别是<code>DataInputStream</code>、<code>BufferInputStream</code>以及两个不常用的类<code>LineNumberInputStream</code>和<code>PushBackInputStream</code>。</p>
-<hr>
-<p>得到这样一个结构图就能更好的理解io，以装饰类<code>BufferedInputStream</code>为例，如果使用继承的方法，那么要为具体构件例如<code>ByteArrayInputStream</code>，<code>FileInputStream</code>等都添加缓冲功能，需要为他们都设计一个子类，而现在，只需要将他们传入<code>BufferedInputStream</code>中，就能获取相应的带缓冲的流。</p>
-<p>首先看构造方法，需要传入一个普通字节输入流</p>
-<pre><code class="highlight plain">public BufferedInputStream(InputStream in) &#123;
-    this(in, DEFAULT_BUFFER_SIZE);
-&#125;
-
-public BufferedInputStream(InputStream in, int size) &#123;
-    super(in);
-    if (size &lt;&#x3D; 0) &#123;
-        throw new IllegalArgumentException(&quot;Buffer size &lt;&#x3D; 0&quot;);
-    &#125;
-    buf &#x3D; new byte[size];
-&#125;</code></pre>
-
-<p>接着，装饰类中新定义一个字节数组作为缓冲区</p>
-<p><code>protected volatile byte buf[]</code></p>
-<p>接下来我们看装饰类是怎么让普通的输入流用上缓冲的,这是装饰类中的read方法，在调用普通输入流的read方法前后进行了一系列操作(对read方法进行修饰)。</p>
-<pre><code class="highlight plain">public synchronized int read(byte b[], int off, int len)
-    throws IOException
-&#123;
-    getBufIfOpen(); &#x2F;&#x2F; Check for closed stream
-    if ((off | len | (off + len) | (b.length - (off + len))) &lt; 0) &#123;
-        throw new IndexOutOfBoundsException();
-    &#125; else if (len &#x3D;&#x3D; 0) &#123;
-        return 0;
-    &#125;
-
-    int n &#x3D; 0;
-    for (;;) &#123;
-        int nread &#x3D; read1(b, off + n, len - n);&#x2F;&#x2F;此处跳入read1方法
-        if (nread &lt;&#x3D; 0)
-            return (n &#x3D;&#x3D; 0) ? nread : n;
-        n +&#x3D; nread;
-        if (n &gt;&#x3D; len)
-            return n;
-        &#x2F;&#x2F; if not closed but no bytes available, return
-        InputStream input &#x3D; in;
-        if (input !&#x3D; null &amp;&amp; input.available() &lt;&#x3D; 0)
-            return n;
-    &#125;
-&#125;
-
-private int read1(byte[] b, int off, int len) throws IOException &#123;
-    int avail &#x3D; count - pos;
-    if (avail &lt;&#x3D; 0) &#123;
-        &#x2F;* If the requested length is at least as large as the buffer, and
-           if there is no mark&#x2F;reset activity, do not bother to copy the
-           bytes into the local buffer.  In this way buffered streams will
-           cascade harmlessly. *&#x2F;
-        if (len &gt;&#x3D; getBufIfOpen().length &amp;&amp; markpos &lt; 0) &#123;
-            return getInIfOpen().read(b, off, len);&#x2F;&#x2F;这里调用了普通输入流的read方法，读取长度超过缓冲默认长度时，不使用缓冲直接读取。
-        &#125;
-        fill();&#x2F;&#x2F;填充缓冲区，进入这个方法
-        avail &#x3D; count - pos;
-        if (avail &lt;&#x3D; 0) return -1;
-    &#125;
-    int cnt &#x3D; (avail &lt; len) ? avail : len;
-    System.arraycopy(getBufIfOpen(), pos, b, off, cnt);
-    pos +&#x3D; cnt;
-    return cnt;
-&#125;
-
-
-private void fill() throws IOException &#123;
-    byte[] buffer &#x3D; getBufIfOpen();
-    if (markpos &lt; 0)
-        pos &#x3D; 0;            &#x2F;* no mark: throw away the buffer *&#x2F;
-    else if (pos &gt;&#x3D; buffer.length)  &#x2F;* no room left in buffer *&#x2F;
-        if (markpos &gt; 0) &#123;  &#x2F;* can throw away early part of the buffer *&#x2F;
-            int sz &#x3D; pos - markpos;
-            System.arraycopy(buffer, markpos, buffer, 0, sz);
-            pos &#x3D; sz;
-            markpos &#x3D; 0;
-        &#125; else if (buffer.length &gt;&#x3D; marklimit) &#123;
-            markpos &#x3D; -1;   &#x2F;* buffer got too big, invalidate mark *&#x2F;
-            pos &#x3D; 0;        &#x2F;* drop buffer contents *&#x2F;
-        &#125; else if (buffer.length &gt;&#x3D; MAX_BUFFER_SIZE) &#123;
-            throw new OutOfMemoryError(&quot;Required array size too large&quot;);
-        &#125; else &#123;            &#x2F;* grow buffer *&#x2F;
-            int nsz &#x3D; (pos &lt;&#x3D; MAX_BUFFER_SIZE - pos) ?
-                    pos * 2 : MAX_BUFFER_SIZE;
-            if (nsz &gt; marklimit)
-                nsz &#x3D; marklimit;
-            byte nbuf[] &#x3D; new byte[nsz];
-            System.arraycopy(buffer, 0, nbuf, 0, pos);
-            if (!bufUpdater.compareAndSet(this, buffer, nbuf)) &#123;
-                &#x2F;&#x2F; Can&#39;t replace buf if there was an async close.
-                &#x2F;&#x2F; Note: This would need to be changed if fill()
-                &#x2F;&#x2F; is ever made accessible to multiple threads.
-                &#x2F;&#x2F; But for now, the only way CAS can fail is via close.
-                &#x2F;&#x2F; assert buf &#x3D;&#x3D; null;
-                throw new IOException(&quot;Stream closed&quot;);
-            &#125;
-            buffer &#x3D; nbuf;
-        &#125;
-    count &#x3D; pos;
-    int n &#x3D; getInIfOpen().read(buffer, pos, buffer.length - pos);&#x2F;&#x2F;在这个地方又再次调用普通输入流的read方法，一次读取默认长度8192个长度的数据到缓冲区
-    if (n &gt; 0)
-        count &#x3D; n + pos;
-&#125;</code></pre>
-<p>就这样，BufferedInputStream就成了带缓冲区的字节输入流，通过使用装饰者模式，对普通输入流的read方法添加修改，扩充了普通输入流的功能。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/fail-fast%20fail-safe/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/fail-fast%20fail-safe/" itemprop="url">fail-fast与fail-safe</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="fail-fast"><a href="#fail-fast" class="headerlink" title="fail-fast"></a>fail-fast</h3><p>java.util 包中的集合类都返回 fail-fast 迭代器，意味着在使用iterator遍历集合时，如果改变集合结构，将会抛出ConcurrentModificationException</p>
-<p>下面以ArrayList为例分析</p>
-<p>ArrayList继承于AbstractList，而AbstractList中定义了一个protected transient int modCount = 0，那么这个变量有什么作用呢</p>
-<p>我们看ArrayList中实现了Iterator接口的私有内部类ltr，有个变量接收了这个modCount</p>
-<pre><code class="highlight plain">int expectedModCount &#x3D; modCount;</code></pre>
-
-<p>当我们获取集合的迭代器对象Iterator时，这个动作发生</p>
-<pre><code class="highlight plain">public Iterator&lt;E&gt; iterator() &#123;
-    return new Itr();
-&#125;</code></pre>
-
-<p>然后看看改变集合结构的几个方法，例如add,remove</p>
-<p>add方法：</p>
-<pre><code class="highlight plain">public boolean add(E e) &#123;
-    ensureCapacityInternal(size + 1);  &#x2F;&#x2F; Increments modCount!!
-    elementData[size++] &#x3D; e;
-    return true;
-&#125;
-private void ensureCapacityInternal(int minCapacity) &#123;
-    if (elementData &#x3D;&#x3D; DEFAULTCAPACITY_EMPTY_ELEMENTDATA) &#123;
-        minCapacity &#x3D; Math.max(DEFAULT_CAPACITY, minCapacity);
-    &#125;
-
-    ensureExplicitCapacity(minCapacity);
-&#125;
-
-private void ensureExplicitCapacity(int minCapacity) &#123;
-    modCount++;
-
-    &#x2F;&#x2F; overflow-conscious code
-    if (minCapacity - elementData.length &gt; 0)
-        grow(minCapacity);
-&#125;</code></pre>
-
-<p>remove方法：</p>
-<pre><code class="highlight plain">public E remove(int index) &#123;
-    rangeCheck(index);
-
-    modCount++;
-    E oldValue &#x3D; elementData(index);
-
-    int numMoved &#x3D; size - index - 1;
-    if (numMoved &gt; 0)
-        System.arraycopy(elementData, index+1, elementData, index,
-                         numMoved);
-    elementData[--size] &#x3D; null; &#x2F;&#x2F; clear to let GC do its work
-
-    return oldValue;
-&#125;</code></pre>
-
-<p><strong>我们发现在这些操作中都会将集合自身变量modCount自增1，会造成什么影响呢，接着往下看</strong></p>
-<p>迭代器Iterator中的next()方法中调用了checkForComodification()</p>
-<p>查看方法checkForComodification：</p>
-<pre><code class="highlight plain">final void checkForComodification() &#123;
-          if (modCount !&#x3D; expectedModCount)
-              throw new ConcurrentModificationException();
-      &#125;</code></pre>
-
-<p>可以看到我们在获取下个元素时，Iterator会先比较modCount和expectedModCount，如果我们在迭代器遍历时调用了add或者remove等改变集合结构的方法时，modCount自增了，而expectedModCount不变，所以在此处会抛出ConcurrentModificationException</p>
-<p>但是如果是在我们自己遍历集合时想修改集合结构，而且不是多线程环境中的话，我们可以看Iterator中给我们提供的方法，在ArrayList中的内部类Iterator中给我们提供了一个remove方法</p>
-<pre><code class="highlight plain">public void remove() &#123;
-    if (lastRet &lt; 0)
-        throw new IllegalStateException();
-    checkForComodification();
-
-    try &#123;
-        ArrayList.this.remove(lastRet);
-        cursor &#x3D; lastRet;
-        lastRet &#x3D; -1;
-        expectedModCount &#x3D; modCount;
-    &#125; catch (IndexOutOfBoundsException ex) &#123;
-        throw new ConcurrentModificationException();
+            <h3 id="final用法"><a href="#final用法" class="headerlink" title="final用法"></a>final用法</h3><p>1.final用来修饰类时，该类不可被继承</p>
+<p>2.final用来修饰方法时，方法不可被复写</p>
+<p>3.final修饰的基本变量时，值不可变，修饰的引用类型时，引用不可变，值可变</p>
+<h3 id="final类型成员变量初始化"><a href="#final类型成员变量初始化" class="headerlink" title="final类型成员变量初始化"></a>final类型成员变量初始化</h3><p>1.final修饰的成员变量没有默认值</p>
+<p>2.final初始化可以在三个地方<br>(1)声明的时候初始化<br>(2)构造函数里初始化(！ static &amp;&amp; final，一起时会报错)<br>(3)要是没有static修饰的话可以在非静态块里初始化,要是有static修饰的话可以在静态块里初始化</p>
+<p>3.使用final成员前要确保已经初始化</p>
+<h3 id="深入理解"><a href="#深入理解" class="headerlink" title="深入理解"></a>深入理解</h3><p>1.当final变量是基本数据类型以及String类型时，如果在编译期间能知道它的确切值，则编译器会把它当做编译期常量使用。也就是说在用到该final变量的地方，相当于直接访问的这个常量，不需要在运行时确定。</p>
+<pre><code class="highlight plain">public class Test &#123;
+    public static void main(String[] args)  &#123;
+        String a &#x3D; &quot;hello2&quot;; 
+        final String b &#x3D; &quot;hello&quot;;
+        String d &#x3D; &quot;hello&quot;;
+        String c &#x3D; b + 2; 
+        String e &#x3D; d + 2;
+        System.out.println((a &#x3D;&#x3D; c));
+        System.out.println((a &#x3D;&#x3D; e));
     &#125;
 &#125;</code></pre>
 
-<p>我们可以看到在移除元素后，重新对expectedModCount赋值，所以checkForComodification()不会抛出异常</p>
-<p>ArrayList还提供了一个更丰富的ListIterator内部类，是一个双向迭代器，可以双向遍历，在这里比Iterator多了add方法</p>
-<pre><code class="highlight plain">    public void add(E e) &#123;
-        checkForComodification();
-
-        try &#123;
-            int i &#x3D; cursor;
-            ArrayList.this.add(i, e);
-            cursor &#x3D; i + 1;
-            lastRet &#x3D; -1;
-            expectedModCount &#x3D; modCount;
-        &#125; catch (IndexOutOfBoundsException ex) &#123;
-            throw new ConcurrentModificationException();
-        &#125;
+<p><code>true false</code></p>
+<p>不过要注意，只有在编译期间能确切知道final变量值的情况下，编译器才会进行这样的优化</p>
+<pre><code class="highlight plain">public class Test &#123;
+    public static void main(String[] args)  &#123;
+        String a &#x3D; &quot;hello2&quot;; 
+        final String b &#x3D; getHello();
+        String c &#x3D; b + 2; 
+        System.out.println((a &#x3D;&#x3D; c));
+ 
+    &#125;
+     
+    public static String getHello() &#123;
+        return &quot;hello&quot;;
     &#125;
 &#125;</code></pre>
 
-<p>依旧是处理了expectedModCount = modCount。</p>
-<h3 id="fail-safe"><a href="#fail-safe" class="headerlink" title="fail-safe"></a>fail-safe</h3><p>以ArrayList的替代类CopyOnWriteArrayList为例分析，CopyOnWriteArrayList为何物？ArrayList 的一个线程安全的变体，其中所有可变操作（add、set 等等）都是通过对底层数组进行一次新的复制来实现的。 该类产生的开销比较大，但是在两种情况下，它非常适合使用。</p>
-<ol>
-<li>在不能或不想进行同步遍历，但又需要从并发线程中排除冲突时。</li>
-<li>当遍历操作的数量大大超过可变操作的数量时。</li>
-</ol>
-<p>查看迭代器</p>
-<pre><code class="highlight plain">public E next() &#123;
-    if (! hasNext())
-        throw new NoSuchElementException();
-    return (E) snapshot[cursor++];
-&#125;</code></pre>
-
-<p>没有像ArrayList的迭代器一样，它不需要检查expectedModCount = modCount</p>
-<p>再看add方法</p>
-<pre><code class="highlight plain">public boolean add(E paramE) &#123;    
-        ReentrantLock localReentrantLock &#x3D; this.lock;    
-        localReentrantLock.lock();    
-        try &#123;    
-            Object[] arrayOfObject1 &#x3D; getArray();    
-            int i &#x3D; arrayOfObject1.length;    
-            Object[] arrayOfObject2 &#x3D; Arrays.copyOf(arrayOfObject1, i + 1);    
-            arrayOfObject2[i] &#x3D; paramE;    
-            setArray(arrayOfObject2);    
-            int j &#x3D; 1;    
-            return j;    
-        &#125; finally &#123;    
-            localReentrantLock.unlock();    
-        &#125;    
-    &#125;    
-    final void setArray(Object[] paramArrayOfObject) &#123;    
-        this.array &#x3D; paramArrayOfObject;    
-    &#125;</code></pre>
-
-<p>看关键代码：</p>
-<pre><code class="highlight plain">Object[] arrayOfObject2 &#x3D; Arrays.copyOf(arrayOfObject1, i + 1);    
-arrayOfObject2[i] &#x3D; paramE;    
-setArray(arrayOfObject2)</code></pre>
-
-<p>所以在多线程环境时，可以使用CopyOnWriterArrayList来替代，它们的原理为先复制原有集合，然后在复制集合上作修改，然后将原引用指向复制修改后的集合，而迭代器遍历集合是先接收CopyOnWriterArrayList中存储元素的数组，然后对其遍历。这样就达到了遍历和修改集合结构分别在不同的存储数组中。</p>
+<p><code>false</code></p>
+<p>2.final也可以用来修饰方法的形参，防止方法内部修改形参</p>
+<p>3.匿名内部类使用的外部变量必须为final</p>
+<p><strong>外部类和外部局部变量是作为构造方法的参数传入匿名内部类的</strong></p>
+<p>为什么在匿名内部类中引用外部对象要加final修饰符呢，因为，在匿名内部类中引用的外部对象受到外部线程的作用域的制约有其特定的生命周期，以线程为例，当外部的变量生命周期已经完结之后，内部的线程还在运行，怎么样解决这个外部生命周期已经结束而在内部却需要继续使用呢，这个时候就需要在外部变量中添加final修饰符，<strong>其实内部匿名类使用的这个变量就是外部变量的一个“复制品”</strong>，即使外部变量生命周期已经结束，内部的“复制品“依然可用。并且<strong>final保证复制品与原始变量保持一致</strong></p>
 
           
         

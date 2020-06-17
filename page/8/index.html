@@ -248,6 +248,371 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/MyBatis%E5%A4%A7%E8%87%B4%E8%BF%90%E8%A1%8C%E6%B5%81%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/MyBatis%E5%A4%A7%E8%87%B4%E8%BF%90%E8%A1%8C%E6%B5%81%E7%A8%8B/" itemprop="url">MyBatis大致运行流程</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">框架</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="原生调用方式"><a href="#原生调用方式" class="headerlink" title="原生调用方式"></a>原生调用方式</h3><pre><code class="highlight plain">&#x2F;&#x2F;第一种
+SqlSession session &#x3D; sqlSessionFactory.openSession();
+try &#123;
+  Blog blog &#x3D; (Blog) session.selectOne(&quot;org.mybatis.example.BlogMapper.selectBlog&quot;, 101);
+&#125; finally &#123;
+  session.close();
+&#125;
+
+&#x2F;&#x2F;第二种，使用到了代理(getMapper方法)
+
+SqlSession session &#x3D; sqlSessionFactory.openSession();
+try &#123;
+  BlogMapper mapper &#x3D; session.getMapper(BlogMapper.class);
+  Blog blog &#x3D; mapper.selectBlog(101);
+&#125; finally &#123;
+  session.close();
+&#125;</code></pre>
+
+<h3 id="集成框架后使用代理"><a href="#集成框架后使用代理" class="headerlink" title="集成框架后使用代理"></a>集成框架后使用代理</h3><ol>
+<li>启动服务器后，自动创建数据库服务接口的代理类</li>
+</ol>
+<pre><code class="highlight plain">&#x2F;&#x2F;MapperRegistry类的addMapper方法
+public &lt;T&gt; void addMapper(Class&lt;T&gt; type) &#123;
+if (type.isInterface()) &#123;
+  if (hasMapper(type)) &#123;
+    throw new BindingException(&quot;Type &quot; + type + &quot; is already known to the MapperRegistry.&quot;);
+  &#125;
+  boolean loadCompleted &#x3D; false;
+  try &#123;
+	&#x2F;&#x2F;每个接口对应一个代理工厂实例
+    knownMappers.put(type, new MapperProxyFactory&lt;T&gt;(type));
+    &#x2F;&#x2F; It&#39;s important that the type is added before the parser is run
+    &#x2F;&#x2F; otherwise the binding may automatically be attempted by the
+    &#x2F;&#x2F; mapper parser. If the type is already known, it won&#39;t try.
+    MapperAnnotationBuilder parser &#x3D; new MapperAnnotationBuilder(config, type);
+    parser.parse();
+    loadCompleted &#x3D; true;
+  &#125; finally &#123;
+    if (!loadCompleted) &#123;
+      knownMappers.remove(type);
+    &#125;
+  &#125;
+&#125;
+&#125;</code></pre>
+
+<ol start="2">
+<li>触发Spring的autowire自动向service注入接口的代理类，通过sqlsession的getMappder的方法</li>
+</ol>
+<pre><code class="highlight plain">public &lt;T&gt; T getMapper(Class&lt;T&gt; type) &#123;
+return getConfiguration().getMapper(type, this);
+&#125;
+
+&#x2F;&#x2F;跟踪源码
+public &lt;T&gt; T getMapper(Class&lt;T&gt; type, SqlSession sqlSession) &#123;
+	return mapperRegistry.getMapper(type, sqlSession);
+&#125;
+
+&#x2F;&#x2F;mapperRegistry就是初始化容器时，通过addMapper方法，给每个接口确定了对应的代理工厂实例
+public &lt;T&gt; T getMapper(Class&lt;T&gt; type, SqlSession sqlSession) &#123;
+	return mapperRegistry.getMapper(type, sqlSession);
+&#125;
+
+&#x2F;&#x2F;mapperRegistry类
+public &lt;T&gt; T getMapper(Class&lt;T&gt; type, SqlSession sqlSession) &#123;
+&#x2F;&#x2F;取出之前添加的代理工厂类
+	final MapperProxyFactory&lt;T&gt; mapperProxyFactory &#x3D; (MapperProxyFactory&lt;T&gt;) knownMappers.get(type);
+	if (mapperProxyFactory &#x3D;&#x3D; null) &#123;
+	  throw new BindingException(&quot;Type &quot; + type + &quot; is not known to the MapperRegistry.&quot;);
+	&#125;
+	try &#123;
+	  &#x2F;&#x2F;使用代理工厂类创建代理类实例
+	  return mapperProxyFactory.newInstance(sqlSession);
+	&#125; catch (Exception e) &#123;
+	  throw new BindingException(&quot;Error getting mapper instance. Cause: &quot; + e, e);
+	&#125;
+&#125;
+
+&#x2F;&#x2F;转进mapperProxyFactory类
+protected T newInstance(MapperProxy&lt;T&gt; mapperProxy) &#123;
+	&#x2F;&#x2F;这行代码生成代理
+	return (T) Proxy.newProxyInstance(mapperInterface.getClassLoader(), new Class[] &#123; mapperInterface &#125;, mapperProxy);
+&#125;
+
+public T newInstance(SqlSession sqlSession) &#123;
+	final MapperProxy&lt;T&gt; mapperProxy &#x3D; new MapperProxy&lt;T&gt;(sqlSession, mapperInterface, methodCache);
+	return newInstance(mapperProxy);
+&#125;</code></pre>
+
+<ol start="3">
+<li>代理类的生成</li>
+</ol>
+<p>我们知道代理类的生成需要一个实现invocationHandler接口的类，在MyBatis中这个类为MapperProxy，查看invoke方法</p>
+<pre><code class="highlight plain"> public Object invoke(Object proxy, Method method, Object[] args) throws Throwable &#123;
+   if (Object.class.equals(method.getDeclaringClass())) &#123;
+     try &#123;
+       return method.invoke(this, args);
+     &#125; catch (Throwable t) &#123;
+       throw ExceptionUtil.unwrapThrowable(t);
+     &#125;
+   &#125;
+查看method方法对用的MapperMehtod是否存在，不存在则创建
+   final MapperMethod mapperMethod &#x3D; cachedMapperMethod(method);
+   return mapperMethod.execute(sqlSession, args);
+ &#125;
+
+ private MapperMethod cachedMapperMethod(Method method) &#123;
+   MapperMethod mapperMethod &#x3D; methodCache.get(method);
+   if (mapperMethod &#x3D;&#x3D; null) &#123;
+     mapperMethod &#x3D; new MapperMethod(mapperInterface, method, sqlSession.getConfiguration());
+     methodCache.put(method, mapperMethod);
+   &#125;
+   return mapperMethod;
+ &#125;</code></pre>
+
+<ol start="4">
+<li>通过代理调用原生调用方式</li>
+</ol>
+<p>通过MapperMehtod这个类来实现，先看下它的成员变量</p>
+<pre><code class="highlight plain">private final SqlCommand command;
+private final MethodSignature method;
+
+public MapperMethod(Class&lt;?&gt; mapperInterface, Method method, Configuration config) &#123;
+  this.command &#x3D; new SqlCommand(config, mapperInterface, method);
+  this.method &#x3D; new MethodSignature(config, method);
+&#125;</code></pre>
+
+<p>查看sqlcommand是什么，大概就是关于sql语句</p>
+<pre><code class="highlight plain">public SqlCommand(Configuration configuration, Class&lt;?&gt; mapperInterface, Method method) &#123;
+  &#x2F;&#x2F;接口名加方法名，正好等于我们配置文件的命名空间namespace加上语句的id
+  String statementName &#x3D; mapperInterface.getName() + &quot;.&quot; + method.getName();
+  MappedStatement ms &#x3D; null;
+  if (configuration.hasStatement(statementName)) &#123;
+	&#x2F;&#x2F;大概是通过命名空间和id从配置文件查找具体配置对象
+    ms &#x3D; configuration.getMappedStatement(statementName);
+  &#125; else if (!mapperInterface.equals(method.getDeclaringClass())) &#123; &#x2F;&#x2F; issue #35
+    String parentStatementName &#x3D; method.getDeclaringClass().getName() + &quot;.&quot; + method.getName();
+    if (configuration.hasStatement(parentStatementName)) &#123;
+      ms &#x3D; configuration.getMappedStatement(parentStatementName);
+    &#125;
+  &#125;
+  if (ms &#x3D;&#x3D; null) &#123;
+    if(method.getAnnotation(Flush.class) !&#x3D; null)&#123;
+      name &#x3D; null;
+      type &#x3D; SqlCommandType.FLUSH;
+    &#125; else &#123;
+      throw new BindingException(&quot;Invalid bound statement (not found): &quot; + statementName);
+    &#125;
+  &#125; else &#123;
+    name &#x3D; ms.getId();
+    type &#x3D; ms.getSqlCommandType();
+    if (type &#x3D;&#x3D; SqlCommandType.UNKNOWN) &#123;
+      throw new BindingException(&quot;Unknown execution method for: &quot; + name);
+    &#125;
+  &#125;
+&#125;</code></pre>
+
+<p>看<code>MethodSignature</code>的创建</p>
+<pre><code class="highlight plain">public MethodSignature(Configuration configuration, Method method) &#123;
+  this.returnType &#x3D; method.getReturnType();
+  this.returnsVoid &#x3D; void.class.equals(this.returnType);
+  this.returnsMany &#x3D; (configuration.getObjectFactory().isCollection(this.returnType) || this.returnType.isArray());
+  this.mapKey &#x3D; getMapKey(method);
+  this.returnsMap &#x3D; (this.mapKey !&#x3D; null);
+  &#x2F;&#x2F;处理@Param
+  this.hasNamedParameters &#x3D; hasNamedParams(method);
+  this.rowBoundsIndex &#x3D; getUniqueParamIndex(method, RowBounds.class);
+  this.resultHandlerIndex &#x3D; getUniqueParamIndex(method, ResultHandler.class);
+  this.params &#x3D; Collections.unmodifiableSortedMap(getParams(method, this.hasNamedParameters));
+&#125;</code></pre>
+
+<p>在代理类中生成MethodMapper类后，调用execute方法来指定sqlcommand中的sql语句</p>
+<pre><code class="highlight plain"> public Object execute(SqlSession sqlSession, Object[] args) &#123;
+&#x2F;&#x2F;args是由代理类invoke方法传来的方法参数
+   Object result;
+   if (SqlCommandType.INSERT &#x3D;&#x3D; command.getType()) &#123;
+     Object param &#x3D; method.convertArgsToSqlCommandParam(args);
+  &#x2F;&#x2F;getName返回具体配置语句对象的id
+     result &#x3D; rowCountResult(sqlSession.insert(command.getName(), param));
+   &#125; else if (SqlCommandType.UPDATE &#x3D;&#x3D; command.getType()) &#123;
+     Object param &#x3D; method.convertArgsToSqlCommandParam(args);
+     result &#x3D; rowCountResult(sqlSession.update(command.getName(), param));
+   &#125; else if (SqlCommandType.DELETE &#x3D;&#x3D; command.getType()) &#123;
+     Object param &#x3D; method.convertArgsToSqlCommandParam(args);
+     result &#x3D; rowCountResult(sqlSession.delete(command.getName(), param));
+   &#125; else if (SqlCommandType.SELECT &#x3D;&#x3D; command.getType()) &#123;
+     if (method.returnsVoid() &amp;&amp; method.hasResultHandler()) &#123;
+       executeWithResultHandler(sqlSession, args);
+       result &#x3D; null;
+     &#125; else if (method.returnsMany()) &#123;
+       result &#x3D; executeForMany(sqlSession, args);
+     &#125; else if (method.returnsMap()) &#123;
+       result &#x3D; executeForMap(sqlSession, args);
+     &#125; else &#123;
+       Object param &#x3D; method.convertArgsToSqlCommandParam(args);
+       result &#x3D; sqlSession.selectOne(command.getName(), param);
+     &#125;
+   &#125; else if (SqlCommandType.FLUSH &#x3D;&#x3D; command.getType()) &#123;
+       result &#x3D; sqlSession.flushStatements();
+   &#125; else &#123;
+     throw new BindingException(&quot;Unknown execution method for: &quot; + command.getName());
+   &#125;
+   if (result &#x3D;&#x3D; null &amp;&amp; method.getReturnType().isPrimitive() &amp;&amp; !method.returnsVoid()) &#123;
+     throw new BindingException(&quot;Mapper method &#39;&quot; + command.getName() 
+         + &quot; attempted to return null from a method with a primitive return type (&quot; + method.getReturnType() + &quot;).&quot;);
+   &#125;
+&#x2F;&#x2F;返回结果
+   return result;
+ &#125;
+
+ &#x2F;&#x2F;对返回结果result进行类型转换
+ private Object rowCountResult(int rowCount) &#123;
+   final Object result;
+   if (method.returnsVoid()) &#123;
+     result &#x3D; null;
+   &#125; else if (Integer.class.equals(method.getReturnType()) || Integer.TYPE.equals(method.getReturnType())) &#123;
+     result &#x3D; Integer.valueOf(rowCount);
+   &#125; else if (Long.class.equals(method.getReturnType()) || Long.TYPE.equals(method.getReturnType())) &#123;
+     result &#x3D; Long.valueOf(rowCount);
+   &#125; else if (Boolean.class.equals(method.getReturnType()) || Boolean.TYPE.equals(method.getReturnType())) &#123;
+     result &#x3D; Boolean.valueOf(rowCount &gt; 0);
+   &#125; else &#123;
+     throw new BindingException(&quot;Mapper method &#39;&quot; + command.getName() + &quot;&#39; has an unsupported return type: &quot; + method.getReturnType());
+   &#125;
+   return result;
+ &#125;</code></pre>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/Mysql%E5%9F%BA%E7%A1%80%E8%AF%AD%E5%8F%A5/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -615,637 +980,6 @@
 <p>字符型：CHAR<br>日期：DATE<br>时间：TIME<br>日期时间型：DATETIME<br>浮点数：DECIMAL<br>整数：SIGNED<br>无符号整数：UNSIGNED</p>
 <h4 id="数据库类函数"><a href="#数据库类函数" class="headerlink" title="数据库类函数"></a>数据库类函数</h4><p>DATABASE() 返回当前数据库名称<br>VERSION() 返回当前数据库版本<br>INET_ATON(ip) 返回数字表示的IP<br>INET_NTOA(num) 将数字表示的IP转换为IP<br>PASSWORD(s) 返回加密版本<br>MD5(s) 返回MD5加密值</p>
 <h4 id="数学函数"><a href="#数学函数" class="headerlink" title="数学函数"></a>数学函数</h4><p>ABS(X): 返回X的绝对值<br>MOD(N,M): 或%:返回N被M除的余数<br>FLOOR(X): 返回不大于X的最大整数值<br>CEILING(X): 返回不小于X的最小整数值<br>ROUND(X) : 返回参数X的四舍五入的一个整数<br>ROUND(X,D): 舍入函数。将参数X舍入到D小数位。 舍入算法取决于X的数据类型。如果未指定，则D默认为0。 D可能是负数，导致值X的小数点左边的D数字变为零</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/MyBatis%E5%A4%A7%E8%87%B4%E8%BF%90%E8%A1%8C%E6%B5%81%E7%A8%8B/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/MyBatis%E5%A4%A7%E8%87%B4%E8%BF%90%E8%A1%8C%E6%B5%81%E7%A8%8B/" itemprop="url">MyBatis大致运行流程</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
-                    <span itemprop="name">框架</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="原生调用方式"><a href="#原生调用方式" class="headerlink" title="原生调用方式"></a>原生调用方式</h3><pre><code class="highlight plain">&#x2F;&#x2F;第一种
-SqlSession session &#x3D; sqlSessionFactory.openSession();
-try &#123;
-  Blog blog &#x3D; (Blog) session.selectOne(&quot;org.mybatis.example.BlogMapper.selectBlog&quot;, 101);
-&#125; finally &#123;
-  session.close();
-&#125;
-
-&#x2F;&#x2F;第二种，使用到了代理(getMapper方法)
-
-SqlSession session &#x3D; sqlSessionFactory.openSession();
-try &#123;
-  BlogMapper mapper &#x3D; session.getMapper(BlogMapper.class);
-  Blog blog &#x3D; mapper.selectBlog(101);
-&#125; finally &#123;
-  session.close();
-&#125;</code></pre>
-
-<h3 id="集成框架后使用代理"><a href="#集成框架后使用代理" class="headerlink" title="集成框架后使用代理"></a>集成框架后使用代理</h3><ol>
-<li>启动服务器后，自动创建数据库服务接口的代理类</li>
-</ol>
-<pre><code class="highlight plain">&#x2F;&#x2F;MapperRegistry类的addMapper方法
-public &lt;T&gt; void addMapper(Class&lt;T&gt; type) &#123;
-if (type.isInterface()) &#123;
-  if (hasMapper(type)) &#123;
-    throw new BindingException(&quot;Type &quot; + type + &quot; is already known to the MapperRegistry.&quot;);
-  &#125;
-  boolean loadCompleted &#x3D; false;
-  try &#123;
-	&#x2F;&#x2F;每个接口对应一个代理工厂实例
-    knownMappers.put(type, new MapperProxyFactory&lt;T&gt;(type));
-    &#x2F;&#x2F; It&#39;s important that the type is added before the parser is run
-    &#x2F;&#x2F; otherwise the binding may automatically be attempted by the
-    &#x2F;&#x2F; mapper parser. If the type is already known, it won&#39;t try.
-    MapperAnnotationBuilder parser &#x3D; new MapperAnnotationBuilder(config, type);
-    parser.parse();
-    loadCompleted &#x3D; true;
-  &#125; finally &#123;
-    if (!loadCompleted) &#123;
-      knownMappers.remove(type);
-    &#125;
-  &#125;
-&#125;
-&#125;</code></pre>
-
-<ol start="2">
-<li>触发Spring的autowire自动向service注入接口的代理类，通过sqlsession的getMappder的方法</li>
-</ol>
-<pre><code class="highlight plain">public &lt;T&gt; T getMapper(Class&lt;T&gt; type) &#123;
-return getConfiguration().getMapper(type, this);
-&#125;
-
-&#x2F;&#x2F;跟踪源码
-public &lt;T&gt; T getMapper(Class&lt;T&gt; type, SqlSession sqlSession) &#123;
-	return mapperRegistry.getMapper(type, sqlSession);
-&#125;
-
-&#x2F;&#x2F;mapperRegistry就是初始化容器时，通过addMapper方法，给每个接口确定了对应的代理工厂实例
-public &lt;T&gt; T getMapper(Class&lt;T&gt; type, SqlSession sqlSession) &#123;
-	return mapperRegistry.getMapper(type, sqlSession);
-&#125;
-
-&#x2F;&#x2F;mapperRegistry类
-public &lt;T&gt; T getMapper(Class&lt;T&gt; type, SqlSession sqlSession) &#123;
-&#x2F;&#x2F;取出之前添加的代理工厂类
-	final MapperProxyFactory&lt;T&gt; mapperProxyFactory &#x3D; (MapperProxyFactory&lt;T&gt;) knownMappers.get(type);
-	if (mapperProxyFactory &#x3D;&#x3D; null) &#123;
-	  throw new BindingException(&quot;Type &quot; + type + &quot; is not known to the MapperRegistry.&quot;);
-	&#125;
-	try &#123;
-	  &#x2F;&#x2F;使用代理工厂类创建代理类实例
-	  return mapperProxyFactory.newInstance(sqlSession);
-	&#125; catch (Exception e) &#123;
-	  throw new BindingException(&quot;Error getting mapper instance. Cause: &quot; + e, e);
-	&#125;
-&#125;
-
-&#x2F;&#x2F;转进mapperProxyFactory类
-protected T newInstance(MapperProxy&lt;T&gt; mapperProxy) &#123;
-	&#x2F;&#x2F;这行代码生成代理
-	return (T) Proxy.newProxyInstance(mapperInterface.getClassLoader(), new Class[] &#123; mapperInterface &#125;, mapperProxy);
-&#125;
-
-public T newInstance(SqlSession sqlSession) &#123;
-	final MapperProxy&lt;T&gt; mapperProxy &#x3D; new MapperProxy&lt;T&gt;(sqlSession, mapperInterface, methodCache);
-	return newInstance(mapperProxy);
-&#125;</code></pre>
-
-<ol start="3">
-<li>代理类的生成</li>
-</ol>
-<p>我们知道代理类的生成需要一个实现invocationHandler接口的类，在MyBatis中这个类为MapperProxy，查看invoke方法</p>
-<pre><code class="highlight plain"> public Object invoke(Object proxy, Method method, Object[] args) throws Throwable &#123;
-   if (Object.class.equals(method.getDeclaringClass())) &#123;
-     try &#123;
-       return method.invoke(this, args);
-     &#125; catch (Throwable t) &#123;
-       throw ExceptionUtil.unwrapThrowable(t);
-     &#125;
-   &#125;
-查看method方法对用的MapperMehtod是否存在，不存在则创建
-   final MapperMethod mapperMethod &#x3D; cachedMapperMethod(method);
-   return mapperMethod.execute(sqlSession, args);
- &#125;
-
- private MapperMethod cachedMapperMethod(Method method) &#123;
-   MapperMethod mapperMethod &#x3D; methodCache.get(method);
-   if (mapperMethod &#x3D;&#x3D; null) &#123;
-     mapperMethod &#x3D; new MapperMethod(mapperInterface, method, sqlSession.getConfiguration());
-     methodCache.put(method, mapperMethod);
-   &#125;
-   return mapperMethod;
- &#125;</code></pre>
-
-<ol start="4">
-<li>通过代理调用原生调用方式</li>
-</ol>
-<p>通过MapperMehtod这个类来实现，先看下它的成员变量</p>
-<pre><code class="highlight plain">private final SqlCommand command;
-private final MethodSignature method;
-
-public MapperMethod(Class&lt;?&gt; mapperInterface, Method method, Configuration config) &#123;
-  this.command &#x3D; new SqlCommand(config, mapperInterface, method);
-  this.method &#x3D; new MethodSignature(config, method);
-&#125;</code></pre>
-
-<p>查看sqlcommand是什么，大概就是关于sql语句</p>
-<pre><code class="highlight plain">public SqlCommand(Configuration configuration, Class&lt;?&gt; mapperInterface, Method method) &#123;
-  &#x2F;&#x2F;接口名加方法名，正好等于我们配置文件的命名空间namespace加上语句的id
-  String statementName &#x3D; mapperInterface.getName() + &quot;.&quot; + method.getName();
-  MappedStatement ms &#x3D; null;
-  if (configuration.hasStatement(statementName)) &#123;
-	&#x2F;&#x2F;大概是通过命名空间和id从配置文件查找具体配置对象
-    ms &#x3D; configuration.getMappedStatement(statementName);
-  &#125; else if (!mapperInterface.equals(method.getDeclaringClass())) &#123; &#x2F;&#x2F; issue #35
-    String parentStatementName &#x3D; method.getDeclaringClass().getName() + &quot;.&quot; + method.getName();
-    if (configuration.hasStatement(parentStatementName)) &#123;
-      ms &#x3D; configuration.getMappedStatement(parentStatementName);
-    &#125;
-  &#125;
-  if (ms &#x3D;&#x3D; null) &#123;
-    if(method.getAnnotation(Flush.class) !&#x3D; null)&#123;
-      name &#x3D; null;
-      type &#x3D; SqlCommandType.FLUSH;
-    &#125; else &#123;
-      throw new BindingException(&quot;Invalid bound statement (not found): &quot; + statementName);
-    &#125;
-  &#125; else &#123;
-    name &#x3D; ms.getId();
-    type &#x3D; ms.getSqlCommandType();
-    if (type &#x3D;&#x3D; SqlCommandType.UNKNOWN) &#123;
-      throw new BindingException(&quot;Unknown execution method for: &quot; + name);
-    &#125;
-  &#125;
-&#125;</code></pre>
-
-<p>看<code>MethodSignature</code>的创建</p>
-<pre><code class="highlight plain">public MethodSignature(Configuration configuration, Method method) &#123;
-  this.returnType &#x3D; method.getReturnType();
-  this.returnsVoid &#x3D; void.class.equals(this.returnType);
-  this.returnsMany &#x3D; (configuration.getObjectFactory().isCollection(this.returnType) || this.returnType.isArray());
-  this.mapKey &#x3D; getMapKey(method);
-  this.returnsMap &#x3D; (this.mapKey !&#x3D; null);
-  &#x2F;&#x2F;处理@Param
-  this.hasNamedParameters &#x3D; hasNamedParams(method);
-  this.rowBoundsIndex &#x3D; getUniqueParamIndex(method, RowBounds.class);
-  this.resultHandlerIndex &#x3D; getUniqueParamIndex(method, ResultHandler.class);
-  this.params &#x3D; Collections.unmodifiableSortedMap(getParams(method, this.hasNamedParameters));
-&#125;</code></pre>
-
-<p>在代理类中生成MethodMapper类后，调用execute方法来指定sqlcommand中的sql语句</p>
-<pre><code class="highlight plain"> public Object execute(SqlSession sqlSession, Object[] args) &#123;
-&#x2F;&#x2F;args是由代理类invoke方法传来的方法参数
-   Object result;
-   if (SqlCommandType.INSERT &#x3D;&#x3D; command.getType()) &#123;
-     Object param &#x3D; method.convertArgsToSqlCommandParam(args);
-  &#x2F;&#x2F;getName返回具体配置语句对象的id
-     result &#x3D; rowCountResult(sqlSession.insert(command.getName(), param));
-   &#125; else if (SqlCommandType.UPDATE &#x3D;&#x3D; command.getType()) &#123;
-     Object param &#x3D; method.convertArgsToSqlCommandParam(args);
-     result &#x3D; rowCountResult(sqlSession.update(command.getName(), param));
-   &#125; else if (SqlCommandType.DELETE &#x3D;&#x3D; command.getType()) &#123;
-     Object param &#x3D; method.convertArgsToSqlCommandParam(args);
-     result &#x3D; rowCountResult(sqlSession.delete(command.getName(), param));
-   &#125; else if (SqlCommandType.SELECT &#x3D;&#x3D; command.getType()) &#123;
-     if (method.returnsVoid() &amp;&amp; method.hasResultHandler()) &#123;
-       executeWithResultHandler(sqlSession, args);
-       result &#x3D; null;
-     &#125; else if (method.returnsMany()) &#123;
-       result &#x3D; executeForMany(sqlSession, args);
-     &#125; else if (method.returnsMap()) &#123;
-       result &#x3D; executeForMap(sqlSession, args);
-     &#125; else &#123;
-       Object param &#x3D; method.convertArgsToSqlCommandParam(args);
-       result &#x3D; sqlSession.selectOne(command.getName(), param);
-     &#125;
-   &#125; else if (SqlCommandType.FLUSH &#x3D;&#x3D; command.getType()) &#123;
-       result &#x3D; sqlSession.flushStatements();
-   &#125; else &#123;
-     throw new BindingException(&quot;Unknown execution method for: &quot; + command.getName());
-   &#125;
-   if (result &#x3D;&#x3D; null &amp;&amp; method.getReturnType().isPrimitive() &amp;&amp; !method.returnsVoid()) &#123;
-     throw new BindingException(&quot;Mapper method &#39;&quot; + command.getName() 
-         + &quot; attempted to return null from a method with a primitive return type (&quot; + method.getReturnType() + &quot;).&quot;);
-   &#125;
-&#x2F;&#x2F;返回结果
-   return result;
- &#125;
-
- &#x2F;&#x2F;对返回结果result进行类型转换
- private Object rowCountResult(int rowCount) &#123;
-   final Object result;
-   if (method.returnsVoid()) &#123;
-     result &#x3D; null;
-   &#125; else if (Integer.class.equals(method.getReturnType()) || Integer.TYPE.equals(method.getReturnType())) &#123;
-     result &#x3D; Integer.valueOf(rowCount);
-   &#125; else if (Long.class.equals(method.getReturnType()) || Long.TYPE.equals(method.getReturnType())) &#123;
-     result &#x3D; Long.valueOf(rowCount);
-   &#125; else if (Boolean.class.equals(method.getReturnType()) || Boolean.TYPE.equals(method.getReturnType())) &#123;
-     result &#x3D; Boolean.valueOf(rowCount &gt; 0);
-   &#125; else &#123;
-     throw new BindingException(&quot;Mapper method &#39;&quot; + command.getName() + &quot;&#39; has an unsupported return type: &quot; + method.getReturnType());
-   &#125;
-   return result;
- &#125;</code></pre>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/LinkedHashMap/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/LinkedHashMap/" itemprop="url">LinkedHashMap与LRU算法</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>使用LRU时，我们要用到这个构造函数</p>
-<pre><code class="highlight plain">&#x2F;**
- * Constructs an empty &lt;tt&gt;LinkedHashMap&lt;&#x2F;tt&gt; instance with the
- * specified initial capacity, load factor and ordering mode.
- *
- * @param  initialCapacity the initial capacity
- * @param  loadFactor      the load factor
- * @param  accessOrder     the ordering mode - &lt;tt&gt;true&lt;&#x2F;tt&gt; for
- *         access-order, &lt;tt&gt;false&lt;&#x2F;tt&gt; for insertion-order
- * @throws IllegalArgumentException if the initial capacity is negative
- *         or the load factor is nonpositive
- *&#x2F;
-public LinkedHashMap(int initialCapacity,
-                     float loadFactor,
-                     boolean accessOrder) &#123;
-    super(initialCapacity, loadFactor);
-    this.accessOrder &#x3D; accessOrder;
-&#125;</code></pre>
-
-<p>对于变量accessOrder，传入false时，集合中元素顺序基于插入顺序，传入true是，集合中元素基于访问顺序</p>
-<pre><code class="highlight plain">LinkedHashMap&lt;Integer, String&gt; lhm &#x3D; new LinkedHashMap&lt;Integer,String&gt;(8, 0.75f, true);
-lhm.put(3, &quot;3&quot;);
-lhm.put(2, &quot;2&quot;);
-lhm.put(1, &quot;1&quot;);
-lhm.put(6, &quot;6&quot;);
-lhm.put(5, &quot;5&quot;);
-lhm.put(4, &quot;4&quot;);
-lhm.get(2);
-lhm.forEach((a,b)-&gt;System.out.println(a));</code></pre>
-
-<p>得到输出</p>
-<p><code>3 1 6 5 4 2</code></p>
-<p>查看get方法</p>
-<pre><code class="highlight plain">public V get(Object key) &#123;
-    Node&lt;K,V&gt; e;
-    if ((e &#x3D; getNode(hash(key), key)) &#x3D;&#x3D; null)
-        return null;
-    if (accessOrder)&#x2F;&#x2F;access为true时，将访问元素放到尾部
-        afterNodeAccess(e);
-    return e.value;
-&#125;
-
- void afterNodeAccess(Node&lt;K,V&gt; e) &#123; &#x2F;&#x2F; move node to last
-    LinkedHashMap.Entry&lt;K,V&gt; last;
-    if (accessOrder &amp;&amp; (last &#x3D; tail) !&#x3D; e) &#123;
-        LinkedHashMap.Entry&lt;K,V&gt; p &#x3D;
-            (LinkedHashMap.Entry&lt;K,V&gt;)e, b &#x3D; p.before, a &#x3D; p.after;
-        p.after &#x3D; null;
-        if (b &#x3D;&#x3D; null)
-            head &#x3D; a;
-        else
-            b.after &#x3D; a;
-        if (a !&#x3D; null)
-            a.before &#x3D; b;
-        else
-            last &#x3D; b;
-        if (last &#x3D;&#x3D; null)
-            head &#x3D; p;
-        else &#123;
-            p.before &#x3D; last;
-            last.after &#x3D; p;
-        &#125;
-        tail &#x3D; p;
-        ++modCount;
-    &#125;
-&#125;</code></pre>
-
-<p>调用get节点访问元素后，会继续调用afterNodeAccess将元素移动到尾部，要实现LinkedHashMap中元素个数大于容量*负载因子时，删除头部，即最近最少被访问的元素,先查看put方法，找到关键代码</p>
-<pre><code class="highlight plain">if (++size &gt; threshold)
-    resize();
-afterNodeInsertion(evict);</code></pre>
-
-<p>进入该方法：</p>
-<pre><code class="highlight plain">void afterNodeInsertion(boolean evict) &#123; &#x2F;&#x2F; possibly remove eldest
-    LinkedHashMap.Entry&lt;K,V&gt; first;
-    if (evict &amp;&amp; (first &#x3D; head) !&#x3D; null &amp;&amp; removeEldestEntry(first)) &#123;
-        K key &#x3D; first.key;
-        removeNode(hash(key), key, null, false, true);
-    &#125;
-&#125;</code></pre>
-
-<p>发现removeEldestEntry(first)，接着查看removeEldestEntry(first)</p>
-<pre><code class="highlight plain">protected boolean removeEldestEntry(Map.Entry&lt;K,V&gt; eldest) &#123;
-    return false;
-&#125;</code></pre>
-
-<p>方法总是放回一个false，所以要实现移除头部，需要覆写本方法，我们新定义一个类继承LinkedHashMap</p>
-<pre><code class="highlight plain">class MyLinkedHashMap&lt;K,V&gt; extends LinkedHashMap&lt;K, V&gt;&#123;
-	&#x2F;**
-	 * 
-	 *&#x2F;
-	private static final long serialVersionUID &#x3D; 1L;
-	private int MaxSize;
-
-	public MyLinkedHashMap(int capacity,float factor,boolean accessOrder,int MaxSize)&#123;
-		super(capacity,factor,accessOrder);
-		this.MaxSize &#x3D; MaxSize;
-	&#125;
-
-	&#x2F;* (non-Javadoc)
-	 * @see java.util.LinkedHashMap#removeEldestEntry(java.util.Map.Entry)
-	 *&#x2F;
-	@Override
-	protected boolean removeEldestEntry(Entry&lt;K, V&gt; eldest) &#123;
-		&#x2F;&#x2F; TODO Auto-generated method stub
-		return this.size()&gt;MaxSize;
-	&#125;
-	
-	
-&#125;</code></pre>
-
-<p>构造方法调用父类上文提到那个，再加一个MaxSize表示集合元素最大个数，在removeEldestEntry方法中比较size和MaxSize大小，这样当集合中元素个数size超过设定最大个数MaxSize时，就会触发removeNode，移除头结点即最近最少使用的元素</p>
-<pre><code class="highlight plain">LinkedHashMap&lt;Integer, String&gt; lhm &#x3D; new MyLinkedHashMap&lt;Integer,String&gt;(8, 0.75f, true,6);
-lhm.put(3, &quot;3&quot;);
-lhm.put(2, &quot;2&quot;);
-lhm.put(1, &quot;1&quot;);
-lhm.put(6, &quot;6&quot;);
-lhm.put(5, &quot;5&quot;);
-lhm.put(4, &quot;4&quot;);
-lhm.put(7,&quot;7&quot;);
-lhm.forEach((a,b)-&gt;System.out.println(a+&quot; &quot;+b));</code></pre>
-
-<p>输出</p>
-<p><code>2 1 6 5 4 7</code></p>
-<p>我们可以看到头结点Entry 3=3被移除</p>
 
           
         
@@ -1669,6 +1403,272 @@ try &#123;
 <li>主要用来填充表格，当jsp页面表单项不包含该类所有属性时，可以先在ModelAttribute中根据相应变量先从数据库取出数据，然后表单数据提交到controller中对应方法时，覆盖用ModelAttribute注解修饰的形参，达到自动填充形参所有数据</li>
 <li><a href="https://blog.csdn.net/m0_37893932/article/details/78327972" target="_blank" rel="noopener">关于SessionAttribute,当Model中找不到时转到Session中查找</a></li>
 </ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/LinkedHashMap/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/LinkedHashMap/" itemprop="url">LinkedHashMap与LRU算法</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>使用LRU时，我们要用到这个构造函数</p>
+<pre><code class="highlight plain">&#x2F;**
+ * Constructs an empty &lt;tt&gt;LinkedHashMap&lt;&#x2F;tt&gt; instance with the
+ * specified initial capacity, load factor and ordering mode.
+ *
+ * @param  initialCapacity the initial capacity
+ * @param  loadFactor      the load factor
+ * @param  accessOrder     the ordering mode - &lt;tt&gt;true&lt;&#x2F;tt&gt; for
+ *         access-order, &lt;tt&gt;false&lt;&#x2F;tt&gt; for insertion-order
+ * @throws IllegalArgumentException if the initial capacity is negative
+ *         or the load factor is nonpositive
+ *&#x2F;
+public LinkedHashMap(int initialCapacity,
+                     float loadFactor,
+                     boolean accessOrder) &#123;
+    super(initialCapacity, loadFactor);
+    this.accessOrder &#x3D; accessOrder;
+&#125;</code></pre>
+
+<p>对于变量accessOrder，传入false时，集合中元素顺序基于插入顺序，传入true是，集合中元素基于访问顺序</p>
+<pre><code class="highlight plain">LinkedHashMap&lt;Integer, String&gt; lhm &#x3D; new LinkedHashMap&lt;Integer,String&gt;(8, 0.75f, true);
+lhm.put(3, &quot;3&quot;);
+lhm.put(2, &quot;2&quot;);
+lhm.put(1, &quot;1&quot;);
+lhm.put(6, &quot;6&quot;);
+lhm.put(5, &quot;5&quot;);
+lhm.put(4, &quot;4&quot;);
+lhm.get(2);
+lhm.forEach((a,b)-&gt;System.out.println(a));</code></pre>
+
+<p>得到输出</p>
+<p><code>3 1 6 5 4 2</code></p>
+<p>查看get方法</p>
+<pre><code class="highlight plain">public V get(Object key) &#123;
+    Node&lt;K,V&gt; e;
+    if ((e &#x3D; getNode(hash(key), key)) &#x3D;&#x3D; null)
+        return null;
+    if (accessOrder)&#x2F;&#x2F;access为true时，将访问元素放到尾部
+        afterNodeAccess(e);
+    return e.value;
+&#125;
+
+ void afterNodeAccess(Node&lt;K,V&gt; e) &#123; &#x2F;&#x2F; move node to last
+    LinkedHashMap.Entry&lt;K,V&gt; last;
+    if (accessOrder &amp;&amp; (last &#x3D; tail) !&#x3D; e) &#123;
+        LinkedHashMap.Entry&lt;K,V&gt; p &#x3D;
+            (LinkedHashMap.Entry&lt;K,V&gt;)e, b &#x3D; p.before, a &#x3D; p.after;
+        p.after &#x3D; null;
+        if (b &#x3D;&#x3D; null)
+            head &#x3D; a;
+        else
+            b.after &#x3D; a;
+        if (a !&#x3D; null)
+            a.before &#x3D; b;
+        else
+            last &#x3D; b;
+        if (last &#x3D;&#x3D; null)
+            head &#x3D; p;
+        else &#123;
+            p.before &#x3D; last;
+            last.after &#x3D; p;
+        &#125;
+        tail &#x3D; p;
+        ++modCount;
+    &#125;
+&#125;</code></pre>
+
+<p>调用get节点访问元素后，会继续调用afterNodeAccess将元素移动到尾部，要实现LinkedHashMap中元素个数大于容量*负载因子时，删除头部，即最近最少被访问的元素,先查看put方法，找到关键代码</p>
+<pre><code class="highlight plain">if (++size &gt; threshold)
+    resize();
+afterNodeInsertion(evict);</code></pre>
+
+<p>进入该方法：</p>
+<pre><code class="highlight plain">void afterNodeInsertion(boolean evict) &#123; &#x2F;&#x2F; possibly remove eldest
+    LinkedHashMap.Entry&lt;K,V&gt; first;
+    if (evict &amp;&amp; (first &#x3D; head) !&#x3D; null &amp;&amp; removeEldestEntry(first)) &#123;
+        K key &#x3D; first.key;
+        removeNode(hash(key), key, null, false, true);
+    &#125;
+&#125;</code></pre>
+
+<p>发现removeEldestEntry(first)，接着查看removeEldestEntry(first)</p>
+<pre><code class="highlight plain">protected boolean removeEldestEntry(Map.Entry&lt;K,V&gt; eldest) &#123;
+    return false;
+&#125;</code></pre>
+
+<p>方法总是放回一个false，所以要实现移除头部，需要覆写本方法，我们新定义一个类继承LinkedHashMap</p>
+<pre><code class="highlight plain">class MyLinkedHashMap&lt;K,V&gt; extends LinkedHashMap&lt;K, V&gt;&#123;
+	&#x2F;**
+	 * 
+	 *&#x2F;
+	private static final long serialVersionUID &#x3D; 1L;
+	private int MaxSize;
+
+	public MyLinkedHashMap(int capacity,float factor,boolean accessOrder,int MaxSize)&#123;
+		super(capacity,factor,accessOrder);
+		this.MaxSize &#x3D; MaxSize;
+	&#125;
+
+	&#x2F;* (non-Javadoc)
+	 * @see java.util.LinkedHashMap#removeEldestEntry(java.util.Map.Entry)
+	 *&#x2F;
+	@Override
+	protected boolean removeEldestEntry(Entry&lt;K, V&gt; eldest) &#123;
+		&#x2F;&#x2F; TODO Auto-generated method stub
+		return this.size()&gt;MaxSize;
+	&#125;
+	
+	
+&#125;</code></pre>
+
+<p>构造方法调用父类上文提到那个，再加一个MaxSize表示集合元素最大个数，在removeEldestEntry方法中比较size和MaxSize大小，这样当集合中元素个数size超过设定最大个数MaxSize时，就会触发removeNode，移除头结点即最近最少使用的元素</p>
+<pre><code class="highlight plain">LinkedHashMap&lt;Integer, String&gt; lhm &#x3D; new MyLinkedHashMap&lt;Integer,String&gt;(8, 0.75f, true,6);
+lhm.put(3, &quot;3&quot;);
+lhm.put(2, &quot;2&quot;);
+lhm.put(1, &quot;1&quot;);
+lhm.put(6, &quot;6&quot;);
+lhm.put(5, &quot;5&quot;);
+lhm.put(4, &quot;4&quot;);
+lhm.put(7,&quot;7&quot;);
+lhm.forEach((a,b)-&gt;System.out.println(a+&quot; &quot;+b));</code></pre>
+
+<p>输出</p>
+<p><code>2 1 6 5 4 7</code></p>
+<p>我们可以看到头结点Entry 3=3被移除</p>
 
           
         

@@ -248,7 +248,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/final/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/fail-fast%20fail-safe/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="sinaill">
@@ -267,7 +267,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/06/17/final/" itemprop="url">final关键字</a></h1>
+                <a class="post-title-link" href="/2020/06/17/fail-fast%20fail-safe/" itemprop="url">fail-fast与fail-safe</a></h1>
         
 
         <div class="post-meta">
@@ -341,233 +341,138 @@
       
         
           
-            <h3 id="final用法"><a href="#final用法" class="headerlink" title="final用法"></a>final用法</h3><p>1.final用来修饰类时，该类不可被继承</p>
-<p>2.final用来修饰方法时，方法不可被复写</p>
-<p>3.final修饰的基本变量时，值不可变，修饰的引用类型时，引用不可变，值可变</p>
-<h3 id="final类型成员变量初始化"><a href="#final类型成员变量初始化" class="headerlink" title="final类型成员变量初始化"></a>final类型成员变量初始化</h3><p>1.final修饰的成员变量没有默认值</p>
-<p>2.final初始化可以在三个地方<br>(1)声明的时候初始化<br>(2)构造函数里初始化(！ static &amp;&amp; final，一起时会报错)<br>(3)要是没有static修饰的话可以在非静态块里初始化,要是有static修饰的话可以在静态块里初始化</p>
-<p>3.使用final成员前要确保已经初始化</p>
-<h3 id="深入理解"><a href="#深入理解" class="headerlink" title="深入理解"></a>深入理解</h3><p>1.当final变量是基本数据类型以及String类型时，如果在编译期间能知道它的确切值，则编译器会把它当做编译期常量使用。也就是说在用到该final变量的地方，相当于直接访问的这个常量，不需要在运行时确定。</p>
-<pre><code class="highlight plain">public class Test &#123;
-    public static void main(String[] args)  &#123;
-        String a &#x3D; &quot;hello2&quot;; 
-        final String b &#x3D; &quot;hello&quot;;
-        String d &#x3D; &quot;hello&quot;;
-        String c &#x3D; b + 2; 
-        String e &#x3D; d + 2;
-        System.out.println((a &#x3D;&#x3D; c));
-        System.out.println((a &#x3D;&#x3D; e));
+            <h3 id="fail-fast"><a href="#fail-fast" class="headerlink" title="fail-fast"></a>fail-fast</h3><p>java.util 包中的集合类都返回 fail-fast 迭代器，意味着在使用iterator遍历集合时，如果改变集合结构，将会抛出ConcurrentModificationException</p>
+<p>下面以ArrayList为例分析</p>
+<p>ArrayList继承于AbstractList，而AbstractList中定义了一个protected transient int modCount = 0，那么这个变量有什么作用呢</p>
+<p>我们看ArrayList中实现了Iterator接口的私有内部类ltr，有个变量接收了这个modCount</p>
+<pre><code class="highlight plain">int expectedModCount &#x3D; modCount;</code></pre>
+
+<p>当我们获取集合的迭代器对象Iterator时，这个动作发生</p>
+<pre><code class="highlight plain">public Iterator&lt;E&gt; iterator() &#123;
+    return new Itr();
+&#125;</code></pre>
+
+<p>然后看看改变集合结构的几个方法，例如add,remove</p>
+<p>add方法：</p>
+<pre><code class="highlight plain">public boolean add(E e) &#123;
+    ensureCapacityInternal(size + 1);  &#x2F;&#x2F; Increments modCount!!
+    elementData[size++] &#x3D; e;
+    return true;
+&#125;
+private void ensureCapacityInternal(int minCapacity) &#123;
+    if (elementData &#x3D;&#x3D; DEFAULTCAPACITY_EMPTY_ELEMENTDATA) &#123;
+        minCapacity &#x3D; Math.max(DEFAULT_CAPACITY, minCapacity);
+    &#125;
+
+    ensureExplicitCapacity(minCapacity);
+&#125;
+
+private void ensureExplicitCapacity(int minCapacity) &#123;
+    modCount++;
+
+    &#x2F;&#x2F; overflow-conscious code
+    if (minCapacity - elementData.length &gt; 0)
+        grow(minCapacity);
+&#125;</code></pre>
+
+<p>remove方法：</p>
+<pre><code class="highlight plain">public E remove(int index) &#123;
+    rangeCheck(index);
+
+    modCount++;
+    E oldValue &#x3D; elementData(index);
+
+    int numMoved &#x3D; size - index - 1;
+    if (numMoved &gt; 0)
+        System.arraycopy(elementData, index+1, elementData, index,
+                         numMoved);
+    elementData[--size] &#x3D; null; &#x2F;&#x2F; clear to let GC do its work
+
+    return oldValue;
+&#125;</code></pre>
+
+<p><strong>我们发现在这些操作中都会将集合自身变量modCount自增1，会造成什么影响呢，接着往下看</strong></p>
+<p>迭代器Iterator中的next()方法中调用了checkForComodification()</p>
+<p>查看方法checkForComodification：</p>
+<pre><code class="highlight plain">final void checkForComodification() &#123;
+          if (modCount !&#x3D; expectedModCount)
+              throw new ConcurrentModificationException();
+      &#125;</code></pre>
+
+<p>可以看到我们在获取下个元素时，Iterator会先比较modCount和expectedModCount，如果我们在迭代器遍历时调用了add或者remove等改变集合结构的方法时，modCount自增了，而expectedModCount不变，所以在此处会抛出ConcurrentModificationException</p>
+<p>但是如果是在我们自己遍历集合时想修改集合结构，而且不是多线程环境中的话，我们可以看Iterator中给我们提供的方法，在ArrayList中的内部类Iterator中给我们提供了一个remove方法</p>
+<pre><code class="highlight plain">public void remove() &#123;
+    if (lastRet &lt; 0)
+        throw new IllegalStateException();
+    checkForComodification();
+
+    try &#123;
+        ArrayList.this.remove(lastRet);
+        cursor &#x3D; lastRet;
+        lastRet &#x3D; -1;
+        expectedModCount &#x3D; modCount;
+    &#125; catch (IndexOutOfBoundsException ex) &#123;
+        throw new ConcurrentModificationException();
     &#125;
 &#125;</code></pre>
 
-<p><code>true false</code></p>
-<p>不过要注意，只有在编译期间能确切知道final变量值的情况下，编译器才会进行这样的优化</p>
-<pre><code class="highlight plain">public class Test &#123;
-    public static void main(String[] args)  &#123;
-        String a &#x3D; &quot;hello2&quot;; 
-        final String b &#x3D; getHello();
-        String c &#x3D; b + 2; 
-        System.out.println((a &#x3D;&#x3D; c));
- 
-    &#125;
-     
-    public static String getHello() &#123;
-        return &quot;hello&quot;;
-    &#125;
-&#125;</code></pre>
+<p>我们可以看到在移除元素后，重新对expectedModCount赋值，所以checkForComodification()不会抛出异常</p>
+<p>ArrayList还提供了一个更丰富的ListIterator内部类，是一个双向迭代器，可以双向遍历，在这里比Iterator多了add方法</p>
+<pre><code class="highlight plain">    public void add(E e) &#123;
+        checkForComodification();
 
-<p><code>false</code></p>
-<p>2.final也可以用来修饰方法的形参，防止方法内部修改形参</p>
-<p>3.匿名内部类使用的外部变量必须为final</p>
-<p><strong>外部类和外部局部变量是作为构造方法的参数传入匿名内部类的</strong></p>
-<p>为什么在匿名内部类中引用外部对象要加final修饰符呢，因为，在匿名内部类中引用的外部对象受到外部线程的作用域的制约有其特定的生命周期，以线程为例，当外部的变量生命周期已经完结之后，内部的线程还在运行，怎么样解决这个外部生命周期已经结束而在内部却需要继续使用呢，这个时候就需要在外部变量中添加final修饰符，<strong>其实内部匿名类使用的这个变量就是外部变量的一个“复制品”</strong>，即使外部变量生命周期已经结束，内部的“复制品“依然可用。并且<strong>final保证复制品与原始变量保持一致</strong></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/consumer/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/consumer/" itemprop="url">consumer接口</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="consumer"><a href="#consumer" class="headerlink" title="consumer"></a>consumer</h3><pre><code class="highlight plain">@FunctionalInterface
-public interface Consumer&lt;T&gt; &#123;
-
-    &#x2F;**
-     * Performs this operation on the given argument.
-     *
-     * @param t the input argument
-     *&#x2F;
-    void accept(T t);
-
-    &#x2F;**
-     * Returns a composed &#123;@code Consumer&#125; that performs, in sequence, this
-     * operation followed by the &#123;@code after&#125; operation. If performing either
-     * operation throws an exception, it is relayed to the caller of the
-     * composed operation.  If performing this operation throws an exception,
-     * the &#123;@code after&#125; operation will not be performed.
-     *
-     * @param after the operation to perform after this operation
-     * @return a composed &#123;@code Consumer&#125; that performs in sequence this
-     * operation followed by the &#123;@code after&#125; operation
-     * @throws NullPointerException if &#123;@code after&#125; is null
-     *&#x2F;
-    default Consumer&lt;T&gt; andThen(Consumer&lt;? super T&gt; after) &#123;
-        Objects.requireNonNull(after);
-        return (T t) -&gt; &#123; accept(t); after.accept(t); &#125;;
+        try &#123;
+            int i &#x3D; cursor;
+            ArrayList.this.add(i, e);
+            cursor &#x3D; i + 1;
+            lastRet &#x3D; -1;
+            expectedModCount &#x3D; modCount;
+        &#125; catch (IndexOutOfBoundsException ex) &#123;
+            throw new ConcurrentModificationException();
+        &#125;
     &#125;
 &#125;</code></pre>
 
-<p>consumer是一个函数式接口，可配合实现了Iterable的类和Iterator使用。</p>
-<pre><code class="highlight plain">List&lt;student&gt; a &#x3D; new ArrayList&lt;student&gt;();
-a.add(new student(1, &quot;aa&quot;));
-a.add(new student(2, &quot;bb&quot;));
-a.add(new student(3, &quot;cc&quot;));
-a.forEach(stu-&gt;stu.id&#x3D;4);
-a.forEach(stu-&gt;System.out::println)</code></pre>
-
-<p><code>4 4 4</code></p>
-<p>List继承自Collection，而Collection又实现了Iterable接口，接口的foreach方法如下：</p>
-<pre><code class="highlight plain">default void forEach(Consumer&lt;? super T&gt; action) &#123;
-    Objects.requireNonNull(action);
-    for (T t : this) &#123;
-        action.accept(t);
-    &#125;
+<p>依旧是处理了expectedModCount = modCount。</p>
+<h3 id="fail-safe"><a href="#fail-safe" class="headerlink" title="fail-safe"></a>fail-safe</h3><p>以ArrayList的替代类CopyOnWriteArrayList为例分析，CopyOnWriteArrayList为何物？ArrayList 的一个线程安全的变体，其中所有可变操作（add、set 等等）都是通过对底层数组进行一次新的复制来实现的。 该类产生的开销比较大，但是在两种情况下，它非常适合使用。</p>
+<ol>
+<li>在不能或不想进行同步遍历，但又需要从并发线程中排除冲突时。</li>
+<li>当遍历操作的数量大大超过可变操作的数量时。</li>
+</ol>
+<p>查看迭代器</p>
+<pre><code class="highlight plain">public E next() &#123;
+    if (! hasNext())
+        throw new NoSuchElementException();
+    return (E) snapshot[cursor++];
 &#125;</code></pre>
 
-<p><strong>所以，此接口是用来处理集合中所有元素，Performs this operation on the given argument.</strong></p>
+<p>没有像ArrayList的迭代器一样，它不需要检查expectedModCount = modCount</p>
+<p>再看add方法</p>
+<pre><code class="highlight plain">public boolean add(E paramE) &#123;    
+        ReentrantLock localReentrantLock &#x3D; this.lock;    
+        localReentrantLock.lock();    
+        try &#123;    
+            Object[] arrayOfObject1 &#x3D; getArray();    
+            int i &#x3D; arrayOfObject1.length;    
+            Object[] arrayOfObject2 &#x3D; Arrays.copyOf(arrayOfObject1, i + 1);    
+            arrayOfObject2[i] &#x3D; paramE;    
+            setArray(arrayOfObject2);    
+            int j &#x3D; 1;    
+            return j;    
+        &#125; finally &#123;    
+            localReentrantLock.unlock();    
+        &#125;    
+    &#125;    
+    final void setArray(Object[] paramArrayOfObject) &#123;    
+        this.array &#x3D; paramArrayOfObject;    
+    &#125;</code></pre>
+
+<p>看关键代码：</p>
+<pre><code class="highlight plain">Object[] arrayOfObject2 &#x3D; Arrays.copyOf(arrayOfObject1, i + 1);    
+arrayOfObject2[i] &#x3D; paramE;    
+setArray(arrayOfObject2)</code></pre>
+
+<p>所以在多线程环境时，可以使用CopyOnWriterArrayList来替代，它们的原理为先复制原有集合，然后在复制集合上作修改，然后将原引用指向复制修改后的集合，而迭代器遍历集合是先接收CopyOnWriterArrayList中存储元素的数组，然后对其遍历。这样就达到了遍历和修改集合结构分别在不同的存储数组中。</p>
 
           
         
@@ -827,7 +732,7 @@ users.forEach(u-&gt;System.out.println(u.getId()));</code></pre>
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/bit%20arithmetic/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/consumer/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="sinaill">
@@ -846,7 +751,7 @@ users.forEach(u-&gt;System.out.println(u.getId()));</code></pre>
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/06/17/bit%20arithmetic/" itemprop="url">java中的位运算</a></h1>
+                <a class="post-title-link" href="/2020/06/17/consumer/" itemprop="url">consumer接口</a></h1>
         
 
         <div class="post-meta">
@@ -920,45 +825,229 @@ users.forEach(u-&gt;System.out.println(u.getId()));</code></pre>
       
         
           
-            <h3 id="原码，补码，反码"><a href="#原码，补码，反码" class="headerlink" title="原码，补码，反码"></a>原码，补码，反码</h3><h4 id="原码"><a href="#原码" class="headerlink" title="原码"></a>原码</h4><p>原码就是符号位加上真值的绝对值, 即用第一位表示符号, 其余位表示值. 比如如果是8位二进制:</p>
-<p>[+1]原 = 0000 0001</p>
-<p>[-1]原 = 1000 0001</p>
-<h4 id="补码"><a href="#补码" class="headerlink" title="补码"></a>补码</h4><p>正数的补码就是其本身，负数的补码是在其原码的基础上, 符号位不变, 其余各位取反, 最后+1. (即在反码的基础上+1),<strong>负数的补码转为原码也是符号位不变, 其余各位取反, 最后+1</strong></p>
-<p>[+1] = [00000001]原 = [00000001]反 = [00000001]补</p>
-<p>[-1] = [10000001]原 = [11111110]反 = [11111111]补</p>
-<h4 id="反码"><a href="#反码" class="headerlink" title="反码"></a>反码</h4><p>正数的反码是其本身，负数的反码是在其原码的基础上, 符号位不变，其余各个位取反。</p>
-<p>[+1] = [00000001]原 = [00000001]反</p>
-<p>[-1] = [10000001]原 = [11111110]反</p>
-<h3 id="或运算"><a href="#或运算" class="headerlink" title="或运算"></a>或运算</h3><p><code>System.out.println(3 | 4);</code></p>
-<p><code>7</code></p>
-<p>转化为2进制补码运算，0 1 1与 1 0 0 相或 结果为1 1 1，所以为7</p>
-<h3 id="与运算"><a href="#与运算" class="headerlink" title="与运算"></a>与运算</h3><p><code>System.out.println(3 &amp; 4);</code></p>
-<p><code>0</code></p>
-<p>转化为2进制补码运算，0 1 1与 1 0 0 相与，结果为0 0 0，所以为0</p>
-<h3 id="左移-lt-lt"><a href="#左移-lt-lt" class="headerlink" title="左移&lt;&lt;"></a>左移&lt;&lt;</h3><p><code>System.out.println(5&lt;&lt;2)</code></p>
-<p><code>20</code></p>
-<p>首先会将5转为2进制表示形式(java中，整数默认就是int类型,也就是32位):</p>
-<p>0000 0000 0000 0000 0000 0000 0000 0101           然后左移2位后，低位补0<br>0000 0000 0000 0000 0000 0000 0001 0100           换算成10进制为20</p>
-<p><code>System.out.println(-5 &lt;&lt; 2);</code></p>
-<p><code>-20</code></p>
-<p>1111 1111 1111 1111 1111 1111 1111 1011           然后左移2位后，低位也是补0<br>1111 1111 1111 1111 1111 1111 1110 1100           换算成10进制为-20</p>
-<h3 id="右移-gt-gt"><a href="#右移-gt-gt" class="headerlink" title="右移&gt;&gt;"></a>右移&gt;&gt;</h3><p><code>System.out.println(5&gt;&gt;2);</code></p>
-<p><code>1</code></p>
-<p>还是先将5转为2进制表示形式：<br>0000 0000 0000 0000 0000 0000 0000 0101           然后右移2位，高位补0：<br>0000 0000 0000 0000 0000 0000 0000 0001              换算成10进制为1</p>
-<p><code>System.out.println(-5&gt;&gt;3);</code></p>
-<p><code>-1</code></p>
-<p>-5换算成二进制:<br>1111 1111 1111 1111 1111 1111 1111 1011          然后右移三位，高位补1<br>1111 1111 1111 1111 1111 1111 1111 1111          换算成10进制为-1</p>
-<h3 id="无符号右移-gt-gt-gt"><a href="#无符号右移-gt-gt-gt" class="headerlink" title="无符号右移&gt;&gt;&gt;"></a>无符号右移&gt;&gt;&gt;</h3><p><code>System.out.println(5 &gt;&gt;&gt; 3);</code></p>
-<p><code>0</code></p>
-<p>5换算成二进制:<br>0000 0000 0000 0000 0000 0000 0000 0101          然后右移三位，高位补0<br>0000 0000 0000 0000 0000 0000 0000 0000          换算成10进制为0</p>
-<p><code>System.out.println(-5 &gt;&gt;&gt; 3);</code></p>
-<p><code>536870911</code></p>
-<p>-5换算成二进制:<br>1111 1111 1111 1111 1111 1111 1111 1011         带符号右移，高位补0<br>0001 1111 1111 1111 1111 1111 1111 1111         换算成10进制为536870911</p>
-<h3 id="位异或"><a href="#位异或" class="headerlink" title="位异或^"></a>位异或^</h3><p>位异或：第一个操作数的的第n位于第二个操作数的第n位 相反，那么结果的第n为也为1，否则为0</p>
-<p><code>System.out.println(5 ^ 3);</code></p>
-<p><code>6</code></p>
-<p>5转换为二进制：0000 0000 0000 0000 0000 0000 0000 0101<br>3转换为二进制：0000 0000 0000 0000 0000 0000 0000 0011<br>得：0000 0000 0000 0000 0000 0000 0000 0110</p>
+            <h3 id="consumer"><a href="#consumer" class="headerlink" title="consumer"></a>consumer</h3><pre><code class="highlight plain">@FunctionalInterface
+public interface Consumer&lt;T&gt; &#123;
 
+    &#x2F;**
+     * Performs this operation on the given argument.
+     *
+     * @param t the input argument
+     *&#x2F;
+    void accept(T t);
+
+    &#x2F;**
+     * Returns a composed &#123;@code Consumer&#125; that performs, in sequence, this
+     * operation followed by the &#123;@code after&#125; operation. If performing either
+     * operation throws an exception, it is relayed to the caller of the
+     * composed operation.  If performing this operation throws an exception,
+     * the &#123;@code after&#125; operation will not be performed.
+     *
+     * @param after the operation to perform after this operation
+     * @return a composed &#123;@code Consumer&#125; that performs in sequence this
+     * operation followed by the &#123;@code after&#125; operation
+     * @throws NullPointerException if &#123;@code after&#125; is null
+     *&#x2F;
+    default Consumer&lt;T&gt; andThen(Consumer&lt;? super T&gt; after) &#123;
+        Objects.requireNonNull(after);
+        return (T t) -&gt; &#123; accept(t); after.accept(t); &#125;;
+    &#125;
+&#125;</code></pre>
+
+<p>consumer是一个函数式接口，可配合实现了Iterable的类和Iterator使用。</p>
+<pre><code class="highlight plain">List&lt;student&gt; a &#x3D; new ArrayList&lt;student&gt;();
+a.add(new student(1, &quot;aa&quot;));
+a.add(new student(2, &quot;bb&quot;));
+a.add(new student(3, &quot;cc&quot;));
+a.forEach(stu-&gt;stu.id&#x3D;4);
+a.forEach(stu-&gt;System.out::println)</code></pre>
+
+<p><code>4 4 4</code></p>
+<p>List继承自Collection，而Collection又实现了Iterable接口，接口的foreach方法如下：</p>
+<pre><code class="highlight plain">default void forEach(Consumer&lt;? super T&gt; action) &#123;
+    Objects.requireNonNull(action);
+    for (T t : this) &#123;
+        action.accept(t);
+    &#125;
+&#125;</code></pre>
+
+<p><strong>所以，此接口是用来处理集合中所有元素，Performs this operation on the given argument.</strong></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/ajax%E4%B8%ADjson%E5%92%8Cspringmvc/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/ajax%E4%B8%ADjson%E5%92%8Cspringmvc/" itemprop="url">ajax中json和SpringMVC</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">框架</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="json"><a href="#json" class="headerlink" title="json"></a>json</h3><p>json对象格式:<code>{&quot;param&quot;:&quot;value&quot;,&quot;param&quot;:&quot;value&quot;}</code></p>
+<p>普通js对象:<code>{param:&quot;value&quot;,param:&quot;value&quot;}</code></p>
+<p>js对象转json对象:</p>
+<ul>
+<li>先将js转json字符串：<code>JSON.stringify()</code></li>
+<li>将json字符串转json对象:<code>JSON.parse()</code></li>
+</ul>
+<h3 id="ajax中的contentType"><a href="#ajax中的contentType" class="headerlink" title="ajax中的contentType"></a>ajax中的contentType</h3><p>ajax中，没有指定<code>contentType</code>的话，Jquery默认使用<code>application/x-www-form-urlencoded</code>类型，data使用json对象格式,<code>springmvc</code>可以<code>@RequestParam</code>接收数据(变量同名不需要)</p>
+<p>指定<code>contentType</code>为<code>application/json</code>时，data必须为json字符串格式，springmvc接收数据要用<code>@RequestBody</code>注解</p>
+<pre><code class="highlight plain">$.ajax(&#123;
+    type: &quot;post&quot;,
+    url:  &quot;mobile&#x2F;notice&#x2F;addMessageInfo.jspx&quot;,
+    contentType: &quot;application&#x2F;json&quot;,
+    data:&quot;&#123;&#39;name&#39;:&#39;zhangsan&#39;,&#39;age&#39;:&#39;15&#39;&#125;&quot;,
+    dataType: &quot;json&quot;,
+    success: function(data) &#123;
+        console.log(data);
+    &#125;,
+    error: function(msg) &#123;
+        console.log(msg)
+    &#125;
+&#125;)
+
+
+$.ajax(&#123;
+    type: &quot;post&quot;,
+    url:  &quot;mobile&#x2F;notice&#x2F;addMessageInfo.jspx&quot;,
+    data:&#123;name:&#39;zhangsan&#39;,age:&#39;15&#39;&#125;,
+    dataType: &quot;json&quot;,
+    success: function(data) &#123;
+        console.log(data);
+    &#125;,
+    error: function(msg) &#123;
+        console.log(msg)
+    &#125;
+&#125;)</code></pre>
           
         
       
@@ -1304,7 +1393,7 @@ private void doSignalAll(Node first) &#123;
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/ajax%E4%B8%ADjson%E5%92%8Cspringmvc/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/bit%20arithmetic/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="sinaill">
@@ -1323,7 +1412,7 @@ private void doSignalAll(Node first) &#123;
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/06/17/ajax%E4%B8%ADjson%E5%92%8Cspringmvc/" itemprop="url">ajax中json和SpringMVC</a></h1>
+                <a class="post-title-link" href="/2020/06/17/bit%20arithmetic/" itemprop="url">java中的位运算</a></h1>
         
 
         <div class="post-meta">
@@ -1358,8 +1447,8 @@ private void doSignalAll(Node first) &#123;
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
-                    <span itemprop="name">框架</span>
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
                   </a>
                 </span>
 
@@ -1397,42 +1486,45 @@ private void doSignalAll(Node first) &#123;
       
         
           
-            <h3 id="json"><a href="#json" class="headerlink" title="json"></a>json</h3><p>json对象格式:<code>{&quot;param&quot;:&quot;value&quot;,&quot;param&quot;:&quot;value&quot;}</code></p>
-<p>普通js对象:<code>{param:&quot;value&quot;,param:&quot;value&quot;}</code></p>
-<p>js对象转json对象:</p>
-<ul>
-<li>先将js转json字符串：<code>JSON.stringify()</code></li>
-<li>将json字符串转json对象:<code>JSON.parse()</code></li>
-</ul>
-<h3 id="ajax中的contentType"><a href="#ajax中的contentType" class="headerlink" title="ajax中的contentType"></a>ajax中的contentType</h3><p>ajax中，没有指定<code>contentType</code>的话，Jquery默认使用<code>application/x-www-form-urlencoded</code>类型，data使用json对象格式,<code>springmvc</code>可以<code>@RequestParam</code>接收数据(变量同名不需要)</p>
-<p>指定<code>contentType</code>为<code>application/json</code>时，data必须为json字符串格式，springmvc接收数据要用<code>@RequestBody</code>注解</p>
-<pre><code class="highlight plain">$.ajax(&#123;
-    type: &quot;post&quot;,
-    url:  &quot;mobile&#x2F;notice&#x2F;addMessageInfo.jspx&quot;,
-    contentType: &quot;application&#x2F;json&quot;,
-    data:&quot;&#123;&#39;name&#39;:&#39;zhangsan&#39;,&#39;age&#39;:&#39;15&#39;&#125;&quot;,
-    dataType: &quot;json&quot;,
-    success: function(data) &#123;
-        console.log(data);
-    &#125;,
-    error: function(msg) &#123;
-        console.log(msg)
-    &#125;
-&#125;)
+            <h3 id="原码，补码，反码"><a href="#原码，补码，反码" class="headerlink" title="原码，补码，反码"></a>原码，补码，反码</h3><h4 id="原码"><a href="#原码" class="headerlink" title="原码"></a>原码</h4><p>原码就是符号位加上真值的绝对值, 即用第一位表示符号, 其余位表示值. 比如如果是8位二进制:</p>
+<p>[+1]原 = 0000 0001</p>
+<p>[-1]原 = 1000 0001</p>
+<h4 id="补码"><a href="#补码" class="headerlink" title="补码"></a>补码</h4><p>正数的补码就是其本身，负数的补码是在其原码的基础上, 符号位不变, 其余各位取反, 最后+1. (即在反码的基础上+1),<strong>负数的补码转为原码也是符号位不变, 其余各位取反, 最后+1</strong></p>
+<p>[+1] = [00000001]原 = [00000001]反 = [00000001]补</p>
+<p>[-1] = [10000001]原 = [11111110]反 = [11111111]补</p>
+<h4 id="反码"><a href="#反码" class="headerlink" title="反码"></a>反码</h4><p>正数的反码是其本身，负数的反码是在其原码的基础上, 符号位不变，其余各个位取反。</p>
+<p>[+1] = [00000001]原 = [00000001]反</p>
+<p>[-1] = [10000001]原 = [11111110]反</p>
+<h3 id="或运算"><a href="#或运算" class="headerlink" title="或运算"></a>或运算</h3><p><code>System.out.println(3 | 4);</code></p>
+<p><code>7</code></p>
+<p>转化为2进制补码运算，0 1 1与 1 0 0 相或 结果为1 1 1，所以为7</p>
+<h3 id="与运算"><a href="#与运算" class="headerlink" title="与运算"></a>与运算</h3><p><code>System.out.println(3 &amp; 4);</code></p>
+<p><code>0</code></p>
+<p>转化为2进制补码运算，0 1 1与 1 0 0 相与，结果为0 0 0，所以为0</p>
+<h3 id="左移-lt-lt"><a href="#左移-lt-lt" class="headerlink" title="左移&lt;&lt;"></a>左移&lt;&lt;</h3><p><code>System.out.println(5&lt;&lt;2)</code></p>
+<p><code>20</code></p>
+<p>首先会将5转为2进制表示形式(java中，整数默认就是int类型,也就是32位):</p>
+<p>0000 0000 0000 0000 0000 0000 0000 0101           然后左移2位后，低位补0<br>0000 0000 0000 0000 0000 0000 0001 0100           换算成10进制为20</p>
+<p><code>System.out.println(-5 &lt;&lt; 2);</code></p>
+<p><code>-20</code></p>
+<p>1111 1111 1111 1111 1111 1111 1111 1011           然后左移2位后，低位也是补0<br>1111 1111 1111 1111 1111 1111 1110 1100           换算成10进制为-20</p>
+<h3 id="右移-gt-gt"><a href="#右移-gt-gt" class="headerlink" title="右移&gt;&gt;"></a>右移&gt;&gt;</h3><p><code>System.out.println(5&gt;&gt;2);</code></p>
+<p><code>1</code></p>
+<p>还是先将5转为2进制表示形式：<br>0000 0000 0000 0000 0000 0000 0000 0101           然后右移2位，高位补0：<br>0000 0000 0000 0000 0000 0000 0000 0001              换算成10进制为1</p>
+<p><code>System.out.println(-5&gt;&gt;3);</code></p>
+<p><code>-1</code></p>
+<p>-5换算成二进制:<br>1111 1111 1111 1111 1111 1111 1111 1011          然后右移三位，高位补1<br>1111 1111 1111 1111 1111 1111 1111 1111          换算成10进制为-1</p>
+<h3 id="无符号右移-gt-gt-gt"><a href="#无符号右移-gt-gt-gt" class="headerlink" title="无符号右移&gt;&gt;&gt;"></a>无符号右移&gt;&gt;&gt;</h3><p><code>System.out.println(5 &gt;&gt;&gt; 3);</code></p>
+<p><code>0</code></p>
+<p>5换算成二进制:<br>0000 0000 0000 0000 0000 0000 0000 0101          然后右移三位，高位补0<br>0000 0000 0000 0000 0000 0000 0000 0000          换算成10进制为0</p>
+<p><code>System.out.println(-5 &gt;&gt;&gt; 3);</code></p>
+<p><code>536870911</code></p>
+<p>-5换算成二进制:<br>1111 1111 1111 1111 1111 1111 1111 1011         带符号右移，高位补0<br>0001 1111 1111 1111 1111 1111 1111 1111         换算成10进制为536870911</p>
+<h3 id="位异或"><a href="#位异或" class="headerlink" title="位异或^"></a>位异或^</h3><p>位异或：第一个操作数的的第n位于第二个操作数的第n位 相反，那么结果的第n为也为1，否则为0</p>
+<p><code>System.out.println(5 ^ 3);</code></p>
+<p><code>6</code></p>
+<p>5转换为二进制：0000 0000 0000 0000 0000 0000 0000 0101<br>3转换为二进制：0000 0000 0000 0000 0000 0000 0000 0011<br>得：0000 0000 0000 0000 0000 0000 0000 0110</p>
 
-
-$.ajax(&#123;
-    type: &quot;post&quot;,
-    url:  &quot;mobile&#x2F;notice&#x2F;addMessageInfo.jspx&quot;,
-    data:&#123;name:&#39;zhangsan&#39;,age:&#39;15&#39;&#125;,
-    dataType: &quot;json&quot;,
-    success: function(data) &#123;
-        console.log(data);
-    &#125;,
-    error: function(msg) &#123;
-        console.log(msg)
-    &#125;
-&#125;)</code></pre>
           
         
       
@@ -1823,6 +1915,210 @@ ThreadLocalMap(ThreadLocal&lt;?&gt; firstKey, Object firstValue) &#123;
 <p>调用<code>ThreadLocal</code>的<code>set</code>方法时，先获取当前线程，查看线程中<code>ThreadLocalMap</code>引用为不为空，若为空，为当前线程创建<code>ThreadLocalMap</code>实例，传入键值对<code>key</code>为当前<code>ThreadLocal</code>实例，<code>value</code>为<code>set</code>方法传入的参数值。若不为空，为<code>ThreadLocalMap</code>实例添加新键值对，<code>key</code>为当前<code>ThreadLocal</code>实例，<code>value</code>为<code>set</code>方法传入的参数值。</p>
 <p>调用<code>ThreadLocal</code>的<code>get</code>方法时，如果之前为调用过<code>set</code>方法或<code>ThreadLocalMap</code>实例中<code>key</code>没有与当前<code>ThreadLocal</code>实例对应的，则返回一个默认值<code>null</code>。照旧先获取当前线程，获取线程中<code>ThreadLocalMap</code>实例，再根据当前<code>ThreadLocal</code>实例获取对应的键值对<code>Entry</code>，从而获取线程中存储的变量副本。</p>
 <p>为什么不用一个<code>map Entry&lt;Thread,value&gt;</code>来存储所有线程和线程变量副本，<code>map</code>过大会造成哈希冲突，造成性能变差。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/Spring%E4%B8%AD%E4%BE%9D%E8%B5%96%E7%9A%84%E6%B3%A8%E5%85%A5%E6%96%B9%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/Spring%E4%B8%AD%E4%BE%9D%E8%B5%96%E7%9A%84%E6%B3%A8%E5%85%A5%E6%96%B9%E5%BC%8F/" itemprop="url">Spring中依赖的注入方式</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">框架</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="构造器注入"><a href="#构造器注入" class="headerlink" title="构造器注入"></a>构造器注入</h3><p>构造器注入作用在第二次后置处理器调用，找到合适构造器后，用它实例化类的同时，注入依赖属性</p>
+<pre><code class="highlight plain">public class userServiceImpl implements userService&#123;
+
+	private userDao userdao;
+	@Autowired
+	public userServiceImpl(userDao userdao)&#123;
+		this.userdao &#x3D; userdao;
+	&#125;
+
+	@Override
+	public void query() &#123;
+		userdao.query();
+	&#125;
+&#125;</code></pre>
+
+<p><code>Autowired</code>注解可省略，当不需要无参构造函数时</p>
+<h3 id="set方法注入"><a href="#set方法注入" class="headerlink" title="set方法注入"></a>set方法注入</h3><pre><code class="highlight plain">public class userServiceImpl implements userService&#123;
+
+	private userDao userdao;
+	@Override
+	public void query() &#123;
+		userdao.query();
+	&#125;
+	@Autowired
+	public void setuserDao(userDao userdao)&#123;
+		this.userdao &#x3D; userdao;
+	&#125;
+
+
+&#125;</code></pre>
+
+<h3 id="普通属性注入"><a href="#普通属性注入" class="headerlink" title="普通属性注入"></a>普通属性注入</h3><p>使用<code>@Value</code>注解</p>
+<h3 id="Method-Injection方法注入"><a href="#Method-Injection方法注入" class="headerlink" title="Method Injection方法注入"></a>Method Injection方法注入</h3><p>Spring文档</p>
+<p>In most application scenarios, most beans in the container are singletons. When a singleton bean needs to collaborate with another singleton bean or a non-singleton bean needs to collaborate with another non-singleton bean, you typically handle the dependency by defining one bean as a property of the other. A problem arises when the bean lifecycles are different. Suppose singleton bean A needs to use non-singleton (prototype) bean B, perhaps on each method invocation on A. The container creates the singleton bean A only once, and thus only gets one opportunity to set the properties. The container cannot provide bean A with a new instance of bean B every time one is needed.</p>
+<p>当一个singleton的Bean A，内部依赖为prototype的Bean B，因为A只初始化一次，所以它的内部依赖B始终为同一个实例，如果要使每次用到B时都是新实例，就需要用到Method Injection</p>
+<p>文档要我们实现<code>ApplicationContextAware</code>接口，从而获得容器对象</p>
+<pre><code class="highlight plain">public class CommandManager implements ApplicationContextAware &#123;
+
+    private ApplicationContext applicationContext;
+
+    public Object process(Map commandState) &#123;
+        &#x2F;&#x2F; grab a new instance of the appropriate Command
+        Command command &#x3D; createCommand();
+        &#x2F;&#x2F; set the state on the (hopefully brand new) Command instance
+        command.setState(commandState);
+        return command.execute();
+    &#125;
+
+    protected Command createCommand() &#123;
+        &#x2F;&#x2F; notice the Spring API dependency!
+        return this.applicationContext.getBean(&quot;command&quot;, Command.class);
+    &#125;
+
+    public void setApplicationContext(
+            ApplicationContext applicationContext) throws BeansException &#123;
+        this.applicationContext &#x3D; applicationContext;
+    &#125;
+&#125;</code></pre>
+
+<p>官方例子中，实现接口，获取容器对象，每次使用这个类时都手动从容器获取这个对象的实例，从而每次都是新的实例B</p>
+<h3 id="depends-on"><a href="#depends-on" class="headerlink" title="depends-on"></a>depends-on</h3><p>文档中</p>
+<p>The depends-on attribute can explicitly force one or more beans to be initialized before the bean using this element is initialized</p>
+<p>depends-on属性可以强制在初始化使用这个元素的类之前初始化一个指定的类</p>
 
           
         
@@ -2497,210 +2793,6 @@ public Object applyBeanPostProcessorsAfterInitialization(Object existingBean, St
 
 <h3 id="附加"><a href="#附加" class="headerlink" title="附加"></a>附加</h3><p>这几个后置处理器在<code>AnnotationConfigUtils</code>中的<code>registerBeanDefinition</code>方法中注册到<code>DefaultListableBeanFactory</code>的<code>beanDefinitionNames</code>和<code>beanDefinitionMap</code>中</p>
 <p>使用注解式配置ssm时，这个过程发生在容器refresh的时候    ，在创建工厂对象后调用<code>loadBeanDefinitions</code>方法开始注册</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/Spring%E4%B8%AD%E4%BE%9D%E8%B5%96%E7%9A%84%E6%B3%A8%E5%85%A5%E6%96%B9%E5%BC%8F/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/Spring%E4%B8%AD%E4%BE%9D%E8%B5%96%E7%9A%84%E6%B3%A8%E5%85%A5%E6%96%B9%E5%BC%8F/" itemprop="url">Spring中依赖的注入方式</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
-                    <span itemprop="name">框架</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="构造器注入"><a href="#构造器注入" class="headerlink" title="构造器注入"></a>构造器注入</h3><p>构造器注入作用在第二次后置处理器调用，找到合适构造器后，用它实例化类的同时，注入依赖属性</p>
-<pre><code class="highlight plain">public class userServiceImpl implements userService&#123;
-
-	private userDao userdao;
-	@Autowired
-	public userServiceImpl(userDao userdao)&#123;
-		this.userdao &#x3D; userdao;
-	&#125;
-
-	@Override
-	public void query() &#123;
-		userdao.query();
-	&#125;
-&#125;</code></pre>
-
-<p><code>Autowired</code>注解可省略，当不需要无参构造函数时</p>
-<h3 id="set方法注入"><a href="#set方法注入" class="headerlink" title="set方法注入"></a>set方法注入</h3><pre><code class="highlight plain">public class userServiceImpl implements userService&#123;
-
-	private userDao userdao;
-	@Override
-	public void query() &#123;
-		userdao.query();
-	&#125;
-	@Autowired
-	public void setuserDao(userDao userdao)&#123;
-		this.userdao &#x3D; userdao;
-	&#125;
-
-
-&#125;</code></pre>
-
-<h3 id="普通属性注入"><a href="#普通属性注入" class="headerlink" title="普通属性注入"></a>普通属性注入</h3><p>使用<code>@Value</code>注解</p>
-<h3 id="Method-Injection方法注入"><a href="#Method-Injection方法注入" class="headerlink" title="Method Injection方法注入"></a>Method Injection方法注入</h3><p>Spring文档</p>
-<p>In most application scenarios, most beans in the container are singletons. When a singleton bean needs to collaborate with another singleton bean or a non-singleton bean needs to collaborate with another non-singleton bean, you typically handle the dependency by defining one bean as a property of the other. A problem arises when the bean lifecycles are different. Suppose singleton bean A needs to use non-singleton (prototype) bean B, perhaps on each method invocation on A. The container creates the singleton bean A only once, and thus only gets one opportunity to set the properties. The container cannot provide bean A with a new instance of bean B every time one is needed.</p>
-<p>当一个singleton的Bean A，内部依赖为prototype的Bean B，因为A只初始化一次，所以它的内部依赖B始终为同一个实例，如果要使每次用到B时都是新实例，就需要用到Method Injection</p>
-<p>文档要我们实现<code>ApplicationContextAware</code>接口，从而获得容器对象</p>
-<pre><code class="highlight plain">public class CommandManager implements ApplicationContextAware &#123;
-
-    private ApplicationContext applicationContext;
-
-    public Object process(Map commandState) &#123;
-        &#x2F;&#x2F; grab a new instance of the appropriate Command
-        Command command &#x3D; createCommand();
-        &#x2F;&#x2F; set the state on the (hopefully brand new) Command instance
-        command.setState(commandState);
-        return command.execute();
-    &#125;
-
-    protected Command createCommand() &#123;
-        &#x2F;&#x2F; notice the Spring API dependency!
-        return this.applicationContext.getBean(&quot;command&quot;, Command.class);
-    &#125;
-
-    public void setApplicationContext(
-            ApplicationContext applicationContext) throws BeansException &#123;
-        this.applicationContext &#x3D; applicationContext;
-    &#125;
-&#125;</code></pre>
-
-<p>官方例子中，实现接口，获取容器对象，每次使用这个类时都手动从容器获取这个对象的实例，从而每次都是新的实例B</p>
-<h3 id="depends-on"><a href="#depends-on" class="headerlink" title="depends-on"></a>depends-on</h3><p>文档中</p>
-<p>The depends-on attribute can explicitly force one or more beans to be initialized before the bean using this element is initialized</p>
-<p>depends-on属性可以强制在初始化使用这个元素的类之前初始化一个指定的类</p>
 
           
         
