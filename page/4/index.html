@@ -1758,352 +1758,6 @@ public class Test {
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/nio%E4%B8%8Eio%E7%AE%80%E5%8D%95%E8%81%8A%E5%A4%A9%E5%AE%A4demo/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/nio%E4%B8%8Eio%E7%AE%80%E5%8D%95%E8%81%8A%E5%A4%A9%E5%AE%A4demo/" itemprop="url">nio与io简单聊天室demo</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="io聊天室demo"><a href="#io聊天室demo" class="headerlink" title="io聊天室demo"></a>io聊天室demo</h3><p>client端</p>
-<pre><code>public static void main(String[] args) throws Exception {
-    Socket Client = new Socket(&quot;localhost&quot;, 8888);
-    DataInputStream dis = new DataInputStream(Client.getInputStream());
-    DataOutputStream dos = new DataOutputStream(Client.getOutputStream());
-    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    //开启一个线程用于读服务器传来的数据
-    new Thread(new Runnable() {
-        @Override
-        public void run() {
-            try {
-                DataInputStream dis = new DataInputStream(Client.getInputStream());
-                while (true) {
-                    String msgr = dis.readUTF();
-                }
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-    }).start();;
-    //开启一个线程 用来读取键盘输入然后传输给服务器
-    new Thread(new Runnable() {
-
-        @Override
-        public void run() {
-            String msg;
-            try {
-                while (true) {
-
-                    msg = br.readLine();
-                    dos.writeUTF(msg);
-                    dos.flush();
-                }
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-    }).start();;
-//        dis.close();
-//        dos.close();
-//        br.close();
-//        Client.close();
-}</code></pre><p>server端</p>
-<pre><code class="java">public static void main(String[] args) throws Exception {
-    List&lt;Socket&gt; sockets = new ArrayList&lt;Socket&gt;();
-    ServerSocket server = new ServerSocket(8888);
-    while(true) {
-        Socket socket = server.accept();
-        sockets.add(socket);
-        //由于io阻塞，每一个客户端连接都开启一个线程监听
-        new Thread(new Runnable() {
-            Socket mySocket = socket;
-            @Override
-            public void run() {
-                DataInputStream dis = null;
-                DataOutputStream dos = null;
-                String name = &quot;&quot;;
-                try {
-                    dis = new DataInputStream(mySocket.getInputStream());
-                    dos = new DataOutputStream(mySocket.getOutputStream());
-                    dos.writeUTF(&quot;输入名字&quot;);
-                    name = dis.readUTF();
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-
-                while(true) {
-                    String msg = &quot;&quot;;
-                    try {
-                        msg = dis.readUTF();
-                        //消息分发给其他客户端
-                        for (Socket socket : sockets) {
-                            if(mySocket == socket) {
-                                continue;
-                            }
-                            dos = new DataOutputStream(socket.getOutputStream());
-                            dos.writeUTF(name+&quot;:&quot;+msg);
-                            dos.flush();
-                        }
-                    } catch (IOException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-
-                }
-            }
-        }).start();
-    }
-
-
-}</code></pre>
-<h3 id="nio聊天室demo"><a href="#nio聊天室demo" class="headerlink" title="nio聊天室demo"></a>nio聊天室demo</h3><p>client端</p>
-<pre><code class="java">public static void main(String[] args) {
-
-    try {
-        SocketChannel sc = SocketChannel.open();
-        sc.connect(new InetSocketAddress(&quot;127.0.0.1&quot;, 8888));
-        Selector selector = Selector.open();
-        sc.configureBlocking(false);
-        sc.register(selector, SelectionKey.OP_READ);
-
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        ByteBuffer writeBuffer = ByteBuffer.allocate(50);
-        ByteBuffer readBuffer = ByteBuffer.allocate(50);
-        //开启线程用于读取键盘输入然后写入服务器
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    String msg;
-                    try {
-                        msg = br.readLine();
-                        writeBuffer.clear();
-                        writeBuffer.put(msg.getBytes());
-                        writeBuffer.flip();
-                        sc.write(writeBuffer);
-                    } catch (IOException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }).start();
-        //selector监听channel
-        while (true) {
-            selector.select();
-            Set&lt;SelectionKey&gt; selectedKeys = selector.selectedKeys();
-            Iterator&lt;SelectionKey&gt; it = selectedKeys.iterator();
-            while (it.hasNext()) {
-                SelectionKey selectionKey = (SelectionKey) it.next();
-                if (selectionKey.isReadable()) {
-                    SocketChannel channel = (SocketChannel) selectionKey.channel();
-                    readBuffer.clear();
-                    channel.read(readBuffer);
-                    System.out.println(new String(readBuffer.array()));
-                }
-                it.remove();
-            }
-        }
-
-    } catch (Exception e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-    }
-}</code></pre>
-<p>服务端</p>
-<pre><code class="java">public static void main(String[] args) {
-    List&lt;SocketChannel&gt; socketChannels;
-    ServerSocketChannel ssc = null;
-    Selector selector = null;
-    try {
-        //存放所有客户端socketchannel，用于消息分发
-        socketChannels = new ArrayList&lt;SocketChannel&gt;();
-        ssc = ServerSocketChannel.open();
-        ssc.socket().bind(new InetSocketAddress(8888));
-        selector = Selector.open();
-        ssc.configureBlocking(false);
-        ssc.register(selector, SelectionKey.OP_ACCEPT);
-        ByteBuffer buff = ByteBuffer.allocate(50);
-        while (true) {
-            selector.select();
-            Set&lt;SelectionKey&gt; selectedKeys = selector.selectedKeys();
-            Iterator&lt;SelectionKey&gt; it = selectedKeys.iterator();
-            while (it.hasNext()) {
-                SelectionKey key = it.next();
-                if(key.isAcceptable()) {
-                    ServerSocketChannel sscTemp = (ServerSocketChannel) key.channel();
-                    SocketChannel sc = sscTemp.accept();
-                    sc.configureBlocking(false);
-                    sc.register(selector, SelectionKey.OP_READ);
-                    socketChannels.add(sc);
-                }
-
-                if(key.isReadable()) {
-
-                    buff.clear();
-                    SocketChannel sc = (SocketChannel) key.channel();
-                    sc.read(buff);
-                    //消息分发
-                    socketChannels.forEach(socketChannel-&gt;{
-                        if(sc!=socketChannel) {
-                            try {
-                                buff.flip();
-                                socketChannel.write(buff);
-                            } catch (IOException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-                    System.out.println(new String(buff.array()));
-
-                }
-
-                it.remove();
-            }
-        }
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-}</code></pre>
-<h3 id="nio非阻塞特性"><a href="#nio非阻塞特性" class="headerlink" title="nio非阻塞特性"></a>nio非阻塞特性</h3><p>不用像io一样，因为读写都是阻塞的，所以对每个客户端连接都要建一个线程来监听，而nio只需要一个线程使用selector监听所有channel，减轻服务器负担</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/mysql%E4%BA%8B%E5%8A%A1%E5%92%8C%E9%94%81/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2518,6 +2172,352 @@ while(keyIterator.hasNext()) {
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/nio%E4%B8%8Eio%E7%AE%80%E5%8D%95%E8%81%8A%E5%A4%A9%E5%AE%A4demo/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/nio%E4%B8%8Eio%E7%AE%80%E5%8D%95%E8%81%8A%E5%A4%A9%E5%AE%A4demo/" itemprop="url">nio与io简单聊天室demo</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="io聊天室demo"><a href="#io聊天室demo" class="headerlink" title="io聊天室demo"></a>io聊天室demo</h3><p>client端</p>
+<pre><code>public static void main(String[] args) throws Exception {
+    Socket Client = new Socket(&quot;localhost&quot;, 8888);
+    DataInputStream dis = new DataInputStream(Client.getInputStream());
+    DataOutputStream dos = new DataOutputStream(Client.getOutputStream());
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    //开启一个线程用于读服务器传来的数据
+    new Thread(new Runnable() {
+        @Override
+        public void run() {
+            try {
+                DataInputStream dis = new DataInputStream(Client.getInputStream());
+                while (true) {
+                    String msgr = dis.readUTF();
+                }
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }).start();;
+    //开启一个线程 用来读取键盘输入然后传输给服务器
+    new Thread(new Runnable() {
+
+        @Override
+        public void run() {
+            String msg;
+            try {
+                while (true) {
+
+                    msg = br.readLine();
+                    dos.writeUTF(msg);
+                    dos.flush();
+                }
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }).start();;
+//        dis.close();
+//        dos.close();
+//        br.close();
+//        Client.close();
+}</code></pre><p>server端</p>
+<pre><code class="java">public static void main(String[] args) throws Exception {
+    List&lt;Socket&gt; sockets = new ArrayList&lt;Socket&gt;();
+    ServerSocket server = new ServerSocket(8888);
+    while(true) {
+        Socket socket = server.accept();
+        sockets.add(socket);
+        //由于io阻塞，每一个客户端连接都开启一个线程监听
+        new Thread(new Runnable() {
+            Socket mySocket = socket;
+            @Override
+            public void run() {
+                DataInputStream dis = null;
+                DataOutputStream dos = null;
+                String name = &quot;&quot;;
+                try {
+                    dis = new DataInputStream(mySocket.getInputStream());
+                    dos = new DataOutputStream(mySocket.getOutputStream());
+                    dos.writeUTF(&quot;输入名字&quot;);
+                    name = dis.readUTF();
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+
+                while(true) {
+                    String msg = &quot;&quot;;
+                    try {
+                        msg = dis.readUTF();
+                        //消息分发给其他客户端
+                        for (Socket socket : sockets) {
+                            if(mySocket == socket) {
+                                continue;
+                            }
+                            dos = new DataOutputStream(socket.getOutputStream());
+                            dos.writeUTF(name+&quot;:&quot;+msg);
+                            dos.flush();
+                        }
+                    } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+        }).start();
+    }
+
+
+}</code></pre>
+<h3 id="nio聊天室demo"><a href="#nio聊天室demo" class="headerlink" title="nio聊天室demo"></a>nio聊天室demo</h3><p>client端</p>
+<pre><code class="java">public static void main(String[] args) {
+
+    try {
+        SocketChannel sc = SocketChannel.open();
+        sc.connect(new InetSocketAddress(&quot;127.0.0.1&quot;, 8888));
+        Selector selector = Selector.open();
+        sc.configureBlocking(false);
+        sc.register(selector, SelectionKey.OP_READ);
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        ByteBuffer writeBuffer = ByteBuffer.allocate(50);
+        ByteBuffer readBuffer = ByteBuffer.allocate(50);
+        //开启线程用于读取键盘输入然后写入服务器
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    String msg;
+                    try {
+                        msg = br.readLine();
+                        writeBuffer.clear();
+                        writeBuffer.put(msg.getBytes());
+                        writeBuffer.flip();
+                        sc.write(writeBuffer);
+                    } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
+        //selector监听channel
+        while (true) {
+            selector.select();
+            Set&lt;SelectionKey&gt; selectedKeys = selector.selectedKeys();
+            Iterator&lt;SelectionKey&gt; it = selectedKeys.iterator();
+            while (it.hasNext()) {
+                SelectionKey selectionKey = (SelectionKey) it.next();
+                if (selectionKey.isReadable()) {
+                    SocketChannel channel = (SocketChannel) selectionKey.channel();
+                    readBuffer.clear();
+                    channel.read(readBuffer);
+                    System.out.println(new String(readBuffer.array()));
+                }
+                it.remove();
+            }
+        }
+
+    } catch (Exception e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+    }
+}</code></pre>
+<p>服务端</p>
+<pre><code class="java">public static void main(String[] args) {
+    List&lt;SocketChannel&gt; socketChannels;
+    ServerSocketChannel ssc = null;
+    Selector selector = null;
+    try {
+        //存放所有客户端socketchannel，用于消息分发
+        socketChannels = new ArrayList&lt;SocketChannel&gt;();
+        ssc = ServerSocketChannel.open();
+        ssc.socket().bind(new InetSocketAddress(8888));
+        selector = Selector.open();
+        ssc.configureBlocking(false);
+        ssc.register(selector, SelectionKey.OP_ACCEPT);
+        ByteBuffer buff = ByteBuffer.allocate(50);
+        while (true) {
+            selector.select();
+            Set&lt;SelectionKey&gt; selectedKeys = selector.selectedKeys();
+            Iterator&lt;SelectionKey&gt; it = selectedKeys.iterator();
+            while (it.hasNext()) {
+                SelectionKey key = it.next();
+                if(key.isAcceptable()) {
+                    ServerSocketChannel sscTemp = (ServerSocketChannel) key.channel();
+                    SocketChannel sc = sscTemp.accept();
+                    sc.configureBlocking(false);
+                    sc.register(selector, SelectionKey.OP_READ);
+                    socketChannels.add(sc);
+                }
+
+                if(key.isReadable()) {
+
+                    buff.clear();
+                    SocketChannel sc = (SocketChannel) key.channel();
+                    sc.read(buff);
+                    //消息分发
+                    socketChannels.forEach(socketChannel-&gt;{
+                        if(sc!=socketChannel) {
+                            try {
+                                buff.flip();
+                                socketChannel.write(buff);
+                            } catch (IOException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                    System.out.println(new String(buff.array()));
+
+                }
+
+                it.remove();
+            }
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}</code></pre>
+<h3 id="nio非阻塞特性"><a href="#nio非阻塞特性" class="headerlink" title="nio非阻塞特性"></a>nio非阻塞特性</h3><p>不用像io一样，因为读写都是阻塞的，所以对每个客户端连接都要建一个线程来监听，而nio只需要一个线程使用selector监听所有channel，减轻服务器负担</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
@@ -2808,7 +2808,7 @@ while(keyIterator.hasNext()) {
 
   
 
-  <link rel="stylesheet" href="/lib/prettify/skins/desert.css" type="text/css">
+  <link rel="stylesheet" href="/lib/prettify/skins/sunburst.css" type="text/css">
 <script src="/lib/prettify/prettify.js" type="text/javascript"></script>
 <script type="text/javascript">
   $(document).ready(function() {

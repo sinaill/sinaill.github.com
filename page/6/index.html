@@ -248,7 +248,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/final/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/fail-fast%20fail-safe/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="sinaill">
@@ -267,7 +267,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/06/17/final/" itemprop="url">final关键字</a></h1>
+                <a class="post-title-link" href="/2020/06/17/fail-fast%20fail-safe/" itemprop="url">fail-fast与fail-safe</a></h1>
         
 
         <div class="post-meta">
@@ -341,42 +341,119 @@
       
         
           
-            <h3 id="final用法"><a href="#final用法" class="headerlink" title="final用法"></a>final用法</h3><p>1.final用来修饰类时，该类不可被继承</p>
-<p>2.final用来修饰方法时，方法不可被复写</p>
-<p>3.final修饰的基本变量时，值不可变，修饰的引用类型时，引用不可变，值可变</p>
-<h3 id="final类型成员变量初始化"><a href="#final类型成员变量初始化" class="headerlink" title="final类型成员变量初始化"></a>final类型成员变量初始化</h3><p>1.final修饰的成员变量没有默认值</p>
-<p>2.final初始化可以在三个地方<br>(1)声明的时候初始化<br>(2)构造函数里初始化(！ static &amp;&amp; final，一起时会报错)<br>(3)要是没有static修饰的话可以在非静态块里初始化,要是有static修饰的话可以在静态块里初始化</p>
-<p>3.使用final成员前要确保已经初始化</p>
-<h3 id="深入理解"><a href="#深入理解" class="headerlink" title="深入理解"></a>深入理解</h3><p>1.当final变量是基本数据类型以及String类型时，如果在编译期间能知道它的确切值，则编译器会把它当做编译期常量使用。也就是说在用到该final变量的地方，相当于直接访问的这个常量，不需要在运行时确定。</p>
-<pre><code>public class Test {
-    public static void main(String[] args)  {
-        String a = &quot;hello2&quot;; 
-        final String b = &quot;hello&quot;;
-        String d = &quot;hello&quot;;
-        String c = b + 2; 
-        String e = d + 2;
-        System.out.println((a == c));
-        System.out.println((a == e));
+            <h3 id="fail-fast"><a href="#fail-fast" class="headerlink" title="fail-fast"></a>fail-fast</h3><p>java.util 包中的集合类都返回 fail-fast 迭代器，意味着在使用iterator遍历集合时，如果改变集合结构，将会抛出ConcurrentModificationException</p>
+<p>下面以ArrayList为例分析</p>
+<p>ArrayList继承于AbstractList，而AbstractList中定义了一个protected transient int modCount = 0，那么这个变量有什么作用呢</p>
+<p>我们看ArrayList中实现了Iterator接口的私有内部类ltr，有个变量接收了这个modCount</p>
+<pre><code>int expectedModCount = modCount;</code></pre><p>当我们获取集合的迭代器对象Iterator时，这个动作发生</p>
+<pre><code>    public Iterator&lt;E&gt; iterator() {
+        return new Itr();
+    }</code></pre><p>然后看看改变集合结构的几个方法，例如add,remove</p>
+<p>add方法：</p>
+<pre><code>    public boolean add(E e) {
+        ensureCapacityInternal(size + 1);  // Increments modCount!!
+        elementData[size++] = e;
+        return true;
     }
-}</code></pre><p><code>true false</code></p>
-<p>不过要注意，只有在编译期间能确切知道final变量值的情况下，编译器才会进行这样的优化</p>
-<pre><code>public class Test {
-    public static void main(String[] args)  {
-        String a = &quot;hello2&quot;; 
-        final String b = getHello();
-        String c = b + 2; 
-        System.out.println((a == c));
+    private void ensureCapacityInternal(int minCapacity) {
+        if (elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA) {
+            minCapacity = Math.max(DEFAULT_CAPACITY, minCapacity);
+        }
 
+        ensureExplicitCapacity(minCapacity);
     }
 
-    public static String getHello() {
-        return &quot;hello&quot;;
+    private void ensureExplicitCapacity(int minCapacity) {
+        modCount++;
+
+        // overflow-conscious code
+        if (minCapacity - elementData.length &gt; 0)
+            grow(minCapacity);
     }
-}</code></pre><p><code>false</code></p>
-<p>2.final也可以用来修饰方法的形参，防止方法内部修改形参</p>
-<p>3.匿名内部类使用的外部变量必须为final</p>
-<p><strong>外部类和外部局部变量是作为构造方法的参数传入匿名内部类的</strong></p>
-<p>为什么在匿名内部类中引用外部对象要加final修饰符呢，因为，在匿名内部类中引用的外部对象受到外部线程的作用域的制约有其特定的生命周期，以线程为例，当外部的变量生命周期已经完结之后，内部的线程还在运行，怎么样解决这个外部生命周期已经结束而在内部却需要继续使用呢，这个时候就需要在外部变量中添加final修饰符，<strong>其实内部匿名类使用的这个变量就是外部变量的一个“复制品”</strong>，即使外部变量生命周期已经结束，内部的“复制品“依然可用。并且<strong>final保证复制品与原始变量保持一致</strong></p>
+</code></pre><p>remove方法：</p>
+<pre><code>    public E remove(int index) {
+        rangeCheck(index);
+
+        modCount++;
+        E oldValue = elementData(index);
+
+        int numMoved = size - index - 1;
+        if (numMoved &gt; 0)
+            System.arraycopy(elementData, index+1, elementData, index,
+                             numMoved);
+        elementData[--size] = null; // clear to let GC do its work
+
+        return oldValue;
+    }</code></pre><p><strong>我们发现在这些操作中都会将集合自身变量modCount自增1，会造成什么影响呢，接着往下看</strong></p>
+<p>迭代器Iterator中的next()方法中调用了checkForComodification()</p>
+<p>查看方法checkForComodification：</p>
+<pre><code>        final void checkForComodification() {
+            if (modCount != expectedModCount)
+                throw new ConcurrentModificationException();
+        }</code></pre><p>可以看到我们在获取下个元素时，Iterator会先比较modCount和expectedModCount，如果我们在迭代器遍历时调用了add或者remove等改变集合结构的方法时，modCount自增了，而expectedModCount不变，所以在此处会抛出ConcurrentModificationException</p>
+<p>但是如果是在我们自己遍历集合时想修改集合结构，而且不是多线程环境中的话，我们可以看Iterator中给我们提供的方法，在ArrayList中的内部类Iterator中给我们提供了一个remove方法</p>
+<pre><code>        public void remove() {
+            if (lastRet &lt; 0)
+                throw new IllegalStateException();
+            checkForComodification();
+
+            try {
+                ArrayList.this.remove(lastRet);
+                cursor = lastRet;
+                lastRet = -1;
+                expectedModCount = modCount;
+            } catch (IndexOutOfBoundsException ex) {
+                throw new ConcurrentModificationException();
+            }
+        }</code></pre><p>我们可以看到在移除元素后，重新对expectedModCount赋值，所以checkForComodification()不会抛出异常</p>
+<p>ArrayList还提供了一个更丰富的ListIterator内部类，是一个双向迭代器，可以双向遍历，在这里比Iterator多了add方法</p>
+<pre><code>    public void add(E e) {
+        checkForComodification();
+
+        try {
+            int i = cursor;
+            ArrayList.this.add(i, e);
+            cursor = i + 1;
+            lastRet = -1;
+            expectedModCount = modCount;
+        } catch (IndexOutOfBoundsException ex) {
+            throw new ConcurrentModificationException();
+        }
+    }
+}</code></pre><p>依旧是处理了expectedModCount = modCount。</p>
+<h3 id="fail-safe"><a href="#fail-safe" class="headerlink" title="fail-safe"></a>fail-safe</h3><p>以ArrayList的替代类CopyOnWriteArrayList为例分析，CopyOnWriteArrayList为何物？ArrayList 的一个线程安全的变体，其中所有可变操作（add、set 等等）都是通过对底层数组进行一次新的复制来实现的。 该类产生的开销比较大，但是在两种情况下，它非常适合使用。</p>
+<ol>
+<li>在不能或不想进行同步遍历，但又需要从并发线程中排除冲突时。</li>
+<li>当遍历操作的数量大大超过可变操作的数量时。</li>
+</ol>
+<p>查看迭代器</p>
+<pre><code>public E next() {
+    if (! hasNext())
+        throw new NoSuchElementException();
+    return (E) snapshot[cursor++];
+}</code></pre><p>没有像ArrayList的迭代器一样，它不需要检查expectedModCount = modCount</p>
+<p>再看add方法</p>
+<pre><code>public boolean add(E paramE) {    
+        ReentrantLock localReentrantLock = this.lock;    
+        localReentrantLock.lock();    
+        try {    
+            Object[] arrayOfObject1 = getArray();    
+            int i = arrayOfObject1.length;    
+            Object[] arrayOfObject2 = Arrays.copyOf(arrayOfObject1, i + 1);    
+            arrayOfObject2[i] = paramE;    
+            setArray(arrayOfObject2);    
+            int j = 1;    
+            return j;    
+        } finally {    
+            localReentrantLock.unlock();    
+        }    
+    }    
+    final void setArray(Object[] paramArrayOfObject) {    
+        this.array = paramArrayOfObject;    
+    }  </code></pre><p>看关键代码：</p>
+<pre><code>            Object[] arrayOfObject2 = Arrays.copyOf(arrayOfObject1, i + 1);    
+            arrayOfObject2[i] = paramE;    
+            setArray(arrayOfObject2)</code></pre><p>所以在多线程环境时，可以使用CopyOnWriterArrayList来替代，它们的原理为先复制原有集合，然后在复制集合上作修改，然后将原引用指向复制修改后的集合，而迭代器遍历集合是先接收CopyOnWriterArrayList中存储元素的数组，然后对其遍历。这样就达到了遍历和修改集合结构分别在不同的存储数组中。</p>
 
           
         
@@ -1448,6 +1525,173 @@ private void doSignalAll(Node first) {
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/String%20and%20constant%20pool/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/String%20and%20constant%20pool/" itemprop="url">String与常量池</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="创建方法"><a href="#创建方法" class="headerlink" title="创建方法"></a>创建方法</h3><p><code>String str=new String(&quot;abc&quot;)</code></p>
+<p><strong>一共创建两个对象，其中new方法在堆中创建一个String对象，””为String特有的创建对象的方法，这行代码被执行的时候，JAVA虚拟机首先在字符串池中查找是否已经存在了值为”abc”的这么一个对象，它的判断依据是String类equals(Object obj)方法的返回值。如果有，则不再创建新的对象，直接返回已存在对象的引用；如果没有，则先创建这个对象，然后把它加入到字符串池中，再将它的引用返回</strong></p>
+<pre><code>        String str1 = &quot;abc&quot;;
+        String str2 = new String(&quot;abc&quot;);
+        System.out.println(str1 == str2);</code></pre><p><code>false</code></p>
+<p><strong>str2指向堆中的对象，str1指向常量池中的对象</strong></p>
+<h3 id="intern方法"><a href="#intern方法" class="headerlink" title="intern方法"></a>intern方法</h3><p><code>string.intern()</code></p>
+<p>实例1：</p>
+<pre><code>        String str1 = &quot;abc&quot;;
+        String str2 = new String(&quot;abc&quot;);
+        str2 = &quot;abc&quot;.intern();
+        System.out.println(str1 == str2);</code></pre><p><code>true</code></p>
+<p><strong>会检查常量池中是否存在string，存在则返回池里的字符串引用；如果不存在则将string引用放入常量池中(jdk1.7后)。这样做可以避免在堆中不断的创建字符串对象，起到节省空间的作用。</strong></p>
+<p>实例2：</p>
+<pre><code>String s3 = new String(&quot;1&quot;) + new String(&quot;1&quot;);  
+s3.intern();  
+String s4 = &quot;11&quot;;  
+System.out.println(s3 == s4);</code></pre><p><code>true</code></p>
+<p>实例3：</p>
+<pre><code>String s3 = new String(&quot;1&quot;) + new String(&quot;1&quot;);  
+String s4 = &quot;11&quot;;  
+s3.intern();  
+System.out.println(s3 == s4);</code></pre><p><code>false</code></p>
+<p><strong>调换顺序后出现不同结果的原因</strong></p>
+<p><strong>1.String s3 = new String(“1”) + new String(“1”)，字符串常量池中生成“1” ，并在堆空间中生成s3引用指向的对象（内容为”11”）。注意此时常量池中是没有 “11”对象的</strong></p>
+<p><strong>2.实例2中s3.intern()，此时常量池中没有”11”对象，所以在常量池中存储s3引用(jdk1.7以后)，String s4 = “11”,首先从常量池中查看(equals方法)有无”11”对象，所以将s3引用传回去，所以结果true，而在实例3中，String s4 = “11”在s3.intern()方法前，此时常量池中已经有”11”对象，s3.intern()无效，所以s3还是指向堆中对象，所以结果false</strong></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/ThreadLocal/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1602,173 +1846,6 @@ ThreadLocalMap(ThreadLocal&lt;?&gt; firstKey, Object firstValue) {
 <p>调用<code>ThreadLocal</code>的<code>set</code>方法时，先获取当前线程，查看线程中<code>ThreadLocalMap</code>引用为不为空，若为空，为当前线程创建<code>ThreadLocalMap</code>实例，传入键值对<code>key</code>为当前<code>ThreadLocal</code>实例，<code>value</code>为<code>set</code>方法传入的参数值。若不为空，为<code>ThreadLocalMap</code>实例添加新键值对，<code>key</code>为当前<code>ThreadLocal</code>实例，<code>value</code>为<code>set</code>方法传入的参数值。</p>
 <p>调用<code>ThreadLocal</code>的<code>get</code>方法时，如果之前为调用过<code>set</code>方法或<code>ThreadLocalMap</code>实例中<code>key</code>没有与当前<code>ThreadLocal</code>实例对应的，则返回一个默认值<code>null</code>。照旧先获取当前线程，获取线程中<code>ThreadLocalMap</code>实例，再根据当前<code>ThreadLocal</code>实例获取对应的键值对<code>Entry</code>，从而获取线程中存储的变量副本。</p>
 <p>为什么不用一个<code>map Entry&lt;Thread,value&gt;</code>来存储所有线程和线程变量副本，<code>map</code>过大会造成哈希冲突，造成性能变差。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/String%20and%20constant%20pool/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/String%20and%20constant%20pool/" itemprop="url">String与常量池</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="创建方法"><a href="#创建方法" class="headerlink" title="创建方法"></a>创建方法</h3><p><code>String str=new String(&quot;abc&quot;)</code></p>
-<p><strong>一共创建两个对象，其中new方法在堆中创建一个String对象，””为String特有的创建对象的方法，这行代码被执行的时候，JAVA虚拟机首先在字符串池中查找是否已经存在了值为”abc”的这么一个对象，它的判断依据是String类equals(Object obj)方法的返回值。如果有，则不再创建新的对象，直接返回已存在对象的引用；如果没有，则先创建这个对象，然后把它加入到字符串池中，再将它的引用返回</strong></p>
-<pre><code>        String str1 = &quot;abc&quot;;
-        String str2 = new String(&quot;abc&quot;);
-        System.out.println(str1 == str2);</code></pre><p><code>false</code></p>
-<p><strong>str2指向堆中的对象，str1指向常量池中的对象</strong></p>
-<h3 id="intern方法"><a href="#intern方法" class="headerlink" title="intern方法"></a>intern方法</h3><p><code>string.intern()</code></p>
-<p>实例1：</p>
-<pre><code>        String str1 = &quot;abc&quot;;
-        String str2 = new String(&quot;abc&quot;);
-        str2 = &quot;abc&quot;.intern();
-        System.out.println(str1 == str2);</code></pre><p><code>true</code></p>
-<p><strong>会检查常量池中是否存在string，存在则返回池里的字符串引用；如果不存在则将string引用放入常量池中(jdk1.7后)。这样做可以避免在堆中不断的创建字符串对象，起到节省空间的作用。</strong></p>
-<p>实例2：</p>
-<pre><code>String s3 = new String(&quot;1&quot;) + new String(&quot;1&quot;);  
-s3.intern();  
-String s4 = &quot;11&quot;;  
-System.out.println(s3 == s4);</code></pre><p><code>true</code></p>
-<p>实例3：</p>
-<pre><code>String s3 = new String(&quot;1&quot;) + new String(&quot;1&quot;);  
-String s4 = &quot;11&quot;;  
-s3.intern();  
-System.out.println(s3 == s4);</code></pre><p><code>false</code></p>
-<p><strong>调换顺序后出现不同结果的原因</strong></p>
-<p><strong>1.String s3 = new String(“1”) + new String(“1”)，字符串常量池中生成“1” ，并在堆空间中生成s3引用指向的对象（内容为”11”）。注意此时常量池中是没有 “11”对象的</strong></p>
-<p><strong>2.实例2中s3.intern()，此时常量池中没有”11”对象，所以在常量池中存储s3引用(jdk1.7以后)，String s4 = “11”,首先从常量池中查看(equals方法)有无”11”对象，所以将s3引用传回去，所以结果true，而在实例3中，String s4 = “11”在s3.intern()方法前，此时常量池中已经有”11”对象，s3.intern()无效，所以s3还是指向堆中对象，所以结果false</strong></p>
 
           
         
@@ -2902,7 +2979,7 @@ public Object applyBeanPostProcessorsAfterInitialization(Object existingBean, St
 
   
 
-  <link rel="stylesheet" href="/lib/prettify/skins/desert.css" type="text/css">
+  <link rel="stylesheet" href="/lib/prettify/skins/sunburst.css" type="text/css">
 <script src="/lib/prettify/prettify.js" type="text/javascript"></script>
 <script type="text/javascript">
   $(document).ready(function() {

@@ -1016,7 +1016,7 @@ public T newInstance(SqlSession sqlSession) {
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/JDBC/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/ModelAttribute%E6%B3%A8%E8%A7%A3%E7%AC%94%E8%AE%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="sinaill">
@@ -1035,7 +1035,7 @@ public T newInstance(SqlSession sqlSession) {
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/06/17/JDBC/" itemprop="url">JDBC</a></h1>
+                <a class="post-title-link" href="/2020/06/17/ModelAttribute%E6%B3%A8%E8%A7%A3%E7%AC%94%E8%AE%B0/" itemprop="url">ModelAttribute注解笔记</a></h1>
         
 
         <div class="post-meta">
@@ -1070,8 +1070,8 @@ public T newInstance(SqlSession sqlSession) {
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/mysql/" itemprop="url" rel="index">
-                    <span itemprop="name">mysql</span>
+                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">框架</span>
                   </a>
                 </span>
 
@@ -1109,107 +1109,33 @@ public T newInstance(SqlSession sqlSession) {
       
         
           
-            <h3 id="获取链接Connection"><a href="#获取链接Connection" class="headerlink" title="获取链接Connection"></a>获取链接Connection</h3><pre><code>String driver = &quot;com.mysql.jdbc.Driver&quot;;
-String url = &quot;jdbc:mysql://localhost:3306/test?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8&quot;;//防止中文乱码
-String userName = &quot;root&quot;;
-String passWord = &quot;password&quot;;
-Connection con = null;
-Class.forName(driver);//加载驱动
-con = (Connection) DriverManager.getConnection(url, userName, passWord);//获取链接</code></pre><h3 id="preparestatement和statement"><a href="#preparestatement和statement" class="headerlink" title="preparestatement和statement"></a>preparestatement和statement</h3><p>使用preparestatement的优点：</p>
-<ol>
-<li>每一种数据库都会尽最大努力对预编译语句提供最大的性能优化.因为预编译语句有可能被重复调用.所以语句在被DB的编译器编译后的执行代码被缓存下来,那么下次调用时只要是相同的预编译语句就不需要编译,只要将参数直接传入编译过的语句执行代码中(相当于一个涵数)就会得到执行.这并不是说只有一个Connection中多次执行的预编译语句被缓存,而是对于整个DB中,只要预编译的语句语法和缓存中匹配.那么在任何时候就可以不需要再次编译而可以直接执行</li>
-<li>代码的可读性和可维护性</li>
-<li>防止恶意sql语法传入非法参数</li>
+            <h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><p>@ModelAttribute.这个注解可以用在方法参数上，或是方法声明上。这个注解的主要作用是绑定request或是form参数到模型对象。可以使用保存在request或session中的对象来组装模型对象。注意，被@ModelAttribute注解的方法会在controller方法（@RequestMapping注解的）之前执行。因为模型对象要先于controller方法之前创建。</p>
+<h3 id="笔记"><a href="#笔记" class="headerlink" title="笔记"></a>笔记</h3><pre><code>    @ModelAttribute
+    public Person mda() {
+        return new Person(&quot;zh&quot;, 14);
+    }
+
+    @RequestMapping(&quot;/test&quot;)
+    public ModelAndView test(@ModelAttribute Person person,Model model) {
+        ModelAndView mov = new ModelAndView(&quot;param&quot;);
+        System.out.println(model.containsAttribute(&quot;person&quot;));
+        mov.addObject(&quot;person&quot;, person);
+        return mov;
+    }
+
+    //或者
+
+    @ModelAttribute(&quot;attr&quot;)
+    public void mda(Map map) {
+//        Person person = new Person(&quot;li&quot;, 12);
+        map.put(&quot;person&quot;, new Person(&quot;zh&quot;, 14));
+    }</code></pre><ol>
+<li>注解可以指定名称，如果没有指定，则以类名首字母小写为名字，若注解指定了名字，则在形参前面的ModelAttribute也要带上已指定的名字</li>
+<li>在ModelAttribute中使用Map,Model保存的数据，可以在controller中的Map或Model获取</li>
+<li>主要用来填充表格，当jsp页面表单项不包含该类所有属性时，可以先在ModelAttribute中根据相应变量先从数据库取出数据，然后表单数据提交到controller中对应方法时，覆盖用ModelAttribute注解修饰的形参，达到自动填充形参所有数据</li>
+<li><a href="https://blog.csdn.net/m0_37893932/article/details/78327972" target="_blank" rel="noopener">关于SessionAttribute,当Model中找不到时转到Session中查找</a></li>
 </ol>
-<h3 id="增删改查"><a href="#增删改查" class="headerlink" title="增删改查"></a>增删改查</h3><p>创建数据库如下：</p>
-<pre><code>create table person(
-    id int auto_increment primary key,
-    name varchar(255),
-    age int)default charset=utf8;</code></pre><p>新增数据：</p>
-<pre><code>Connection con = getCon();
-PreparedStatement psmt = null;
 
-String sql = &quot;insert into person(name,age) values(?,?)&quot;;
-
-try {
-    psmt = con.prepareStatement(sql);
-    psmt.setString(1, &quot;小张&quot;);
-    psmt.setInt(2, 10);
-    psmt.executeUpdate();
-    psmt.close();
-    con.close();
-} catch (SQLException e) {
-    // TODO Auto-generated catch block
-    e.printStackTrace();
-}
-System.out.println(&quot;插入成功&quot;);</code></pre><p>删除数据：</p>
-<pre><code>String sql = &quot;delete from person where id = ?&quot;;
-try {
-    psmt = con.prepareStatement(sql);
-    psmt.setInt(1, 1);
-    psmt.executeUpdate();
-    psmt.close();
-    con.close();
-} catch (SQLException e) {
-    // TODO Auto-generated catch block
-    e.printStackTrace();
-}
-System.out.println(&quot;删除成功&quot;);</code></pre><p>修改数据：</p>
-<pre><code>String sql = &quot;update person set age=? where id=2&quot;;
-try {
-    psmt = con.prepareStatement(sql);
-    psmt.setInt(1, 20);
-    psmt.executeUpdate();
-    psmt.close();
-    con.close();
-} catch (SQLException e) {
-    // TODO Auto-generated catch block
-    e.printStackTrace();
-}
-System.out.println(&quot;修改成功&quot;);</code></pre><p>查找数据：</p>
-<pre><code>String sql = &quot;select * from person where id = 2&quot;;
-try {
-    psmt = con.prepareStatement(sql);
-    ResultSet rs = psmt.executeQuery();
-    while (rs.next()) {
-        int id = rs.getInt(&quot;id&quot;);
-        String name = rs.getString(&quot;name&quot;);
-        int age = rs.getInt(&quot;age&quot;);
-        System.out.println(&quot;id:&quot;+id+&quot; name:&quot;+name+&quot; age:&quot;+age);
-    }
-} catch (SQLException e) {
-    // TODO Auto-generated catch block
-    e.printStackTrace();
-}</code></pre><h3 id="批量处理"><a href="#批量处理" class="headerlink" title="批量处理"></a>批量处理</h3><h4 id="preparestatement"><a href="#preparestatement" class="headerlink" title="preparestatement"></a>preparestatement</h4><p>只能批量进行相同操作，批量插入：</p>
-<pre><code>String sql = &quot;insert into person(name,age) values(?,?)&quot;;
-try {
-    psmt = con.prepareStatement(sql);
-    for (int i = 0; i &lt; 100; i++) {
-        psmt.setString(1, &quot;李&quot;+i);
-        psmt.setInt(2, i);
-        psmt.addBatch();
-    }
-    psmt.executeBatch();
-    psmt.close();
-    con.close();
-} catch (SQLException e) {
-    // TODO Auto-generated catch block
-    e.printStackTrace();
-}</code></pre><h4 id="statement"><a href="#statement" class="headerlink" title="statement"></a>statement</h4><p>可以批量执行不同类型操作，批量操作：</p>
-<pre><code>Statement st = null;
-try {
-    st = con.createStatement();
-    String sql1 = &quot;delete from person where id&gt;2 and id&lt;103&quot;;
-    String sql2 = &quot;insert into person(name,age) values(&#39;小李    &#39;,&#39;50&#39;)&quot;;
-    st.addBatch(sql1);
-    st.addBatch(sql2);
-    st.executeBatch();
-    st.close();
-    con.close();
-} catch (SQLException e) {
-    // TODO Auto-generated catch block
-    e.printStackTrace();
-}</code></pre>
           
         
       
@@ -1507,7 +1433,7 @@ try {
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/ModelAttribute%E6%B3%A8%E8%A7%A3%E7%AC%94%E8%AE%B0/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/JDBC/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="sinaill">
@@ -1526,7 +1452,7 @@ try {
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/06/17/ModelAttribute%E6%B3%A8%E8%A7%A3%E7%AC%94%E8%AE%B0/" itemprop="url">ModelAttribute注解笔记</a></h1>
+                <a class="post-title-link" href="/2020/06/17/JDBC/" itemprop="url">JDBC</a></h1>
         
 
         <div class="post-meta">
@@ -1561,8 +1487,8 @@ try {
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
-                    <span itemprop="name">框架</span>
+                  <a href="/categories/mysql/" itemprop="url" rel="index">
+                    <span itemprop="name">mysql</span>
                   </a>
                 </span>
 
@@ -1600,33 +1526,107 @@ try {
       
         
           
-            <h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><p>@ModelAttribute.这个注解可以用在方法参数上，或是方法声明上。这个注解的主要作用是绑定request或是form参数到模型对象。可以使用保存在request或session中的对象来组装模型对象。注意，被@ModelAttribute注解的方法会在controller方法（@RequestMapping注解的）之前执行。因为模型对象要先于controller方法之前创建。</p>
-<h3 id="笔记"><a href="#笔记" class="headerlink" title="笔记"></a>笔记</h3><pre><code>    @ModelAttribute
-    public Person mda() {
-        return new Person(&quot;zh&quot;, 14);
-    }
-
-    @RequestMapping(&quot;/test&quot;)
-    public ModelAndView test(@ModelAttribute Person person,Model model) {
-        ModelAndView mov = new ModelAndView(&quot;param&quot;);
-        System.out.println(model.containsAttribute(&quot;person&quot;));
-        mov.addObject(&quot;person&quot;, person);
-        return mov;
-    }
-
-    //或者
-
-    @ModelAttribute(&quot;attr&quot;)
-    public void mda(Map map) {
-//        Person person = new Person(&quot;li&quot;, 12);
-        map.put(&quot;person&quot;, new Person(&quot;zh&quot;, 14));
-    }</code></pre><ol>
-<li>注解可以指定名称，如果没有指定，则以类名首字母小写为名字，若注解指定了名字，则在形参前面的ModelAttribute也要带上已指定的名字</li>
-<li>在ModelAttribute中使用Map,Model保存的数据，可以在controller中的Map或Model获取</li>
-<li>主要用来填充表格，当jsp页面表单项不包含该类所有属性时，可以先在ModelAttribute中根据相应变量先从数据库取出数据，然后表单数据提交到controller中对应方法时，覆盖用ModelAttribute注解修饰的形参，达到自动填充形参所有数据</li>
-<li><a href="https://blog.csdn.net/m0_37893932/article/details/78327972" target="_blank" rel="noopener">关于SessionAttribute,当Model中找不到时转到Session中查找</a></li>
+            <h3 id="获取链接Connection"><a href="#获取链接Connection" class="headerlink" title="获取链接Connection"></a>获取链接Connection</h3><pre><code>String driver = &quot;com.mysql.jdbc.Driver&quot;;
+String url = &quot;jdbc:mysql://localhost:3306/test?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8&quot;;//防止中文乱码
+String userName = &quot;root&quot;;
+String passWord = &quot;password&quot;;
+Connection con = null;
+Class.forName(driver);//加载驱动
+con = (Connection) DriverManager.getConnection(url, userName, passWord);//获取链接</code></pre><h3 id="preparestatement和statement"><a href="#preparestatement和statement" class="headerlink" title="preparestatement和statement"></a>preparestatement和statement</h3><p>使用preparestatement的优点：</p>
+<ol>
+<li>每一种数据库都会尽最大努力对预编译语句提供最大的性能优化.因为预编译语句有可能被重复调用.所以语句在被DB的编译器编译后的执行代码被缓存下来,那么下次调用时只要是相同的预编译语句就不需要编译,只要将参数直接传入编译过的语句执行代码中(相当于一个涵数)就会得到执行.这并不是说只有一个Connection中多次执行的预编译语句被缓存,而是对于整个DB中,只要预编译的语句语法和缓存中匹配.那么在任何时候就可以不需要再次编译而可以直接执行</li>
+<li>代码的可读性和可维护性</li>
+<li>防止恶意sql语法传入非法参数</li>
 </ol>
+<h3 id="增删改查"><a href="#增删改查" class="headerlink" title="增删改查"></a>增删改查</h3><p>创建数据库如下：</p>
+<pre><code>create table person(
+    id int auto_increment primary key,
+    name varchar(255),
+    age int)default charset=utf8;</code></pre><p>新增数据：</p>
+<pre><code>Connection con = getCon();
+PreparedStatement psmt = null;
 
+String sql = &quot;insert into person(name,age) values(?,?)&quot;;
+
+try {
+    psmt = con.prepareStatement(sql);
+    psmt.setString(1, &quot;小张&quot;);
+    psmt.setInt(2, 10);
+    psmt.executeUpdate();
+    psmt.close();
+    con.close();
+} catch (SQLException e) {
+    // TODO Auto-generated catch block
+    e.printStackTrace();
+}
+System.out.println(&quot;插入成功&quot;);</code></pre><p>删除数据：</p>
+<pre><code>String sql = &quot;delete from person where id = ?&quot;;
+try {
+    psmt = con.prepareStatement(sql);
+    psmt.setInt(1, 1);
+    psmt.executeUpdate();
+    psmt.close();
+    con.close();
+} catch (SQLException e) {
+    // TODO Auto-generated catch block
+    e.printStackTrace();
+}
+System.out.println(&quot;删除成功&quot;);</code></pre><p>修改数据：</p>
+<pre><code>String sql = &quot;update person set age=? where id=2&quot;;
+try {
+    psmt = con.prepareStatement(sql);
+    psmt.setInt(1, 20);
+    psmt.executeUpdate();
+    psmt.close();
+    con.close();
+} catch (SQLException e) {
+    // TODO Auto-generated catch block
+    e.printStackTrace();
+}
+System.out.println(&quot;修改成功&quot;);</code></pre><p>查找数据：</p>
+<pre><code>String sql = &quot;select * from person where id = 2&quot;;
+try {
+    psmt = con.prepareStatement(sql);
+    ResultSet rs = psmt.executeQuery();
+    while (rs.next()) {
+        int id = rs.getInt(&quot;id&quot;);
+        String name = rs.getString(&quot;name&quot;);
+        int age = rs.getInt(&quot;age&quot;);
+        System.out.println(&quot;id:&quot;+id+&quot; name:&quot;+name+&quot; age:&quot;+age);
+    }
+} catch (SQLException e) {
+    // TODO Auto-generated catch block
+    e.printStackTrace();
+}</code></pre><h3 id="批量处理"><a href="#批量处理" class="headerlink" title="批量处理"></a>批量处理</h3><h4 id="preparestatement"><a href="#preparestatement" class="headerlink" title="preparestatement"></a>preparestatement</h4><p>只能批量进行相同操作，批量插入：</p>
+<pre><code>String sql = &quot;insert into person(name,age) values(?,?)&quot;;
+try {
+    psmt = con.prepareStatement(sql);
+    for (int i = 0; i &lt; 100; i++) {
+        psmt.setString(1, &quot;李&quot;+i);
+        psmt.setInt(2, i);
+        psmt.addBatch();
+    }
+    psmt.executeBatch();
+    psmt.close();
+    con.close();
+} catch (SQLException e) {
+    // TODO Auto-generated catch block
+    e.printStackTrace();
+}</code></pre><h4 id="statement"><a href="#statement" class="headerlink" title="statement"></a>statement</h4><p>可以批量执行不同类型操作，批量操作：</p>
+<pre><code>Statement st = null;
+try {
+    st = con.createStatement();
+    String sql1 = &quot;delete from person where id&gt;2 and id&lt;103&quot;;
+    String sql2 = &quot;insert into person(name,age) values(&#39;小李    &#39;,&#39;50&#39;)&quot;;
+    st.addBatch(sql1);
+    st.addBatch(sql2);
+    st.executeBatch();
+    st.close();
+    con.close();
+} catch (SQLException e) {
+    // TODO Auto-generated catch block
+    e.printStackTrace();
+}</code></pre>
           
         
       
@@ -2039,7 +2039,7 @@ for (String key : map.keySet()) {
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/Function%20and%20Predicate/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/HashMap%20and%20HashTable/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="sinaill">
@@ -2058,7 +2058,7 @@ for (String key : map.keySet()) {
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/06/17/Function%20and%20Predicate/" itemprop="url">Predicate和Function</a></h1>
+                <a class="post-title-link" href="/2020/06/17/HashMap%20and%20HashTable/" itemprop="url">HashMap与HashTable</a></h1>
         
 
         <div class="post-meta">
@@ -2132,31 +2132,64 @@ for (String key : map.keySet()) {
       
         
           
-            <h3 id="Predicate"><a href="#Predicate" class="headerlink" title="Predicate"></a>Predicate</h3><p>Predicate接口为函数式接口</p>
-<pre><code>    /**
-     * Evaluates this predicate on the given argument.
-     *
-     * @param t the input argument
-     * @return {@code true} if the input argument matches the predicate,
-     * otherwise {@code false}
-     */
-    boolean test(T t);</code></pre><h3 id="Function"><a href="#Function" class="headerlink" title="Function"></a>Function</h3><p>Function接口为函数式接口</p>
-<pre><code>    /**
-     * Applies this function to the given argument.
-     *
-     * @param t the function argument
-     * @return the function result
-     */
-    R apply(T t);</code></pre><p>与Consumer接口类似，但Function的抽象方法有返回值</p>
-<pre><code>    /**
-     * Returns a function that always returns its input argument.
-     *
-     * @param &lt;T&gt; the type of the input and output objects to the function
-     * @return a function that always returns its input argument
-     */
-    static &lt;T&gt; Function&lt;T, T&gt; identity() {
-        return t -&gt; t;
-    }</code></pre><p>相当于用lambda实现apply抽象方法：u-&gt;u</p>
+            <p>1.HashTable继承自Dictionary,而HashMap继承自AbstractMap</p>
+<p>2.HashTable方法带有synchronized关键字，意味着HashTable是同步的，而HashMap是非同步的</p>
+<p>3.HashTable中提供了一个类似Iterator的Enumeration(fail-safe),用来遍历自身，而HashMap中无迭代器</p>
+<pre><code>    public synchronized Enumeration&lt;K&gt; keys() {
+        return this.&lt;K&gt;getEnumeration(KEYS);
+    }
+
+    public synchronized Enumeration&lt;V&gt; elements() {
+        return this.&lt;V&gt;getEnumeration(VALUES);
+    }</code></pre><p>以keys为例</p>
+<pre><code>    Hashtable&lt;String,String&gt; a = new Hashtable&lt;String,String&gt;();
+    a.put(&quot;1&quot;, &quot;1&quot;);
+    a.put(&quot;2&quot;, &quot;2&quot;);
+    a.put(&quot;3&quot;, &quot;3&quot;);
+    Enumeration&lt;String&gt; e = a.keys();
+    while(e.hasMoreElements()){
+        System.out.println(e.nextElement());
+    }
+    }</code></pre><p><code>3 2 1</code></p>
+<p>结果是倒序的，我们看下源码</p>
+<pre><code>        public T nextElement() {
+            Entry&lt;?,?&gt; et = entry;
+            int i = index;//index=table.length
+            Entry&lt;?,?&gt;[] t = table;
+            /* Use locals for faster loop iteration */
+            while (et == null &amp;&amp; i &gt; 0) {
+                et = t[--i];
+            }
+            entry = et;
+            index = i;
+            if (et != null) {
+                Entry&lt;?,?&gt; e = lastReturned = entry;
+                entry = e.next;
+                return type == KEYS ? (T)e.key : (type == VALUES ? (T)e.value : (T)e);
+            }
+            throw new NoSuchElementException(&quot;Hashtable Enumerator&quot;);
+        }</code></pre><p>et = t[–i];所以结果是倒序的，但是我们还可以发现，与其他集合的Iterator不同，Enumerator的nextElement方法中没有检测modCount==expectedModCount，而HashMap中EntrySet的Iterator有检测这个。</p>
+<pre><code>    Hashtable&lt;String,String&gt; a = new Hashtable&lt;String,String&gt;();
+    a.put(&quot;1&quot;, &quot;1&quot;);
+    a.put(&quot;2&quot;, &quot;2&quot;);
+    a.put(&quot;3&quot;, &quot;3&quot;);
+    a.put(&quot;4&quot;, &quot;4&quot;);
+    a.put(&quot;5&quot;, &quot;5&quot;);
+    a.put(&quot;6&quot;, &quot;6&quot;);
+    Enumeration&lt;String&gt; e = a.keys();
+    String b = null;
+    while(e.hasMoreElements()){
+        b = e.nextElement();
+        if(b.equals(&quot;3&quot;)){
+            a.remove(b);
+        }
+    }
+    a.forEach((c,d)-&gt;System.out.println(c+&quot; &quot;+d));
+    }</code></pre><p>输出</p>
+<p><code>1 1 2 2 4 4 5 5 6 6</code></p>
+<p>确实没有抛出ConcurrentModificationException，Enumerator是一个fail-safe迭代器</p>
+<p>4.HashMap允许null作为key或value</p>
+<p>5.HashMap默认容量16，Hashtable默认容量11</p>
 
           
         
@@ -2423,7 +2456,7 @@ for (String key : map.keySet()) {
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/HashMap%20and%20HashTable/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/Function%20and%20Predicate/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="sinaill">
@@ -2442,7 +2475,7 @@ for (String key : map.keySet()) {
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/06/17/HashMap%20and%20HashTable/" itemprop="url">HashMap与HashTable</a></h1>
+                <a class="post-title-link" href="/2020/06/17/Function%20and%20Predicate/" itemprop="url">Predicate和Function</a></h1>
         
 
         <div class="post-meta">
@@ -2516,64 +2549,31 @@ for (String key : map.keySet()) {
       
         
           
-            <p>1.HashTable继承自Dictionary,而HashMap继承自AbstractMap</p>
-<p>2.HashTable方法带有synchronized关键字，意味着HashTable是同步的，而HashMap是非同步的</p>
-<p>3.HashTable中提供了一个类似Iterator的Enumeration(fail-safe),用来遍历自身，而HashMap中无迭代器</p>
-<pre><code>    public synchronized Enumeration&lt;K&gt; keys() {
-        return this.&lt;K&gt;getEnumeration(KEYS);
-    }
-
-    public synchronized Enumeration&lt;V&gt; elements() {
-        return this.&lt;V&gt;getEnumeration(VALUES);
-    }</code></pre><p>以keys为例</p>
-<pre><code>    Hashtable&lt;String,String&gt; a = new Hashtable&lt;String,String&gt;();
-    a.put(&quot;1&quot;, &quot;1&quot;);
-    a.put(&quot;2&quot;, &quot;2&quot;);
-    a.put(&quot;3&quot;, &quot;3&quot;);
-    Enumeration&lt;String&gt; e = a.keys();
-    while(e.hasMoreElements()){
-        System.out.println(e.nextElement());
-    }
-    }</code></pre><p><code>3 2 1</code></p>
-<p>结果是倒序的，我们看下源码</p>
-<pre><code>        public T nextElement() {
-            Entry&lt;?,?&gt; et = entry;
-            int i = index;//index=table.length
-            Entry&lt;?,?&gt;[] t = table;
-            /* Use locals for faster loop iteration */
-            while (et == null &amp;&amp; i &gt; 0) {
-                et = t[--i];
-            }
-            entry = et;
-            index = i;
-            if (et != null) {
-                Entry&lt;?,?&gt; e = lastReturned = entry;
-                entry = e.next;
-                return type == KEYS ? (T)e.key : (type == VALUES ? (T)e.value : (T)e);
-            }
-            throw new NoSuchElementException(&quot;Hashtable Enumerator&quot;);
-        }</code></pre><p>et = t[–i];所以结果是倒序的，但是我们还可以发现，与其他集合的Iterator不同，Enumerator的nextElement方法中没有检测modCount==expectedModCount，而HashMap中EntrySet的Iterator有检测这个。</p>
-<pre><code>    Hashtable&lt;String,String&gt; a = new Hashtable&lt;String,String&gt;();
-    a.put(&quot;1&quot;, &quot;1&quot;);
-    a.put(&quot;2&quot;, &quot;2&quot;);
-    a.put(&quot;3&quot;, &quot;3&quot;);
-    a.put(&quot;4&quot;, &quot;4&quot;);
-    a.put(&quot;5&quot;, &quot;5&quot;);
-    a.put(&quot;6&quot;, &quot;6&quot;);
-    Enumeration&lt;String&gt; e = a.keys();
-    String b = null;
-    while(e.hasMoreElements()){
-        b = e.nextElement();
-        if(b.equals(&quot;3&quot;)){
-            a.remove(b);
-        }
-    }
-    a.forEach((c,d)-&gt;System.out.println(c+&quot; &quot;+d));
-    }</code></pre><p>输出</p>
-<p><code>1 1 2 2 4 4 5 5 6 6</code></p>
-<p>确实没有抛出ConcurrentModificationException，Enumerator是一个fail-safe迭代器</p>
-<p>4.HashMap允许null作为key或value</p>
-<p>5.HashMap默认容量16，Hashtable默认容量11</p>
+            <h3 id="Predicate"><a href="#Predicate" class="headerlink" title="Predicate"></a>Predicate</h3><p>Predicate接口为函数式接口</p>
+<pre><code>    /**
+     * Evaluates this predicate on the given argument.
+     *
+     * @param t the input argument
+     * @return {@code true} if the input argument matches the predicate,
+     * otherwise {@code false}
+     */
+    boolean test(T t);</code></pre><h3 id="Function"><a href="#Function" class="headerlink" title="Function"></a>Function</h3><p>Function接口为函数式接口</p>
+<pre><code>    /**
+     * Applies this function to the given argument.
+     *
+     * @param t the function argument
+     * @return the function result
+     */
+    R apply(T t);</code></pre><p>与Consumer接口类似，但Function的抽象方法有返回值</p>
+<pre><code>    /**
+     * Returns a function that always returns its input argument.
+     *
+     * @param &lt;T&gt; the type of the input and output objects to the function
+     * @return a function that always returns its input argument
+     */
+    static &lt;T&gt; Function&lt;T, T&gt; identity() {
+        return t -&gt; t;
+    }</code></pre><p>相当于用lambda实现apply抽象方法：u-&gt;u</p>
 
           
         
@@ -2899,7 +2899,7 @@ for (String key : map.keySet()) {
 
   
 
-  <link rel="stylesheet" href="/lib/prettify/skins/desert.css" type="text/css">
+  <link rel="stylesheet" href="/lib/prettify/skins/sunburst.css" type="text/css">
 <script src="/lib/prettify/prettify.js" type="text/javascript"></script>
 <script type="text/javascript">
   $(document).ready(function() {

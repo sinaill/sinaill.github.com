@@ -593,204 +593,6 @@ class sonReflect extends reflect{
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/" itemprop="url">单例模式</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="单例模式概念"><a href="#单例模式概念" class="headerlink" title="单例模式概念"></a>单例模式概念</h3><p>单例模式(Singleton Pattern)：确保某一个类只有一个实例，而且自行实例化并向整个系统提供这个实例，这个类称为单例类，它提供全局访问的方法。单例模式是一种对象创建型模式。</p>
-<p>单例模式有三个特性：</p>
-<ul>
-<li>单例类只能有一个实例</li>
-<li>单例类必须自行创建自己的唯一的实例</li>
-<li>单例类必须给所有其他对象提供这一实例</li>
-</ul>
-<p>###单例模式的几种实现模式</p>
-<h4 id="懒汉式-线程不安全"><a href="#懒汉式-线程不安全" class="headerlink" title="懒汉式(线程不安全)"></a>懒汉式(线程不安全)</h4><pre><code>public class Singleton {
-    private static Singleton instance;
-    private Singleton (){}
-    public static Singleton getInstance() {
-        if (instance == null) {
-            instance = new Singleton();
-        }
-        return instance;
-    }
-}</code></pre><p>懒加载，但线程不安全</p>
-<h4 id="懒汉式-线程安全"><a href="#懒汉式-线程安全" class="headerlink" title="懒汉式(线程安全)"></a>懒汉式(线程安全)</h4><pre><code>public class Singleton {
-    private static Singleton instance;
-    private Singleton (){}
-    public static synchronized Singleton getInstance() {
-        if (instance == null) {
-            instance = new Singleton();
-        }
-        return instance;
-    }
-}</code></pre><p>懒加载，线程安全，但效率低</p>
-<h4 id="懒汉式-线程安全-1"><a href="#懒汉式-线程安全-1" class="headerlink" title="懒汉式(线程安全)"></a>懒汉式(线程安全)</h4><pre><code>public class Singleton {
-    private volatile static Singleton instance;
-    private Singleton (){}
-    public static Singleton getInstance() {
-        if (instance == null) {
-            synchronized(this.class){
-                if (instance == null){
-                    instance = new Singleton();
-                }
-        }
-        return instance;
-    }
-}</code></pre><p>相比上一种，提高了效率，将同步代码块放到判断instance是否空后面，避免了创建实例instance后每个线程仍需要排队</p>
-<h4 id="饿汉式-线程安全"><a href="#饿汉式-线程安全" class="headerlink" title="饿汉式(线程安全)"></a>饿汉式(线程安全)</h4><pre><code>public class Singleton {  
-    private static Singleton instance = new Singleton();  
-    private Singleton (){}  
-    public static Singleton getInstance() {  
-        return instance;  
-    }  
-}</code></pre><p>没有实现懒加载，线程安全，缺点是：类加载时就初始化，浪费内存</p>
-<h4 id="静态内部类"><a href="#静态内部类" class="headerlink" title="静态内部类"></a>静态内部类</h4><pre><code>public class SingletonDemo5 {
-    private static class SingletonHolder{
-        private static final SingletonDemo5 instance = new SingletonDemo5();
-    }
-    private SingletonDemo5(){}
-    public static final SingletonDemo5 getInsatance(){
-        return SingletonHolder.instance;
-    }
-}</code></pre><p>这种方式同样利用了classloder的机制来保证初始化instance时只有一个线程，它跟第三种和第四种方式不同的是（很细微的差别）：第三种和第四种方式是只要Singleton类被装载了，那么instance就会被实例化（没有达到lazy loading效果），而这种方式是Singleton类被装载了，instance不一定被初始化。因为SingletonHolder类没有被主动使用，只有显示通过调用getInstance方法时，才会显示装载SingletonHolder类，从而实例化instance。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E5%8D%95%E9%93%BE%E8%A1%A8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1043,6 +845,204 @@ class sonReflect extends reflect{
 }</code></pre><h4 id="清空链表"><a href="#清空链表" class="headerlink" title="清空链表"></a>清空链表</h4><pre><code>public void clear(){
     header = null;
 }</code></pre>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/" itemprop="url">单例模式</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="单例模式概念"><a href="#单例模式概念" class="headerlink" title="单例模式概念"></a>单例模式概念</h3><p>单例模式(Singleton Pattern)：确保某一个类只有一个实例，而且自行实例化并向整个系统提供这个实例，这个类称为单例类，它提供全局访问的方法。单例模式是一种对象创建型模式。</p>
+<p>单例模式有三个特性：</p>
+<ul>
+<li>单例类只能有一个实例</li>
+<li>单例类必须自行创建自己的唯一的实例</li>
+<li>单例类必须给所有其他对象提供这一实例</li>
+</ul>
+<p>###单例模式的几种实现模式</p>
+<h4 id="懒汉式-线程不安全"><a href="#懒汉式-线程不安全" class="headerlink" title="懒汉式(线程不安全)"></a>懒汉式(线程不安全)</h4><pre><code>public class Singleton {
+    private static Singleton instance;
+    private Singleton (){}
+    public static Singleton getInstance() {
+        if (instance == null) {
+            instance = new Singleton();
+        }
+        return instance;
+    }
+}</code></pre><p>懒加载，但线程不安全</p>
+<h4 id="懒汉式-线程安全"><a href="#懒汉式-线程安全" class="headerlink" title="懒汉式(线程安全)"></a>懒汉式(线程安全)</h4><pre><code>public class Singleton {
+    private static Singleton instance;
+    private Singleton (){}
+    public static synchronized Singleton getInstance() {
+        if (instance == null) {
+            instance = new Singleton();
+        }
+        return instance;
+    }
+}</code></pre><p>懒加载，线程安全，但效率低</p>
+<h4 id="懒汉式-线程安全-1"><a href="#懒汉式-线程安全-1" class="headerlink" title="懒汉式(线程安全)"></a>懒汉式(线程安全)</h4><pre><code>public class Singleton {
+    private volatile static Singleton instance;
+    private Singleton (){}
+    public static Singleton getInstance() {
+        if (instance == null) {
+            synchronized(this.class){
+                if (instance == null){
+                    instance = new Singleton();
+                }
+        }
+        return instance;
+    }
+}</code></pre><p>相比上一种，提高了效率，将同步代码块放到判断instance是否空后面，避免了创建实例instance后每个线程仍需要排队</p>
+<h4 id="饿汉式-线程安全"><a href="#饿汉式-线程安全" class="headerlink" title="饿汉式(线程安全)"></a>饿汉式(线程安全)</h4><pre><code>public class Singleton {  
+    private static Singleton instance = new Singleton();  
+    private Singleton (){}  
+    public static Singleton getInstance() {  
+        return instance;  
+    }  
+}</code></pre><p>没有实现懒加载，线程安全，缺点是：类加载时就初始化，浪费内存</p>
+<h4 id="静态内部类"><a href="#静态内部类" class="headerlink" title="静态内部类"></a>静态内部类</h4><pre><code>public class SingletonDemo5 {
+    private static class SingletonHolder{
+        private static final SingletonDemo5 instance = new SingletonDemo5();
+    }
+    private SingletonDemo5(){}
+    public static final SingletonDemo5 getInsatance(){
+        return SingletonHolder.instance;
+    }
+}</code></pre><p>这种方式同样利用了classloder的机制来保证初始化instance时只有一个线程，它跟第三种和第四种方式不同的是（很细微的差别）：第三种和第四种方式是只要Singleton类被装载了，那么instance就会被实例化（没有达到lazy loading效果），而这种方式是Singleton类被装载了，instance不一定被初始化。因为SingletonHolder类没有被主动使用，只有显示通过调用getInstance方法时，才会显示装载SingletonHolder类，从而实例化instance。</p>
+
           
         
       
@@ -3086,7 +3086,7 @@ afterCompletion方法</code></pre><p>先执行<code>@Around</code>方法，直�
 
   
 
-  <link rel="stylesheet" href="/lib/prettify/skins/desert.css" type="text/css">
+  <link rel="stylesheet" href="/lib/prettify/skins/sunburst.css" type="text/css">
 <script src="/lib/prettify/prettify.js" type="text/javascript"></script>
 <script type="text/javascript">
   $(document).ready(function() {

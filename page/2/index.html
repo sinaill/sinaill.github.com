@@ -906,194 +906,6 @@ class consumer2 extends Thread{
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E6%8E%A5%E5%8F%A3%E4%B8%AD%E7%9A%84default%E6%96%B9%E6%B3%95/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/%E6%8E%A5%E5%8F%A3%E4%B8%AD%E7%9A%84default%E6%96%B9%E6%B3%95/" itemprop="url">接口中的default方法</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="特性"><a href="#特性" class="headerlink" title="特性"></a>特性</h3><p>java接口中的default方法是在java 8之后引入的，即在不破坏java现有实现架构的情况下能往接口里增加新方法，这个特征又叫做虚拟扩展方法（Virtual extension methods），通常也称之为 defender 方法，它目前可以添加到接口中，为声明的方法提供默认的实现，子类可以直接调用或者复写该方法。作用为优化接口的同时，避免跟现有实现架构的兼容问题。</p>
-<h3 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h3><pre><code>List&lt;Integer&gt; list = new ArrayList&lt;Integer&gt;();
-list.add(1);
-list.add(2);
-list.forEach(System.out::println);</code></pre><p>java8之后list多了一个forEach方法来方便我们遍历集合，向上查找父类和实现的接口发现Iterable接口中多了一个default方法</p>
-<pre><code>/**
- * Performs the given action for each element of the {@code Iterable}
- * until all elements have been processed or the action throws an
- * exception.  Unless otherwise specified by the implementing class,
- * actions are performed in the order of iteration (if an iteration order
- * is specified).  Exceptions thrown by the action are relayed to the
- * caller.
- *
- * @implSpec
- * &lt;p&gt;The default implementation behaves as if:
- * &lt;pre&gt;{@code
- *     for (T t : this)
- *         action.accept(t);
- * }&lt;/pre&gt;
- *
- * @param action The action to be performed for each element
- * @throws NullPointerException if the specified action is null
- * @since 1.8
- */
-default void forEach(Consumer&lt;? super T&gt; action) {
-    Objects.requireNonNull(action);
-    for (T t : this) {
-        action.accept(t);
-    }
-}</code></pre><p>与此相同的还有Collection接口新增的stream方法，用来帮助我们更方便地处理集合元素</p>
-<pre><code>/**
- * Returns a sequential {@code Stream} with this collection as its source.
- *
- * &lt;p&gt;This method should be overridden when the {@link #spliterator()}
- * method cannot return a spliterator that is {@code IMMUTABLE},
- * {@code CONCURRENT}, or &lt;em&gt;late-binding&lt;/em&gt;. (See {@link #spliterator()}
- * for details.)
- *
- * @implSpec
- * The default implementation creates a sequential {@code Stream} from the
- * collection&#39;s {@code Spliterator}.
- *
- * @return a sequential {@code Stream} over the elements in this collection
- * @since 1.8
- */
-default Stream&lt;E&gt; stream() {
-    return StreamSupport.stream(spliterator(), false);
-}</code></pre>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E6%9E%9A%E4%B8%BE/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1293,7 +1105,7 @@ default Stream&lt;E&gt; stream() {
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E6%8E%A5%E5%8F%A3%E4%B8%AD%E7%9A%84default%E6%96%B9%E6%B3%95/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="sinaill">
@@ -1312,7 +1124,7 @@ default Stream&lt;E&gt; stream() {
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/06/17/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" itemprop="url">排序算法</a></h1>
+                <a class="post-title-link" href="/2020/06/17/%E6%8E%A5%E5%8F%A3%E4%B8%AD%E7%9A%84default%E6%96%B9%E6%B3%95/" itemprop="url">接口中的default方法</a></h1>
         
 
         <div class="post-meta">
@@ -1386,77 +1198,54 @@ default Stream&lt;E&gt; stream() {
       
         
           
-            <h3 id="冒泡法"><a href="#冒泡法" class="headerlink" title="冒泡法"></a>冒泡法</h3><p>关键排序代码如下</p>
-<pre><code>public void bubble(int[] i){
-    int temp;
-    for(int j = 0;j &lt; i.length-1; j++){
-        for(int k = 0; k &lt; i.length - j -1; k++){
-            if(i[k] &gt; i[k+1]){
-                temp = i[k];
-                i[k] = i[k+1];
-                i[k+1] = temp;
-            }
-        }
+            <h3 id="特性"><a href="#特性" class="headerlink" title="特性"></a>特性</h3><p>java接口中的default方法是在java 8之后引入的，即在不破坏java现有实现架构的情况下能往接口里增加新方法，这个特征又叫做虚拟扩展方法（Virtual extension methods），通常也称之为 defender 方法，它目前可以添加到接口中，为声明的方法提供默认的实现，子类可以直接调用或者复写该方法。作用为优化接口的同时，避免跟现有实现架构的兼容问题。</p>
+<h3 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h3><pre><code>List&lt;Integer&gt; list = new ArrayList&lt;Integer&gt;();
+list.add(1);
+list.add(2);
+list.forEach(System.out::println);</code></pre><p>java8之后list多了一个forEach方法来方便我们遍历集合，向上查找父类和实现的接口发现Iterable接口中多了一个default方法</p>
+<pre><code>/**
+ * Performs the given action for each element of the {@code Iterable}
+ * until all elements have been processed or the action throws an
+ * exception.  Unless otherwise specified by the implementing class,
+ * actions are performed in the order of iteration (if an iteration order
+ * is specified).  Exceptions thrown by the action are relayed to the
+ * caller.
+ *
+ * @implSpec
+ * &lt;p&gt;The default implementation behaves as if:
+ * &lt;pre&gt;{@code
+ *     for (T t : this)
+ *         action.accept(t);
+ * }&lt;/pre&gt;
+ *
+ * @param action The action to be performed for each element
+ * @throws NullPointerException if the specified action is null
+ * @since 1.8
+ */
+default void forEach(Consumer&lt;? super T&gt; action) {
+    Objects.requireNonNull(action);
+    for (T t : this) {
+        action.accept(t);
     }
-}</code></pre><p>用来对一万个10000内随机数进行排序，所消耗时间为 <strong>耗时：14329ms</strong></p>
-<h3 id="选择排序"><a href="#选择排序" class="headerlink" title="选择排序"></a>选择排序</h3><p>关键代码如下</p>
-<pre><code>public void selectionSort(int n[]) {
-    for (int i = 0; i &lt; n.length - 1; i++) {
-        int max = 0;
-        for (int j = 0; j &lt; n.length - i - 1; j++) {
-            if(n[max] &lt; n[j+1]){
-                max = j+1;
-            }
-        }
-        if (max != n.length-1-i) {
-            int temp;
-            temp = n[max];
-            n[max] = n[n.length-1-i];
-            n[n.length-1-i] = temp;
-        }
-    }
-}</code></pre><p>用来对一万个10000内随机数进行排序，所消耗时间为 <strong>耗时：2657ms</strong></p>
-<h3 id="插入排序"><a href="#插入排序" class="headerlink" title="插入排序"></a>插入排序</h3><p>关键代码如下</p>
-<pre><code>public void Insert(int n[]) {
-    for (int i = 1; i &lt; n.length; i++) {
-        int temp = i;
-        for (int j = i -1; j &gt;= 0 &amp;&amp; n[j] &gt; n[temp]; j--) {
-            exch(n, j, temp);
-            temp = j;
-        }
-    }
-}
-public void exch(int n[],int a,int b) {
-    int temp = n[a];
-    n[a] = n[b];
-    n[b] = temp;
-}</code></pre><p>用来对一万个10000内随机数进行排序，所消耗时间为 <strong>耗时：3107ms</strong></p>
-<h3 id="快速排序"><a href="#快速排序" class="headerlink" title="快速排序"></a>快速排序</h3><p>关键代码如下</p>
-<pre><code>    public void Quick(int n[],int left,int right) {
-        if(left &gt;= right){
-            return;
-        }
-        int key = PartSort(n, left, right);
-        Quick(n, left, key);
-        Quick(n, key+1, right);
-    }
-    public int PartSort(int n[],int left,int right) {
-        int key = n[left];
-        while(left &lt; right){
-            while (left &lt; right &amp;&amp; n[right] &gt;= key) {
-                right--;
-            }
-            n[left] = n[right];
-            while (left &lt; right &amp;&amp; n[left] &lt;= key) {
-                left++;
-            }
-            n[right] = n[left];
-        }
-        n[left] = key;
-        return left;
-    }
-}</code></pre><p>用来对一万个10000内随机数进行排序，所消耗时间为 <strong>耗时：16ms</strong></p>
-
+}</code></pre><p>与此相同的还有Collection接口新增的stream方法，用来帮助我们更方便地处理集合元素</p>
+<pre><code>/**
+ * Returns a sequential {@code Stream} with this collection as its source.
+ *
+ * &lt;p&gt;This method should be overridden when the {@link #spliterator()}
+ * method cannot return a spliterator that is {@code IMMUTABLE},
+ * {@code CONCURRENT}, or &lt;em&gt;late-binding&lt;/em&gt;. (See {@link #spliterator()}
+ * for details.)
+ *
+ * @implSpec
+ * The default implementation creates a sequential {@code Stream} from the
+ * collection&#39;s {@code Spliterator}.
+ *
+ * @return a sequential {@code Stream} over the elements in this collection
+ * @since 1.8
+ */
+default Stream&lt;E&gt; stream() {
+    return StreamSupport.stream(spliterator(), false);
+}</code></pre>
           
         
       
@@ -1754,6 +1543,217 @@ if (currentUser.isPermitted(&quot;printer:print:laserjet4400n&quot;)) {
 &lt;shiro:hasPermission name=&quot;user:create&quot;&gt;&lt;/shiro:hasPermission&gt;
 
 &lt;shiro:lacksPermission name=&quot;org:create&quot;&gt;&lt;/shiro:lacksPermission&gt;      </code></pre>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" itemprop="url">排序算法</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="冒泡法"><a href="#冒泡法" class="headerlink" title="冒泡法"></a>冒泡法</h3><p>关键排序代码如下</p>
+<pre><code>public void bubble(int[] i){
+    int temp;
+    for(int j = 0;j &lt; i.length-1; j++){
+        for(int k = 0; k &lt; i.length - j -1; k++){
+            if(i[k] &gt; i[k+1]){
+                temp = i[k];
+                i[k] = i[k+1];
+                i[k+1] = temp;
+            }
+        }
+    }
+}</code></pre><p>用来对一万个10000内随机数进行排序，所消耗时间为 <strong>耗时：14329ms</strong></p>
+<h3 id="选择排序"><a href="#选择排序" class="headerlink" title="选择排序"></a>选择排序</h3><p>关键代码如下</p>
+<pre><code>public void selectionSort(int n[]) {
+    for (int i = 0; i &lt; n.length - 1; i++) {
+        int max = 0;
+        for (int j = 0; j &lt; n.length - i - 1; j++) {
+            if(n[max] &lt; n[j+1]){
+                max = j+1;
+            }
+        }
+        if (max != n.length-1-i) {
+            int temp;
+            temp = n[max];
+            n[max] = n[n.length-1-i];
+            n[n.length-1-i] = temp;
+        }
+    }
+}</code></pre><p>用来对一万个10000内随机数进行排序，所消耗时间为 <strong>耗时：2657ms</strong></p>
+<h3 id="插入排序"><a href="#插入排序" class="headerlink" title="插入排序"></a>插入排序</h3><p>关键代码如下</p>
+<pre><code>public void Insert(int n[]) {
+    for (int i = 1; i &lt; n.length; i++) {
+        int temp = i;
+        for (int j = i -1; j &gt;= 0 &amp;&amp; n[j] &gt; n[temp]; j--) {
+            exch(n, j, temp);
+            temp = j;
+        }
+    }
+}
+public void exch(int n[],int a,int b) {
+    int temp = n[a];
+    n[a] = n[b];
+    n[b] = temp;
+}</code></pre><p>用来对一万个10000内随机数进行排序，所消耗时间为 <strong>耗时：3107ms</strong></p>
+<h3 id="快速排序"><a href="#快速排序" class="headerlink" title="快速排序"></a>快速排序</h3><p>关键代码如下</p>
+<pre><code>    public void Quick(int n[],int left,int right) {
+        if(left &gt;= right){
+            return;
+        }
+        int key = PartSort(n, left, right);
+        Quick(n, left, key);
+        Quick(n, key+1, right);
+    }
+    public int PartSort(int n[],int left,int right) {
+        int key = n[left];
+        while(left &lt; right){
+            while (left &lt; right &amp;&amp; n[right] &gt;= key) {
+                right--;
+            }
+            n[left] = n[right];
+            while (left &lt; right &amp;&amp; n[left] &lt;= key) {
+                left++;
+            }
+            n[right] = n[left];
+        }
+        n[left] = key;
+        return left;
+    }
+}</code></pre><p>用来对一万个10000内随机数进行排序，所消耗时间为 <strong>耗时：16ms</strong></p>
+
           
         
       
@@ -3206,7 +3206,7 @@ class ThreadReen extends Thread{
 
   
 
-  <link rel="stylesheet" href="/lib/prettify/skins/desert.css" type="text/css">
+  <link rel="stylesheet" href="/lib/prettify/skins/sunburst.css" type="text/css">
 <script src="/lib/prettify/prettify.js" type="text/javascript"></script>
 <script type="text/javascript">
   $(document).ready(function() {
