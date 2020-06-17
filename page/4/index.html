@@ -784,6 +784,163 @@ assertCredentialsMatch(token, info);</code></pre><p>第一条调用了我们自�
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/set%E9%9B%86%E5%90%88/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/set%E9%9B%86%E5%90%88/" itemprop="url">set集合</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h3><p><code>Set</code>集合中的元素是唯一的，不可重复（取决于<code>hashCode和equals</code>方法），也就是说具有唯一性。</p>
+<p><code>Set</code>集合中元素不保证存取顺序，并不存在索引。</p>
+<h3 id="HashSet"><a href="#HashSet" class="headerlink" title="HashSet"></a>HashSet</h3><p><code>HashSet</code>实际上是基于<code>HashMap</code>实现的，HashSet中有一成员变量</p>
+<p><code>private transient HashMap&lt;E,Object&gt; map</code></p>
+<p><code>HashSet</code>使用了<code>HashMap</code>的<code>key</code>来存储集合元素，也就是说<code>HashSet</code>可以存储一个<code>null</code>元素，并且不能有重复元素</p>
+<pre><code>private static final Object PRESENT = new Object()
+
+   public boolean add(E e) {
+       return map.put(e, PRESENT)==null;
+   }</code></pre><p>由于<code>HashMap</code>的无序性，所以<code>HashSet</code>也是无序性的</p>
+<h3 id="LinkedHashSet"><a href="#LinkedHashSet" class="headerlink" title="LinkedHashSet"></a>LinkedHashSet</h3><p><code>LinkedHashSet</code>是<code>HashSet</code>的一个子类，<code>LinkedHashSet</code>也根据<code>HashCode</code>的值来决定元素的存储位置，但同时它还用一个链表来维护元素的插入顺序，插入的时候既要计算<code>hashCode</code>还要维护链表，而遍历的时候只需要按照链表来访问元素。</p>
+<p><code>LinkedHashSet</code>只有四个构造方法，构造方法调用了<code>HashSet</code>一个构造方法</p>
+<pre><code>HashSet(int initialCapacity, float loadFactor, boolean dummy) {
+    map = new LinkedHashMap&lt;&gt;(initialCapacity, loadFactor);
+}</code></pre><p>可以看出，是基于<code>LinkedHashMap</code>实现，<code>HashSet</code>存储元素用的<code>HashMap</code>，而LinkedHashSet存储元素用的<code>LinkedHashMap</code>。</p>
+<h3 id="TreeSet"><a href="#TreeSet" class="headerlink" title="TreeSet"></a>TreeSet</h3><p><code>TreeSet</code>是一个有序集合，本质上属于二叉树，实现了<code>SortedSet</code>接口所以具有了对元素排序的功能，要实现对元素的排序，需要在构造方法中传入一个<code>comparator</code>或者元素实现了<code>comparable</code>接口。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/shiro%E6%8E%88%E6%9D%83/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -998,163 +1155,6 @@ assertCredentialsMatch(token, info);</code></pre><p>第一条调用了我们自�
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/set%E9%9B%86%E5%90%88/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/set%E9%9B%86%E5%90%88/" itemprop="url">set集合</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h3><p><code>Set</code>集合中的元素是唯一的，不可重复（取决于<code>hashCode和equals</code>方法），也就是说具有唯一性。</p>
-<p><code>Set</code>集合中元素不保证存取顺序，并不存在索引。</p>
-<h3 id="HashSet"><a href="#HashSet" class="headerlink" title="HashSet"></a>HashSet</h3><p><code>HashSet</code>实际上是基于<code>HashMap</code>实现的，HashSet中有一成员变量</p>
-<p><code>private transient HashMap&lt;E,Object&gt; map</code></p>
-<p><code>HashSet</code>使用了<code>HashMap</code>的<code>key</code>来存储集合元素，也就是说<code>HashSet</code>可以存储一个<code>null</code>元素，并且不能有重复元素</p>
-<pre><code>private static final Object PRESENT = new Object()
-
-   public boolean add(E e) {
-       return map.put(e, PRESENT)==null;
-   }</code></pre><p>由于<code>HashMap</code>的无序性，所以<code>HashSet</code>也是无序性的</p>
-<h3 id="LinkedHashSet"><a href="#LinkedHashSet" class="headerlink" title="LinkedHashSet"></a>LinkedHashSet</h3><p><code>LinkedHashSet</code>是<code>HashSet</code>的一个子类，<code>LinkedHashSet</code>也根据<code>HashCode</code>的值来决定元素的存储位置，但同时它还用一个链表来维护元素的插入顺序，插入的时候既要计算<code>hashCode</code>还要维护链表，而遍历的时候只需要按照链表来访问元素。</p>
-<p><code>LinkedHashSet</code>只有四个构造方法，构造方法调用了<code>HashSet</code>一个构造方法</p>
-<pre><code>HashSet(int initialCapacity, float loadFactor, boolean dummy) {
-    map = new LinkedHashMap&lt;&gt;(initialCapacity, loadFactor);
-}</code></pre><p>可以看出，是基于<code>LinkedHashMap</code>实现，<code>HashSet</code>存储元素用的<code>HashMap</code>，而LinkedHashSet存储元素用的<code>LinkedHashMap</code>。</p>
-<h3 id="TreeSet"><a href="#TreeSet" class="headerlink" title="TreeSet"></a>TreeSet</h3><p><code>TreeSet</code>是一个有序集合，本质上属于二叉树，实现了<code>SortedSet</code>接口所以具有了对元素排序的功能，要实现对元素的排序，需要在构造方法中传入一个<code>comparator</code>或者元素实现了<code>comparable</code>接口。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/only_full_group_by/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1252,216 +1252,6 @@ assertCredentialsMatch(token, info);</code></pre><p>第一条调用了我们自�
 <h3 id="sql-mode-only-full-group-by报错"><a href="#sql-mode-only-full-group-by报错" class="headerlink" title="sql_mode=only_full_group_by报错"></a>sql_mode=only_full_group_by报错</h3><p>对于GROUP BY聚合操作，如果在SELECT中的列，没有在GROUP BY中出现，那么这个SQL是不合法的，因为列不在GROUP BY从句中，也就是说查出来的列必须在group by后面出现否则就会报错，或者这个字段出现在聚合函数里面。</p>
 <p>解决方法：关闭 only_full_group_by 模式或者使用any()或者其它聚合函数作用于不在group by后的字段</p>
 <pre><code>set @@sql_mode=&#39;STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION&#39;;</code></pre>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/optional/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/optional/" itemprop="url">option接口</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>Optional是Java8提供的为了解决null安全问题的一个API，与String类似，也是final类型</p>
-<h3 id="成员变量"><a href="#成员变量" class="headerlink" title="成员变量"></a>成员变量</h3><pre><code>    /**
-     * Common instance for {@code empty()}.
-     */
-    private static final Optional&lt;?&gt; EMPTY = new Optional&lt;&gt;();</code></pre><p>值为空的Optional共享此实例</p>
-<pre><code>    /**
-     * If non-null, the value; if null, indicates no value is present
-     */
-    private final T value;</code></pre><p>Optional类中用来存储值得变量</p>
-<h3 id="成员方法"><a href="#成员方法" class="headerlink" title="成员方法"></a>成员方法</h3><h4 id="empty"><a href="#empty" class="headerlink" title="empty"></a>empty</h4><pre><code>    public static&lt;T&gt; Optional&lt;T&gt; empty() {
-        @SuppressWarnings(&quot;unchecked&quot;)
-        Optional&lt;T&gt; t = (Optional&lt;T&gt;) EMPTY;
-        return t;
-    }</code></pre><p>返回类中定义好的空的Optional实例</p>
-<h4 id="of"><a href="#of" class="headerlink" title="of"></a>of</h4><pre><code>    public static &lt;T&gt; Optional&lt;T&gt; of(T value) {
-        return new Optional&lt;&gt;(value);
-    }</code></pre><p>指定value返回一个Optional实例，若value为空，抛出空指针异常</p>
-<h4 id="ofNullable"><a href="#ofNullable" class="headerlink" title="ofNullable"></a>ofNullable</h4><pre><code>    public static &lt;T&gt; Optional&lt;T&gt; ofNullable(T value) {
-        return value == null ? empty() : of(value);
-    }</code></pre><p>指定value返回一个Optional实例，若value为空，则返回类中定义好的空的optional实例</p>
-<h4 id="get"><a href="#get" class="headerlink" title="get"></a>get</h4><pre><code>    public T get() {
-        if (value == null) {
-            throw new NoSuchElementException(&quot;No value present&quot;);
-        }
-        return value;
-    }</code></pre><p>如果 Optional中存在值，则返回值，否则抛出 NoSuchElementException </p>
-<h4 id="isPresent"><a href="#isPresent" class="headerlink" title="isPresent"></a>isPresent</h4><pre><code>    public boolean isPresent() {
-        return value != null;
-    }</code></pre><p>值不为空时返回true，否则返回false</p>
-<h4 id="ifPresent"><a href="#ifPresent" class="headerlink" title="ifPresent"></a>ifPresent</h4><pre><code>    public void ifPresent(Consumer&lt;? super T&gt; consumer) {
-        if (value != null)
-            consumer.accept(value);
-    }</code></pre><p>使用consumer处理value，若consumer为空，抛出空指针异常</p>
-<h4 id="filter"><a href="#filter" class="headerlink" title="filter"></a>filter</h4><pre><code>    public Optional&lt;T&gt; filter(Predicate&lt;? super T&gt; predicate) {
-        Objects.requireNonNull(predicate);
-        if (!isPresent())
-            return this;
-        else
-            return predicate.test(value) ? this : empty();
-    }</code></pre><p>predicate接口处理value，返回true时，filter方法返回自身，返回false时，filter返回Optional中定义的空实例</p>
-<h4 id="map"><a href="#map" class="headerlink" title="map"></a>map</h4><pre><code>    public&lt;U&gt; Optional&lt;U&gt; map(Function&lt;? super T, ? extends U&gt; mapper) {
-        Objects.requireNonNull(mapper);
-        if (!isPresent())
-            return empty();
-        else {
-            return Optional.ofNullable(mapper.apply(value));
-        }
-    }</code></pre><p>Function接口处理value，value为空时，返回Optional中定义的空实例。value不为空时，当Function中apply返回值为空时，也是返回空实例，否则以apply返回值创建Optional实例</p>
-<pre><code>    public&lt;U&gt; Optional&lt;U&gt; flatMap(Function&lt;? super T, Optional&lt;U&gt;&gt; mapper) {
-        Objects.requireNonNull(mapper);
-        if (!isPresent())
-            return empty();
-        else {
-            return Objects.requireNonNull(mapper.apply(value));
-        }
-    }</code></pre><p>与map方法类似，区别在于Function返回值，apply方法直接返回Optional实例</p>
-<h4 id="orElse"><a href="#orElse" class="headerlink" title="orElse"></a>orElse</h4><pre><code>    public T orElse(T other) {
-        return value != null ? value : other;
-    }</code></pre><p>value为空则返回other，否则返回value</p>
-<h4 id="orElseGet"><a href="#orElseGet" class="headerlink" title="orElseGet"></a>orElseGet</h4><pre><code>    public T orElseGet(Supplier&lt;? extends T&gt; other) {
-        return value != null ? value : other.get();
-    }</code></pre><p>与orElse方法相同，参数变为Supplier接口实现。Optional.orElse(new class)与Optional.orElseGet(class:new)区别在于，orElseGet在value为空时才创建对象，而orElse一开始就创建了对象</p>
-<h4 id="orElseThrow"><a href="#orElseThrow" class="headerlink" title="orElseThrow"></a>orElseThrow</h4><pre><code>    public &lt;X extends Throwable&gt; T orElseThrow(Supplier&lt;? extends X&gt; exceptionSupplier) throws X {
-        if (value != null) {
-            return value;
-        } else {
-            throw exceptionSupplier.get();
-        }
-    }</code></pre><p>value为空时抛出自定义异常，否则返回value，value和Supplier的get方法返回值都为空时抛出空指针异常</p>
-
           
         
       
@@ -1758,7 +1548,7 @@ public class Test {
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/nio%E5%9F%BA%E7%A1%80/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/optional/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="sinaill">
@@ -1777,7 +1567,7 @@ public class Test {
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/06/17/nio%E5%9F%BA%E7%A1%80/" itemprop="url">nio基础</a></h1>
+                <a class="post-title-link" href="/2020/06/17/optional/" itemprop="url">option接口</a></h1>
         
 
         <div class="post-meta">
@@ -1851,103 +1641,264 @@ public class Test {
       
         
           
-            <h3 id="什么是nio"><a href="#什么是nio" class="headerlink" title="什么是nio"></a>什么是nio</h3><p>Java NIO是java 1.4之后新出的一套IO接口，这里的的新是相对于原有标准的Java IO和Java Networking接口。NIO提供了一种完全不同的操作方式。</p>
-<p><strong>NIO中的N可以理解为Non-blocking，不单纯是New</strong></p>
-<p>标准的IO编程接口是面向字节流和字符流的。而NIO是面向通道和缓冲区的，数据总是从通道中读到buffer缓冲区内，或者从buffer写入到通道中</p>
-<h3 id="nio核心组件"><a href="#nio核心组件" class="headerlink" title="nio核心组件"></a>nio核心组件</h3><h4 id="Channel通道"><a href="#Channel通道" class="headerlink" title="Channel通道"></a>Channel通道</h4><p>普通io是通过输入流和输出流来进行传输，nio只需要一个channel，channel是双向的，既可以写也可以读</p>
-<p>特点</p>
-<ul>
-<li>通道可以读也可以写，流一般来说是单向的(只能读或者写)</li>
-<li>通道可以异步读写</li>
-<li>通道总是基于缓冲区Buffer来读写</li>
-</ul>
-<h4 id="Buffer缓冲区"><a href="#Buffer缓冲区" class="headerlink" title="Buffer缓冲区"></a>Buffer缓冲区</h4><p>Java NIO Buffers用于和NIO Channel交互，我们从channel中读取数据到buffers里，从buffer把数据写入到channels。</p>
-<p>buffer中有三个属性，position，limit，capacity</p>
-<ol>
-<li>初始状态下，position为0，limit=capacity</li>
-<li>使用put写入数据后，position为写入数据最后一个字节的索引(即写入数据的长度)</li>
-<li>在读取buffer中数据或者向channel写入buffer，需要调用flip，作用是将<code>limit=position</code>,然后position归0，保证只作用于有效数据。</li>
+            <p>Optional是Java8提供的为了解决null安全问题的一个API，与String类似，也是final类型</p>
+<h3 id="成员变量"><a href="#成员变量" class="headerlink" title="成员变量"></a>成员变量</h3><pre><code>    /**
+     * Common instance for {@code empty()}.
+     */
+    private static final Optional&lt;?&gt; EMPTY = new Optional&lt;&gt;();</code></pre><p>值为空的Optional共享此实例</p>
+<pre><code>    /**
+     * If non-null, the value; if null, indicates no value is present
+     */
+    private final T value;</code></pre><p>Optional类中用来存储值得变量</p>
+<h3 id="成员方法"><a href="#成员方法" class="headerlink" title="成员方法"></a>成员方法</h3><h4 id="empty"><a href="#empty" class="headerlink" title="empty"></a>empty</h4><pre><code>    public static&lt;T&gt; Optional&lt;T&gt; empty() {
+        @SuppressWarnings(&quot;unchecked&quot;)
+        Optional&lt;T&gt; t = (Optional&lt;T&gt;) EMPTY;
+        return t;
+    }</code></pre><p>返回类中定义好的空的Optional实例</p>
+<h4 id="of"><a href="#of" class="headerlink" title="of"></a>of</h4><pre><code>    public static &lt;T&gt; Optional&lt;T&gt; of(T value) {
+        return new Optional&lt;&gt;(value);
+    }</code></pre><p>指定value返回一个Optional实例，若value为空，抛出空指针异常</p>
+<h4 id="ofNullable"><a href="#ofNullable" class="headerlink" title="ofNullable"></a>ofNullable</h4><pre><code>    public static &lt;T&gt; Optional&lt;T&gt; ofNullable(T value) {
+        return value == null ? empty() : of(value);
+    }</code></pre><p>指定value返回一个Optional实例，若value为空，则返回类中定义好的空的optional实例</p>
+<h4 id="get"><a href="#get" class="headerlink" title="get"></a>get</h4><pre><code>    public T get() {
+        if (value == null) {
+            throw new NoSuchElementException(&quot;No value present&quot;);
+        }
+        return value;
+    }</code></pre><p>如果 Optional中存在值，则返回值，否则抛出 NoSuchElementException </p>
+<h4 id="isPresent"><a href="#isPresent" class="headerlink" title="isPresent"></a>isPresent</h4><pre><code>    public boolean isPresent() {
+        return value != null;
+    }</code></pre><p>值不为空时返回true，否则返回false</p>
+<h4 id="ifPresent"><a href="#ifPresent" class="headerlink" title="ifPresent"></a>ifPresent</h4><pre><code>    public void ifPresent(Consumer&lt;? super T&gt; consumer) {
+        if (value != null)
+            consumer.accept(value);
+    }</code></pre><p>使用consumer处理value，若consumer为空，抛出空指针异常</p>
+<h4 id="filter"><a href="#filter" class="headerlink" title="filter"></a>filter</h4><pre><code>    public Optional&lt;T&gt; filter(Predicate&lt;? super T&gt; predicate) {
+        Objects.requireNonNull(predicate);
+        if (!isPresent())
+            return this;
+        else
+            return predicate.test(value) ? this : empty();
+    }</code></pre><p>predicate接口处理value，返回true时，filter方法返回自身，返回false时，filter返回Optional中定义的空实例</p>
+<h4 id="map"><a href="#map" class="headerlink" title="map"></a>map</h4><pre><code>    public&lt;U&gt; Optional&lt;U&gt; map(Function&lt;? super T, ? extends U&gt; mapper) {
+        Objects.requireNonNull(mapper);
+        if (!isPresent())
+            return empty();
+        else {
+            return Optional.ofNullable(mapper.apply(value));
+        }
+    }</code></pre><p>Function接口处理value，value为空时，返回Optional中定义的空实例。value不为空时，当Function中apply返回值为空时，也是返回空实例，否则以apply返回值创建Optional实例</p>
+<pre><code>    public&lt;U&gt; Optional&lt;U&gt; flatMap(Function&lt;? super T, Optional&lt;U&gt;&gt; mapper) {
+        Objects.requireNonNull(mapper);
+        if (!isPresent())
+            return empty();
+        else {
+            return Objects.requireNonNull(mapper.apply(value));
+        }
+    }</code></pre><p>与map方法类似，区别在于Function返回值，apply方法直接返回Optional实例</p>
+<h4 id="orElse"><a href="#orElse" class="headerlink" title="orElse"></a>orElse</h4><pre><code>    public T orElse(T other) {
+        return value != null ? value : other;
+    }</code></pre><p>value为空则返回other，否则返回value</p>
+<h4 id="orElseGet"><a href="#orElseGet" class="headerlink" title="orElseGet"></a>orElseGet</h4><pre><code>    public T orElseGet(Supplier&lt;? extends T&gt; other) {
+        return value != null ? value : other.get();
+    }</code></pre><p>与orElse方法相同，参数变为Supplier接口实现。Optional.orElse(new class)与Optional.orElseGet(class:new)区别在于，orElseGet在value为空时才创建对象，而orElse一开始就创建了对象</p>
+<h4 id="orElseThrow"><a href="#orElseThrow" class="headerlink" title="orElseThrow"></a>orElseThrow</h4><pre><code>    public &lt;X extends Throwable&gt; T orElseThrow(Supplier&lt;? extends X&gt; exceptionSupplier) throws X {
+        if (value != null) {
+            return value;
+        } else {
+            throw exceptionSupplier.get();
+        }
+    }</code></pre><p>value为空时抛出自定义异常，否则返回value，value和Supplier的get方法返回值都为空时抛出空指针异常</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/mysql%E4%BA%8B%E5%8A%A1%E5%92%8C%E9%94%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/mysql%E4%BA%8B%E5%8A%A1%E5%92%8C%E9%94%81/" itemprop="url">mysql事务和锁</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/mysql/" itemprop="url" rel="index">
+                    <span itemprop="name">mysql</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="事务的基本要素-acid"><a href="#事务的基本要素-acid" class="headerlink" title="事务的基本要素(acid)"></a>事务的基本要素(acid)</h3><ol>
+<li>原子性（Atomicity）：事务开始后所有操作，要么全部做完，要么全部不做，不可能停滞在中间环节。事务执行过程中出错，会回滚到事务开始前的状态，所有的操作就像没有发生一样。也就是说事务是一个不可分割的整体，就像化学中学过的原子，是物质构成的基本单位。</li>
+<li>一致性（Consistency）：事务开始前和结束后，数据库的完整性约束没有被破坏 。比如A向B转账，不可能A扣了钱，B却没收到。</li>
+<li>隔离性（Isolation）：同一时间，只允许一个事务请求同一数据，不同的事务之间彼此没有任何干扰。比如A正在从一张银行卡中取钱，在A取钱的过程结束前，B不能向这张卡转账。</li>
+<li>持久性（Durability）：事务完成后，事务对数据库的所有更新将被保存到数据库，不能回滚。</li>
 </ol>
-<h4 id="Selector选择器"><a href="#Selector选择器" class="headerlink" title="Selector选择器"></a>Selector选择器</h4><p>Selector是Java NIO中的一个组件，用于检查一个或多个NIO Channel的状态是否处于可读、可写。如此可以实现单线程管理多个channels,也就是可以管理多个网络链接。</p>
-<h5 id="创建一个Selector"><a href="#创建一个Selector" class="headerlink" title="创建一个Selector"></a>创建一个Selector</h5><p><code>Selector selector = Selector.open();</code></p>
-<h5 id="注册Channel到Selector上"><a href="#注册Channel到Selector上" class="headerlink" title="注册Channel到Selector上"></a>注册Channel到Selector上</h5><pre><code>channel.configureBlocking(false);//必须设置非阻塞通道
-SelectionKey key = channel.register(selector, SelectionKey.OP_READ);</code></pre><p>register的第二个参数，这个参数是一个“关注集合”，代表我们关注的channel状态，有四种基础类型可供监听：</p>
-<ul>
-<li>Connect</li>
-<li>Accept</li>
-<li>Read</li>
-<li>Write</li>
-</ul>
-<p>一个channel触发了一个事件也可视作该事件处于就绪状态。因此当channel与server连接成功后，那么就是“连接就绪”状态。server channel接收请求连接时处于“可连接就绪”状态。channel有数据可读时处于“读就绪”状态。channel可以进行数据写入时处于“写就绪”状态。</p>
-<p>上述的四种就绪状态用SelectionKey中的常量表示如下：</p>
-<ul>
-<li>SelectionKey.OP_CONNECT</li>
-<li>SelectionKey.OP_ACCEPT</li>
-<li>SelectionKey.OP_READ</li>
-<li>SelectionKey.OP_WRITE</li>
-</ul>
-<p>如果对多个事件感兴趣可利用位的或运算结合多个常量，比如：</p>
-<p><code>int interestSet = SelectionKey.OP_READ | SelectionKey.OP_WRITE;</code></p>
-<h5 id="SelectionKey"><a href="#SelectionKey" class="headerlink" title="SelectionKey"></a>SelectionKey</h5><p>register方法把Channel注册到了Selectors上，这个方法的返回值是SelectionKey，这个返回的对象包含了以下属性：</p>
-<ul>
-<li>The interest set</li>
-<li>The ready set</li>
-<li>The Channel</li>
-<li>The Selector</li>
-<li>An attached object (optional)</li>
-</ul>
-<p>Interest Set实际上就是我们希望处理的事件的集合，它的值就是注册时传入的参数，我们可以用按为与运算把每个事件取出来：</p>
-<pre><code>int interestSet = selectionKey.interestOps();
-
-boolean isInterestedInAccept  = interestSet &amp; SelectionKey.OP_ACCEPT;
-boolean isInterestedInConnect = interestSet &amp; SelectionKey.OP_CONNECT;
-boolean isInterestedInRead    = interestSet &amp; SelectionKey.OP_READ;
-boolean isInterestedInWrite   = interestSet &amp; SelectionKey.OP_WRITE; </code></pre><p>Ready Set中的值是当前channel处于就绪的值，为触发该channel的就绪状态</p>
-<p><code>int readySet = selectionKey.readyOps();</code></p>
-<p>Channel + Selector可以这样获得</p>
-<pre><code>Channel  channel  = selectionKey.channel();
-Selector selector = selectionKey.selector(); </code></pre><p>Attaching Objects，我们可以给一个SelectionKey附加一个Object，这样做一方面可以方便我们识别某个特定的channel，同时也增加了channel相关的附加信息。例如，可以把用于channel的buffer附加到SelectionKey上：</p>
-<pre><code>selectionKey.attach(theObject);
-
-Object attachedObj = selectionKey.attachment();</code></pre><p>附加对象的操作也可以在register的时候就执行：</p>
-<p><code>SelectionKey key = channel.register(selector, SelectionKey.OP_READ, theObject);</code></p>
-<h5 id="获取就绪channel"><a href="#获取就绪channel" class="headerlink" title="获取就绪channel"></a>获取就绪channel</h5><p>一旦我们向Selector注册了一个或多个channel后，就可以调用select来获取channel。select方法会返回所有处于就绪状态的channel。 select方法具体如下：</p>
-<ul>
-<li>int select()</li>
-<li>int select(long timeout)</li>
-<li>int selectNow()</li>
-</ul>
-<p>select()方法在返回channel之前处于阻塞状态。 select(long timeout)和select做的事一样，不过他的阻塞有一个超时限制。</p>
-<p>selectNow()不会阻塞，根据当前状态立刻返回合适的channel。</p>
-<p>select()方法的返回值是一个int整形，代表有多少channel处于就绪了。也就是自上一次select后有多少channel进入就绪。举例来说，假设第一次调用select时正好有一个channel就绪，那么返回值是1，并且对这个channel做任何处理，接着再次调用select，此时恰好又有一个新的channel就绪，那么返回值还是1，现在我们一共有两个channel处于就绪，但是在每次调用select时只有一个channel是就绪的。</p>
-<p>在调用select并返回了有channel就绪之后，可以通过选中的key集合来获取channel，这个操作通过调用selectedKeys()方法：</p>
-<p><code>Set&lt;SelectionKey&gt; selectedKeys = selector.selectedKeys();</code></p>
-<p>还记得在register时的操作吧，我们register后的返回值就是SelectionKey实例，也就是我们现在通过selectedKeys()方法所返回的SelectionKey。</p>
-<p>遍历这些SelectionKey可以通过如下方法：</p>
-<pre><code>Set&lt;SelectionKey&gt; selectedKeys = selector.selectedKeys();
-
-Iterator&lt;SelectionKey&gt; keyIterator = selectedKeys.iterator();
-
-while(keyIterator.hasNext()) {
-
-    SelectionKey key = keyIterator.next();
-
-    if(key.isAcceptable()) {
-        // a connection was accepted by a ServerSocketChannel.
-
-    } else if (key.isConnectable()) {
-        // a connection was established with a remote server.
-
-    } else if (key.isReadable()) {
-        // a channel is ready for reading
-
-    } else if (key.isWritable()) {
-        // a channel is ready for writing
-    }
-
-    keyIterator.remove();
-}</code></pre><p>由于调用select而被阻塞的线程，可以通过调用Selector.wakeup()来唤醒即便此时已然没有channel处于就绪状态。具体操作是，在另外一个线程调用wakeup，被阻塞与select方法的线程就会立刻返回。</p>
-<p>当操作Selector完毕后，需要调用close方法。close的调用会关闭Selector并使相关的SelectionKey都无效。channel本身不管被关闭。</p>
+<h3 id="事务的并发问题"><a href="#事务的并发问题" class="headerlink" title="事务的并发问题"></a>事务的并发问题</h3><ol>
+<li>脏读：脏读意味着一个事务读取了另一个事务未提交的数据,而这个数据是有可能回滚</li>
+<li>不可重复读：不可重复读意味着，在数据库访问中，一个事务范围内两个相同的查询却返回了不同数据。这是由于查询时系统中其他事务修改的提交而引起的。</li>
+<li>幻读：是指当事务不是独立执行时发生的一种现象，例如第一个事务对一个表中的数据进行了修改，这种修改涉及到表中的全部数据行。同时，第二个事务也修改这个表中的数据，这种修改是向表中插入一行新数据。那么，以后就会发生操作第一个事务的用户发现表中还有没有修改的数据行，就好象发生了幻觉一样.<br>不可重复读的和幻读很容易混淆，不可重复读侧重于修改，幻读侧重于新增或删除。解决不可重复读的问题只需锁住满足条件的行，解决幻读需要锁表</li>
+</ol>
+<h3 id="mysql事务隔离级别"><a href="#mysql事务隔离级别" class="headerlink" title="mysql事务隔离级别"></a>mysql事务隔离级别</h3><p>mysql的事务默认级别是可重复读</p>
+<table>
+<thead>
+<tr>
+<th>事务隔离级别</th>
+<th>脏读</th>
+<th>不可重复读</th>
+<th>幻读</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>读未提交(read-uncommitted)</td>
+<td>是</td>
+<td>是</td>
+<td>是</td>
+</tr>
+<tr>
+<td>不可重复读(read-committed)</td>
+<td>否</td>
+<td>是</td>
+<td>是</td>
+</tr>
+<tr>
+<td>可重复读(repeatable-read)</td>
+<td>否</td>
+<td>否</td>
+<td>是</td>
+</tr>
+<tr>
+<td>串行化(serializable)</td>
+<td>否</td>
+<td>否</td>
+<td>否</td>
+</tr>
+</tbody></table>
+<p><a href="https://www.liaoxuefeng.com/wiki/1177760294764384/1219071817284064" target="_blank" rel="noopener">四种隔离级别测试</a></p>
+<h3 id="锁"><a href="#锁" class="headerlink" title="锁"></a>锁</h3><p><a href="https://www.letiantian.me/mysql-innodb-rr-x-lock-example/" target="_blank" rel="noopener">共享锁，排他锁与事务</a></p>
 
           
         
@@ -2342,7 +2293,7 @@ while(keyIterator.hasNext()) {
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/mysql%E4%BA%8B%E5%8A%A1%E5%92%8C%E9%94%81/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/nio%E5%9F%BA%E7%A1%80/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="sinaill">
@@ -2361,7 +2312,7 @@ while(keyIterator.hasNext()) {
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/06/17/mysql%E4%BA%8B%E5%8A%A1%E5%92%8C%E9%94%81/" itemprop="url">mysql事务和锁</a></h1>
+                <a class="post-title-link" href="/2020/06/17/nio%E5%9F%BA%E7%A1%80/" itemprop="url">nio基础</a></h1>
         
 
         <div class="post-meta">
@@ -2396,8 +2347,8 @@ while(keyIterator.hasNext()) {
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/mysql/" itemprop="url" rel="index">
-                    <span itemprop="name">mysql</span>
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
                   </a>
                 </span>
 
@@ -2435,54 +2386,103 @@ while(keyIterator.hasNext()) {
       
         
           
-            <h3 id="事务的基本要素-acid"><a href="#事务的基本要素-acid" class="headerlink" title="事务的基本要素(acid)"></a>事务的基本要素(acid)</h3><ol>
-<li>原子性（Atomicity）：事务开始后所有操作，要么全部做完，要么全部不做，不可能停滞在中间环节。事务执行过程中出错，会回滚到事务开始前的状态，所有的操作就像没有发生一样。也就是说事务是一个不可分割的整体，就像化学中学过的原子，是物质构成的基本单位。</li>
-<li>一致性（Consistency）：事务开始前和结束后，数据库的完整性约束没有被破坏 。比如A向B转账，不可能A扣了钱，B却没收到。</li>
-<li>隔离性（Isolation）：同一时间，只允许一个事务请求同一数据，不同的事务之间彼此没有任何干扰。比如A正在从一张银行卡中取钱，在A取钱的过程结束前，B不能向这张卡转账。</li>
-<li>持久性（Durability）：事务完成后，事务对数据库的所有更新将被保存到数据库，不能回滚。</li>
+            <h3 id="什么是nio"><a href="#什么是nio" class="headerlink" title="什么是nio"></a>什么是nio</h3><p>Java NIO是java 1.4之后新出的一套IO接口，这里的的新是相对于原有标准的Java IO和Java Networking接口。NIO提供了一种完全不同的操作方式。</p>
+<p><strong>NIO中的N可以理解为Non-blocking，不单纯是New</strong></p>
+<p>标准的IO编程接口是面向字节流和字符流的。而NIO是面向通道和缓冲区的，数据总是从通道中读到buffer缓冲区内，或者从buffer写入到通道中</p>
+<h3 id="nio核心组件"><a href="#nio核心组件" class="headerlink" title="nio核心组件"></a>nio核心组件</h3><h4 id="Channel通道"><a href="#Channel通道" class="headerlink" title="Channel通道"></a>Channel通道</h4><p>普通io是通过输入流和输出流来进行传输，nio只需要一个channel，channel是双向的，既可以写也可以读</p>
+<p>特点</p>
+<ul>
+<li>通道可以读也可以写，流一般来说是单向的(只能读或者写)</li>
+<li>通道可以异步读写</li>
+<li>通道总是基于缓冲区Buffer来读写</li>
+</ul>
+<h4 id="Buffer缓冲区"><a href="#Buffer缓冲区" class="headerlink" title="Buffer缓冲区"></a>Buffer缓冲区</h4><p>Java NIO Buffers用于和NIO Channel交互，我们从channel中读取数据到buffers里，从buffer把数据写入到channels。</p>
+<p>buffer中有三个属性，position，limit，capacity</p>
+<ol>
+<li>初始状态下，position为0，limit=capacity</li>
+<li>使用put写入数据后，position为写入数据最后一个字节的索引(即写入数据的长度)</li>
+<li>在读取buffer中数据或者向channel写入buffer，需要调用flip，作用是将<code>limit=position</code>,然后position归0，保证只作用于有效数据。</li>
 </ol>
-<h3 id="事务的并发问题"><a href="#事务的并发问题" class="headerlink" title="事务的并发问题"></a>事务的并发问题</h3><ol>
-<li>脏读：脏读意味着一个事务读取了另一个事务未提交的数据,而这个数据是有可能回滚</li>
-<li>不可重复读：不可重复读意味着，在数据库访问中，一个事务范围内两个相同的查询却返回了不同数据。这是由于查询时系统中其他事务修改的提交而引起的。</li>
-<li>幻读：是指当事务不是独立执行时发生的一种现象，例如第一个事务对一个表中的数据进行了修改，这种修改涉及到表中的全部数据行。同时，第二个事务也修改这个表中的数据，这种修改是向表中插入一行新数据。那么，以后就会发生操作第一个事务的用户发现表中还有没有修改的数据行，就好象发生了幻觉一样.<br>不可重复读的和幻读很容易混淆，不可重复读侧重于修改，幻读侧重于新增或删除。解决不可重复读的问题只需锁住满足条件的行，解决幻读需要锁表</li>
-</ol>
-<h3 id="mysql事务隔离级别"><a href="#mysql事务隔离级别" class="headerlink" title="mysql事务隔离级别"></a>mysql事务隔离级别</h3><p>mysql的事务默认级别是可重复读</p>
-<table>
-<thead>
-<tr>
-<th>事务隔离级别</th>
-<th>脏读</th>
-<th>不可重复读</th>
-<th>幻读</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>读未提交(read-uncommitted)</td>
-<td>是</td>
-<td>是</td>
-<td>是</td>
-</tr>
-<tr>
-<td>不可重复读(read-committed)</td>
-<td>否</td>
-<td>是</td>
-<td>是</td>
-</tr>
-<tr>
-<td>可重复读(repeatable-read)</td>
-<td>否</td>
-<td>否</td>
-<td>是</td>
-</tr>
-<tr>
-<td>串行化(serializable)</td>
-<td>否</td>
-<td>否</td>
-<td>否</td>
-</tr>
-</tbody></table>
-<p><a href="https://www.liaoxuefeng.com/wiki/1177760294764384/1219071817284064" target="_blank" rel="noopener">四种隔离级别测试</a></p>
-<h3 id="锁"><a href="#锁" class="headerlink" title="锁"></a>锁</h3><p><a href="https://www.letiantian.me/mysql-innodb-rr-x-lock-example/" target="_blank" rel="noopener">共享锁，排他锁与事务</a></p>
+<h4 id="Selector选择器"><a href="#Selector选择器" class="headerlink" title="Selector选择器"></a>Selector选择器</h4><p>Selector是Java NIO中的一个组件，用于检查一个或多个NIO Channel的状态是否处于可读、可写。如此可以实现单线程管理多个channels,也就是可以管理多个网络链接。</p>
+<h5 id="创建一个Selector"><a href="#创建一个Selector" class="headerlink" title="创建一个Selector"></a>创建一个Selector</h5><p><code>Selector selector = Selector.open();</code></p>
+<h5 id="注册Channel到Selector上"><a href="#注册Channel到Selector上" class="headerlink" title="注册Channel到Selector上"></a>注册Channel到Selector上</h5><pre><code>channel.configureBlocking(false);//必须设置非阻塞通道
+SelectionKey key = channel.register(selector, SelectionKey.OP_READ);</code></pre><p>register的第二个参数，这个参数是一个“关注集合”，代表我们关注的channel状态，有四种基础类型可供监听：</p>
+<ul>
+<li>Connect</li>
+<li>Accept</li>
+<li>Read</li>
+<li>Write</li>
+</ul>
+<p>一个channel触发了一个事件也可视作该事件处于就绪状态。因此当channel与server连接成功后，那么就是“连接就绪”状态。server channel接收请求连接时处于“可连接就绪”状态。channel有数据可读时处于“读就绪”状态。channel可以进行数据写入时处于“写就绪”状态。</p>
+<p>上述的四种就绪状态用SelectionKey中的常量表示如下：</p>
+<ul>
+<li>SelectionKey.OP_CONNECT</li>
+<li>SelectionKey.OP_ACCEPT</li>
+<li>SelectionKey.OP_READ</li>
+<li>SelectionKey.OP_WRITE</li>
+</ul>
+<p>如果对多个事件感兴趣可利用位的或运算结合多个常量，比如：</p>
+<p><code>int interestSet = SelectionKey.OP_READ | SelectionKey.OP_WRITE;</code></p>
+<h5 id="SelectionKey"><a href="#SelectionKey" class="headerlink" title="SelectionKey"></a>SelectionKey</h5><p>register方法把Channel注册到了Selectors上，这个方法的返回值是SelectionKey，这个返回的对象包含了以下属性：</p>
+<ul>
+<li>The interest set</li>
+<li>The ready set</li>
+<li>The Channel</li>
+<li>The Selector</li>
+<li>An attached object (optional)</li>
+</ul>
+<p>Interest Set实际上就是我们希望处理的事件的集合，它的值就是注册时传入的参数，我们可以用按为与运算把每个事件取出来：</p>
+<pre><code>int interestSet = selectionKey.interestOps();
+
+boolean isInterestedInAccept  = interestSet &amp; SelectionKey.OP_ACCEPT;
+boolean isInterestedInConnect = interestSet &amp; SelectionKey.OP_CONNECT;
+boolean isInterestedInRead    = interestSet &amp; SelectionKey.OP_READ;
+boolean isInterestedInWrite   = interestSet &amp; SelectionKey.OP_WRITE; </code></pre><p>Ready Set中的值是当前channel处于就绪的值，为触发该channel的就绪状态</p>
+<p><code>int readySet = selectionKey.readyOps();</code></p>
+<p>Channel + Selector可以这样获得</p>
+<pre><code>Channel  channel  = selectionKey.channel();
+Selector selector = selectionKey.selector(); </code></pre><p>Attaching Objects，我们可以给一个SelectionKey附加一个Object，这样做一方面可以方便我们识别某个特定的channel，同时也增加了channel相关的附加信息。例如，可以把用于channel的buffer附加到SelectionKey上：</p>
+<pre><code>selectionKey.attach(theObject);
+
+Object attachedObj = selectionKey.attachment();</code></pre><p>附加对象的操作也可以在register的时候就执行：</p>
+<p><code>SelectionKey key = channel.register(selector, SelectionKey.OP_READ, theObject);</code></p>
+<h5 id="获取就绪channel"><a href="#获取就绪channel" class="headerlink" title="获取就绪channel"></a>获取就绪channel</h5><p>一旦我们向Selector注册了一个或多个channel后，就可以调用select来获取channel。select方法会返回所有处于就绪状态的channel。 select方法具体如下：</p>
+<ul>
+<li>int select()</li>
+<li>int select(long timeout)</li>
+<li>int selectNow()</li>
+</ul>
+<p>select()方法在返回channel之前处于阻塞状态。 select(long timeout)和select做的事一样，不过他的阻塞有一个超时限制。</p>
+<p>selectNow()不会阻塞，根据当前状态立刻返回合适的channel。</p>
+<p>select()方法的返回值是一个int整形，代表有多少channel处于就绪了。也就是自上一次select后有多少channel进入就绪。举例来说，假设第一次调用select时正好有一个channel就绪，那么返回值是1，并且对这个channel做任何处理，接着再次调用select，此时恰好又有一个新的channel就绪，那么返回值还是1，现在我们一共有两个channel处于就绪，但是在每次调用select时只有一个channel是就绪的。</p>
+<p>在调用select并返回了有channel就绪之后，可以通过选中的key集合来获取channel，这个操作通过调用selectedKeys()方法：</p>
+<p><code>Set&lt;SelectionKey&gt; selectedKeys = selector.selectedKeys();</code></p>
+<p>还记得在register时的操作吧，我们register后的返回值就是SelectionKey实例，也就是我们现在通过selectedKeys()方法所返回的SelectionKey。</p>
+<p>遍历这些SelectionKey可以通过如下方法：</p>
+<pre><code>Set&lt;SelectionKey&gt; selectedKeys = selector.selectedKeys();
+
+Iterator&lt;SelectionKey&gt; keyIterator = selectedKeys.iterator();
+
+while(keyIterator.hasNext()) {
+
+    SelectionKey key = keyIterator.next();
+
+    if(key.isAcceptable()) {
+        // a connection was accepted by a ServerSocketChannel.
+
+    } else if (key.isConnectable()) {
+        // a connection was established with a remote server.
+
+    } else if (key.isReadable()) {
+        // a channel is ready for reading
+
+    } else if (key.isWritable()) {
+        // a channel is ready for writing
+    }
+
+    keyIterator.remove();
+}</code></pre><p>由于调用select而被阻塞的线程，可以通过调用Selector.wakeup()来唤醒即便此时已然没有channel处于就绪状态。具体操作是，在另外一个线程调用wakeup，被阻塞与select方法的线程就会立刻返回。</p>
+<p>当操作Selector完毕后，需要调用close方法。close的调用会关闭Selector并使相关的SelectionKey都无效。channel本身不管被关闭。</p>
 
           
         

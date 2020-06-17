@@ -626,338 +626,6 @@ END</code></pre><h5 id="其它"><a href="#其它" class="headerlink" title="其�
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/java8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/java8/" itemprop="url">jdk1.8新特性</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h3><p>1.可以定义静态方法(包括方法体)，实现接口后的类无法调用</p>
-<p>2.可以定义default类型方法(包括方法体)，实现接口后可override，实现接口后的类的实例可以调用</p>
-<h3 id="函数式接口"><a href="#函数式接口" class="headerlink" title="函数式接口"></a>函数式接口</h3><p>如果一个接口定义个唯一一个抽象方法，那么这个接口就成为函数式接口，引入了一个新的Annotation：@FunctionalInterface。可以把他它放在一个接口前，表示这个接口是一个函数式接口。加上它的接口不会被编译。<br><strong>函数式接口中还可以额外定义Object类中的抽象方法，例如Comparator接口</strong></p>
-<h3 id="lambda表达式"><a href="#lambda表达式" class="headerlink" title="lambda表达式"></a>lambda表达式</h3><p>基本语法:(parameters) -&gt; expression</p>
-<pre><code>    // 1. 不需要参数,返回值为 5  
-    () -&gt; 5  
-
-    // 2. 接收一个参数(数字类型),返回其2倍的值  
-    x -&gt; 2 * x  
-
-    // 3. 接受2个参数(数字),并返回他们的差值  
-    (x, y) -&gt; x – y  
-
-    // 4. 接收2个int型整数,返回他们的和  
-    (int x, int y) -&gt; x + y  
-
-    // 5. 接受一个 string 对象,并在控制台打印,不返回任何值(看起来像是返回void)  
-    (String s) -&gt; System.out.print(s)  </code></pre><p>例子：</p>
-<pre><code>        Integer a[] = {1,2,3,4,5,6,7,8,9};
-        List&lt;Integer&gt; list = Arrays.asList(a);
-        list.forEach((Integer b)-&gt;System.out.println(b));</code></pre><pre><code>    String[] players = {&quot;Rafael Nadal&quot;, &quot;Novak Djokovic&quot;,   
-    &quot;Stanislas Wawrinka&quot;, &quot;David Ferrer&quot;,  
-    &quot;Roger Federer&quot;, &quot;Andy Murray&quot;,  
-    &quot;Tomas Berdych&quot;, &quot;Juan Martin Del Potro&quot;,  
-    &quot;Richard Gasquet&quot;, &quot;John Isner&quot;}; 
-    Arrays.sort(players, (String s1, String s2) -&gt; (s1.compareTo(s2)));  </code></pre><p><code>Runnable r = () -&gt; { System.out.println(&quot;Running!&quot;); }</code></p>
-<h3 id="捕获和非捕获的Lambda表达式"><a href="#捕获和非捕获的Lambda表达式" class="headerlink" title="捕获和非捕获的Lambda表达式"></a>捕获和非捕获的Lambda表达式</h3><p>1.当Lambda表达式访问一个定义在Lambda表达式体外的非静态变量或者对象时，这个Lambda表达式称为“捕获的”。</p>
-<p>2.在lambda表达式中访问外层作用域和老版本的匿名对象中的方式很相似。你可以直接访问标记了final的外层局部变量，或者实例的字段以及静态变量。</p>
-<h3 id="Stream"><a href="#Stream" class="headerlink" title="Stream"></a>Stream</h3><p>这里的Stream可不是IO里面的OutputStream或InputStream之类，而是对java中Collection类聚合功能的增强。Stream API配合lamada表达式，极大的提升了编程效率和程序可读性。Stream中支持并行和串行两种聚合方式。</p>
-<p>Stream接口中提供了更多对集合操作的api</p>
-<h4 id="map"><a href="#map" class="headerlink" title="map"></a>map</h4><pre><code>    /**
-     * Returns a stream consisting of the results of applying the given
-     * function to the elements of this stream.
-     *
-     * &lt;p&gt;This is an &lt;a href=&quot;package-summary.html#StreamOps&quot;&gt;intermediate
-     * operation&lt;/a&gt;.
-     *
-     * @param &lt;R&gt; The element type of the new stream
-     * @param mapper a &lt;a href=&quot;package-summary.html#NonInterference&quot;&gt;non-interfering&lt;/a&gt;,
-     *               &lt;a href=&quot;package-summary.html#Statelessness&quot;&gt;stateless&lt;/a&gt;
-     *               function to apply to each element
-     * @return the new stream
-     */
-    &lt;R&gt; Stream&lt;R&gt; map(Function&lt;? super T, ? extends R&gt; mapper);</code></pre><p>与forEach方法不同，Function中apply方法有返回值，而Consumer中的accept方法没有，map返回的Stream中的元素为Function中apply方法返回值，forEach只提供对元素操作，不返回Stream</p>
-<pre><code>        List&lt;Integer&gt; a = new ArrayList&lt;Integer&gt;();
-        a.add(1);
-        a.add(2);
-        a.add(5);
-        a = a.stream().map(i-&gt;++i).collect(Collectors.toList());</code></pre><p><code>2 3 6</code><br>将集合中每个元素加1</p>
-<pre><code>        List&lt;String&gt; l = new ArrayList&lt;String&gt;();
-        l.add(&quot;a&quot;);
-        l.add(&quot;b&quot;);
-        l.add(&quot;c&quot;);
-        l = l.stream().map(String::toUpperCase).collect(Collectors.toList());</code></pre><p>将集合中每个字符串变大写</p>
-<h4 id="filter"><a href="#filter" class="headerlink" title="filter"></a>filter</h4><pre><code>    /**
-     * Returns a stream consisting of the elements of this stream that match
-     * the given predicate.
-     *
-     * &lt;p&gt;This is an &lt;a href=&quot;package-summary.html#StreamOps&quot;&gt;intermediate
-     * operation&lt;/a&gt;.
-     *
-     * @param predicate a &lt;a href=&quot;package-summary.html#NonInterference&quot;&gt;non-interfering&lt;/a&gt;,
-     *                  &lt;a href=&quot;package-summary.html#Statelessness&quot;&gt;stateless&lt;/a&gt;
-     *                  predicate to apply to each element to determine if it
-     *                  should be included
-     * @return the new stream
-     */
-    Stream&lt;T&gt; filter(Predicate&lt;? super T&gt; predicate);</code></pre><p>predicate接口返回值为布尔值，用来过滤不符合条件的集合中的元素</p>
-<pre><code>        List&lt;Integer&gt; a = new ArrayList&lt;Integer&gt;();
-        a.add(1);
-        a.add(2);
-        a.add(5);
-        List&lt;Integer&gt; t = new ArrayList&lt;Integer&gt;();
-        t = a.stream().filter(i-&gt;i&gt;2).collect(Collectors.toList());
-        t.forEach(System.out::println);</code></pre><p><code>5</code></p>
-<p>作用是过滤了小于等于2的元素</p>
-<h4 id="mapToInt-mapToLong-mapToDouble"><a href="#mapToInt-mapToLong-mapToDouble" class="headerlink" title="mapToInt (mapToLong  mapToDouble)"></a>mapToInt (mapToLong  mapToDouble)</h4><pre><code>    /**
-     * Returns an {@code IntStream} consisting of the results of applying the
-     * given function to the elements of this stream.
-     *
-     * &lt;p&gt;This is an &lt;a href=&quot;package-summary.html#StreamOps&quot;&gt;
-     *     intermediate operation&lt;/a&gt;.
-     *
-     * @param mapper a &lt;a href=&quot;package-summary.html#NonInterference&quot;&gt;non-interfering&lt;/a&gt;,
-     *               &lt;a href=&quot;package-summary.html#Statelessness&quot;&gt;stateless&lt;/a&gt;
-     *               function to apply to each element
-     * @return the new stream
-     */
-    IntStream mapToInt(ToIntFunction&lt;? super T&gt; mapper);</code></pre><pre><code>public interface ToIntFunction&lt;T&gt; {
-
-    /**
-     * Applies this function to the given argument.
-     *
-     * @param value the function argument
-     * @return the function result
-     */
-    int applyAsInt(T value);
-}</code></pre><p>实现ToIntFunction，将集合中元素转化为int类型，返回一个IntStream</p>
-<h4 id="flapMap"><a href="#flapMap" class="headerlink" title="flapMap"></a>flapMap</h4><p><code>&lt;R&gt; Stream&lt;R&gt; flatMap(Function&lt;? super T, ? extends Stream&lt;? extends R&gt;&gt; mapper);</code></p>
-<p>与map方法的区别是，Function返回的是Stream，意味着Function方法中可以返回含有多个元素的Stream，最后会将所有Stream合并并返回一个Stream</p>
-<p>例子：</p>
-<pre><code>        Stream&lt;List&lt;Integer&gt;&gt; integerListStream = Stream.of(
-                  Arrays.asList(1, 4), 
-                  Arrays.asList(3, 2), 
-                  Arrays.asList(5)
-                );
-        integerListStream.flatMap(i-&gt;Stream.of(i.toArray())).forEach(System.out::println);</code></pre><p><code>1,4,3,2,5</code></p>
-<h4 id="flapMapToInt-flapMapToDouble-flapMapToLong"><a href="#flapMapToInt-flapMapToDouble-flapMapToLong" class="headerlink" title="flapMapToInt(flapMapToDouble flapMapToLong)"></a>flapMapToInt(flapMapToDouble flapMapToLong)</h4><pre><code>    IntStream flatMapToInt(Function&lt;? super T, ? extends IntStream&gt; mapper);</code></pre><p>与flapMap方法类似，Function返回的是IntStream，将多个IntStream合并然后返回一个IntStream</p>
-<pre><code>        Stream&lt;List&lt;String&gt;&gt; stringListStream = Stream.of(
-                  Arrays.asList(&quot;1&quot;,&quot;4&quot;), 
-                  Arrays.asList(&quot;3&quot;,&quot;2&quot;), 
-                  Arrays.asList(&quot;5&quot;)
-                );
-        stringListStream.flatMapToInt(i-&gt;i.stream().mapToInt(Integer::valueOf)).forEach(System.out::println);</code></pre><p><code>1,4,3,2,5</code></p>
-<h4 id="distinct"><a href="#distinct" class="headerlink" title="distinct"></a>distinct</h4><p><code>Stream&lt;T&gt; distinct();</code></p>
-<p>利用Object的equals方法去除重复元素</p>
-<h4 id="sorted"><a href="#sorted" class="headerlink" title="sorted"></a>sorted</h4><p><code>Stream&lt;T&gt; sorted();</code></p>
-<p>对集合元素进行排序，如果元素没实现comparable接口，则抛出java.lang.ClassCastException异常</p>
-<p><code>Stream&lt;T&gt; sorted(Comparator&lt;? super T&gt; comparator);</code></p>
-<p>元素没有实现comparable接口时，可以传入comparator实现类对集合元素进行排序</p>
-<h4 id="peek"><a href="#peek" class="headerlink" title="peek"></a>peek</h4><p><code>Stream&lt;T&gt; peek(Consumer&lt;? super T&gt; action);</code></p>
-<p>与forEach类似，不同之处在于peek继续返回Stream，而forEach无返回值</p>
-<h4 id="limit"><a href="#limit" class="headerlink" title="limit"></a>limit</h4><p><code>Stream&lt;T&gt; limit(long maxSize);</code></p>
-<p>根据maxSize截断Stream并返回长度为maxSize的新Stream，若maxSize为负数，抛出IllegalArgumentException</p>
-<h4 id="skip"><a href="#skip" class="headerlink" title="skip"></a>skip</h4><p><code>Stream&lt;T&gt; skip(long n);</code></p>
-<p>返回一个删除前n个元素的Stream</p>
-<h4 id="forEach"><a href="#forEach" class="headerlink" title="forEach"></a>forEach</h4><p><code>void forEach(Consumer&lt;? super T&gt; action);</code></p>
-<p>Consumer中accept方法对Stream中元素操作，无返回值(<strong>遍历集合时依旧检测modCount==expectedModCount</strong>)</p>
-<h4 id="forEachOrdered"><a href="#forEachOrdered" class="headerlink" title="forEachOrdered"></a>forEachOrdered</h4><p><code>void forEachOrdered(Consumer&lt;? super T&gt; action);</code></p>
-<p>按照集合中元素顺序来使用Consumer处理每个元素</p>
-<h4 id="toArray"><a href="#toArray" class="headerlink" title="toArray"></a>toArray</h4><p><code>Object[] toArray();</code></p>
-<p>Stream转为数组</p>
-<h4 id="reduce"><a href="#reduce" class="headerlink" title="reduce"></a>reduce</h4><p><code>T reduce(T identity, BinaryOperator&lt;T&gt; accumulator);</code></p>
-<p>accumulator函数式接口中，抽象方法为R apply(T t, U u);</p>
-<p>先将identity作为第一个参数，Stream中第一个元素作为第二个参数，执行apply方法后，返回值作为第一个参数，下一个元素作为第二个参数,继续执行apply直到</p>
-<p>sum，min，max, average,都是特殊的reduction</p>
-<p>例如 sum = Stream.reduce(0,Integer::sum);</p>
-<p><code>Optional&lt;T&gt; reduce(BinaryOperator&lt;T&gt; accumulator);</code></p>
-<p>同上，只是去掉identity，并且返回值为Optional类</p>
-<h4 id="collect"><a href="#collect" class="headerlink" title="collect"></a>collect</h4><p><code>&lt;R, A&gt; R collect(Collector&lt;? super T, A, R&gt; collector);</code></p>
-<p>参数详见Collectors接口，Stream.collect(Collectors.tolist())将流转化回集合List</p>
-<h4 id="min"><a href="#min" class="headerlink" title="min"></a>min</h4><p><code>Optional&lt;T&gt; min(Comparator&lt;? super T&gt; comparator);</code></p>
-<p>返回Optional实例，值为传入的comparator排序后第一个元素</p>
-<h4 id="max"><a href="#max" class="headerlink" title="max"></a>max</h4><p><code>Optional&lt;T&gt; max(Comparator&lt;? super T&gt; comparator);</code></p>
-<p>返回Optional实例，值为传入的comparator排序后最后一个元素</p>
-<h4 id="count"><a href="#count" class="headerlink" title="count"></a>count</h4><p><code>long count();</code></p>
-<p>返回流中元素个数</p>
-<h4 id="anyMatch"><a href="#anyMatch" class="headerlink" title="anyMatch"></a>anyMatch</h4><p><code>boolean anyMatch(Predicate&lt;? super T&gt; predicate);</code></p>
-<p>Predicate接口中boolean test(T t)处理所有元素，有一个返回值为true时，或者Stream为空时，返回true，否则返回false</p>
-<h4 id="allMatch"><a href="#allMatch" class="headerlink" title="allMatch"></a>allMatch</h4><p><code>boolean allMatch(Predicate&lt;? super T&gt; predicate);</code></p>
-<p>Predicate接口中boolean test(T t)处理所有元素，所有返回值都为true，或者Stream为空时返回true，否则返回false</p>
-<h4 id="noneMatch"><a href="#noneMatch" class="headerlink" title="noneMatch"></a>noneMatch</h4><p>与anyMatch相反</p>
-<h4 id="findFirst"><a href="#findFirst" class="headerlink" title="findFirst"></a>findFirst</h4><p><code>Optional&lt;T&gt; findFirst();</code></p>
-<p>获取Stream第一个元素</p>
-<h4 id="findAny"><a href="#findAny" class="headerlink" title="findAny"></a>findAny</h4><p><code>Optional&lt;T&gt; findAny();</code></p>
-<p>返回任意元素</p>
-<h4 id="of"><a href="#of" class="headerlink" title="of"></a>of</h4><pre><code>    /**
-     * Returns a sequential {@code Stream} containing a single element.
-     *
-     * @param t the single element
-     * @param &lt;T&gt; the type of stream elements
-     * @return a singleton sequential stream
-     */
-    public static&lt;T&gt; Stream&lt;T&gt; of(T t) {
-        return StreamSupport.stream(new Streams.StreamBuilderImpl&lt;&gt;(t), false);
-    }</code></pre><p>返回包含t元素的Stream</p>
-<pre><code>    /**
-     * Returns a sequential ordered stream whose elements are the specified values.
-     *
-     * @param &lt;T&gt; the type of stream elements
-     * @param values the elements of the new stream
-     * @return the new stream
-     */
-    @SafeVarargs
-    @SuppressWarnings(&quot;varargs&quot;) // Creating a stream from an array is safe
-    public static&lt;T&gt; Stream&lt;T&gt; of(T... values) {
-        return Arrays.stream(values);
-    }</code></pre><p>使用不定长度参数来创建Stream，参数可以为数组(可以Integer[]，不能是int[]）</p>
-<h3 id="方法引用与构造引用"><a href="#方法引用与构造引用" class="headerlink" title="方法引用与构造引用"></a>方法引用与构造引用</h3><p>1.方法引用，用来配合lambda表达式使用，使用情况有三种：<br>(1)对象::实例方法<br>(2)类::静态方法<br>(3)类::实例方法</p>
-<p>前两种情况中，方法引用等同于提供方法参数的lambda表达式。比如：<strong>Math::pow等同于(x, y) -&gt; Math.pow(x, y)。</strong><br>第三种情况中，第一个参数会成为执行方法的对象。比如：<strong>String::compareToIgnoreCase等同于(x, y) -&gt; x.compareToIgnoreCase(y)。</strong></p>
-<p>2.构造引用，配合supplier接口使用</p>
-<pre><code>@FunctionalInterface
-public interface Supplier&lt;T&gt; {
-
-    /**
-     * Gets a result.
-     *
-     * @return a result
-     */
-    T get();
-}</code></pre><p><strong>()-&gt;new class()等同于class:new</strong></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/io%E5%9F%BA%E7%A1%80/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1535,6 +1203,338 @@ getLowerBouds: java.lang.String</code></pre><p>相关链接</p>
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/java8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/java8/" itemprop="url">jdk1.8新特性</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h3><p>1.可以定义静态方法(包括方法体)，实现接口后的类无法调用</p>
+<p>2.可以定义default类型方法(包括方法体)，实现接口后可override，实现接口后的类的实例可以调用</p>
+<h3 id="函数式接口"><a href="#函数式接口" class="headerlink" title="函数式接口"></a>函数式接口</h3><p>如果一个接口定义个唯一一个抽象方法，那么这个接口就成为函数式接口，引入了一个新的Annotation：@FunctionalInterface。可以把他它放在一个接口前，表示这个接口是一个函数式接口。加上它的接口不会被编译。<br><strong>函数式接口中还可以额外定义Object类中的抽象方法，例如Comparator接口</strong></p>
+<h3 id="lambda表达式"><a href="#lambda表达式" class="headerlink" title="lambda表达式"></a>lambda表达式</h3><p>基本语法:(parameters) -&gt; expression</p>
+<pre><code>    // 1. 不需要参数,返回值为 5  
+    () -&gt; 5  
+
+    // 2. 接收一个参数(数字类型),返回其2倍的值  
+    x -&gt; 2 * x  
+
+    // 3. 接受2个参数(数字),并返回他们的差值  
+    (x, y) -&gt; x – y  
+
+    // 4. 接收2个int型整数,返回他们的和  
+    (int x, int y) -&gt; x + y  
+
+    // 5. 接受一个 string 对象,并在控制台打印,不返回任何值(看起来像是返回void)  
+    (String s) -&gt; System.out.print(s)  </code></pre><p>例子：</p>
+<pre><code>        Integer a[] = {1,2,3,4,5,6,7,8,9};
+        List&lt;Integer&gt; list = Arrays.asList(a);
+        list.forEach((Integer b)-&gt;System.out.println(b));</code></pre><pre><code>    String[] players = {&quot;Rafael Nadal&quot;, &quot;Novak Djokovic&quot;,   
+    &quot;Stanislas Wawrinka&quot;, &quot;David Ferrer&quot;,  
+    &quot;Roger Federer&quot;, &quot;Andy Murray&quot;,  
+    &quot;Tomas Berdych&quot;, &quot;Juan Martin Del Potro&quot;,  
+    &quot;Richard Gasquet&quot;, &quot;John Isner&quot;}; 
+    Arrays.sort(players, (String s1, String s2) -&gt; (s1.compareTo(s2)));  </code></pre><p><code>Runnable r = () -&gt; { System.out.println(&quot;Running!&quot;); }</code></p>
+<h3 id="捕获和非捕获的Lambda表达式"><a href="#捕获和非捕获的Lambda表达式" class="headerlink" title="捕获和非捕获的Lambda表达式"></a>捕获和非捕获的Lambda表达式</h3><p>1.当Lambda表达式访问一个定义在Lambda表达式体外的非静态变量或者对象时，这个Lambda表达式称为“捕获的”。</p>
+<p>2.在lambda表达式中访问外层作用域和老版本的匿名对象中的方式很相似。你可以直接访问标记了final的外层局部变量，或者实例的字段以及静态变量。</p>
+<h3 id="Stream"><a href="#Stream" class="headerlink" title="Stream"></a>Stream</h3><p>这里的Stream可不是IO里面的OutputStream或InputStream之类，而是对java中Collection类聚合功能的增强。Stream API配合lamada表达式，极大的提升了编程效率和程序可读性。Stream中支持并行和串行两种聚合方式。</p>
+<p>Stream接口中提供了更多对集合操作的api</p>
+<h4 id="map"><a href="#map" class="headerlink" title="map"></a>map</h4><pre><code>    /**
+     * Returns a stream consisting of the results of applying the given
+     * function to the elements of this stream.
+     *
+     * &lt;p&gt;This is an &lt;a href=&quot;package-summary.html#StreamOps&quot;&gt;intermediate
+     * operation&lt;/a&gt;.
+     *
+     * @param &lt;R&gt; The element type of the new stream
+     * @param mapper a &lt;a href=&quot;package-summary.html#NonInterference&quot;&gt;non-interfering&lt;/a&gt;,
+     *               &lt;a href=&quot;package-summary.html#Statelessness&quot;&gt;stateless&lt;/a&gt;
+     *               function to apply to each element
+     * @return the new stream
+     */
+    &lt;R&gt; Stream&lt;R&gt; map(Function&lt;? super T, ? extends R&gt; mapper);</code></pre><p>与forEach方法不同，Function中apply方法有返回值，而Consumer中的accept方法没有，map返回的Stream中的元素为Function中apply方法返回值，forEach只提供对元素操作，不返回Stream</p>
+<pre><code>        List&lt;Integer&gt; a = new ArrayList&lt;Integer&gt;();
+        a.add(1);
+        a.add(2);
+        a.add(5);
+        a = a.stream().map(i-&gt;++i).collect(Collectors.toList());</code></pre><p><code>2 3 6</code><br>将集合中每个元素加1</p>
+<pre><code>        List&lt;String&gt; l = new ArrayList&lt;String&gt;();
+        l.add(&quot;a&quot;);
+        l.add(&quot;b&quot;);
+        l.add(&quot;c&quot;);
+        l = l.stream().map(String::toUpperCase).collect(Collectors.toList());</code></pre><p>将集合中每个字符串变大写</p>
+<h4 id="filter"><a href="#filter" class="headerlink" title="filter"></a>filter</h4><pre><code>    /**
+     * Returns a stream consisting of the elements of this stream that match
+     * the given predicate.
+     *
+     * &lt;p&gt;This is an &lt;a href=&quot;package-summary.html#StreamOps&quot;&gt;intermediate
+     * operation&lt;/a&gt;.
+     *
+     * @param predicate a &lt;a href=&quot;package-summary.html#NonInterference&quot;&gt;non-interfering&lt;/a&gt;,
+     *                  &lt;a href=&quot;package-summary.html#Statelessness&quot;&gt;stateless&lt;/a&gt;
+     *                  predicate to apply to each element to determine if it
+     *                  should be included
+     * @return the new stream
+     */
+    Stream&lt;T&gt; filter(Predicate&lt;? super T&gt; predicate);</code></pre><p>predicate接口返回值为布尔值，用来过滤不符合条件的集合中的元素</p>
+<pre><code>        List&lt;Integer&gt; a = new ArrayList&lt;Integer&gt;();
+        a.add(1);
+        a.add(2);
+        a.add(5);
+        List&lt;Integer&gt; t = new ArrayList&lt;Integer&gt;();
+        t = a.stream().filter(i-&gt;i&gt;2).collect(Collectors.toList());
+        t.forEach(System.out::println);</code></pre><p><code>5</code></p>
+<p>作用是过滤了小于等于2的元素</p>
+<h4 id="mapToInt-mapToLong-mapToDouble"><a href="#mapToInt-mapToLong-mapToDouble" class="headerlink" title="mapToInt (mapToLong  mapToDouble)"></a>mapToInt (mapToLong  mapToDouble)</h4><pre><code>    /**
+     * Returns an {@code IntStream} consisting of the results of applying the
+     * given function to the elements of this stream.
+     *
+     * &lt;p&gt;This is an &lt;a href=&quot;package-summary.html#StreamOps&quot;&gt;
+     *     intermediate operation&lt;/a&gt;.
+     *
+     * @param mapper a &lt;a href=&quot;package-summary.html#NonInterference&quot;&gt;non-interfering&lt;/a&gt;,
+     *               &lt;a href=&quot;package-summary.html#Statelessness&quot;&gt;stateless&lt;/a&gt;
+     *               function to apply to each element
+     * @return the new stream
+     */
+    IntStream mapToInt(ToIntFunction&lt;? super T&gt; mapper);</code></pre><pre><code>public interface ToIntFunction&lt;T&gt; {
+
+    /**
+     * Applies this function to the given argument.
+     *
+     * @param value the function argument
+     * @return the function result
+     */
+    int applyAsInt(T value);
+}</code></pre><p>实现ToIntFunction，将集合中元素转化为int类型，返回一个IntStream</p>
+<h4 id="flapMap"><a href="#flapMap" class="headerlink" title="flapMap"></a>flapMap</h4><p><code>&lt;R&gt; Stream&lt;R&gt; flatMap(Function&lt;? super T, ? extends Stream&lt;? extends R&gt;&gt; mapper);</code></p>
+<p>与map方法的区别是，Function返回的是Stream，意味着Function方法中可以返回含有多个元素的Stream，最后会将所有Stream合并并返回一个Stream</p>
+<p>例子：</p>
+<pre><code>        Stream&lt;List&lt;Integer&gt;&gt; integerListStream = Stream.of(
+                  Arrays.asList(1, 4), 
+                  Arrays.asList(3, 2), 
+                  Arrays.asList(5)
+                );
+        integerListStream.flatMap(i-&gt;Stream.of(i.toArray())).forEach(System.out::println);</code></pre><p><code>1,4,3,2,5</code></p>
+<h4 id="flapMapToInt-flapMapToDouble-flapMapToLong"><a href="#flapMapToInt-flapMapToDouble-flapMapToLong" class="headerlink" title="flapMapToInt(flapMapToDouble flapMapToLong)"></a>flapMapToInt(flapMapToDouble flapMapToLong)</h4><pre><code>    IntStream flatMapToInt(Function&lt;? super T, ? extends IntStream&gt; mapper);</code></pre><p>与flapMap方法类似，Function返回的是IntStream，将多个IntStream合并然后返回一个IntStream</p>
+<pre><code>        Stream&lt;List&lt;String&gt;&gt; stringListStream = Stream.of(
+                  Arrays.asList(&quot;1&quot;,&quot;4&quot;), 
+                  Arrays.asList(&quot;3&quot;,&quot;2&quot;), 
+                  Arrays.asList(&quot;5&quot;)
+                );
+        stringListStream.flatMapToInt(i-&gt;i.stream().mapToInt(Integer::valueOf)).forEach(System.out::println);</code></pre><p><code>1,4,3,2,5</code></p>
+<h4 id="distinct"><a href="#distinct" class="headerlink" title="distinct"></a>distinct</h4><p><code>Stream&lt;T&gt; distinct();</code></p>
+<p>利用Object的equals方法去除重复元素</p>
+<h4 id="sorted"><a href="#sorted" class="headerlink" title="sorted"></a>sorted</h4><p><code>Stream&lt;T&gt; sorted();</code></p>
+<p>对集合元素进行排序，如果元素没实现comparable接口，则抛出java.lang.ClassCastException异常</p>
+<p><code>Stream&lt;T&gt; sorted(Comparator&lt;? super T&gt; comparator);</code></p>
+<p>元素没有实现comparable接口时，可以传入comparator实现类对集合元素进行排序</p>
+<h4 id="peek"><a href="#peek" class="headerlink" title="peek"></a>peek</h4><p><code>Stream&lt;T&gt; peek(Consumer&lt;? super T&gt; action);</code></p>
+<p>与forEach类似，不同之处在于peek继续返回Stream，而forEach无返回值</p>
+<h4 id="limit"><a href="#limit" class="headerlink" title="limit"></a>limit</h4><p><code>Stream&lt;T&gt; limit(long maxSize);</code></p>
+<p>根据maxSize截断Stream并返回长度为maxSize的新Stream，若maxSize为负数，抛出IllegalArgumentException</p>
+<h4 id="skip"><a href="#skip" class="headerlink" title="skip"></a>skip</h4><p><code>Stream&lt;T&gt; skip(long n);</code></p>
+<p>返回一个删除前n个元素的Stream</p>
+<h4 id="forEach"><a href="#forEach" class="headerlink" title="forEach"></a>forEach</h4><p><code>void forEach(Consumer&lt;? super T&gt; action);</code></p>
+<p>Consumer中accept方法对Stream中元素操作，无返回值(<strong>遍历集合时依旧检测modCount==expectedModCount</strong>)</p>
+<h4 id="forEachOrdered"><a href="#forEachOrdered" class="headerlink" title="forEachOrdered"></a>forEachOrdered</h4><p><code>void forEachOrdered(Consumer&lt;? super T&gt; action);</code></p>
+<p>按照集合中元素顺序来使用Consumer处理每个元素</p>
+<h4 id="toArray"><a href="#toArray" class="headerlink" title="toArray"></a>toArray</h4><p><code>Object[] toArray();</code></p>
+<p>Stream转为数组</p>
+<h4 id="reduce"><a href="#reduce" class="headerlink" title="reduce"></a>reduce</h4><p><code>T reduce(T identity, BinaryOperator&lt;T&gt; accumulator);</code></p>
+<p>accumulator函数式接口中，抽象方法为R apply(T t, U u);</p>
+<p>先将identity作为第一个参数，Stream中第一个元素作为第二个参数，执行apply方法后，返回值作为第一个参数，下一个元素作为第二个参数,继续执行apply直到</p>
+<p>sum，min，max, average,都是特殊的reduction</p>
+<p>例如 sum = Stream.reduce(0,Integer::sum);</p>
+<p><code>Optional&lt;T&gt; reduce(BinaryOperator&lt;T&gt; accumulator);</code></p>
+<p>同上，只是去掉identity，并且返回值为Optional类</p>
+<h4 id="collect"><a href="#collect" class="headerlink" title="collect"></a>collect</h4><p><code>&lt;R, A&gt; R collect(Collector&lt;? super T, A, R&gt; collector);</code></p>
+<p>参数详见Collectors接口，Stream.collect(Collectors.tolist())将流转化回集合List</p>
+<h4 id="min"><a href="#min" class="headerlink" title="min"></a>min</h4><p><code>Optional&lt;T&gt; min(Comparator&lt;? super T&gt; comparator);</code></p>
+<p>返回Optional实例，值为传入的comparator排序后第一个元素</p>
+<h4 id="max"><a href="#max" class="headerlink" title="max"></a>max</h4><p><code>Optional&lt;T&gt; max(Comparator&lt;? super T&gt; comparator);</code></p>
+<p>返回Optional实例，值为传入的comparator排序后最后一个元素</p>
+<h4 id="count"><a href="#count" class="headerlink" title="count"></a>count</h4><p><code>long count();</code></p>
+<p>返回流中元素个数</p>
+<h4 id="anyMatch"><a href="#anyMatch" class="headerlink" title="anyMatch"></a>anyMatch</h4><p><code>boolean anyMatch(Predicate&lt;? super T&gt; predicate);</code></p>
+<p>Predicate接口中boolean test(T t)处理所有元素，有一个返回值为true时，或者Stream为空时，返回true，否则返回false</p>
+<h4 id="allMatch"><a href="#allMatch" class="headerlink" title="allMatch"></a>allMatch</h4><p><code>boolean allMatch(Predicate&lt;? super T&gt; predicate);</code></p>
+<p>Predicate接口中boolean test(T t)处理所有元素，所有返回值都为true，或者Stream为空时返回true，否则返回false</p>
+<h4 id="noneMatch"><a href="#noneMatch" class="headerlink" title="noneMatch"></a>noneMatch</h4><p>与anyMatch相反</p>
+<h4 id="findFirst"><a href="#findFirst" class="headerlink" title="findFirst"></a>findFirst</h4><p><code>Optional&lt;T&gt; findFirst();</code></p>
+<p>获取Stream第一个元素</p>
+<h4 id="findAny"><a href="#findAny" class="headerlink" title="findAny"></a>findAny</h4><p><code>Optional&lt;T&gt; findAny();</code></p>
+<p>返回任意元素</p>
+<h4 id="of"><a href="#of" class="headerlink" title="of"></a>of</h4><pre><code>    /**
+     * Returns a sequential {@code Stream} containing a single element.
+     *
+     * @param t the single element
+     * @param &lt;T&gt; the type of stream elements
+     * @return a singleton sequential stream
+     */
+    public static&lt;T&gt; Stream&lt;T&gt; of(T t) {
+        return StreamSupport.stream(new Streams.StreamBuilderImpl&lt;&gt;(t), false);
+    }</code></pre><p>返回包含t元素的Stream</p>
+<pre><code>    /**
+     * Returns a sequential ordered stream whose elements are the specified values.
+     *
+     * @param &lt;T&gt; the type of stream elements
+     * @param values the elements of the new stream
+     * @return the new stream
+     */
+    @SafeVarargs
+    @SuppressWarnings(&quot;varargs&quot;) // Creating a stream from an array is safe
+    public static&lt;T&gt; Stream&lt;T&gt; of(T... values) {
+        return Arrays.stream(values);
+    }</code></pre><p>使用不定长度参数来创建Stream，参数可以为数组(可以Integer[]，不能是int[]）</p>
+<h3 id="方法引用与构造引用"><a href="#方法引用与构造引用" class="headerlink" title="方法引用与构造引用"></a>方法引用与构造引用</h3><p>1.方法引用，用来配合lambda表达式使用，使用情况有三种：<br>(1)对象::实例方法<br>(2)类::静态方法<br>(3)类::实例方法</p>
+<p>前两种情况中，方法引用等同于提供方法参数的lambda表达式。比如：<strong>Math::pow等同于(x, y) -&gt; Math.pow(x, y)。</strong><br>第三种情况中，第一个参数会成为执行方法的对象。比如：<strong>String::compareToIgnoreCase等同于(x, y) -&gt; x.compareToIgnoreCase(y)。</strong></p>
+<p>2.构造引用，配合supplier接口使用</p>
+<pre><code>@FunctionalInterface
+public interface Supplier&lt;T&gt; {
+
+    /**
+     * Gets a result.
+     *
+     * @return a result
+     */
+    T get();
+}</code></pre><p><strong>()-&gt;new class()等同于class:new</strong></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/interface%20and%20adstract%20class/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1640,6 +1640,250 @@ getLowerBouds: java.lang.String</code></pre><p>相关链接</p>
 <p>3.抽象方法修饰符可以为public,protected,default，而接口中方法要么为public，要么为有方法体的default</p>
 <p>4.接口与普通类不同，不能有Main方法，抽象类可以</p>
 <p>5.接口不能继承抽象类，抽象类可以实现接口</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/io%E4%B8%AD%E7%9A%84%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/io%E4%B8%AD%E7%9A%84%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F/" itemprop="url">io中的装饰者模式</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="java-io中的装饰者模式"><a href="#java-io中的装饰者模式" class="headerlink" title="java io中的装饰者模式"></a>java io中的装饰者模式</h3><p>以<code>inputStream</code>输入流为例，<code>inputStream</code>中的装饰者模式结构图：</p>
+<p><img src="http://wx1.sinaimg.cn/large/96b7c0f4gy1g0aqr1yy2fj20ge06j74k.jpg" alt=""></p>
+<p><strong>装饰者模式的各个角色</strong>:</p>
+<p><strong>抽象构件（Component）角色</strong>：由<code>InputStream</code>扮演。这是一个抽象类，为各种子类型流处理器提供统一的接口。<br><strong>具体构件（ConcreteComponent）角色</strong>：由<code>ByteArrayInputStream</code>、<code>FileInputStream</code>、PipedInputStream以及StringBufferInputStream等原始流处理器扮演。他们实现了抽象构件角色所规定的接口，可以被链接流处理器所装饰。<br><strong>抽象装饰（Decorator）角色</strong>：由<code>FilterInputStream</code>扮演。它实现了<code>InputStream</code>所规定的接口。<br><strong>具体装饰（ConcreteDecorator）角色</strong>：由几个类扮演，分别是<code>DataInputStream</code>、<code>BufferInputStream</code>以及两个不常用的类<code>LineNumberInputStream</code>和<code>PushBackInputStream</code>。</p>
+<hr>
+<p>得到这样一个结构图就能更好的理解io，以装饰类<code>BufferedInputStream</code>为例，如果使用继承的方法，那么要为具体构件例如<code>ByteArrayInputStream</code>，<code>FileInputStream</code>等都添加缓冲功能，需要为他们都设计一个子类，而现在，只需要将他们传入<code>BufferedInputStream</code>中，就能获取相应的带缓冲的流。</p>
+<p>首先看构造方法，需要传入一个普通字节输入流</p>
+<pre><code>public BufferedInputStream(InputStream in) {
+    this(in, DEFAULT_BUFFER_SIZE);
+}
+
+public BufferedInputStream(InputStream in, int size) {
+    super(in);
+    if (size &lt;= 0) {
+        throw new IllegalArgumentException(&quot;Buffer size &lt;= 0&quot;);
+    }
+    buf = new byte[size];
+}</code></pre><p>接着，装饰类中新定义一个字节数组作为缓冲区</p>
+<p><code>protected volatile byte buf[]</code></p>
+<p>接下来我们看装饰类是怎么让普通的输入流用上缓冲的,这是装饰类中的read方法，在调用普通输入流的read方法前后进行了一系列操作(对read方法进行修饰)。</p>
+<pre><code>public synchronized int read(byte b[], int off, int len)
+    throws IOException
+{
+    getBufIfOpen(); // Check for closed stream
+    if ((off | len | (off + len) | (b.length - (off + len))) &lt; 0) {
+        throw new IndexOutOfBoundsException();
+    } else if (len == 0) {
+        return 0;
+    }
+
+    int n = 0;
+    for (;;) {
+        int nread = read1(b, off + n, len - n);//此处跳入read1方法
+        if (nread &lt;= 0)
+            return (n == 0) ? nread : n;
+        n += nread;
+        if (n &gt;= len)
+            return n;
+        // if not closed but no bytes available, return
+        InputStream input = in;
+        if (input != null &amp;&amp; input.available() &lt;= 0)
+            return n;
+    }
+}
+
+private int read1(byte[] b, int off, int len) throws IOException {
+    int avail = count - pos;
+    if (avail &lt;= 0) {
+        /* If the requested length is at least as large as the buffer, and
+           if there is no mark/reset activity, do not bother to copy the
+           bytes into the local buffer.  In this way buffered streams will
+           cascade harmlessly. */
+        if (len &gt;= getBufIfOpen().length &amp;&amp; markpos &lt; 0) {
+            return getInIfOpen().read(b, off, len);//这里调用了普通输入流的read方法，读取长度超过缓冲默认长度时，不使用缓冲直接读取。
+        }
+        fill();//填充缓冲区，进入这个方法
+        avail = count - pos;
+        if (avail &lt;= 0) return -1;
+    }
+    int cnt = (avail &lt; len) ? avail : len;
+    System.arraycopy(getBufIfOpen(), pos, b, off, cnt);
+    pos += cnt;
+    return cnt;
+}
+
+
+private void fill() throws IOException {
+    byte[] buffer = getBufIfOpen();
+    if (markpos &lt; 0)
+        pos = 0;            /* no mark: throw away the buffer */
+    else if (pos &gt;= buffer.length)  /* no room left in buffer */
+        if (markpos &gt; 0) {  /* can throw away early part of the buffer */
+            int sz = pos - markpos;
+            System.arraycopy(buffer, markpos, buffer, 0, sz);
+            pos = sz;
+            markpos = 0;
+        } else if (buffer.length &gt;= marklimit) {
+            markpos = -1;   /* buffer got too big, invalidate mark */
+            pos = 0;        /* drop buffer contents */
+        } else if (buffer.length &gt;= MAX_BUFFER_SIZE) {
+            throw new OutOfMemoryError(&quot;Required array size too large&quot;);
+        } else {            /* grow buffer */
+            int nsz = (pos &lt;= MAX_BUFFER_SIZE - pos) ?
+                    pos * 2 : MAX_BUFFER_SIZE;
+            if (nsz &gt; marklimit)
+                nsz = marklimit;
+            byte nbuf[] = new byte[nsz];
+            System.arraycopy(buffer, 0, nbuf, 0, pos);
+            if (!bufUpdater.compareAndSet(this, buffer, nbuf)) {
+                // Can&#39;t replace buf if there was an async close.
+                // Note: This would need to be changed if fill()
+                // is ever made accessible to multiple threads.
+                // But for now, the only way CAS can fail is via close.
+                // assert buf == null;
+                throw new IOException(&quot;Stream closed&quot;);
+            }
+            buffer = nbuf;
+        }
+    count = pos;
+    int n = getInIfOpen().read(buffer, pos, buffer.length - pos);//在这个地方又再次调用普通输入流的read方法，一次读取默认长度8192个长度的数据到缓冲区
+    if (n &gt; 0)
+        count = n + pos;
+}</code></pre><p>就这样，BufferedInputStream就成了带缓冲区的字节输入流，通过使用装饰者模式，对普通输入流的read方法添加修改，扩充了普通输入流的功能。</p>
 
           
         
@@ -2000,250 +2244,6 @@ public void test4(){
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/io%E4%B8%AD%E7%9A%84%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/io%E4%B8%AD%E7%9A%84%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F/" itemprop="url">io中的装饰者模式</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="java-io中的装饰者模式"><a href="#java-io中的装饰者模式" class="headerlink" title="java io中的装饰者模式"></a>java io中的装饰者模式</h3><p>以<code>inputStream</code>输入流为例，<code>inputStream</code>中的装饰者模式结构图：</p>
-<p><img src="http://wx1.sinaimg.cn/large/96b7c0f4gy1g0aqr1yy2fj20ge06j74k.jpg" alt=""></p>
-<p><strong>装饰者模式的各个角色</strong>:</p>
-<p><strong>抽象构件（Component）角色</strong>：由<code>InputStream</code>扮演。这是一个抽象类，为各种子类型流处理器提供统一的接口。<br><strong>具体构件（ConcreteComponent）角色</strong>：由<code>ByteArrayInputStream</code>、<code>FileInputStream</code>、PipedInputStream以及StringBufferInputStream等原始流处理器扮演。他们实现了抽象构件角色所规定的接口，可以被链接流处理器所装饰。<br><strong>抽象装饰（Decorator）角色</strong>：由<code>FilterInputStream</code>扮演。它实现了<code>InputStream</code>所规定的接口。<br><strong>具体装饰（ConcreteDecorator）角色</strong>：由几个类扮演，分别是<code>DataInputStream</code>、<code>BufferInputStream</code>以及两个不常用的类<code>LineNumberInputStream</code>和<code>PushBackInputStream</code>。</p>
-<hr>
-<p>得到这样一个结构图就能更好的理解io，以装饰类<code>BufferedInputStream</code>为例，如果使用继承的方法，那么要为具体构件例如<code>ByteArrayInputStream</code>，<code>FileInputStream</code>等都添加缓冲功能，需要为他们都设计一个子类，而现在，只需要将他们传入<code>BufferedInputStream</code>中，就能获取相应的带缓冲的流。</p>
-<p>首先看构造方法，需要传入一个普通字节输入流</p>
-<pre><code>public BufferedInputStream(InputStream in) {
-    this(in, DEFAULT_BUFFER_SIZE);
-}
-
-public BufferedInputStream(InputStream in, int size) {
-    super(in);
-    if (size &lt;= 0) {
-        throw new IllegalArgumentException(&quot;Buffer size &lt;= 0&quot;);
-    }
-    buf = new byte[size];
-}</code></pre><p>接着，装饰类中新定义一个字节数组作为缓冲区</p>
-<p><code>protected volatile byte buf[]</code></p>
-<p>接下来我们看装饰类是怎么让普通的输入流用上缓冲的,这是装饰类中的read方法，在调用普通输入流的read方法前后进行了一系列操作(对read方法进行修饰)。</p>
-<pre><code>public synchronized int read(byte b[], int off, int len)
-    throws IOException
-{
-    getBufIfOpen(); // Check for closed stream
-    if ((off | len | (off + len) | (b.length - (off + len))) &lt; 0) {
-        throw new IndexOutOfBoundsException();
-    } else if (len == 0) {
-        return 0;
-    }
-
-    int n = 0;
-    for (;;) {
-        int nread = read1(b, off + n, len - n);//此处跳入read1方法
-        if (nread &lt;= 0)
-            return (n == 0) ? nread : n;
-        n += nread;
-        if (n &gt;= len)
-            return n;
-        // if not closed but no bytes available, return
-        InputStream input = in;
-        if (input != null &amp;&amp; input.available() &lt;= 0)
-            return n;
-    }
-}
-
-private int read1(byte[] b, int off, int len) throws IOException {
-    int avail = count - pos;
-    if (avail &lt;= 0) {
-        /* If the requested length is at least as large as the buffer, and
-           if there is no mark/reset activity, do not bother to copy the
-           bytes into the local buffer.  In this way buffered streams will
-           cascade harmlessly. */
-        if (len &gt;= getBufIfOpen().length &amp;&amp; markpos &lt; 0) {
-            return getInIfOpen().read(b, off, len);//这里调用了普通输入流的read方法，读取长度超过缓冲默认长度时，不使用缓冲直接读取。
-        }
-        fill();//填充缓冲区，进入这个方法
-        avail = count - pos;
-        if (avail &lt;= 0) return -1;
-    }
-    int cnt = (avail &lt; len) ? avail : len;
-    System.arraycopy(getBufIfOpen(), pos, b, off, cnt);
-    pos += cnt;
-    return cnt;
-}
-
-
-private void fill() throws IOException {
-    byte[] buffer = getBufIfOpen();
-    if (markpos &lt; 0)
-        pos = 0;            /* no mark: throw away the buffer */
-    else if (pos &gt;= buffer.length)  /* no room left in buffer */
-        if (markpos &gt; 0) {  /* can throw away early part of the buffer */
-            int sz = pos - markpos;
-            System.arraycopy(buffer, markpos, buffer, 0, sz);
-            pos = sz;
-            markpos = 0;
-        } else if (buffer.length &gt;= marklimit) {
-            markpos = -1;   /* buffer got too big, invalidate mark */
-            pos = 0;        /* drop buffer contents */
-        } else if (buffer.length &gt;= MAX_BUFFER_SIZE) {
-            throw new OutOfMemoryError(&quot;Required array size too large&quot;);
-        } else {            /* grow buffer */
-            int nsz = (pos &lt;= MAX_BUFFER_SIZE - pos) ?
-                    pos * 2 : MAX_BUFFER_SIZE;
-            if (nsz &gt; marklimit)
-                nsz = marklimit;
-            byte nbuf[] = new byte[nsz];
-            System.arraycopy(buffer, 0, nbuf, 0, pos);
-            if (!bufUpdater.compareAndSet(this, buffer, nbuf)) {
-                // Can&#39;t replace buf if there was an async close.
-                // Note: This would need to be changed if fill()
-                // is ever made accessible to multiple threads.
-                // But for now, the only way CAS can fail is via close.
-                // assert buf == null;
-                throw new IOException(&quot;Stream closed&quot;);
-            }
-            buffer = nbuf;
-        }
-    count = pos;
-    int n = getInIfOpen().read(buffer, pos, buffer.length - pos);//在这个地方又再次调用普通输入流的read方法，一次读取默认长度8192个长度的数据到缓冲区
-    if (n &gt; 0)
-        count = n + pos;
-}</code></pre><p>就这样，BufferedInputStream就成了带缓冲区的字节输入流，通过使用装饰者模式，对普通输入流的read方法添加修改，扩充了普通输入流的功能。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/deference%20between%20sb%20and%20str/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2430,7 +2430,7 @@ private void fill() throws IOException {
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/fail-fast%20fail-safe/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/final/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="sinaill">
@@ -2449,7 +2449,7 @@ private void fill() throws IOException {
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/06/17/fail-fast%20fail-safe/" itemprop="url">fail-fast与fail-safe</a></h1>
+                <a class="post-title-link" href="/2020/06/17/final/" itemprop="url">final关键字</a></h1>
         
 
         <div class="post-meta">
@@ -2523,119 +2523,42 @@ private void fill() throws IOException {
       
         
           
-            <h3 id="fail-fast"><a href="#fail-fast" class="headerlink" title="fail-fast"></a>fail-fast</h3><p>java.util 包中的集合类都返回 fail-fast 迭代器，意味着在使用iterator遍历集合时，如果改变集合结构，将会抛出ConcurrentModificationException</p>
-<p>下面以ArrayList为例分析</p>
-<p>ArrayList继承于AbstractList，而AbstractList中定义了一个protected transient int modCount = 0，那么这个变量有什么作用呢</p>
-<p>我们看ArrayList中实现了Iterator接口的私有内部类ltr，有个变量接收了这个modCount</p>
-<pre><code>int expectedModCount = modCount;</code></pre><p>当我们获取集合的迭代器对象Iterator时，这个动作发生</p>
-<pre><code>    public Iterator&lt;E&gt; iterator() {
-        return new Itr();
-    }</code></pre><p>然后看看改变集合结构的几个方法，例如add,remove</p>
-<p>add方法：</p>
-<pre><code>    public boolean add(E e) {
-        ensureCapacityInternal(size + 1);  // Increments modCount!!
-        elementData[size++] = e;
-        return true;
+            <h3 id="final用法"><a href="#final用法" class="headerlink" title="final用法"></a>final用法</h3><p>1.final用来修饰类时，该类不可被继承</p>
+<p>2.final用来修饰方法时，方法不可被复写</p>
+<p>3.final修饰的基本变量时，值不可变，修饰的引用类型时，引用不可变，值可变</p>
+<h3 id="final类型成员变量初始化"><a href="#final类型成员变量初始化" class="headerlink" title="final类型成员变量初始化"></a>final类型成员变量初始化</h3><p>1.final修饰的成员变量没有默认值</p>
+<p>2.final初始化可以在三个地方<br>(1)声明的时候初始化<br>(2)构造函数里初始化(！ static &amp;&amp; final，一起时会报错)<br>(3)要是没有static修饰的话可以在非静态块里初始化,要是有static修饰的话可以在静态块里初始化</p>
+<p>3.使用final成员前要确保已经初始化</p>
+<h3 id="深入理解"><a href="#深入理解" class="headerlink" title="深入理解"></a>深入理解</h3><p>1.当final变量是基本数据类型以及String类型时，如果在编译期间能知道它的确切值，则编译器会把它当做编译期常量使用。也就是说在用到该final变量的地方，相当于直接访问的这个常量，不需要在运行时确定。</p>
+<pre><code>public class Test {
+    public static void main(String[] args)  {
+        String a = &quot;hello2&quot;; 
+        final String b = &quot;hello&quot;;
+        String d = &quot;hello&quot;;
+        String c = b + 2; 
+        String e = d + 2;
+        System.out.println((a == c));
+        System.out.println((a == e));
     }
-    private void ensureCapacityInternal(int minCapacity) {
-        if (elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA) {
-            minCapacity = Math.max(DEFAULT_CAPACITY, minCapacity);
-        }
+}</code></pre><p><code>true false</code></p>
+<p>不过要注意，只有在编译期间能确切知道final变量值的情况下，编译器才会进行这样的优化</p>
+<pre><code>public class Test {
+    public static void main(String[] args)  {
+        String a = &quot;hello2&quot;; 
+        final String b = getHello();
+        String c = b + 2; 
+        System.out.println((a == c));
 
-        ensureExplicitCapacity(minCapacity);
     }
 
-    private void ensureExplicitCapacity(int minCapacity) {
-        modCount++;
-
-        // overflow-conscious code
-        if (minCapacity - elementData.length &gt; 0)
-            grow(minCapacity);
+    public static String getHello() {
+        return &quot;hello&quot;;
     }
-</code></pre><p>remove方法：</p>
-<pre><code>    public E remove(int index) {
-        rangeCheck(index);
-
-        modCount++;
-        E oldValue = elementData(index);
-
-        int numMoved = size - index - 1;
-        if (numMoved &gt; 0)
-            System.arraycopy(elementData, index+1, elementData, index,
-                             numMoved);
-        elementData[--size] = null; // clear to let GC do its work
-
-        return oldValue;
-    }</code></pre><p><strong>我们发现在这些操作中都会将集合自身变量modCount自增1，会造成什么影响呢，接着往下看</strong></p>
-<p>迭代器Iterator中的next()方法中调用了checkForComodification()</p>
-<p>查看方法checkForComodification：</p>
-<pre><code>        final void checkForComodification() {
-            if (modCount != expectedModCount)
-                throw new ConcurrentModificationException();
-        }</code></pre><p>可以看到我们在获取下个元素时，Iterator会先比较modCount和expectedModCount，如果我们在迭代器遍历时调用了add或者remove等改变集合结构的方法时，modCount自增了，而expectedModCount不变，所以在此处会抛出ConcurrentModificationException</p>
-<p>但是如果是在我们自己遍历集合时想修改集合结构，而且不是多线程环境中的话，我们可以看Iterator中给我们提供的方法，在ArrayList中的内部类Iterator中给我们提供了一个remove方法</p>
-<pre><code>        public void remove() {
-            if (lastRet &lt; 0)
-                throw new IllegalStateException();
-            checkForComodification();
-
-            try {
-                ArrayList.this.remove(lastRet);
-                cursor = lastRet;
-                lastRet = -1;
-                expectedModCount = modCount;
-            } catch (IndexOutOfBoundsException ex) {
-                throw new ConcurrentModificationException();
-            }
-        }</code></pre><p>我们可以看到在移除元素后，重新对expectedModCount赋值，所以checkForComodification()不会抛出异常</p>
-<p>ArrayList还提供了一个更丰富的ListIterator内部类，是一个双向迭代器，可以双向遍历，在这里比Iterator多了add方法</p>
-<pre><code>    public void add(E e) {
-        checkForComodification();
-
-        try {
-            int i = cursor;
-            ArrayList.this.add(i, e);
-            cursor = i + 1;
-            lastRet = -1;
-            expectedModCount = modCount;
-        } catch (IndexOutOfBoundsException ex) {
-            throw new ConcurrentModificationException();
-        }
-    }
-}</code></pre><p>依旧是处理了expectedModCount = modCount。</p>
-<h3 id="fail-safe"><a href="#fail-safe" class="headerlink" title="fail-safe"></a>fail-safe</h3><p>以ArrayList的替代类CopyOnWriteArrayList为例分析，CopyOnWriteArrayList为何物？ArrayList 的一个线程安全的变体，其中所有可变操作（add、set 等等）都是通过对底层数组进行一次新的复制来实现的。 该类产生的开销比较大，但是在两种情况下，它非常适合使用。</p>
-<ol>
-<li>在不能或不想进行同步遍历，但又需要从并发线程中排除冲突时。</li>
-<li>当遍历操作的数量大大超过可变操作的数量时。</li>
-</ol>
-<p>查看迭代器</p>
-<pre><code>public E next() {
-    if (! hasNext())
-        throw new NoSuchElementException();
-    return (E) snapshot[cursor++];
-}</code></pre><p>没有像ArrayList的迭代器一样，它不需要检查expectedModCount = modCount</p>
-<p>再看add方法</p>
-<pre><code>public boolean add(E paramE) {    
-        ReentrantLock localReentrantLock = this.lock;    
-        localReentrantLock.lock();    
-        try {    
-            Object[] arrayOfObject1 = getArray();    
-            int i = arrayOfObject1.length;    
-            Object[] arrayOfObject2 = Arrays.copyOf(arrayOfObject1, i + 1);    
-            arrayOfObject2[i] = paramE;    
-            setArray(arrayOfObject2);    
-            int j = 1;    
-            return j;    
-        } finally {    
-            localReentrantLock.unlock();    
-        }    
-    }    
-    final void setArray(Object[] paramArrayOfObject) {    
-        this.array = paramArrayOfObject;    
-    }  </code></pre><p>看关键代码：</p>
-<pre><code>            Object[] arrayOfObject2 = Arrays.copyOf(arrayOfObject1, i + 1);    
-            arrayOfObject2[i] = paramE;    
-            setArray(arrayOfObject2)</code></pre><p>所以在多线程环境时，可以使用CopyOnWriterArrayList来替代，它们的原理为先复制原有集合，然后在复制集合上作修改，然后将原引用指向复制修改后的集合，而迭代器遍历集合是先接收CopyOnWriterArrayList中存储元素的数组，然后对其遍历。这样就达到了遍历和修改集合结构分别在不同的存储数组中。</p>
+}</code></pre><p><code>false</code></p>
+<p>2.final也可以用来修饰方法的形参，防止方法内部修改形参</p>
+<p>3.匿名内部类使用的外部变量必须为final</p>
+<p><strong>外部类和外部局部变量是作为构造方法的参数传入匿名内部类的</strong></p>
+<p>为什么在匿名内部类中引用外部对象要加final修饰符呢，因为，在匿名内部类中引用的外部对象受到外部线程的作用域的制约有其特定的生命周期，以线程为例，当外部的变量生命周期已经完结之后，内部的线程还在运行，怎么样解决这个外部生命周期已经结束而在内部却需要继续使用呢，这个时候就需要在外部变量中添加final修饰符，<strong>其实内部匿名类使用的这个变量就是外部变量的一个“复制品”</strong>，即使外部变量生命周期已经结束，内部的“复制品“依然可用。并且<strong>final保证复制品与原始变量保持一致</strong></p>
 
           
         

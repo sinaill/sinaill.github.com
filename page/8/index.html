@@ -248,361 +248,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/MyBatis%E5%A4%A7%E8%87%B4%E8%BF%90%E8%A1%8C%E6%B5%81%E7%A8%8B/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/MyBatis%E5%A4%A7%E8%87%B4%E8%BF%90%E8%A1%8C%E6%B5%81%E7%A8%8B/" itemprop="url">MyBatis大致运行流程</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
-                    <span itemprop="name">框架</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="原生调用方式"><a href="#原生调用方式" class="headerlink" title="原生调用方式"></a>原生调用方式</h3><pre><code>//第一种
-SqlSession session = sqlSessionFactory.openSession();
-try {
-  Blog blog = (Blog) session.selectOne(&quot;org.mybatis.example.BlogMapper.selectBlog&quot;, 101);
-} finally {
-  session.close();
-}
-
-//第二种，使用到了代理(getMapper方法)
-
-SqlSession session = sqlSessionFactory.openSession();
-try {
-  BlogMapper mapper = session.getMapper(BlogMapper.class);
-  Blog blog = mapper.selectBlog(101);
-} finally {
-  session.close();
-}</code></pre><h3 id="集成框架后使用代理"><a href="#集成框架后使用代理" class="headerlink" title="集成框架后使用代理"></a>集成框架后使用代理</h3><ol>
-<li>启动服务器后，自动创建数据库服务接口的代理类</li>
-</ol>
-<pre><code>//MapperRegistry类的addMapper方法
-public &lt;T&gt; void addMapper(Class&lt;T&gt; type) {
-if (type.isInterface()) {
-  if (hasMapper(type)) {
-    throw new BindingException(&quot;Type &quot; + type + &quot; is already known to the MapperRegistry.&quot;);
-  }
-  boolean loadCompleted = false;
-  try {
-    //每个接口对应一个代理工厂实例
-    knownMappers.put(type, new MapperProxyFactory&lt;T&gt;(type));
-    // It&#39;s important that the type is added before the parser is run
-    // otherwise the binding may automatically be attempted by the
-    // mapper parser. If the type is already known, it won&#39;t try.
-    MapperAnnotationBuilder parser = new MapperAnnotationBuilder(config, type);
-    parser.parse();
-    loadCompleted = true;
-  } finally {
-    if (!loadCompleted) {
-      knownMappers.remove(type);
-    }
-  }
-}
-}</code></pre><ol start="2">
-<li>触发Spring的autowire自动向service注入接口的代理类，通过sqlsession的getMappder的方法</li>
-</ol>
-<pre><code>public &lt;T&gt; T getMapper(Class&lt;T&gt; type) {
-return getConfiguration().getMapper(type, this);
-}
-
-//跟踪源码
-public &lt;T&gt; T getMapper(Class&lt;T&gt; type, SqlSession sqlSession) {
-    return mapperRegistry.getMapper(type, sqlSession);
-}
-
-//mapperRegistry就是初始化容器时，通过addMapper方法，给每个接口确定了对应的代理工厂实例
-public &lt;T&gt; T getMapper(Class&lt;T&gt; type, SqlSession sqlSession) {
-    return mapperRegistry.getMapper(type, sqlSession);
-}
-
-//mapperRegistry类
-public &lt;T&gt; T getMapper(Class&lt;T&gt; type, SqlSession sqlSession) {
-//取出之前添加的代理工厂类
-    final MapperProxyFactory&lt;T&gt; mapperProxyFactory = (MapperProxyFactory&lt;T&gt;) knownMappers.get(type);
-    if (mapperProxyFactory == null) {
-      throw new BindingException(&quot;Type &quot; + type + &quot; is not known to the MapperRegistry.&quot;);
-    }
-    try {
-      //使用代理工厂类创建代理类实例
-      return mapperProxyFactory.newInstance(sqlSession);
-    } catch (Exception e) {
-      throw new BindingException(&quot;Error getting mapper instance. Cause: &quot; + e, e);
-    }
-}
-
-//转进mapperProxyFactory类
-protected T newInstance(MapperProxy&lt;T&gt; mapperProxy) {
-    //这行代码生成代理
-    return (T) Proxy.newProxyInstance(mapperInterface.getClassLoader(), new Class[] { mapperInterface }, mapperProxy);
-}
-
-public T newInstance(SqlSession sqlSession) {
-    final MapperProxy&lt;T&gt; mapperProxy = new MapperProxy&lt;T&gt;(sqlSession, mapperInterface, methodCache);
-    return newInstance(mapperProxy);
-}
-</code></pre><ol start="3">
-<li>代理类的生成</li>
-</ol>
-<p>我们知道代理类的生成需要一个实现invocationHandler接口的类，在MyBatis中这个类为MapperProxy，查看invoke方法</p>
-<pre><code>  public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-    if (Object.class.equals(method.getDeclaringClass())) {
-      try {
-        return method.invoke(this, args);
-      } catch (Throwable t) {
-        throw ExceptionUtil.unwrapThrowable(t);
-      }
-    }
-    查看method方法对用的MapperMehtod是否存在，不存在则创建
-    final MapperMethod mapperMethod = cachedMapperMethod(method);
-    return mapperMethod.execute(sqlSession, args);
-  }
-
-  private MapperMethod cachedMapperMethod(Method method) {
-    MapperMethod mapperMethod = methodCache.get(method);
-    if (mapperMethod == null) {
-      mapperMethod = new MapperMethod(mapperInterface, method, sqlSession.getConfiguration());
-      methodCache.put(method, mapperMethod);
-    }
-    return mapperMethod;
-  }</code></pre><ol start="4">
-<li>通过代理调用原生调用方式</li>
-</ol>
-<p>通过MapperMehtod这个类来实现，先看下它的成员变量</p>
-<pre><code>  private final SqlCommand command;
-  private final MethodSignature method;
-
-  public MapperMethod(Class&lt;?&gt; mapperInterface, Method method, Configuration config) {
-    this.command = new SqlCommand(config, mapperInterface, method);
-    this.method = new MethodSignature(config, method);
-  }
-
-
-</code></pre><p>查看sqlcommand是什么，大概就是关于sql语句</p>
-<pre><code>public SqlCommand(Configuration configuration, Class&lt;?&gt; mapperInterface, Method method) {
-  //接口名加方法名，正好等于我们配置文件的命名空间namespace加上语句的id
-  String statementName = mapperInterface.getName() + &quot;.&quot; + method.getName();
-  MappedStatement ms = null;
-  if (configuration.hasStatement(statementName)) {
-    //大概是通过命名空间和id从配置文件查找具体配置对象
-    ms = configuration.getMappedStatement(statementName);
-  } else if (!mapperInterface.equals(method.getDeclaringClass())) { // issue #35
-    String parentStatementName = method.getDeclaringClass().getName() + &quot;.&quot; + method.getName();
-    if (configuration.hasStatement(parentStatementName)) {
-      ms = configuration.getMappedStatement(parentStatementName);
-    }
-  }
-  if (ms == null) {
-    if(method.getAnnotation(Flush.class) != null){
-      name = null;
-      type = SqlCommandType.FLUSH;
-    } else {
-      throw new BindingException(&quot;Invalid bound statement (not found): &quot; + statementName);
-    }
-  } else {
-    name = ms.getId();
-    type = ms.getSqlCommandType();
-    if (type == SqlCommandType.UNKNOWN) {
-      throw new BindingException(&quot;Unknown execution method for: &quot; + name);
-    }
-  }
-}</code></pre><p>看<code>MethodSignature</code>的创建</p>
-<pre><code>public MethodSignature(Configuration configuration, Method method) {
-  this.returnType = method.getReturnType();
-  this.returnsVoid = void.class.equals(this.returnType);
-  this.returnsMany = (configuration.getObjectFactory().isCollection(this.returnType) || this.returnType.isArray());
-  this.mapKey = getMapKey(method);
-  this.returnsMap = (this.mapKey != null);
-  //处理@Param
-  this.hasNamedParameters = hasNamedParams(method);
-  this.rowBoundsIndex = getUniqueParamIndex(method, RowBounds.class);
-  this.resultHandlerIndex = getUniqueParamIndex(method, ResultHandler.class);
-  this.params = Collections.unmodifiableSortedMap(getParams(method, this.hasNamedParameters));
-}</code></pre><p>在代理类中生成MethodMapper类后，调用execute方法来指定sqlcommand中的sql语句</p>
-<pre><code>  public Object execute(SqlSession sqlSession, Object[] args) {
-    //args是由代理类invoke方法传来的方法参数
-    Object result;
-    if (SqlCommandType.INSERT == command.getType()) {
-      Object param = method.convertArgsToSqlCommandParam(args);
-      //getName返回具体配置语句对象的id
-      result = rowCountResult(sqlSession.insert(command.getName(), param));
-    } else if (SqlCommandType.UPDATE == command.getType()) {
-      Object param = method.convertArgsToSqlCommandParam(args);
-      result = rowCountResult(sqlSession.update(command.getName(), param));
-    } else if (SqlCommandType.DELETE == command.getType()) {
-      Object param = method.convertArgsToSqlCommandParam(args);
-      result = rowCountResult(sqlSession.delete(command.getName(), param));
-    } else if (SqlCommandType.SELECT == command.getType()) {
-      if (method.returnsVoid() &amp;&amp; method.hasResultHandler()) {
-        executeWithResultHandler(sqlSession, args);
-        result = null;
-      } else if (method.returnsMany()) {
-        result = executeForMany(sqlSession, args);
-      } else if (method.returnsMap()) {
-        result = executeForMap(sqlSession, args);
-      } else {
-        Object param = method.convertArgsToSqlCommandParam(args);
-        result = sqlSession.selectOne(command.getName(), param);
-      }
-    } else if (SqlCommandType.FLUSH == command.getType()) {
-        result = sqlSession.flushStatements();
-    } else {
-      throw new BindingException(&quot;Unknown execution method for: &quot; + command.getName());
-    }
-    if (result == null &amp;&amp; method.getReturnType().isPrimitive() &amp;&amp; !method.returnsVoid()) {
-      throw new BindingException(&quot;Mapper method &#39;&quot; + command.getName() 
-          + &quot; attempted to return null from a method with a primitive return type (&quot; + method.getReturnType() + &quot;).&quot;);
-    }
-    //返回结果
-    return result;
-  }
-
-  //对返回结果result进行类型转换
-  private Object rowCountResult(int rowCount) {
-    final Object result;
-    if (method.returnsVoid()) {
-      result = null;
-    } else if (Integer.class.equals(method.getReturnType()) || Integer.TYPE.equals(method.getReturnType())) {
-      result = Integer.valueOf(rowCount);
-    } else if (Long.class.equals(method.getReturnType()) || Long.TYPE.equals(method.getReturnType())) {
-      result = Long.valueOf(rowCount);
-    } else if (Boolean.class.equals(method.getReturnType()) || Boolean.TYPE.equals(method.getReturnType())) {
-      result = Boolean.valueOf(rowCount &gt; 0);
-    } else {
-      throw new BindingException(&quot;Mapper method &#39;&quot; + command.getName() + &quot;&#39; has an unsupported return type: &quot; + method.getReturnType());
-    }
-    return result;
-  }</code></pre>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/Mysql%E5%9F%BA%E7%A1%80%E8%AF%AD%E5%8F%A5/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -969,6 +614,361 @@ public T newInstance(SqlSession sqlSession) {
 <h4 id="数据库类函数"><a href="#数据库类函数" class="headerlink" title="数据库类函数"></a>数据库类函数</h4><p>DATABASE() 返回当前数据库名称<br>VERSION() 返回当前数据库版本<br>INET_ATON(ip) 返回数字表示的IP<br>INET_NTOA(num) 将数字表示的IP转换为IP<br>PASSWORD(s) 返回加密版本<br>MD5(s) 返回MD5加密值</p>
 <h4 id="数学函数"><a href="#数学函数" class="headerlink" title="数学函数"></a>数学函数</h4><p>ABS(X): 返回X的绝对值<br>MOD(N,M): 或%:返回N被M除的余数<br>FLOOR(X): 返回不大于X的最大整数值<br>CEILING(X): 返回不小于X的最小整数值<br>ROUND(X) : 返回参数X的四舍五入的一个整数<br>ROUND(X,D): 舍入函数。将参数X舍入到D小数位。 舍入算法取决于X的数据类型。如果未指定，则D默认为0。 D可能是负数，导致值X的小数点左边的D数字变为零</p>
 
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/MyBatis%E5%A4%A7%E8%87%B4%E8%BF%90%E8%A1%8C%E6%B5%81%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/MyBatis%E5%A4%A7%E8%87%B4%E8%BF%90%E8%A1%8C%E6%B5%81%E7%A8%8B/" itemprop="url">MyBatis大致运行流程</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">框架</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="原生调用方式"><a href="#原生调用方式" class="headerlink" title="原生调用方式"></a>原生调用方式</h3><pre><code>//第一种
+SqlSession session = sqlSessionFactory.openSession();
+try {
+  Blog blog = (Blog) session.selectOne(&quot;org.mybatis.example.BlogMapper.selectBlog&quot;, 101);
+} finally {
+  session.close();
+}
+
+//第二种，使用到了代理(getMapper方法)
+
+SqlSession session = sqlSessionFactory.openSession();
+try {
+  BlogMapper mapper = session.getMapper(BlogMapper.class);
+  Blog blog = mapper.selectBlog(101);
+} finally {
+  session.close();
+}</code></pre><h3 id="集成框架后使用代理"><a href="#集成框架后使用代理" class="headerlink" title="集成框架后使用代理"></a>集成框架后使用代理</h3><ol>
+<li>启动服务器后，自动创建数据库服务接口的代理类</li>
+</ol>
+<pre><code>//MapperRegistry类的addMapper方法
+public &lt;T&gt; void addMapper(Class&lt;T&gt; type) {
+if (type.isInterface()) {
+  if (hasMapper(type)) {
+    throw new BindingException(&quot;Type &quot; + type + &quot; is already known to the MapperRegistry.&quot;);
+  }
+  boolean loadCompleted = false;
+  try {
+    //每个接口对应一个代理工厂实例
+    knownMappers.put(type, new MapperProxyFactory&lt;T&gt;(type));
+    // It&#39;s important that the type is added before the parser is run
+    // otherwise the binding may automatically be attempted by the
+    // mapper parser. If the type is already known, it won&#39;t try.
+    MapperAnnotationBuilder parser = new MapperAnnotationBuilder(config, type);
+    parser.parse();
+    loadCompleted = true;
+  } finally {
+    if (!loadCompleted) {
+      knownMappers.remove(type);
+    }
+  }
+}
+}</code></pre><ol start="2">
+<li>触发Spring的autowire自动向service注入接口的代理类，通过sqlsession的getMappder的方法</li>
+</ol>
+<pre><code>public &lt;T&gt; T getMapper(Class&lt;T&gt; type) {
+return getConfiguration().getMapper(type, this);
+}
+
+//跟踪源码
+public &lt;T&gt; T getMapper(Class&lt;T&gt; type, SqlSession sqlSession) {
+    return mapperRegistry.getMapper(type, sqlSession);
+}
+
+//mapperRegistry就是初始化容器时，通过addMapper方法，给每个接口确定了对应的代理工厂实例
+public &lt;T&gt; T getMapper(Class&lt;T&gt; type, SqlSession sqlSession) {
+    return mapperRegistry.getMapper(type, sqlSession);
+}
+
+//mapperRegistry类
+public &lt;T&gt; T getMapper(Class&lt;T&gt; type, SqlSession sqlSession) {
+//取出之前添加的代理工厂类
+    final MapperProxyFactory&lt;T&gt; mapperProxyFactory = (MapperProxyFactory&lt;T&gt;) knownMappers.get(type);
+    if (mapperProxyFactory == null) {
+      throw new BindingException(&quot;Type &quot; + type + &quot; is not known to the MapperRegistry.&quot;);
+    }
+    try {
+      //使用代理工厂类创建代理类实例
+      return mapperProxyFactory.newInstance(sqlSession);
+    } catch (Exception e) {
+      throw new BindingException(&quot;Error getting mapper instance. Cause: &quot; + e, e);
+    }
+}
+
+//转进mapperProxyFactory类
+protected T newInstance(MapperProxy&lt;T&gt; mapperProxy) {
+    //这行代码生成代理
+    return (T) Proxy.newProxyInstance(mapperInterface.getClassLoader(), new Class[] { mapperInterface }, mapperProxy);
+}
+
+public T newInstance(SqlSession sqlSession) {
+    final MapperProxy&lt;T&gt; mapperProxy = new MapperProxy&lt;T&gt;(sqlSession, mapperInterface, methodCache);
+    return newInstance(mapperProxy);
+}
+</code></pre><ol start="3">
+<li>代理类的生成</li>
+</ol>
+<p>我们知道代理类的生成需要一个实现invocationHandler接口的类，在MyBatis中这个类为MapperProxy，查看invoke方法</p>
+<pre><code>  public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    if (Object.class.equals(method.getDeclaringClass())) {
+      try {
+        return method.invoke(this, args);
+      } catch (Throwable t) {
+        throw ExceptionUtil.unwrapThrowable(t);
+      }
+    }
+    查看method方法对用的MapperMehtod是否存在，不存在则创建
+    final MapperMethod mapperMethod = cachedMapperMethod(method);
+    return mapperMethod.execute(sqlSession, args);
+  }
+
+  private MapperMethod cachedMapperMethod(Method method) {
+    MapperMethod mapperMethod = methodCache.get(method);
+    if (mapperMethod == null) {
+      mapperMethod = new MapperMethod(mapperInterface, method, sqlSession.getConfiguration());
+      methodCache.put(method, mapperMethod);
+    }
+    return mapperMethod;
+  }</code></pre><ol start="4">
+<li>通过代理调用原生调用方式</li>
+</ol>
+<p>通过MapperMehtod这个类来实现，先看下它的成员变量</p>
+<pre><code>  private final SqlCommand command;
+  private final MethodSignature method;
+
+  public MapperMethod(Class&lt;?&gt; mapperInterface, Method method, Configuration config) {
+    this.command = new SqlCommand(config, mapperInterface, method);
+    this.method = new MethodSignature(config, method);
+  }
+
+
+</code></pre><p>查看sqlcommand是什么，大概就是关于sql语句</p>
+<pre><code>public SqlCommand(Configuration configuration, Class&lt;?&gt; mapperInterface, Method method) {
+  //接口名加方法名，正好等于我们配置文件的命名空间namespace加上语句的id
+  String statementName = mapperInterface.getName() + &quot;.&quot; + method.getName();
+  MappedStatement ms = null;
+  if (configuration.hasStatement(statementName)) {
+    //大概是通过命名空间和id从配置文件查找具体配置对象
+    ms = configuration.getMappedStatement(statementName);
+  } else if (!mapperInterface.equals(method.getDeclaringClass())) { // issue #35
+    String parentStatementName = method.getDeclaringClass().getName() + &quot;.&quot; + method.getName();
+    if (configuration.hasStatement(parentStatementName)) {
+      ms = configuration.getMappedStatement(parentStatementName);
+    }
+  }
+  if (ms == null) {
+    if(method.getAnnotation(Flush.class) != null){
+      name = null;
+      type = SqlCommandType.FLUSH;
+    } else {
+      throw new BindingException(&quot;Invalid bound statement (not found): &quot; + statementName);
+    }
+  } else {
+    name = ms.getId();
+    type = ms.getSqlCommandType();
+    if (type == SqlCommandType.UNKNOWN) {
+      throw new BindingException(&quot;Unknown execution method for: &quot; + name);
+    }
+  }
+}</code></pre><p>看<code>MethodSignature</code>的创建</p>
+<pre><code>public MethodSignature(Configuration configuration, Method method) {
+  this.returnType = method.getReturnType();
+  this.returnsVoid = void.class.equals(this.returnType);
+  this.returnsMany = (configuration.getObjectFactory().isCollection(this.returnType) || this.returnType.isArray());
+  this.mapKey = getMapKey(method);
+  this.returnsMap = (this.mapKey != null);
+  //处理@Param
+  this.hasNamedParameters = hasNamedParams(method);
+  this.rowBoundsIndex = getUniqueParamIndex(method, RowBounds.class);
+  this.resultHandlerIndex = getUniqueParamIndex(method, ResultHandler.class);
+  this.params = Collections.unmodifiableSortedMap(getParams(method, this.hasNamedParameters));
+}</code></pre><p>在代理类中生成MethodMapper类后，调用execute方法来指定sqlcommand中的sql语句</p>
+<pre><code>  public Object execute(SqlSession sqlSession, Object[] args) {
+    //args是由代理类invoke方法传来的方法参数
+    Object result;
+    if (SqlCommandType.INSERT == command.getType()) {
+      Object param = method.convertArgsToSqlCommandParam(args);
+      //getName返回具体配置语句对象的id
+      result = rowCountResult(sqlSession.insert(command.getName(), param));
+    } else if (SqlCommandType.UPDATE == command.getType()) {
+      Object param = method.convertArgsToSqlCommandParam(args);
+      result = rowCountResult(sqlSession.update(command.getName(), param));
+    } else if (SqlCommandType.DELETE == command.getType()) {
+      Object param = method.convertArgsToSqlCommandParam(args);
+      result = rowCountResult(sqlSession.delete(command.getName(), param));
+    } else if (SqlCommandType.SELECT == command.getType()) {
+      if (method.returnsVoid() &amp;&amp; method.hasResultHandler()) {
+        executeWithResultHandler(sqlSession, args);
+        result = null;
+      } else if (method.returnsMany()) {
+        result = executeForMany(sqlSession, args);
+      } else if (method.returnsMap()) {
+        result = executeForMap(sqlSession, args);
+      } else {
+        Object param = method.convertArgsToSqlCommandParam(args);
+        result = sqlSession.selectOne(command.getName(), param);
+      }
+    } else if (SqlCommandType.FLUSH == command.getType()) {
+        result = sqlSession.flushStatements();
+    } else {
+      throw new BindingException(&quot;Unknown execution method for: &quot; + command.getName());
+    }
+    if (result == null &amp;&amp; method.getReturnType().isPrimitive() &amp;&amp; !method.returnsVoid()) {
+      throw new BindingException(&quot;Mapper method &#39;&quot; + command.getName() 
+          + &quot; attempted to return null from a method with a primitive return type (&quot; + method.getReturnType() + &quot;).&quot;);
+    }
+    //返回结果
+    return result;
+  }
+
+  //对返回结果result进行类型转换
+  private Object rowCountResult(int rowCount) {
+    final Object result;
+    if (method.returnsVoid()) {
+      result = null;
+    } else if (Integer.class.equals(method.getReturnType()) || Integer.TYPE.equals(method.getReturnType())) {
+      result = Integer.valueOf(rowCount);
+    } else if (Long.class.equals(method.getReturnType()) || Long.TYPE.equals(method.getReturnType())) {
+      result = Long.valueOf(rowCount);
+    } else if (Boolean.class.equals(method.getReturnType()) || Boolean.TYPE.equals(method.getReturnType())) {
+      result = Boolean.valueOf(rowCount &gt; 0);
+    } else {
+      throw new BindingException(&quot;Mapper method &#39;&quot; + command.getName() + &quot;&#39; has an unsupported return type: &quot; + method.getReturnType());
+    }
+    return result;
+  }</code></pre>
           
         
       
