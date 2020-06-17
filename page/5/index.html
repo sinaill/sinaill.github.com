@@ -248,157 +248,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/mysql%20error%201045/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/mysql%20error%201045/" itemprop="url">mysql error 1045</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/mysql/" itemprop="url" rel="index">
-                    <span itemprop="name">mysql</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>解决方法如下：</p>
-<p>进入mysql的bin目录</p>
-<p>命令行运行mysqld –skip-grant-tables</p>
-<p>新建命令行mysql -u -root -p 空密码直接进入数据库</p>
-<p>登录成功后输入：update mysql.user set authentication_string=password(‘你的密码’) where user=’root’ and host=’localhost’;</p>
-<p>让设置的密码生效：flush privileges;</p>
-<p>输入\q退出mysql</p>
-<p>关闭第一个命令行窗口尝试开启mysql服务发生错误，mysql服务无法启动</p>
-<p>到任务管理器中结束mysqld.exe进程</p>
-<p>再次启动mysql服务成功</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/mysql%E4%B8%AD%E7%9A%84%E8%87%AA%E5%AE%9A%E4%B9%89%E5%87%BD%E6%95%B0%E5%92%8C%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1688,250 +1537,6 @@ getLowerBouds: java.lang.String</code></pre><p>相关链接</p>
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/io%E4%B8%AD%E7%9A%84%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/io%E4%B8%AD%E7%9A%84%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F/" itemprop="url">io中的装饰者模式</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="java-io中的装饰者模式"><a href="#java-io中的装饰者模式" class="headerlink" title="java io中的装饰者模式"></a>java io中的装饰者模式</h3><p>以<code>inputStream</code>输入流为例，<code>inputStream</code>中的装饰者模式结构图：</p>
-<p><img src="http://wx1.sinaimg.cn/large/96b7c0f4gy1g0aqr1yy2fj20ge06j74k.jpg" alt=""></p>
-<p><strong>装饰者模式的各个角色</strong>:</p>
-<p><strong>抽象构件（Component）角色</strong>：由<code>InputStream</code>扮演。这是一个抽象类，为各种子类型流处理器提供统一的接口。<br><strong>具体构件（ConcreteComponent）角色</strong>：由<code>ByteArrayInputStream</code>、<code>FileInputStream</code>、PipedInputStream以及StringBufferInputStream等原始流处理器扮演。他们实现了抽象构件角色所规定的接口，可以被链接流处理器所装饰。<br><strong>抽象装饰（Decorator）角色</strong>：由<code>FilterInputStream</code>扮演。它实现了<code>InputStream</code>所规定的接口。<br><strong>具体装饰（ConcreteDecorator）角色</strong>：由几个类扮演，分别是<code>DataInputStream</code>、<code>BufferInputStream</code>以及两个不常用的类<code>LineNumberInputStream</code>和<code>PushBackInputStream</code>。</p>
-<hr>
-<p>得到这样一个结构图就能更好的理解io，以装饰类<code>BufferedInputStream</code>为例，如果使用继承的方法，那么要为具体构件例如<code>ByteArrayInputStream</code>，<code>FileInputStream</code>等都添加缓冲功能，需要为他们都设计一个子类，而现在，只需要将他们传入<code>BufferedInputStream</code>中，就能获取相应的带缓冲的流。</p>
-<p>首先看构造方法，需要传入一个普通字节输入流</p>
-<pre><code>public BufferedInputStream(InputStream in) {
-    this(in, DEFAULT_BUFFER_SIZE);
-}
-
-public BufferedInputStream(InputStream in, int size) {
-    super(in);
-    if (size &lt;= 0) {
-        throw new IllegalArgumentException(&quot;Buffer size &lt;= 0&quot;);
-    }
-    buf = new byte[size];
-}</code></pre><p>接着，装饰类中新定义一个字节数组作为缓冲区</p>
-<p><code>protected volatile byte buf[]</code></p>
-<p>接下来我们看装饰类是怎么让普通的输入流用上缓冲的,这是装饰类中的read方法，在调用普通输入流的read方法前后进行了一系列操作(对read方法进行修饰)。</p>
-<pre><code>public synchronized int read(byte b[], int off, int len)
-    throws IOException
-{
-    getBufIfOpen(); // Check for closed stream
-    if ((off | len | (off + len) | (b.length - (off + len))) &lt; 0) {
-        throw new IndexOutOfBoundsException();
-    } else if (len == 0) {
-        return 0;
-    }
-
-    int n = 0;
-    for (;;) {
-        int nread = read1(b, off + n, len - n);//此处跳入read1方法
-        if (nread &lt;= 0)
-            return (n == 0) ? nread : n;
-        n += nread;
-        if (n &gt;= len)
-            return n;
-        // if not closed but no bytes available, return
-        InputStream input = in;
-        if (input != null &amp;&amp; input.available() &lt;= 0)
-            return n;
-    }
-}
-
-private int read1(byte[] b, int off, int len) throws IOException {
-    int avail = count - pos;
-    if (avail &lt;= 0) {
-        /* If the requested length is at least as large as the buffer, and
-           if there is no mark/reset activity, do not bother to copy the
-           bytes into the local buffer.  In this way buffered streams will
-           cascade harmlessly. */
-        if (len &gt;= getBufIfOpen().length &amp;&amp; markpos &lt; 0) {
-            return getInIfOpen().read(b, off, len);//这里调用了普通输入流的read方法，读取长度超过缓冲默认长度时，不使用缓冲直接读取。
-        }
-        fill();//填充缓冲区，进入这个方法
-        avail = count - pos;
-        if (avail &lt;= 0) return -1;
-    }
-    int cnt = (avail &lt; len) ? avail : len;
-    System.arraycopy(getBufIfOpen(), pos, b, off, cnt);
-    pos += cnt;
-    return cnt;
-}
-
-
-private void fill() throws IOException {
-    byte[] buffer = getBufIfOpen();
-    if (markpos &lt; 0)
-        pos = 0;            /* no mark: throw away the buffer */
-    else if (pos &gt;= buffer.length)  /* no room left in buffer */
-        if (markpos &gt; 0) {  /* can throw away early part of the buffer */
-            int sz = pos - markpos;
-            System.arraycopy(buffer, markpos, buffer, 0, sz);
-            pos = sz;
-            markpos = 0;
-        } else if (buffer.length &gt;= marklimit) {
-            markpos = -1;   /* buffer got too big, invalidate mark */
-            pos = 0;        /* drop buffer contents */
-        } else if (buffer.length &gt;= MAX_BUFFER_SIZE) {
-            throw new OutOfMemoryError(&quot;Required array size too large&quot;);
-        } else {            /* grow buffer */
-            int nsz = (pos &lt;= MAX_BUFFER_SIZE - pos) ?
-                    pos * 2 : MAX_BUFFER_SIZE;
-            if (nsz &gt; marklimit)
-                nsz = marklimit;
-            byte nbuf[] = new byte[nsz];
-            System.arraycopy(buffer, 0, nbuf, 0, pos);
-            if (!bufUpdater.compareAndSet(this, buffer, nbuf)) {
-                // Can&#39;t replace buf if there was an async close.
-                // Note: This would need to be changed if fill()
-                // is ever made accessible to multiple threads.
-                // But for now, the only way CAS can fail is via close.
-                // assert buf == null;
-                throw new IOException(&quot;Stream closed&quot;);
-            }
-            buffer = nbuf;
-        }
-    count = pos;
-    int n = getInIfOpen().read(buffer, pos, buffer.length - pos);//在这个地方又再次调用普通输入流的read方法，一次读取默认长度8192个长度的数据到缓冲区
-    if (n &gt; 0)
-        count = n + pos;
-}</code></pre><p>就这样，BufferedInputStream就成了带缓冲区的字节输入流，通过使用装饰者模式，对普通输入流的read方法添加修改，扩充了普通输入流的功能。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/io%E4%B8%AD%E7%9A%84%E7%BC%93%E5%86%B2%E6%B5%81/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2244,6 +1849,250 @@ public void test4(){
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/io%E4%B8%AD%E7%9A%84%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/io%E4%B8%AD%E7%9A%84%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F/" itemprop="url">io中的装饰者模式</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="java-io中的装饰者模式"><a href="#java-io中的装饰者模式" class="headerlink" title="java io中的装饰者模式"></a>java io中的装饰者模式</h3><p>以<code>inputStream</code>输入流为例，<code>inputStream</code>中的装饰者模式结构图：</p>
+<p><img src="http://wx1.sinaimg.cn/large/96b7c0f4gy1g0aqr1yy2fj20ge06j74k.jpg" alt=""></p>
+<p><strong>装饰者模式的各个角色</strong>:</p>
+<p><strong>抽象构件（Component）角色</strong>：由<code>InputStream</code>扮演。这是一个抽象类，为各种子类型流处理器提供统一的接口。<br><strong>具体构件（ConcreteComponent）角色</strong>：由<code>ByteArrayInputStream</code>、<code>FileInputStream</code>、PipedInputStream以及StringBufferInputStream等原始流处理器扮演。他们实现了抽象构件角色所规定的接口，可以被链接流处理器所装饰。<br><strong>抽象装饰（Decorator）角色</strong>：由<code>FilterInputStream</code>扮演。它实现了<code>InputStream</code>所规定的接口。<br><strong>具体装饰（ConcreteDecorator）角色</strong>：由几个类扮演，分别是<code>DataInputStream</code>、<code>BufferInputStream</code>以及两个不常用的类<code>LineNumberInputStream</code>和<code>PushBackInputStream</code>。</p>
+<hr>
+<p>得到这样一个结构图就能更好的理解io，以装饰类<code>BufferedInputStream</code>为例，如果使用继承的方法，那么要为具体构件例如<code>ByteArrayInputStream</code>，<code>FileInputStream</code>等都添加缓冲功能，需要为他们都设计一个子类，而现在，只需要将他们传入<code>BufferedInputStream</code>中，就能获取相应的带缓冲的流。</p>
+<p>首先看构造方法，需要传入一个普通字节输入流</p>
+<pre><code>public BufferedInputStream(InputStream in) {
+    this(in, DEFAULT_BUFFER_SIZE);
+}
+
+public BufferedInputStream(InputStream in, int size) {
+    super(in);
+    if (size &lt;= 0) {
+        throw new IllegalArgumentException(&quot;Buffer size &lt;= 0&quot;);
+    }
+    buf = new byte[size];
+}</code></pre><p>接着，装饰类中新定义一个字节数组作为缓冲区</p>
+<p><code>protected volatile byte buf[]</code></p>
+<p>接下来我们看装饰类是怎么让普通的输入流用上缓冲的,这是装饰类中的read方法，在调用普通输入流的read方法前后进行了一系列操作(对read方法进行修饰)。</p>
+<pre><code>public synchronized int read(byte b[], int off, int len)
+    throws IOException
+{
+    getBufIfOpen(); // Check for closed stream
+    if ((off | len | (off + len) | (b.length - (off + len))) &lt; 0) {
+        throw new IndexOutOfBoundsException();
+    } else if (len == 0) {
+        return 0;
+    }
+
+    int n = 0;
+    for (;;) {
+        int nread = read1(b, off + n, len - n);//此处跳入read1方法
+        if (nread &lt;= 0)
+            return (n == 0) ? nread : n;
+        n += nread;
+        if (n &gt;= len)
+            return n;
+        // if not closed but no bytes available, return
+        InputStream input = in;
+        if (input != null &amp;&amp; input.available() &lt;= 0)
+            return n;
+    }
+}
+
+private int read1(byte[] b, int off, int len) throws IOException {
+    int avail = count - pos;
+    if (avail &lt;= 0) {
+        /* If the requested length is at least as large as the buffer, and
+           if there is no mark/reset activity, do not bother to copy the
+           bytes into the local buffer.  In this way buffered streams will
+           cascade harmlessly. */
+        if (len &gt;= getBufIfOpen().length &amp;&amp; markpos &lt; 0) {
+            return getInIfOpen().read(b, off, len);//这里调用了普通输入流的read方法，读取长度超过缓冲默认长度时，不使用缓冲直接读取。
+        }
+        fill();//填充缓冲区，进入这个方法
+        avail = count - pos;
+        if (avail &lt;= 0) return -1;
+    }
+    int cnt = (avail &lt; len) ? avail : len;
+    System.arraycopy(getBufIfOpen(), pos, b, off, cnt);
+    pos += cnt;
+    return cnt;
+}
+
+
+private void fill() throws IOException {
+    byte[] buffer = getBufIfOpen();
+    if (markpos &lt; 0)
+        pos = 0;            /* no mark: throw away the buffer */
+    else if (pos &gt;= buffer.length)  /* no room left in buffer */
+        if (markpos &gt; 0) {  /* can throw away early part of the buffer */
+            int sz = pos - markpos;
+            System.arraycopy(buffer, markpos, buffer, 0, sz);
+            pos = sz;
+            markpos = 0;
+        } else if (buffer.length &gt;= marklimit) {
+            markpos = -1;   /* buffer got too big, invalidate mark */
+            pos = 0;        /* drop buffer contents */
+        } else if (buffer.length &gt;= MAX_BUFFER_SIZE) {
+            throw new OutOfMemoryError(&quot;Required array size too large&quot;);
+        } else {            /* grow buffer */
+            int nsz = (pos &lt;= MAX_BUFFER_SIZE - pos) ?
+                    pos * 2 : MAX_BUFFER_SIZE;
+            if (nsz &gt; marklimit)
+                nsz = marklimit;
+            byte nbuf[] = new byte[nsz];
+            System.arraycopy(buffer, 0, nbuf, 0, pos);
+            if (!bufUpdater.compareAndSet(this, buffer, nbuf)) {
+                // Can&#39;t replace buf if there was an async close.
+                // Note: This would need to be changed if fill()
+                // is ever made accessible to multiple threads.
+                // But for now, the only way CAS can fail is via close.
+                // assert buf == null;
+                throw new IOException(&quot;Stream closed&quot;);
+            }
+            buffer = nbuf;
+        }
+    count = pos;
+    int n = getInIfOpen().read(buffer, pos, buffer.length - pos);//在这个地方又再次调用普通输入流的read方法，一次读取默认长度8192个长度的数据到缓冲区
+    if (n &gt; 0)
+        count = n + pos;
+}</code></pre><p>就这样，BufferedInputStream就成了带缓冲区的字节输入流，通过使用装饰者模式，对普通输入流的read方法添加修改，扩充了普通输入流的功能。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/deference%20between%20sb%20and%20str/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2382,6 +2231,260 @@ public void test4(){
 <p><strong>所以当为String对象改变值时，其实是创建了新的String对象再复制给它</strong></p>
 <p><strong>而在StringBuffer中改变值时可以改变自身value[]，不用创建对象，节省资源</strong></p>
 <p><strong>当我们需要频繁改变字符串内容时最好使用StringBuffer而不是String</strong></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/fail-fast%20fail-safe/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/fail-fast%20fail-safe/" itemprop="url">fail-fast与fail-safe</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="fail-fast"><a href="#fail-fast" class="headerlink" title="fail-fast"></a>fail-fast</h3><p>java.util 包中的集合类都返回 fail-fast 迭代器，意味着在使用iterator遍历集合时，如果改变集合结构，将会抛出ConcurrentModificationException</p>
+<p>下面以ArrayList为例分析</p>
+<p>ArrayList继承于AbstractList，而AbstractList中定义了一个protected transient int modCount = 0，那么这个变量有什么作用呢</p>
+<p>我们看ArrayList中实现了Iterator接口的私有内部类ltr，有个变量接收了这个modCount</p>
+<pre><code>int expectedModCount = modCount;</code></pre><p>当我们获取集合的迭代器对象Iterator时，这个动作发生</p>
+<pre><code>    public Iterator&lt;E&gt; iterator() {
+        return new Itr();
+    }</code></pre><p>然后看看改变集合结构的几个方法，例如add,remove</p>
+<p>add方法：</p>
+<pre><code>    public boolean add(E e) {
+        ensureCapacityInternal(size + 1);  // Increments modCount!!
+        elementData[size++] = e;
+        return true;
+    }
+    private void ensureCapacityInternal(int minCapacity) {
+        if (elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA) {
+            minCapacity = Math.max(DEFAULT_CAPACITY, minCapacity);
+        }
+
+        ensureExplicitCapacity(minCapacity);
+    }
+
+    private void ensureExplicitCapacity(int minCapacity) {
+        modCount++;
+
+        // overflow-conscious code
+        if (minCapacity - elementData.length &gt; 0)
+            grow(minCapacity);
+    }
+</code></pre><p>remove方法：</p>
+<pre><code>    public E remove(int index) {
+        rangeCheck(index);
+
+        modCount++;
+        E oldValue = elementData(index);
+
+        int numMoved = size - index - 1;
+        if (numMoved &gt; 0)
+            System.arraycopy(elementData, index+1, elementData, index,
+                             numMoved);
+        elementData[--size] = null; // clear to let GC do its work
+
+        return oldValue;
+    }</code></pre><p><strong>我们发现在这些操作中都会将集合自身变量modCount自增1，会造成什么影响呢，接着往下看</strong></p>
+<p>迭代器Iterator中的next()方法中调用了checkForComodification()</p>
+<p>查看方法checkForComodification：</p>
+<pre><code>        final void checkForComodification() {
+            if (modCount != expectedModCount)
+                throw new ConcurrentModificationException();
+        }</code></pre><p>可以看到我们在获取下个元素时，Iterator会先比较modCount和expectedModCount，如果我们在迭代器遍历时调用了add或者remove等改变集合结构的方法时，modCount自增了，而expectedModCount不变，所以在此处会抛出ConcurrentModificationException</p>
+<p>但是如果是在我们自己遍历集合时想修改集合结构，而且不是多线程环境中的话，我们可以看Iterator中给我们提供的方法，在ArrayList中的内部类Iterator中给我们提供了一个remove方法</p>
+<pre><code>        public void remove() {
+            if (lastRet &lt; 0)
+                throw new IllegalStateException();
+            checkForComodification();
+
+            try {
+                ArrayList.this.remove(lastRet);
+                cursor = lastRet;
+                lastRet = -1;
+                expectedModCount = modCount;
+            } catch (IndexOutOfBoundsException ex) {
+                throw new ConcurrentModificationException();
+            }
+        }</code></pre><p>我们可以看到在移除元素后，重新对expectedModCount赋值，所以checkForComodification()不会抛出异常</p>
+<p>ArrayList还提供了一个更丰富的ListIterator内部类，是一个双向迭代器，可以双向遍历，在这里比Iterator多了add方法</p>
+<pre><code>    public void add(E e) {
+        checkForComodification();
+
+        try {
+            int i = cursor;
+            ArrayList.this.add(i, e);
+            cursor = i + 1;
+            lastRet = -1;
+            expectedModCount = modCount;
+        } catch (IndexOutOfBoundsException ex) {
+            throw new ConcurrentModificationException();
+        }
+    }
+}</code></pre><p>依旧是处理了expectedModCount = modCount。</p>
+<h3 id="fail-safe"><a href="#fail-safe" class="headerlink" title="fail-safe"></a>fail-safe</h3><p>以ArrayList的替代类CopyOnWriteArrayList为例分析，CopyOnWriteArrayList为何物？ArrayList 的一个线程安全的变体，其中所有可变操作（add、set 等等）都是通过对底层数组进行一次新的复制来实现的。 该类产生的开销比较大，但是在两种情况下，它非常适合使用。</p>
+<ol>
+<li>在不能或不想进行同步遍历，但又需要从并发线程中排除冲突时。</li>
+<li>当遍历操作的数量大大超过可变操作的数量时。</li>
+</ol>
+<p>查看迭代器</p>
+<pre><code>public E next() {
+    if (! hasNext())
+        throw new NoSuchElementException();
+    return (E) snapshot[cursor++];
+}</code></pre><p>没有像ArrayList的迭代器一样，它不需要检查expectedModCount = modCount</p>
+<p>再看add方法</p>
+<pre><code>public boolean add(E paramE) {    
+        ReentrantLock localReentrantLock = this.lock;    
+        localReentrantLock.lock();    
+        try {    
+            Object[] arrayOfObject1 = getArray();    
+            int i = arrayOfObject1.length;    
+            Object[] arrayOfObject2 = Arrays.copyOf(arrayOfObject1, i + 1);    
+            arrayOfObject2[i] = paramE;    
+            setArray(arrayOfObject2);    
+            int j = 1;    
+            return j;    
+        } finally {    
+            localReentrantLock.unlock();    
+        }    
+    }    
+    final void setArray(Object[] paramArrayOfObject) {    
+        this.array = paramArrayOfObject;    
+    }  </code></pre><p>看关键代码：</p>
+<pre><code>            Object[] arrayOfObject2 = Arrays.copyOf(arrayOfObject1, i + 1);    
+            arrayOfObject2[i] = paramE;    
+            setArray(arrayOfObject2)</code></pre><p>所以在多线程环境时，可以使用CopyOnWriterArrayList来替代，它们的原理为先复制原有集合，然后在复制集合上作修改，然后将原引用指向复制修改后的集合，而迭代器遍历集合是先接收CopyOnWriterArrayList中存储元素的数组，然后对其遍历。这样就达到了遍历和修改集合结构分别在不同的存储数组中。</p>
 
           
         
@@ -2644,7 +2747,7 @@ public void test4(){
               
                 <a href="/archives/%20%7C%7C%20archive">
               
-                  <span class="site-state-item-count">86</span>
+                  <span class="site-state-item-count">85</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

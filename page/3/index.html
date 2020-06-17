@@ -248,351 +248,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E5%8F%8D%E5%B0%84%E5%9F%BA%E7%A1%80/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/%E5%8F%8D%E5%B0%84%E5%9F%BA%E7%A1%80/" itemprop="url">反射基础</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="什么是反射"><a href="#什么是反射" class="headerlink" title="什么是反射"></a>什么是反射</h3><p>Java反射就是在运行状态中，对于任意一个类，都能够知道这个类的所有属性和方法；对于任意一个对象，都能够调用它的任意方法和属性；并且能改变它的属性。而这也是Java被视为动态（或准动态，为啥要说是准动态，因为一般而言的动态语言定义是程序运行时，允许改变程序结构或变量类型，这种语言称为动态语言。</p>
-<h3 id="反射能做什么"><a href="#反射能做什么" class="headerlink" title="反射能做什么"></a>反射能做什么</h3><p>我们知道反射机制允许程序在运行时取得任何一个已知名称的<code>class</code>的内部信息，包括包括其<code>modifiers</code>(修符)<code>fields</code>(属性)，<code>methods</code>(方法)等，并可于运行时改变<code>fields</code>内容或调用<code>methods</code>。那么我们便可以更灵活的编写代码，代码可以在运行时装配，无需在组件之间进行源代码链接，降低代码的耦合度；还有动态代理的实现等；但是需要注意的是反射使用不当会造成很高的资源消耗</p>
-<h3 id="Class对象"><a href="#Class对象" class="headerlink" title="Class对象"></a>Class对象</h3><p>每个通过关键字<code>class</code>标识的类，在内存中有且只有一个与之对应的<code>Class</code>对象来描述其类型信息，无论创建多少个实例对象，其依据的都是用一个<code>Class</code>对象。</p>
-<p>Java程序在运行时，Java运行时系统一直对所有的对象进行所谓的运行时类型标识，即所谓的RTTI。这项信息纪录了每个对象所属的类。虚拟机通常使用运行时类型信息选准正确方法去执行，用来保存这些类型信息的类是<code>Class</code>类。<code>Class</code>类封装一个对象和接口运行时的状态，当装载类时，<code>Class</code>类型的对象自动创建，所以可以在程序运行中获取类的内部信息。</p>
-<h3 id="获取类的内部信息"><a href="#获取类的内部信息" class="headerlink" title="获取类的内部信息"></a>获取类的内部信息</h3><h4 id="获取Class对象"><a href="#获取Class对象" class="headerlink" title="获取Class对象"></a>获取Class对象</h4><p>第一种：通过类名获得</p>
-<p><code>Class&lt;?&gt; class = ClassName.class;</code></p>
-<p>第二种：通过类名全路径获得：</p>
-<p><code>Class&lt;?&gt; class = Class.forName(&quot;类名全路径&quot;);</code></p>
-<p>第三种：通过实例对象获得：</p>
-<p><code>Class&lt;?&gt; class = object.getClass();</code></p>
-<h4 id="Field"><a href="#Field" class="headerlink" title="Field"></a>Field</h4><p><code>Field</code>提供有关类或接口的单个字段的信息和动态访问。 反射的字段可以是类（静态）字段或普通字段</p>
-<p><code>Class</code>对象提供了四个方法来获取<code>Field</code>对象</p>
-<ol>
-<li><code>getDeclaredField(String name)</code></li>
-</ol>
-<p>根据传入的方法名返回一个指定字段的<code>Field</code>对象</p>
-<ol start="2">
-<li><code>getDeclaredFields()</code></li>
-</ol>
-<p>返回的<code>Field</code>对象数组包含类或接口声明的所有字段</p>
-<ol start="3">
-<li><code>getField(String name)</code></li>
-</ol>
-<p>根据传入的方法名返回一个指定的公共成员字段的<code>Field</code>对象</p>
-<ol start="4">
-<li><code>getFields()</code></li>
-</ol>
-<p>返回一个<code>Field</code>对象数组，包含类或接口的所有可访问的公共字段</p>
-<p>区别：</p>
-<ul>
-<li><p>其中<code>getFields</code>方法返回一个<code>Field</code>类型数组，其中包含当前类的<code>public</code>字段，如果此类继承于某个父类，同时包括父类的public字段。其它的proteced和private字段，无论是属于当前类还是父类都不被此方法获取。</p>
-</li>
-<li><p><code>getDeclaredFields</code>方法返回一个<code>Field</code>类型数组，结果包含当前类的所有字段，<code>private、protected、public</code>或者无修饰符都在内。另外，此方法返回的结果不包括父类的任何字段。 此方法只是针对当前类的。</p>
-</li>
-</ul>
-<h4 id="Method"><a href="#Method" class="headerlink" title="Method"></a>Method</h4><p>方法提供有关类和接口上单一方法的信息和访问权限。可以是类方法或实例方法（包括抽象方法）</p>
-<p>Class对象提供了四个方法来获取Method对象，parameterTypes参数是形参的Class对象数组(new Class[]{})</p>
-<ol>
-<li><code>getDeclaredMethod(String name，Class&lt;?&gt;... parameterTypes)</code></li>
-</ol>
-<p>根据传入的方法名和一个Class对象数组(按顺序包含了方法的形参)返回一个指定的Method对象</p>
-<ol start="2">
-<li><code>getDeclaredMethods()</code></li>
-</ol>
-<p>返回的数组Method对象包含类或接口声明的所有字段</p>
-<ol start="3">
-<li><code>getMethod(String name， Class&lt;?&gt;... parameterTypes)</code></li>
-</ol>
-<p>根据传入的方法名和一个Class对象数组(按顺序包含了方法的形参)返回一个Method对象</p>
-<ol start="4">
-<li>getMethods()</li>
-</ol>
-<p>返回包含一个数组Method对象，包含类或接口的所有可访问的公共字段</p>
-<p>区别：</p>
-<ul>
-<li><p>其中<code>getMethods</code>方法返回一个<code>Method</code>类型数组，其中包含当前类的<code>public</code>字段，如果此类继承于某个父类，同时包括父类的<code>public</code>字段。其它的<code>proteced</code>和<code>private</code>字段，无论是属于当前类还是父类都不被此方法获取。</p>
-</li>
-<li><p><code>getDeclaremethods</code>方法返回一个<code>Method</code>类型数组，结果包含当前类的所有字段，<code>private、protected、public</code>或者无修饰符都在内。另外，此方法返回的结果不包括父类的任何字段。 此方法只是针对当前类的。</p>
-</li>
-</ul>
-<h4 id="Constructor"><a href="#Constructor" class="headerlink" title="Constructor"></a>Constructor</h4><p><code>Constructor</code>提供了一个类的单个构造函数的信息和访问</p>
-<p>1 <code>getConstructor(Class&lt;?&gt;... parameterTypes)</code></p>
-<p>根据传入的形参和一个Class对象数组(按顺序包含了方法的形参)返回指定构造函数</p>
-<ol start="2">
-<li><code>getConstructors()</code></li>
-</ol>
-<p>返回一个包含类中公共构造函数的Constructor数组</p>
-<ol start="3">
-<li><code>getDeclaredConstructor(Class&lt;?&gt;... parameterTypes)</code></li>
-</ol>
-<p>根据传入的形参和一个Class对象数组(按顺序包含了方法的形参)返回指定构造函数</p>
-<ol start="4">
-<li><code>getDeclaredConstructors()</code></li>
-</ol>
-<p>获取包含了所有声明的构造函数的<code>Constructor</code>数组</p>
-<p>区别：<code>getConstructors</code>获取的是类中修饰符为public的构造函数，<code>getDeclaredConstructors</code>获取的是类中所有声明的构造函数</p>
-<h3 id="具体运用"><a href="#具体运用" class="headerlink" title="具体运用"></a>具体运用</h3><pre><code>class reflect{
-    public char asc = &#39;a&#39;;
-    private int num;
-    private String string;
-    private int privateNum = 1;
-    public reflect(){
-
-    }
-
-    public reflect(int num,String string){
-        this.num = num;
-        this.string = string;
-    }
-
-    public int getNum() {
-        return num;
-    }
-
-    public void setNum(int num) {
-        this.num = num;
-    }
-
-    public String getString() {
-        return string;
-    }
-
-    public void setString(String string) {
-        this.string = string;
-    }
-
-    public int getNum(int i){
-        return num+i;
-    }
-
-    public void out(){
-        System.out.println(num+string);
-    }
-}
-
-class sonReflect extends reflect{
-
-    public boolean bool = true;
-    private float fnum;
-
-    public sonReflect() {
-
-    }
-
-    public sonReflect(float fnum) {
-        this.fnum = fnum;
-    }
-
-    public float getFnum() {
-        return fnum;
-    }
-
-    public void setFnum(float fnum) {
-        this.fnum = fnum;
-    }
-
-    public void out(){
-
-    }
-
-    private void privateOut(){
-
-    }
-}
-
-
-
-        reflect r = new reflect(1,&quot;1&quot;);
-        sonReflect sr = new sonReflect(1.1f);
-        Class&lt;?&gt; rc = r.getClass();
-        Class&lt;?&gt; src = sr.getClass();
-        //获取子类的Method
-        Method srcdeclaredMethod[] = src.getDeclaredMethods();
-        Method srcMethod[] = src.getMethods();
-        Arrays.asList(srcdeclaredMethod).forEach(m-&gt;System.out.print(m.getName()+&quot; &quot;));
-        System.out.println();
-        Arrays.asList(srcMethod).forEach(m-&gt;System.out.print(m.getName()+&quot; &quot;));
-        /* 输出为:
-         * out getFnum setFnum  和
-         * out getFnum setFnum getString getNum getNum setNum setString
-         * wait wait wait equals toString hashCode getClass notify notifyAll
-         * getDeclaredMethods只能获取到当前类声明的所有类型方法，而getMethods能
-         * 获取当前和从父类继承的public方法，例如privateOut方法它就无法获得
-         * */
-        System.out.println();
-        Field srcdeclaredField[] = src.getDeclaredFields();
-        Field srcField[] = src.getFields();
-        Arrays.asList(srcdeclaredField).forEach(m-&gt;System.out.print(m.getName()+&quot; &quot;));
-        System.out.println();
-        Arrays.asList(srcField).forEach(m-&gt;System.out.print(m.getName()+&quot; &quot;));
-        /* 输出为:
-         * bool fnum 和 bool asc,从结果看出getDeclaredFields方法获取到了自身公有和私有
-         * 属性,而getFields方法获取到了父类和子类的所有共有属性
-         * 
-         * */
-
-        Method m = rc.getMethod(&quot;getNum&quot;, new Class[]{int.class});
-        Method m1 = rc.getMethod(&quot;getNum&quot;);
-        System.out.println(m.invoke(r, 1));
-        System.out.println(m1.invoke(r));
-      //System.out.println(m1.invoke(r, 1));//抛出异常
-        /*输出为:2 1 和一个异常,通过形参数组确定具体
-         * 方法,再用invoke函数调用对象方法
-         */
-
-        Field f = rc.getDeclaredField(&quot;privateNum&quot;);
-//        Field f1 = rc.getField(&quot;privateNum&quot;); 
-//        System.out.println(f.get(r)+&quot; &quot;+f1.get(r));
-        f.setAccessible(true);
-        System.out.println(f.get(r));
-        /* 抛出两个异常,getField只能获取子类和父类的公有属性
-         * f为私有属性且没有get方法,需要setAccessible设为true
-         * 才能调用Field的get方法获取
-         */
-
-        try {
-            Class constructor = Class.forName(&quot;reflect.reflect&quot;);
-            Constructor con = constructor.getConstructor(new Class[]{int.class,String.class});
-            reflect nr = (reflect) con.newInstance(3,&quot;333&quot;);
-            nr.out();
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        //除了class.newInstance，构造器也能用来创建实例</code></pre>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1090,214 +745,6 @@ class sonReflect extends reflect{
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E5%85%B3%E4%BA%8E%E5%8E%9F%E5%AD%90%E7%B1%BB/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/%E5%85%B3%E4%BA%8E%E5%8E%9F%E5%AD%90%E7%B1%BB/" itemprop="url">关于原子类</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="atomic是什么"><a href="#atomic是什么" class="headerlink" title="atomic是什么"></a>atomic是什么</h3><p>在多线程的场景中，我们需要如何同步数据，通常会使用synchronized或者lock来处理，使用了synchronized意味着内核态的一次切换。这是一个很重的操作。有没有一种方式，可以比较便利的实现一些简单的数据同步，比如计数器等等。concurrent包下的atomic提供我们这么一种轻量级的数据同步的选择。</p>
-<p>下面拿AtomicInteger为例分析</p>
-<pre><code>public class Test {
-    static AtomicInteger atomic = new AtomicInteger(1);
-    public static void main(String[] args) {
-        ExecutorService executor = Executors.newCachedThreadPool();
-        for(int i = 0;i &lt; 20;i++){
-            executor.execute(new Runnable() {
-
-                @Override
-                public void run() {
-                    // TODO Auto-generated method stub
-                    for(int j = 0;j &lt; 100;j++){
-
-                        atomic.getAndIncrement();
-                    }
-                }
-            });
-        }
-        executor.shutdown();
-        try {
-            while(! executor.awaitTermination(2, TimeUnit.SECONDS));
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        System.out.println(atomic.get());
-    }
-}</code></pre><p>输出结果稳定为2001，可以看到并没有使用重量级锁synchronized和reentrantlock，原子类是怎么实现不需要锁也不会在多线程并发中出错的呢？</p>
-<h3 id="AtomicInteger"><a href="#AtomicInteger" class="headerlink" title="AtomicInteger"></a>AtomicInteger</h3><p>####简介</p>
-<p>属于原子类</p>
-<pre><code>private static final Unsafe unsafe = Unsafe.getUnsafe();
-private static final long valueOffset;
-
-static {
-    try {
-        valueOffset = unsafe.objectFieldOffset
-            (AtomicInteger.class.getDeclaredField(&quot;value&quot;));
-    } catch (Exception ex) { throw new Error(ex); }
-}
-
-private volatile int value;</code></pre><p>原子类中几个成员变量</p>
-<p><code>unsafe</code>：<code>Unsafe</code>位于<code>sun.misc</code>包内，看其命名就知道和注重安全性的<code>java jdk</code>无缘，连文档都没，直接就叫”不安全” 。Unsafe的特点是可以直接操作堆外内存，可以随意查看及修改<code>JVM</code>中运行时的数据结构，例如查看和修改对象的成员，<code>Unsafe</code>的操作粒度不是类，而是数据和地址。<br><code>valueOffset</code>：<code>value</code>字段内存地址的偏移量(通过原子类实例的引用指向的内存空间和这个偏移量可以从内存中读取<code>field</code>为<code>value</code>的值)</p>
-<p><code>value</code>：存放真正的值，且为<code>volatile</code>，保证了<code>value</code>对所有线程的可见性</p>
-<h3 id="成员变量unsafe"><a href="#成员变量unsafe" class="headerlink" title="成员变量unsafe"></a>成员变量unsafe</h3><p>是CAS的核心类，由于Java方法无法直接访问底层系统，需要通过本地（native）方法来访问，Unsafe相当于一个后门，基于该类可以直接操作特定内存的数据。</p>
-<p>CAS指的是unsafe中的一个方法，<strong>整个比较并替换的操作是一个原子操作</strong></p>
-<pre><code>/**
- * Atomically update Java variable to &lt;tt&gt;x&lt;/tt&gt; if it is currently
- * holding &lt;tt&gt;expected&lt;/tt&gt;.
- * @return &lt;tt&gt;true&lt;/tt&gt; if successful
- */
-public final native boolean compareAndSwapInt(Object o, long offset,
-                                              int expected,
-                                              int x);
-</code></pre><p>Object o：被修改值的所在的类的实例<br>long offset：存储值的类变量value在内存中的偏移量<br>int expected：修改前的值<br>int x：修改后的值</p>
-<p>方法的作用为：通过o和offset确定变量在内存中的值，expected存放了修改前的值，要将变量修改为x之前先比较内存中的值和expected中修改前的值，若不一致，说明变量被其它线程修改过，返回false。</p>
-<h4 id="原理分析"><a href="#原理分析" class="headerlink" title="原理分析"></a>原理分析</h4><p>以上面代码为例分析流程，先查看AtomicInteger的getAndIncrement()方法</p>
-<pre><code>public final int getAndAdd(int delta) {
-    return unsafe.getAndAddInt(this, valueOffset, delta);
-}</code></pre><p>调用了unsafe的getAndAddInt方法，将自身实例和偏移量和要运算的数的值传入</p>
-<pre><code>public final int getAndAddInt(Object o, long offset, int delta) {
-    int v;
-    do {
-        v = getIntVolatile(o, offset);
-    } while (!compareAndSwapInt(o, offset, v, v + delta));
-    return v;
-}</code></pre><p>最后在unsafe中的<code>compareAndSwapInt</code>方法中完成整个CAS操作，<code>v = getIntVolatile(o, offset)</code>获取了主内存中的值value，存放在线程变量v中作为副本，<code>compareAndSwapInt</code>方法在完成计算v+delta的值后，再次通过o和offset查看此时主内存中的值(value为volatile类型，可见性保证value为最新的值)，看是否与线程中副本变量v相同，如果相同，则将新值刷新到主内存中，否则返回循环do中，更新线程变量副本v为主内存中最新变量的值，再进入compareAndSwapInt，如此循环。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E5%88%A9%E7%94%A8%E9%98%BB%E5%A1%9E%E9%98%9F%E5%88%97%E5%AE%9E%E7%8E%B0%E7%94%9F%E4%BA%A7%E8%80%85%E6%B6%88%E8%B4%B9%E8%80%85/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1559,7 +1006,7 @@ class consumer extends Thread{
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/volatile/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E5%85%B3%E4%BA%8E%E5%8E%9F%E5%AD%90%E7%B1%BB/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="sinaill">
@@ -1578,7 +1025,7 @@ class consumer extends Thread{
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/06/17/volatile/" itemprop="url">volatile</a></h1>
+                <a class="post-title-link" href="/2020/06/17/%E5%85%B3%E4%BA%8E%E5%8E%9F%E5%AD%90%E7%B1%BB/" itemprop="url">关于原子类</a></h1>
         
 
         <div class="post-meta">
@@ -1652,80 +1099,73 @@ class consumer extends Thread{
       
         
           
-            <h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>Java编程语言允许线程访问共享变量，为了确保共享变量能被准确和一致地更新，线程应该确保通过排他锁单独获得这个变量。Java语言提供了volatile，在某些情况下比锁要更加方便。如果一个字段被声明成volatile，Java线程内存模型确保所有线程看到这个变量的值是一致的。</p>
-<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p><img src="http://wx3.sinaimg.cn/large/96b7c0f4gy1g0t2gabww2j20hj08edfq.jpg" alt=""></p>
-<p>在 Java 内存模型中，所有的变量都存储在主存中，同时每个线程都拥有自己的工作线程，用于提高访问速度。线程会从主存中拷贝变量值到自己的工作内存中，然后在自己的工作线程中操作变量，而不是直接操作主存中的变量，由于每个线程在自己的内存中都有一个变量的拷贝，就会造成变量值不一致的问题。</p>
-<p>如果对声明了volatile的变量进行写操作，JVM就会向处理器发送一条Lock前缀的指令，将这个变量所在缓存行的数据写回到系统内存，同时让其它工作内存中这个变量的缓存失效，再次使用该变量的时候重新从主存中读取数据。</p>
-<pre><code>public class VolatileTest extends  Thread{
-    private boolean isRunning = true;
-    public boolean isRunning(){
-        return isRunning;
-    }
-    public void setRunning(boolean isRunning){
-        this.isRunning= isRunning;
-    }
-    public void run(){
-        System.out.println(&quot;进入了run...............&quot;);
-        while (isRunning){}
-        System.out.println(&quot;isRunning的值被修改为为false,线程将被停止了&quot;);
-    }
-    public static void main(String[] args) throws InterruptedException {
-        VolatileTest volatileThread = new VolatileTest();
-        volatileThread.start();
-        Thread.sleep(1000);
-        volatileThread.setRunning(false);   //停止线程
-    }
-}</code></pre><p>以上结果为：线程进入死循环，将<code>isRunning</code>变量设为<code>volatile</code>变量后，线程成功停止。</p>
-<h3 id="volatile的特性"><a href="#volatile的特性" class="headerlink" title="volatile的特性"></a>volatile的特性</h3><ol>
-<li>可见性，当一个共享变量被<code>volatile</code>修饰时，它会保证修改的值立即被更新到主存，所以对其他线程是可见的。当其他线程需要读取该值时，其他线程会去主存中读取新值。相反普通的共享变量不能保证可见性，因为普通共享变量被修改后并不会立即被写入主存，何时被写入主存也不确定。当其他线程去读取该值时，此时主存可能还是原来的旧值，这样就无法保证可见性</li>
-<li>有序性，java内存模型中允许编译器和处理器对指令进行重排序，虽然重排序过程不会影响到单线程执行的正确性，但是会影响到多线程并发执行的正确性。这时可以通过<code>volatile</code>来保证有序性，除了<code>volatile</code>,也可以通过<code>synchronized</code>和<code>Lock</code>来保证有序性。<code>synchronized</code>和<code>Lock</code>保证每个时刻只有一个线程执行同步代码，这相当于让线程顺序执行同步代码，从而保证了有序性。如果不考虑原子性操作的话<code>volatile</code>比<code>synchronized</code>和<code>Lock</code>更轻量级，成本更低。</li>
-<li>不保障原子性<code>volatile</code>关键字只能保证共享变量的可见性和有序性</li>
-</ol>
-<h3 id="非原子性"><a href="#非原子性" class="headerlink" title="非原子性"></a>非原子性</h3><p><code>volatile</code><strong>仅仅用来保证该变量对所有线程的可见性，但不保证原子性</strong></p>
-<pre><code>public class Test{
+            <h3 id="atomic是什么"><a href="#atomic是什么" class="headerlink" title="atomic是什么"></a>atomic是什么</h3><p>在多线程的场景中，我们需要如何同步数据，通常会使用synchronized或者lock来处理，使用了synchronized意味着内核态的一次切换。这是一个很重的操作。有没有一种方式，可以比较便利的实现一些简单的数据同步，比如计数器等等。concurrent包下的atomic提供我们这么一种轻量级的数据同步的选择。</p>
+<p>下面拿AtomicInteger为例分析</p>
+<pre><code>public class Test {
+    static AtomicInteger atomic = new AtomicInteger(1);
+    public static void main(String[] args) {
+        ExecutorService executor = Executors.newCachedThreadPool();
+        for(int i = 0;i &lt; 20;i++){
+            executor.execute(new Runnable() {
 
-    volatile static int n;
+                @Override
+                public void run() {
+                    // TODO Auto-generated method stub
+                    for(int j = 0;j &lt; 100;j++){
 
-        public static void main(String[] args) throws InterruptedException {
-            Thread t1 = new Thread(()-&gt;{
-                for (int i = 0; i &lt; 100; i++) {
-                    n++;
+                        atomic.getAndIncrement();
+                    }
                 }
             });
-            Thread t2 = new Thread(()-&gt;{
-                for (int i = 0; i &lt; 100; i++) {
-                    n++;
-                }
-            });
-            t1.start();
-            t2.start();
-            t1.join();
-            t2.join();
-            System.out.println(n);
         }
-}</code></pre><p>在多次运行中，以上程序输出结果不全是200</p>
-<p>不要将volatile用在getAndOperate场合（这种场合不原子，需要再加锁），仅仅set或者get的场景是适合volatile的。</p>
-<p>volatile在进行自增自减操作的时候，不能保证原子性，n++实际上是三个操作，不是原子操作，先从主内存读取值到线程工作内存，然后在工作内存中对数据进行处理，最后刷新到主内存中，让其它线程可见。<strong>一旦在这三步中线程被挂起，就会出现上面这种结果。</strong></p>
-<h3 id="禁止重排序"><a href="#禁止重排序" class="headerlink" title="禁止重排序"></a>禁止重排序</h3><p>下面是一个单例模式的代码</p>
-<pre><code>public class Singleton {
-    private volatile static Singleton instance;
-    private Singleton (){}
-    public static Singleton getInstance() {
-        if (instance == null) {
-            synchronized(this.class){
-                if (instance == null){
-                    instance = new Singleton();
-                }
+        executor.shutdown();
+        try {
+            while(! executor.awaitTermination(2, TimeUnit.SECONDS));
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
-        return instance;
+        System.out.println(atomic.get());
     }
-}</code></pre><p>为什么要对<code>instance</code>使用<code>volatile</code>，<code>instance = new Singleton()</code>这句，这并非是一个原子操作，事实上在 JVM 中这句话大概做了下面 3 件事情，给<code>instance</code>分配内存，调用 Singleton 的构造函数来初始化成员变量，将instance对象指向分配的内存空间（执行完这步<code>instance</code>就为非 null 了）。但是在 JVM 的即时编译器中存在指令重排序的优化。也就是说上面的第二步和第三步的顺序是不能保证的，最终的执行顺序可能是 1-2-3 也可能是 1-3-2。如果是后者，则在 3 执行完毕、2 未执行之前，线程2进入第一个<code>instance==null</code>，这时<code>instance</code>已经是非null了（但却没有初始化），所以线程二会直接返回<code>instance</code>，然后使用，然后顺理成章地报错。</p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>修改<code>volatile</code>变量时会强制将修改后的值刷新的主内存中</p>
-<p>修改<code>volatile</code>变量后会导致其他线程工作内存中对应的变量值失效。因此，再读取该变量值的时候就需要重新从读取主内存中的值</p>
-<p>在访问<code>volatile</code>变量时不会执行加锁操作，因此也就不会使执行线程阻塞，因此<code>volatile</code>变量是一种比<code>sychronized</code>关键字更轻量级的同步机制。</p>
-<p>性能方面，<code>volatile</code>的读性能消耗与普通变量几乎相同，但是写操作稍慢，因为它需要在本地代码中插入许多内存屏障指令来保证处理器不发生乱序执行。</p>
-<p>不要将<code>volatile</code>用在<code>getAndOperate</code>场合，仅仅<code>set</code>或者<code>get</code>的场景是适合<code>volatile</code>的</p>
-<p><a href="http://www.importnew.com/24082.html" target="_blank" rel="noopener">对volatile更详细的参考</a><br><a href="https://juejin.im/post/5ae9b41b518825670b33e6c4" target="_blank" rel="noopener">彻底理解volatile</a></p>
+}</code></pre><p>输出结果稳定为2001，可以看到并没有使用重量级锁synchronized和reentrantlock，原子类是怎么实现不需要锁也不会在多线程并发中出错的呢？</p>
+<h3 id="AtomicInteger"><a href="#AtomicInteger" class="headerlink" title="AtomicInteger"></a>AtomicInteger</h3><p>####简介</p>
+<p>属于原子类</p>
+<pre><code>private static final Unsafe unsafe = Unsafe.getUnsafe();
+private static final long valueOffset;
+
+static {
+    try {
+        valueOffset = unsafe.objectFieldOffset
+            (AtomicInteger.class.getDeclaredField(&quot;value&quot;));
+    } catch (Exception ex) { throw new Error(ex); }
+}
+
+private volatile int value;</code></pre><p>原子类中几个成员变量</p>
+<p><code>unsafe</code>：<code>Unsafe</code>位于<code>sun.misc</code>包内，看其命名就知道和注重安全性的<code>java jdk</code>无缘，连文档都没，直接就叫”不安全” 。Unsafe的特点是可以直接操作堆外内存，可以随意查看及修改<code>JVM</code>中运行时的数据结构，例如查看和修改对象的成员，<code>Unsafe</code>的操作粒度不是类，而是数据和地址。<br><code>valueOffset</code>：<code>value</code>字段内存地址的偏移量(通过原子类实例的引用指向的内存空间和这个偏移量可以从内存中读取<code>field</code>为<code>value</code>的值)</p>
+<p><code>value</code>：存放真正的值，且为<code>volatile</code>，保证了<code>value</code>对所有线程的可见性</p>
+<h3 id="成员变量unsafe"><a href="#成员变量unsafe" class="headerlink" title="成员变量unsafe"></a>成员变量unsafe</h3><p>是CAS的核心类，由于Java方法无法直接访问底层系统，需要通过本地（native）方法来访问，Unsafe相当于一个后门，基于该类可以直接操作特定内存的数据。</p>
+<p>CAS指的是unsafe中的一个方法，<strong>整个比较并替换的操作是一个原子操作</strong></p>
+<pre><code>/**
+ * Atomically update Java variable to &lt;tt&gt;x&lt;/tt&gt; if it is currently
+ * holding &lt;tt&gt;expected&lt;/tt&gt;.
+ * @return &lt;tt&gt;true&lt;/tt&gt; if successful
+ */
+public final native boolean compareAndSwapInt(Object o, long offset,
+                                              int expected,
+                                              int x);
+</code></pre><p>Object o：被修改值的所在的类的实例<br>long offset：存储值的类变量value在内存中的偏移量<br>int expected：修改前的值<br>int x：修改后的值</p>
+<p>方法的作用为：通过o和offset确定变量在内存中的值，expected存放了修改前的值，要将变量修改为x之前先比较内存中的值和expected中修改前的值，若不一致，说明变量被其它线程修改过，返回false。</p>
+<h4 id="原理分析"><a href="#原理分析" class="headerlink" title="原理分析"></a>原理分析</h4><p>以上面代码为例分析流程，先查看AtomicInteger的getAndIncrement()方法</p>
+<pre><code>public final int getAndAdd(int delta) {
+    return unsafe.getAndAddInt(this, valueOffset, delta);
+}</code></pre><p>调用了unsafe的getAndAddInt方法，将自身实例和偏移量和要运算的数的值传入</p>
+<pre><code>public final int getAndAddInt(Object o, long offset, int delta) {
+    int v;
+    do {
+        v = getIntVolatile(o, offset);
+    } while (!compareAndSwapInt(o, offset, v, v + delta));
+    return v;
+}</code></pre><p>最后在unsafe中的<code>compareAndSwapInt</code>方法中完成整个CAS操作，<code>v = getIntVolatile(o, offset)</code>获取了主内存中的值value，存放在线程变量v中作为副本，<code>compareAndSwapInt</code>方法在完成计算v+delta的值后，再次通过o和offset查看此时主内存中的值(value为volatile类型，可见性保证value为最新的值)，看是否与线程中副本变量v相同，如果相同，则将新值刷新到主内存中，否则返回循环do中，更新线程变量副本v为主内存中最新变量的值，再进入compareAndSwapInt，如此循环。</p>
 
           
         
@@ -2000,6 +1440,221 @@ public void test(){
 out
 after
 Test.Human</code></pre>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/volatile/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/volatile/" itemprop="url">volatile</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>Java编程语言允许线程访问共享变量，为了确保共享变量能被准确和一致地更新，线程应该确保通过排他锁单独获得这个变量。Java语言提供了volatile，在某些情况下比锁要更加方便。如果一个字段被声明成volatile，Java线程内存模型确保所有线程看到这个变量的值是一致的。</p>
+<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p><img src="http://wx3.sinaimg.cn/large/96b7c0f4gy1g0t2gabww2j20hj08edfq.jpg" alt=""></p>
+<p>在 Java 内存模型中，所有的变量都存储在主存中，同时每个线程都拥有自己的工作线程，用于提高访问速度。线程会从主存中拷贝变量值到自己的工作内存中，然后在自己的工作线程中操作变量，而不是直接操作主存中的变量，由于每个线程在自己的内存中都有一个变量的拷贝，就会造成变量值不一致的问题。</p>
+<p>如果对声明了volatile的变量进行写操作，JVM就会向处理器发送一条Lock前缀的指令，将这个变量所在缓存行的数据写回到系统内存，同时让其它工作内存中这个变量的缓存失效，再次使用该变量的时候重新从主存中读取数据。</p>
+<pre><code>public class VolatileTest extends  Thread{
+    private boolean isRunning = true;
+    public boolean isRunning(){
+        return isRunning;
+    }
+    public void setRunning(boolean isRunning){
+        this.isRunning= isRunning;
+    }
+    public void run(){
+        System.out.println(&quot;进入了run...............&quot;);
+        while (isRunning){}
+        System.out.println(&quot;isRunning的值被修改为为false,线程将被停止了&quot;);
+    }
+    public static void main(String[] args) throws InterruptedException {
+        VolatileTest volatileThread = new VolatileTest();
+        volatileThread.start();
+        Thread.sleep(1000);
+        volatileThread.setRunning(false);   //停止线程
+    }
+}</code></pre><p>以上结果为：线程进入死循环，将<code>isRunning</code>变量设为<code>volatile</code>变量后，线程成功停止。</p>
+<h3 id="volatile的特性"><a href="#volatile的特性" class="headerlink" title="volatile的特性"></a>volatile的特性</h3><ol>
+<li>可见性，当一个共享变量被<code>volatile</code>修饰时，它会保证修改的值立即被更新到主存，所以对其他线程是可见的。当其他线程需要读取该值时，其他线程会去主存中读取新值。相反普通的共享变量不能保证可见性，因为普通共享变量被修改后并不会立即被写入主存，何时被写入主存也不确定。当其他线程去读取该值时，此时主存可能还是原来的旧值，这样就无法保证可见性</li>
+<li>有序性，java内存模型中允许编译器和处理器对指令进行重排序，虽然重排序过程不会影响到单线程执行的正确性，但是会影响到多线程并发执行的正确性。这时可以通过<code>volatile</code>来保证有序性，除了<code>volatile</code>,也可以通过<code>synchronized</code>和<code>Lock</code>来保证有序性。<code>synchronized</code>和<code>Lock</code>保证每个时刻只有一个线程执行同步代码，这相当于让线程顺序执行同步代码，从而保证了有序性。如果不考虑原子性操作的话<code>volatile</code>比<code>synchronized</code>和<code>Lock</code>更轻量级，成本更低。</li>
+<li>不保障原子性<code>volatile</code>关键字只能保证共享变量的可见性和有序性</li>
+</ol>
+<h3 id="非原子性"><a href="#非原子性" class="headerlink" title="非原子性"></a>非原子性</h3><p><code>volatile</code><strong>仅仅用来保证该变量对所有线程的可见性，但不保证原子性</strong></p>
+<pre><code>public class Test{
+
+    volatile static int n;
+
+        public static void main(String[] args) throws InterruptedException {
+            Thread t1 = new Thread(()-&gt;{
+                for (int i = 0; i &lt; 100; i++) {
+                    n++;
+                }
+            });
+            Thread t2 = new Thread(()-&gt;{
+                for (int i = 0; i &lt; 100; i++) {
+                    n++;
+                }
+            });
+            t1.start();
+            t2.start();
+            t1.join();
+            t2.join();
+            System.out.println(n);
+        }
+}</code></pre><p>在多次运行中，以上程序输出结果不全是200</p>
+<p>不要将volatile用在getAndOperate场合（这种场合不原子，需要再加锁），仅仅set或者get的场景是适合volatile的。</p>
+<p>volatile在进行自增自减操作的时候，不能保证原子性，n++实际上是三个操作，不是原子操作，先从主内存读取值到线程工作内存，然后在工作内存中对数据进行处理，最后刷新到主内存中，让其它线程可见。<strong>一旦在这三步中线程被挂起，就会出现上面这种结果。</strong></p>
+<h3 id="禁止重排序"><a href="#禁止重排序" class="headerlink" title="禁止重排序"></a>禁止重排序</h3><p>下面是一个单例模式的代码</p>
+<pre><code>public class Singleton {
+    private volatile static Singleton instance;
+    private Singleton (){}
+    public static Singleton getInstance() {
+        if (instance == null) {
+            synchronized(this.class){
+                if (instance == null){
+                    instance = new Singleton();
+                }
+        }
+        return instance;
+    }
+}</code></pre><p>为什么要对<code>instance</code>使用<code>volatile</code>，<code>instance = new Singleton()</code>这句，这并非是一个原子操作，事实上在 JVM 中这句话大概做了下面 3 件事情，给<code>instance</code>分配内存，调用 Singleton 的构造函数来初始化成员变量，将instance对象指向分配的内存空间（执行完这步<code>instance</code>就为非 null 了）。但是在 JVM 的即时编译器中存在指令重排序的优化。也就是说上面的第二步和第三步的顺序是不能保证的，最终的执行顺序可能是 1-2-3 也可能是 1-3-2。如果是后者，则在 3 执行完毕、2 未执行之前，线程2进入第一个<code>instance==null</code>，这时<code>instance</code>已经是非null了（但却没有初始化），所以线程二会直接返回<code>instance</code>，然后使用，然后顺理成章地报错。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>修改<code>volatile</code>变量时会强制将修改后的值刷新的主内存中</p>
+<p>修改<code>volatile</code>变量后会导致其他线程工作内存中对应的变量值失效。因此，再读取该变量值的时候就需要重新从读取主内存中的值</p>
+<p>在访问<code>volatile</code>变量时不会执行加锁操作，因此也就不会使执行线程阻塞，因此<code>volatile</code>变量是一种比<code>sychronized</code>关键字更轻量级的同步机制。</p>
+<p>性能方面，<code>volatile</code>的读性能消耗与普通变量几乎相同，但是写操作稍慢，因为它需要在本地代码中插入许多内存屏障指令来保证处理器不发生乱序执行。</p>
+<p>不要将<code>volatile</code>用在<code>getAndOperate</code>场合，仅仅<code>set</code>或者<code>get</code>的场景是适合<code>volatile</code>的</p>
+<p><a href="http://www.importnew.com/24082.html" target="_blank" rel="noopener">对volatile更详细的参考</a><br><a href="https://juejin.im/post/5ae9b41b518825670b33e6c4" target="_blank" rel="noopener">彻底理解volatile</a></p>
+
           
         
       
@@ -2796,6 +2451,291 @@ afterCompletion方法</code></pre><p>先执行<code>@Around</code>方法，直�
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/shiro%E9%AA%8C%E8%AF%81%E6%8E%88%E6%9D%83%E6%90%AD%E5%BB%BA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/shiro%E9%AA%8C%E8%AF%81%E6%8E%88%E6%9D%83%E6%90%AD%E5%BB%BA/" itemprop="url">shiro验证与授权搭建</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/shiro/" itemprop="url" rel="index">
+                    <span itemprop="name">shiro</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="导入包"><a href="#导入包" class="headerlink" title="导入包"></a>导入包</h3><pre><code>        &lt;!-- shiro核心包 --&gt;
+        &lt;dependency&gt;  
+            &lt;groupId&gt;org.apache.shiro&lt;/groupId&gt;  
+            &lt;artifactId&gt;shiro-core&lt;/artifactId&gt;  
+            &lt;version&gt;1.3.2&lt;/version&gt;  
+        &lt;/dependency&gt;  
+        &lt;!-- 添加shiro web支持 --&gt;
+        &lt;dependency&gt;  
+            &lt;groupId&gt;org.apache.shiro&lt;/groupId&gt;  
+            &lt;artifactId&gt;shiro-web&lt;/artifactId&gt;  
+            &lt;version&gt;1.3.2&lt;/version&gt;  
+        &lt;/dependency&gt;  
+        &lt;!-- 添加shiro spring整合 --&gt;
+        &lt;dependency&gt;  
+            &lt;groupId&gt;org.apache.shiro&lt;/groupId&gt;  
+            &lt;artifactId&gt;shiro-spring&lt;/artifactId&gt;  
+            &lt;version&gt;1.3.2&lt;/version&gt;  
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;net.sf.ehcache&lt;/groupId&gt;
+            &lt;artifactId&gt;ehcache-core&lt;/artifactId&gt;
+            &lt;version&gt;2.4.3&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.apache.shiro&lt;/groupId&gt;
+            &lt;artifactId&gt;shiro-ehcache&lt;/artifactId&gt;
+            &lt;version&gt;1.3.2&lt;/version&gt;
+        &lt;/dependency&gt;</code></pre><h3 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h3><p>在spring配置文件中需要配置</p>
+<pre><code>&lt;!--shiro 核心--&gt;
+&lt;bean id=&quot;securityManager&quot; class=&quot;org.apache.shiro.web.mgt.DefaultWebSecurityManager&quot;&gt;
+    &lt;property name=&quot;cacheManager&quot; ref=&quot;cacheManager&quot;/&gt;
+    &lt;!-- Single realm app.  If you have multiple realms, use the &#39;realms&#39; property instead. --&gt;
+    &lt;property name=&quot;sessionMode&quot; value=&quot;native&quot;/&gt;
+    &lt;property name=&quot;realm&quot; ref=&quot;ShiroRealm&quot;&gt;&lt;/property&gt;
+    &lt;!--或者可以配置多个realm--&gt;
+    &lt;property name=&quot;realms&quot;&gt;
+        &lt;list&gt;
+            &lt;ref bean=&quot;jdbcRealm&quot;/&gt;
+            &lt;ref bean=&quot;secondRealm&quot;/&gt;
+        &lt;/list&gt;
+    &lt;/property&gt;
+
+    &lt;!--可以设置多realm验证策略,realm可以在下面authenticator中注入，但使用到授权时--&gt;
+    &lt;!--只能在securityManager中注入--&gt;
+    &lt;property name=&quot;authenticator&quot; ref=&quot;authenticator&quot;&gt;&lt;/property&gt;
+&lt;/bean&gt;
+
+&lt;bean id=&quot;authenticator&quot; 
+    class=&quot;org.apache.shiro.authc.pam.ModularRealmAuthenticator&quot;&gt;
+    &lt;property name=&quot;authenticationStrategy&quot;&gt;
+        &lt;bean class=&quot;org.apache.shiro.authc.pam.AtLeastOneSuccessfulStrategy&quot;&gt;&lt;/bean&gt;
+    &lt;/property&gt;
+&lt;/bean&gt;
+
+&lt;!--缓存管理--&gt;
+&lt;bean id=&quot;cacheManager&quot; class=&quot;org.apache.shiro.cache.ehcache.EhCacheManager&quot;&gt;
+    &lt;!-- Set a net.sf.ehcache.CacheManager instance here if you already have one.  If not, a new one
+         will be creaed with a default config:
+         &lt;property name=&quot;cacheManager&quot; ref=&quot;ehCacheManager&quot;/&gt; --&gt;
+    &lt;!-- If you don&#39;t have a pre-built net.sf.ehcache.CacheManager instance to inject, but you want
+         a specific Ehcache configuration to be used, specify that here.  If you don&#39;t, a default
+         will be used.: --&gt;
+    &lt;property name=&quot;cacheManagerConfigFile&quot; value=&quot;classpath:ehcache.xml&quot;/&gt;
+&lt;/bean&gt;
+&lt;!--注入自定义realm--&gt;
+&lt;bean id=&quot;ShiroRealm&quot; class=&quot;crj.mspro.realm.ShiroRealm&quot;&gt;
+    &lt;!--匹配器--&gt;
+    &lt;property name=&quot;credentialsMatcher&quot;&gt;
+        &lt;bean class=&quot;org.apache.shiro.authc.credential.HashedCredentialsMatcher&quot;&gt;
+            &lt;property name=&quot;hashAlgorithmName&quot; value=&quot;MD5&quot;&gt;&lt;/property&gt;
+            &lt;property name=&quot;hashIterations&quot; value=&quot;1024&quot;&gt;&lt;/property&gt;
+        &lt;/bean&gt;
+    &lt;/property&gt;
+&lt;/bean&gt;
+
+&lt;!-- Shiro生命周期处理器--&gt;
+&lt;bean id=&quot;lifecycleBeanPostProcessor&quot; class=&quot;org.apache.shiro.spring.LifecycleBeanPostProcessor&quot;/&gt;
+
+&lt;!--自定义LogoutFilter,退出--&gt;
+&lt;bean id=&quot;logoutFilter&quot; class=&quot;org.apache.shiro.web.filter.authc.LogoutFilter&quot;&gt;
+    &lt;property name=&quot;redirectUrl&quot; value=&quot;/main.jsp&quot;/&gt;
+&lt;/bean&gt;
+
+&lt;!--配置 ShiroFilter--&gt;
+&lt;!--id 必须和 web.xml 文件中配置的 DelegatingFilterProxy 的 &lt;filter-name&gt; 一致.
+    若不一致, 则会抛出: NoSuchBeanDefinitionException. 因为 Shiro 会来 IOC 容器中查找和 &lt;filter-name&gt; 名字对应的 filter bean.--&gt;
+&lt;bean id=&quot;shiroFilter&quot; class=&quot;org.apache.shiro.spring.web.ShiroFilterFactoryBean&quot;&gt;
+    &lt;property name=&quot;securityManager&quot; ref=&quot;securityManager&quot;/&gt;
+    &lt;!--进入需要验证页面时跳转--&gt;
+    &lt;property name=&quot;loginUrl&quot; value=&quot;/main.jsp&quot;/&gt;
+    &lt;property name=&quot;successUrl&quot; value=&quot;/main.jsp&quot;/&gt;
+    &lt;property name=&quot;unauthorizedUrl&quot; value=&quot;/unauthorized.jsp&quot;/&gt;
+    &lt;!-- The &#39;filters&#39; property is not necessary since any declared javax.servlet.Filter bean
+         defined will be automatically acquired and available via its beanName in chain
+         definitions, but you can perform overrides or parent/child consolidated configuration
+         here if you like: --&gt;
+     &lt;property name=&quot;filters&quot;&gt;
+        &lt;map&gt;
+            &lt;!--修改默认过滤器--&gt;
+            &lt;entry key=&quot;logout&quot; value-ref=&quot;logoutFilter&quot;/&gt;
+        &lt;/map&gt;
+    &lt;/property&gt; 
+
+    &lt;!--  
+        配置哪些页面需要受保护. 
+        以及访问这些页面需要的权限. 
+        1). anon 可以被匿名访问
+        2). authc 必须认证(即登录)后才可能访问的页面. 
+        3). logout 登出.
+        4). roles 角色过滤器
+    --&gt;
+    &lt;property name=&quot;filterChainDefinitions&quot;&gt;
+        &lt;value&gt;
+            /logout = logout
+            /easyui-jquery/** = anon
+            /main.jsp = anon
+            /js/** = anon
+            /login = anon
+            /css/** = anon
+            /** = authc
+        &lt;/value&gt;
+    &lt;/property&gt;
+    &lt;!--此变量可以用实例工厂方法注入--&gt;
+
+
+&lt;/bean&gt;</code></pre><p>工厂类</p>
+<pre><code>public class FilterChainDefinitionMapBuilder {
+
+    public LinkedHashMap&lt;String, String&gt; buildFilterChainDefinitionMap(){
+        LinkedHashMap&lt;String, String&gt; map = new LinkedHashMap&lt;&gt;();
+
+        map.put(&quot;/login.jsp&quot;, &quot;anon&quot;);
+        map.put(&quot;/shiro/login&quot;, &quot;anon&quot;);
+        map.put(&quot;/shiro/logout&quot;, &quot;logout&quot;);
+        map.put(&quot;/user.jsp&quot;, &quot;authc,roles[user]&quot;);
+        map.put(&quot;/admin.jsp&quot;, &quot;authc,roles[admin]&quot;);
+        map.put(&quot;/list.jsp&quot;, &quot;user&quot;);
+
+        map.put(&quot;/**&quot;, &quot;authc&quot;);
+
+        return map;
+    }
+
+}
+</code></pre>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
@@ -2846,7 +2786,7 @@ afterCompletion方法</code></pre><p>先执行<code>@Around</code>方法，直�
               
                 <a href="/archives/%20%7C%7C%20archive">
               
-                  <span class="site-state-item-count">86</span>
+                  <span class="site-state-item-count">85</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

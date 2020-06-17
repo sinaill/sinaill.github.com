@@ -248,260 +248,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/fail-fast%20fail-safe/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/fail-fast%20fail-safe/" itemprop="url">fail-fast与fail-safe</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="fail-fast"><a href="#fail-fast" class="headerlink" title="fail-fast"></a>fail-fast</h3><p>java.util 包中的集合类都返回 fail-fast 迭代器，意味着在使用iterator遍历集合时，如果改变集合结构，将会抛出ConcurrentModificationException</p>
-<p>下面以ArrayList为例分析</p>
-<p>ArrayList继承于AbstractList，而AbstractList中定义了一个protected transient int modCount = 0，那么这个变量有什么作用呢</p>
-<p>我们看ArrayList中实现了Iterator接口的私有内部类ltr，有个变量接收了这个modCount</p>
-<pre><code>int expectedModCount = modCount;</code></pre><p>当我们获取集合的迭代器对象Iterator时，这个动作发生</p>
-<pre><code>    public Iterator&lt;E&gt; iterator() {
-        return new Itr();
-    }</code></pre><p>然后看看改变集合结构的几个方法，例如add,remove</p>
-<p>add方法：</p>
-<pre><code>    public boolean add(E e) {
-        ensureCapacityInternal(size + 1);  // Increments modCount!!
-        elementData[size++] = e;
-        return true;
-    }
-    private void ensureCapacityInternal(int minCapacity) {
-        if (elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA) {
-            minCapacity = Math.max(DEFAULT_CAPACITY, minCapacity);
-        }
-
-        ensureExplicitCapacity(minCapacity);
-    }
-
-    private void ensureExplicitCapacity(int minCapacity) {
-        modCount++;
-
-        // overflow-conscious code
-        if (minCapacity - elementData.length &gt; 0)
-            grow(minCapacity);
-    }
-</code></pre><p>remove方法：</p>
-<pre><code>    public E remove(int index) {
-        rangeCheck(index);
-
-        modCount++;
-        E oldValue = elementData(index);
-
-        int numMoved = size - index - 1;
-        if (numMoved &gt; 0)
-            System.arraycopy(elementData, index+1, elementData, index,
-                             numMoved);
-        elementData[--size] = null; // clear to let GC do its work
-
-        return oldValue;
-    }</code></pre><p><strong>我们发现在这些操作中都会将集合自身变量modCount自增1，会造成什么影响呢，接着往下看</strong></p>
-<p>迭代器Iterator中的next()方法中调用了checkForComodification()</p>
-<p>查看方法checkForComodification：</p>
-<pre><code>        final void checkForComodification() {
-            if (modCount != expectedModCount)
-                throw new ConcurrentModificationException();
-        }</code></pre><p>可以看到我们在获取下个元素时，Iterator会先比较modCount和expectedModCount，如果我们在迭代器遍历时调用了add或者remove等改变集合结构的方法时，modCount自增了，而expectedModCount不变，所以在此处会抛出ConcurrentModificationException</p>
-<p>但是如果是在我们自己遍历集合时想修改集合结构，而且不是多线程环境中的话，我们可以看Iterator中给我们提供的方法，在ArrayList中的内部类Iterator中给我们提供了一个remove方法</p>
-<pre><code>        public void remove() {
-            if (lastRet &lt; 0)
-                throw new IllegalStateException();
-            checkForComodification();
-
-            try {
-                ArrayList.this.remove(lastRet);
-                cursor = lastRet;
-                lastRet = -1;
-                expectedModCount = modCount;
-            } catch (IndexOutOfBoundsException ex) {
-                throw new ConcurrentModificationException();
-            }
-        }</code></pre><p>我们可以看到在移除元素后，重新对expectedModCount赋值，所以checkForComodification()不会抛出异常</p>
-<p>ArrayList还提供了一个更丰富的ListIterator内部类，是一个双向迭代器，可以双向遍历，在这里比Iterator多了add方法</p>
-<pre><code>    public void add(E e) {
-        checkForComodification();
-
-        try {
-            int i = cursor;
-            ArrayList.this.add(i, e);
-            cursor = i + 1;
-            lastRet = -1;
-            expectedModCount = modCount;
-        } catch (IndexOutOfBoundsException ex) {
-            throw new ConcurrentModificationException();
-        }
-    }
-}</code></pre><p>依旧是处理了expectedModCount = modCount。</p>
-<h3 id="fail-safe"><a href="#fail-safe" class="headerlink" title="fail-safe"></a>fail-safe</h3><p>以ArrayList的替代类CopyOnWriteArrayList为例分析，CopyOnWriteArrayList为何物？ArrayList 的一个线程安全的变体，其中所有可变操作（add、set 等等）都是通过对底层数组进行一次新的复制来实现的。 该类产生的开销比较大，但是在两种情况下，它非常适合使用。</p>
-<ol>
-<li>在不能或不想进行同步遍历，但又需要从并发线程中排除冲突时。</li>
-<li>当遍历操作的数量大大超过可变操作的数量时。</li>
-</ol>
-<p>查看迭代器</p>
-<pre><code>public E next() {
-    if (! hasNext())
-        throw new NoSuchElementException();
-    return (E) snapshot[cursor++];
-}</code></pre><p>没有像ArrayList的迭代器一样，它不需要检查expectedModCount = modCount</p>
-<p>再看add方法</p>
-<pre><code>public boolean add(E paramE) {    
-        ReentrantLock localReentrantLock = this.lock;    
-        localReentrantLock.lock();    
-        try {    
-            Object[] arrayOfObject1 = getArray();    
-            int i = arrayOfObject1.length;    
-            Object[] arrayOfObject2 = Arrays.copyOf(arrayOfObject1, i + 1);    
-            arrayOfObject2[i] = paramE;    
-            setArray(arrayOfObject2);    
-            int j = 1;    
-            return j;    
-        } finally {    
-            localReentrantLock.unlock();    
-        }    
-    }    
-    final void setArray(Object[] paramArrayOfObject) {    
-        this.array = paramArrayOfObject;    
-    }  </code></pre><p>看关键代码：</p>
-<pre><code>            Object[] arrayOfObject2 = Arrays.copyOf(arrayOfObject1, i + 1);    
-            arrayOfObject2[i] = paramE;    
-            setArray(arrayOfObject2)</code></pre><p>所以在多线程环境时，可以使用CopyOnWriterArrayList来替代，它们的原理为先复制原有集合，然后在复制集合上作修改，然后将原引用指向复制修改后的集合，而迭代器遍历集合是先接收CopyOnWriterArrayList中存储元素的数组，然后对其遍历。这样就达到了遍历和修改集合结构分别在不同的存储数组中。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/comparable%20and%20comparator/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -889,6 +635,361 @@ public interface Consumer&lt;T&gt; {
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/ajax%E4%B8%ADjson%E5%92%8Cspringmvc/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/ajax%E4%B8%ADjson%E5%92%8Cspringmvc/" itemprop="url">ajax中json和SpringMVC</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">框架</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="json"><a href="#json" class="headerlink" title="json"></a>json</h3><p>json对象格式:<code>{&quot;param&quot;:&quot;value&quot;,&quot;param&quot;:&quot;value&quot;}</code></p>
+<p>普通js对象:<code>{param:&quot;value&quot;,param:&quot;value&quot;}</code></p>
+<p>js对象转json对象:</p>
+<ul>
+<li>先将js转json字符串：<code>JSON.stringify()</code></li>
+<li>将json字符串转json对象:<code>JSON.parse()</code></li>
+</ul>
+<h3 id="ajax中的contentType"><a href="#ajax中的contentType" class="headerlink" title="ajax中的contentType"></a>ajax中的contentType</h3><p>ajax中，没有指定<code>contentType</code>的话，Jquery默认使用<code>application/x-www-form-urlencoded</code>类型，data使用json对象格式,<code>springmvc</code>可以<code>@RequestParam</code>接收数据(变量同名不需要)</p>
+<p>指定<code>contentType</code>为<code>application/json</code>时，data必须为json字符串格式，springmvc接收数据要用<code>@RequestBody</code>注解</p>
+<pre><code>$.ajax({
+    type: &quot;post&quot;,
+    url:  &quot;mobile/notice/addMessageInfo.jspx&quot;,
+    contentType: &quot;application/json&quot;,
+    data:&quot;{&#39;name&#39;:&#39;zhangsan&#39;,&#39;age&#39;:&#39;15&#39;}&quot;,
+    dataType: &quot;json&quot;,
+    success: function(data) {
+        console.log(data);
+    },
+    error: function(msg) {
+        console.log(msg)
+    }
+})
+
+
+$.ajax({
+    type: &quot;post&quot;,
+    url:  &quot;mobile/notice/addMessageInfo.jspx&quot;,
+    data:{name:&#39;zhangsan&#39;,age:&#39;15&#39;},
+    dataType: &quot;json&quot;,
+    success: function(data) {
+        console.log(data);
+    },
+    error: function(msg) {
+        console.log(msg)
+    }
+})</code></pre>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/bit%20arithmetic/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/bit%20arithmetic/" itemprop="url">java中的位运算</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="原码，补码，反码"><a href="#原码，补码，反码" class="headerlink" title="原码，补码，反码"></a>原码，补码，反码</h3><h4 id="原码"><a href="#原码" class="headerlink" title="原码"></a>原码</h4><p>原码就是符号位加上真值的绝对值, 即用第一位表示符号, 其余位表示值. 比如如果是8位二进制:</p>
+<p>[+1]原 = 0000 0001</p>
+<p>[-1]原 = 1000 0001</p>
+<h4 id="补码"><a href="#补码" class="headerlink" title="补码"></a>补码</h4><p>正数的补码就是其本身，负数的补码是在其原码的基础上, 符号位不变, 其余各位取反, 最后+1. (即在反码的基础上+1),<strong>负数的补码转为原码也是符号位不变, 其余各位取反, 最后+1</strong></p>
+<p>[+1] = [00000001]原 = [00000001]反 = [00000001]补</p>
+<p>[-1] = [10000001]原 = [11111110]反 = [11111111]补</p>
+<h4 id="反码"><a href="#反码" class="headerlink" title="反码"></a>反码</h4><p>正数的反码是其本身，负数的反码是在其原码的基础上, 符号位不变，其余各个位取反。</p>
+<p>[+1] = [00000001]原 = [00000001]反</p>
+<p>[-1] = [10000001]原 = [11111110]反</p>
+<h3 id="或运算"><a href="#或运算" class="headerlink" title="或运算"></a>或运算</h3><p><code>System.out.println(3 | 4);</code></p>
+<p><code>7</code></p>
+<p>转化为2进制补码运算，0 1 1与 1 0 0 相或 结果为1 1 1，所以为7</p>
+<h3 id="与运算"><a href="#与运算" class="headerlink" title="与运算"></a>与运算</h3><p><code>System.out.println(3 &amp; 4);</code></p>
+<p><code>0</code></p>
+<p>转化为2进制补码运算，0 1 1与 1 0 0 相与，结果为0 0 0，所以为0</p>
+<h3 id="左移-lt-lt"><a href="#左移-lt-lt" class="headerlink" title="左移&lt;&lt;"></a>左移&lt;&lt;</h3><p><code>System.out.println(5&lt;&lt;2)</code></p>
+<p><code>20</code></p>
+<p>首先会将5转为2进制表示形式(java中，整数默认就是int类型,也就是32位):</p>
+<p>0000 0000 0000 0000 0000 0000 0000 0101           然后左移2位后，低位补0<br>0000 0000 0000 0000 0000 0000 0001 0100           换算成10进制为20</p>
+<p><code>System.out.println(-5 &lt;&lt; 2);</code></p>
+<p><code>-20</code></p>
+<p>1111 1111 1111 1111 1111 1111 1111 1011           然后左移2位后，低位也是补0<br>1111 1111 1111 1111 1111 1111 1110 1100           换算成10进制为-20</p>
+<h3 id="右移-gt-gt"><a href="#右移-gt-gt" class="headerlink" title="右移&gt;&gt;"></a>右移&gt;&gt;</h3><p><code>System.out.println(5&gt;&gt;2);</code></p>
+<p><code>1</code></p>
+<p>还是先将5转为2进制表示形式：<br>0000 0000 0000 0000 0000 0000 0000 0101           然后右移2位，高位补0：<br>0000 0000 0000 0000 0000 0000 0000 0001              换算成10进制为1</p>
+<p><code>System.out.println(-5&gt;&gt;3);</code></p>
+<p><code>-1</code></p>
+<p>-5换算成二进制:<br>1111 1111 1111 1111 1111 1111 1111 1011          然后右移三位，高位补1<br>1111 1111 1111 1111 1111 1111 1111 1111          换算成10进制为-1</p>
+<h3 id="无符号右移-gt-gt-gt"><a href="#无符号右移-gt-gt-gt" class="headerlink" title="无符号右移&gt;&gt;&gt;"></a>无符号右移&gt;&gt;&gt;</h3><p><code>System.out.println(5 &gt;&gt;&gt; 3);</code></p>
+<p><code>0</code></p>
+<p>5换算成二进制:<br>0000 0000 0000 0000 0000 0000 0000 0101          然后右移三位，高位补0<br>0000 0000 0000 0000 0000 0000 0000 0000          换算成10进制为0</p>
+<p><code>System.out.println(-5 &gt;&gt;&gt; 3);</code></p>
+<p><code>536870911</code></p>
+<p>-5换算成二进制:<br>1111 1111 1111 1111 1111 1111 1111 1011         带符号右移，高位补0<br>0001 1111 1111 1111 1111 1111 1111 1111         换算成10进制为536870911</p>
+<h3 id="位异或"><a href="#位异或" class="headerlink" title="位异或^"></a>位异或^</h3><p>位异或：第一个操作数的的第n位于第二个操作数的第n位 相反，那么结果的第n为也为1，否则为0</p>
+<p><code>System.out.println(5 ^ 3);</code></p>
+<p><code>6</code></p>
+<p>5转换为二进制：0000 0000 0000 0000 0000 0000 0000 0101<br>3转换为二进制：0000 0000 0000 0000 0000 0000 0000 0011<br>得：0000 0000 0000 0000 0000 0000 0000 0110</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/await%E3%80%81signal%E5%92%8CsignalAll%E6%BA%90%E7%A0%81/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1170,7 +1271,7 @@ private void doSignalAll(Node first) {
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/bit%20arithmetic/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/String%20and%20constant%20pool/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="sinaill">
@@ -1189,7 +1290,7 @@ private void doSignalAll(Node first) {
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/06/17/bit%20arithmetic/" itemprop="url">java中的位运算</a></h1>
+                <a class="post-title-link" href="/2020/06/17/String%20and%20constant%20pool/" itemprop="url">String与常量池</a></h1>
         
 
         <div class="post-meta">
@@ -1263,221 +1364,33 @@ private void doSignalAll(Node first) {
       
         
           
-            <h3 id="原码，补码，反码"><a href="#原码，补码，反码" class="headerlink" title="原码，补码，反码"></a>原码，补码，反码</h3><h4 id="原码"><a href="#原码" class="headerlink" title="原码"></a>原码</h4><p>原码就是符号位加上真值的绝对值, 即用第一位表示符号, 其余位表示值. 比如如果是8位二进制:</p>
-<p>[+1]原 = 0000 0001</p>
-<p>[-1]原 = 1000 0001</p>
-<h4 id="补码"><a href="#补码" class="headerlink" title="补码"></a>补码</h4><p>正数的补码就是其本身，负数的补码是在其原码的基础上, 符号位不变, 其余各位取反, 最后+1. (即在反码的基础上+1),<strong>负数的补码转为原码也是符号位不变, 其余各位取反, 最后+1</strong></p>
-<p>[+1] = [00000001]原 = [00000001]反 = [00000001]补</p>
-<p>[-1] = [10000001]原 = [11111110]反 = [11111111]补</p>
-<h4 id="反码"><a href="#反码" class="headerlink" title="反码"></a>反码</h4><p>正数的反码是其本身，负数的反码是在其原码的基础上, 符号位不变，其余各个位取反。</p>
-<p>[+1] = [00000001]原 = [00000001]反</p>
-<p>[-1] = [10000001]原 = [11111110]反</p>
-<h3 id="或运算"><a href="#或运算" class="headerlink" title="或运算"></a>或运算</h3><p><code>System.out.println(3 | 4);</code></p>
-<p><code>7</code></p>
-<p>转化为2进制补码运算，0 1 1与 1 0 0 相或 结果为1 1 1，所以为7</p>
-<h3 id="与运算"><a href="#与运算" class="headerlink" title="与运算"></a>与运算</h3><p><code>System.out.println(3 &amp; 4);</code></p>
-<p><code>0</code></p>
-<p>转化为2进制补码运算，0 1 1与 1 0 0 相与，结果为0 0 0，所以为0</p>
-<h3 id="左移-lt-lt"><a href="#左移-lt-lt" class="headerlink" title="左移&lt;&lt;"></a>左移&lt;&lt;</h3><p><code>System.out.println(5&lt;&lt;2)</code></p>
-<p><code>20</code></p>
-<p>首先会将5转为2进制表示形式(java中，整数默认就是int类型,也就是32位):</p>
-<p>0000 0000 0000 0000 0000 0000 0000 0101           然后左移2位后，低位补0<br>0000 0000 0000 0000 0000 0000 0001 0100           换算成10进制为20</p>
-<p><code>System.out.println(-5 &lt;&lt; 2);</code></p>
-<p><code>-20</code></p>
-<p>1111 1111 1111 1111 1111 1111 1111 1011           然后左移2位后，低位也是补0<br>1111 1111 1111 1111 1111 1111 1110 1100           换算成10进制为-20</p>
-<h3 id="右移-gt-gt"><a href="#右移-gt-gt" class="headerlink" title="右移&gt;&gt;"></a>右移&gt;&gt;</h3><p><code>System.out.println(5&gt;&gt;2);</code></p>
-<p><code>1</code></p>
-<p>还是先将5转为2进制表示形式：<br>0000 0000 0000 0000 0000 0000 0000 0101           然后右移2位，高位补0：<br>0000 0000 0000 0000 0000 0000 0000 0001              换算成10进制为1</p>
-<p><code>System.out.println(-5&gt;&gt;3);</code></p>
-<p><code>-1</code></p>
-<p>-5换算成二进制:<br>1111 1111 1111 1111 1111 1111 1111 1011          然后右移三位，高位补1<br>1111 1111 1111 1111 1111 1111 1111 1111          换算成10进制为-1</p>
-<h3 id="无符号右移-gt-gt-gt"><a href="#无符号右移-gt-gt-gt" class="headerlink" title="无符号右移&gt;&gt;&gt;"></a>无符号右移&gt;&gt;&gt;</h3><p><code>System.out.println(5 &gt;&gt;&gt; 3);</code></p>
-<p><code>0</code></p>
-<p>5换算成二进制:<br>0000 0000 0000 0000 0000 0000 0000 0101          然后右移三位，高位补0<br>0000 0000 0000 0000 0000 0000 0000 0000          换算成10进制为0</p>
-<p><code>System.out.println(-5 &gt;&gt;&gt; 3);</code></p>
-<p><code>536870911</code></p>
-<p>-5换算成二进制:<br>1111 1111 1111 1111 1111 1111 1111 1011         带符号右移，高位补0<br>0001 1111 1111 1111 1111 1111 1111 1111         换算成10进制为536870911</p>
-<h3 id="位异或"><a href="#位异或" class="headerlink" title="位异或^"></a>位异或^</h3><p>位异或：第一个操作数的的第n位于第二个操作数的第n位 相反，那么结果的第n为也为1，否则为0</p>
-<p><code>System.out.println(5 ^ 3);</code></p>
-<p><code>6</code></p>
-<p>5转换为二进制：0000 0000 0000 0000 0000 0000 0000 0101<br>3转换为二进制：0000 0000 0000 0000 0000 0000 0000 0011<br>得：0000 0000 0000 0000 0000 0000 0000 0110</p>
+            <h3 id="创建方法"><a href="#创建方法" class="headerlink" title="创建方法"></a>创建方法</h3><p><code>String str=new String(&quot;abc&quot;)</code></p>
+<p><strong>一共创建两个对象，其中new方法在堆中创建一个String对象，””为String特有的创建对象的方法，这行代码被执行的时候，JAVA虚拟机首先在字符串池中查找是否已经存在了值为”abc”的这么一个对象，它的判断依据是String类equals(Object obj)方法的返回值。如果有，则不再创建新的对象，直接返回已存在对象的引用；如果没有，则先创建这个对象，然后把它加入到字符串池中，再将它的引用返回</strong></p>
+<pre><code>        String str1 = &quot;abc&quot;;
+        String str2 = new String(&quot;abc&quot;);
+        System.out.println(str1 == str2);</code></pre><p><code>false</code></p>
+<p><strong>str2指向堆中的对象，str1指向常量池中的对象</strong></p>
+<h3 id="intern方法"><a href="#intern方法" class="headerlink" title="intern方法"></a>intern方法</h3><p><code>string.intern()</code></p>
+<p>实例1：</p>
+<pre><code>        String str1 = &quot;abc&quot;;
+        String str2 = new String(&quot;abc&quot;);
+        str2 = &quot;abc&quot;.intern();
+        System.out.println(str1 == str2);</code></pre><p><code>true</code></p>
+<p><strong>会检查常量池中是否存在string，存在则返回池里的字符串引用；如果不存在则将string引用放入常量池中(jdk1.7后)。这样做可以避免在堆中不断的创建字符串对象，起到节省空间的作用。</strong></p>
+<p>实例2：</p>
+<pre><code>String s3 = new String(&quot;1&quot;) + new String(&quot;1&quot;);  
+s3.intern();  
+String s4 = &quot;11&quot;;  
+System.out.println(s3 == s4);</code></pre><p><code>true</code></p>
+<p>实例3：</p>
+<pre><code>String s3 = new String(&quot;1&quot;) + new String(&quot;1&quot;);  
+String s4 = &quot;11&quot;;  
+s3.intern();  
+System.out.println(s3 == s4);</code></pre><p><code>false</code></p>
+<p><strong>调换顺序后出现不同结果的原因</strong></p>
+<p><strong>1.String s3 = new String(“1”) + new String(“1”)，字符串常量池中生成“1” ，并在堆空间中生成s3引用指向的对象（内容为”11”）。注意此时常量池中是没有 “11”对象的</strong></p>
+<p><strong>2.实例2中s3.intern()，此时常量池中没有”11”对象，所以在常量池中存储s3引用(jdk1.7以后)，String s4 = “11”,首先从常量池中查看(equals方法)有无”11”对象，所以将s3引用传回去，所以结果true，而在实例3中，String s4 = “11”在s3.intern()方法前，此时常量池中已经有”11”对象，s3.intern()无效，所以s3还是指向堆中对象，所以结果false</strong></p>
 
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/ajax%E4%B8%ADjson%E5%92%8Cspringmvc/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/ajax%E4%B8%ADjson%E5%92%8Cspringmvc/" itemprop="url">ajax中json和SpringMVC</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
-                    <span itemprop="name">框架</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="json"><a href="#json" class="headerlink" title="json"></a>json</h3><p>json对象格式:<code>{&quot;param&quot;:&quot;value&quot;,&quot;param&quot;:&quot;value&quot;}</code></p>
-<p>普通js对象:<code>{param:&quot;value&quot;,param:&quot;value&quot;}</code></p>
-<p>js对象转json对象:</p>
-<ul>
-<li>先将js转json字符串：<code>JSON.stringify()</code></li>
-<li>将json字符串转json对象:<code>JSON.parse()</code></li>
-</ul>
-<h3 id="ajax中的contentType"><a href="#ajax中的contentType" class="headerlink" title="ajax中的contentType"></a>ajax中的contentType</h3><p>ajax中，没有指定<code>contentType</code>的话，Jquery默认使用<code>application/x-www-form-urlencoded</code>类型，data使用json对象格式,<code>springmvc</code>可以<code>@RequestParam</code>接收数据(变量同名不需要)</p>
-<p>指定<code>contentType</code>为<code>application/json</code>时，data必须为json字符串格式，springmvc接收数据要用<code>@RequestBody</code>注解</p>
-<pre><code>$.ajax({
-    type: &quot;post&quot;,
-    url:  &quot;mobile/notice/addMessageInfo.jspx&quot;,
-    contentType: &quot;application/json&quot;,
-    data:&quot;{&#39;name&#39;:&#39;zhangsan&#39;,&#39;age&#39;:&#39;15&#39;}&quot;,
-    dataType: &quot;json&quot;,
-    success: function(data) {
-        console.log(data);
-    },
-    error: function(msg) {
-        console.log(msg)
-    }
-})
-
-
-$.ajax({
-    type: &quot;post&quot;,
-    url:  &quot;mobile/notice/addMessageInfo.jspx&quot;,
-    data:{name:&#39;zhangsan&#39;,age:&#39;15&#39;},
-    dataType: &quot;json&quot;,
-    success: function(data) {
-        console.log(data);
-    },
-    error: function(msg) {
-        console.log(msg)
-    }
-})</code></pre>
           
         
       
@@ -1679,173 +1592,6 @@ ThreadLocalMap(ThreadLocal&lt;?&gt; firstKey, Object firstValue) {
 <p>调用<code>ThreadLocal</code>的<code>set</code>方法时，先获取当前线程，查看线程中<code>ThreadLocalMap</code>引用为不为空，若为空，为当前线程创建<code>ThreadLocalMap</code>实例，传入键值对<code>key</code>为当前<code>ThreadLocal</code>实例，<code>value</code>为<code>set</code>方法传入的参数值。若不为空，为<code>ThreadLocalMap</code>实例添加新键值对，<code>key</code>为当前<code>ThreadLocal</code>实例，<code>value</code>为<code>set</code>方法传入的参数值。</p>
 <p>调用<code>ThreadLocal</code>的<code>get</code>方法时，如果之前为调用过<code>set</code>方法或<code>ThreadLocalMap</code>实例中<code>key</code>没有与当前<code>ThreadLocal</code>实例对应的，则返回一个默认值<code>null</code>。照旧先获取当前线程，获取线程中<code>ThreadLocalMap</code>实例，再根据当前<code>ThreadLocal</code>实例获取对应的键值对<code>Entry</code>，从而获取线程中存储的变量副本。</p>
 <p>为什么不用一个<code>map Entry&lt;Thread,value&gt;</code>来存储所有线程和线程变量副本，<code>map</code>过大会造成哈希冲突，造成性能变差。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/String%20and%20constant%20pool/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/String%20and%20constant%20pool/" itemprop="url">String与常量池</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="创建方法"><a href="#创建方法" class="headerlink" title="创建方法"></a>创建方法</h3><p><code>String str=new String(&quot;abc&quot;)</code></p>
-<p><strong>一共创建两个对象，其中new方法在堆中创建一个String对象，””为String特有的创建对象的方法，这行代码被执行的时候，JAVA虚拟机首先在字符串池中查找是否已经存在了值为”abc”的这么一个对象，它的判断依据是String类equals(Object obj)方法的返回值。如果有，则不再创建新的对象，直接返回已存在对象的引用；如果没有，则先创建这个对象，然后把它加入到字符串池中，再将它的引用返回</strong></p>
-<pre><code>        String str1 = &quot;abc&quot;;
-        String str2 = new String(&quot;abc&quot;);
-        System.out.println(str1 == str2);</code></pre><p><code>false</code></p>
-<p><strong>str2指向堆中的对象，str1指向常量池中的对象</strong></p>
-<h3 id="intern方法"><a href="#intern方法" class="headerlink" title="intern方法"></a>intern方法</h3><p><code>string.intern()</code></p>
-<p>实例1：</p>
-<pre><code>        String str1 = &quot;abc&quot;;
-        String str2 = new String(&quot;abc&quot;);
-        str2 = &quot;abc&quot;.intern();
-        System.out.println(str1 == str2);</code></pre><p><code>true</code></p>
-<p><strong>会检查常量池中是否存在string，存在则返回池里的字符串引用；如果不存在则将string引用放入常量池中(jdk1.7后)。这样做可以避免在堆中不断的创建字符串对象，起到节省空间的作用。</strong></p>
-<p>实例2：</p>
-<pre><code>String s3 = new String(&quot;1&quot;) + new String(&quot;1&quot;);  
-s3.intern();  
-String s4 = &quot;11&quot;;  
-System.out.println(s3 == s4);</code></pre><p><code>true</code></p>
-<p>实例3：</p>
-<pre><code>String s3 = new String(&quot;1&quot;) + new String(&quot;1&quot;);  
-String s4 = &quot;11&quot;;  
-s3.intern();  
-System.out.println(s3 == s4);</code></pre><p><code>false</code></p>
-<p><strong>调换顺序后出现不同结果的原因</strong></p>
-<p><strong>1.String s3 = new String(“1”) + new String(“1”)，字符串常量池中生成“1” ，并在堆空间中生成s3引用指向的对象（内容为”11”）。注意此时常量池中是没有 “11”对象的</strong></p>
-<p><strong>2.实例2中s3.intern()，此时常量池中没有”11”对象，所以在常量池中存储s3引用(jdk1.7以后)，String s4 = “11”,首先从常量池中查看(equals方法)有无”11”对象，所以将s3引用传回去，所以结果true，而在实例3中，String s4 = “11”在s3.intern()方法前，此时常量池中已经有”11”对象，s3.intern()无效，所以s3还是指向堆中对象，所以结果false</strong></p>
 
           
         
@@ -2689,6 +2435,305 @@ public Object applyBeanPostProcessorsAfterInitialization(Object existingBean, St
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/SpringServletContainerInitializer%E4%B8%8Ejava%20config%E9%85%8D%E7%BD%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/SpringServletContainerInitializer%E4%B8%8Ejava%20config%E9%85%8D%E7%BD%AE/" itemprop="url">SpringServletContainerInitializer与java config配置</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">框架</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="ServletContainerInitializer"><a href="#ServletContainerInitializer" class="headerlink" title="ServletContainerInitializer"></a>ServletContainerInitializer</h3><p>这是<code>serlvet3.0</code>的特性，它主要是用来实现<code>java config</code>的方式来配置框架，比如ssm，它通过编程的方式代理<code>web.xml</code>配置文件，通过编程的方式注册<code>serlvet</code>、<code>filter</code>、<code>Listener</code>等组件</p>
+<p><code>serlvet</code>容器在启动时会扫描应用中所有<code>jar</code>包下的<code>META-INF/services/javax.servlet.ServletContainerInitializer</code>文件，文件中的内容为实现了<code>ServletContainerInitializer</code>的实现类的全限定名</p>
+<p>容器会自动创建它的实例，并且调用接口方法<code>onStartup</code></p>
+<p><code>@handlesTypes</code>注解在实现了<code>servletContainerInitializer</code>的类上，决定可以这个类可以处理的类型，作为第一个参数<code>set</code>类型，被传到<code>onStartup</code>方法中</p>
+<h3 id="SpringServletContainerInitializer"><a href="#SpringServletContainerInitializer" class="headerlink" title="SpringServletContainerInitializer"></a>SpringServletContainerInitializer</h3><p>在<code>spring-web-4.17.RELEASE.jar</code>的<code>META-INF</code>目录的<code>services</code>下找到文件<code>javax.servlet.ServlerContainerInitializer</code>，其中内容为</p>
+<pre><code>org.springframework.web.SpringServletContainerInitializer</code></pre><p>查看这个类</p>
+<pre><code>@HandlesTypes(WebApplicationInitializer.class)
+public class SpringServletContainerInitializer implements ServletContainerInitializer {
+
+    @Override
+    public void onStartup(Set&lt;Class&lt;?&gt;&gt; webAppInitializerClasses, ServletContext servletContext)
+            throws ServletException {
+
+        List&lt;WebApplicationInitializer&gt; initializers = new LinkedList&lt;WebApplicationInitializer&gt;();
+
+        if (webAppInitializerClasses != null) {
+            for (Class&lt;?&gt; waiClass : webAppInitializerClasses) {
+                // Be defensive: Some servlet containers provide us with invalid classes,
+                // no matter what @HandlesTypes says...
+                if (!waiClass.isInterface() &amp;&amp; !Modifier.isAbstract(waiClass.getModifiers()) &amp;&amp;
+                        WebApplicationInitializer.class.isAssignableFrom(waiClass)) {
+                    try {
+                        initializers.add((WebApplicationInitializer) waiClass.newInstance());
+                    }
+                    catch (Throwable ex) {
+                        throw new ServletException(&quot;Failed to instantiate WebApplicationInitializer class&quot;, ex);
+                    }
+                }
+            }
+        }
+
+        if (initializers.isEmpty()) {
+            servletContext.log(&quot;No Spring WebApplicationInitializer types detected on classpath&quot;);
+            return;
+        }
+
+        AnnotationAwareOrderComparator.sort(initializers);
+        servletContext.log(&quot;Spring WebApplicationInitializers detected on classpath: &quot; + initializers);
+
+        for (WebApplicationInitializer initializer : initializers) {
+            initializer.onStartup(servletContext);
+        }
+    }
+
+}</code></pre><p>我们看到类上有<code>handlesTypes</code>注解，值为<code>WebApplicationInitializer.class</code></p>
+<p>断点调试查看<code>onStartup</code>方法第一个参数</p>
+<p><img src="https://raw.githubusercontent.com/sinaill/pic/master/wenAppInitializerClasses.jpg" alt="webApplicationInitializerClasses"></p>
+<p>确实把我们定义的继承了<code>WebApplicationInitializer</code>的子类<code>AbstractAnnotationConfigDispatcherServletInitializer</code>的类传入了</p>
+<pre><code>public class WebInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
+    protected Class&lt;?&gt;[] getRootConfigClasses() {
+        return new Class&lt;?&gt;[]{RootConfig.class};
+    }
+
+    protected Class&lt;?&gt;[] getServletConfigClasses() {
+        return new Class&lt;?&gt;[]{MvcConfig.class};
+    }
+
+    protected String[] getServletMappings() {
+        return new String[]{&quot;/&quot;};
+    }
+
+}</code></pre><h3 id="开始配置"><a href="#开始配置" class="headerlink" title="开始配置"></a>开始配置</h3><p>最后容器会调用<code>WebApplicationInitializer</code>接口的<code>onStartup</code>方法，也就是调用我们上面的那个类来开始配置</p>
+<p>由于我们是继承的<code>AbstractAnnotationConfigDispatcherServletInitializer</code>，所以该方法调用的是<code>AbstractDispatcherServletInitializer</code>的<code>onStartup</code>方法</p>
+<pre><code>@Override
+public void onStartup(ServletContext servletContext) throws ServletException {
+    super.onStartup(servletContext);
+    registerDispatcherServlet(servletContext);
+}</code></pre><h4 id="super-onStartup-servletContext"><a href="#super-onStartup-servletContext" class="headerlink" title="super.onStartup(servletContext)"></a>super.onStartup(servletContext)</h4><p>调用了父类<code>AbstractContextLoaderInitializer</code>的<code>onStartup</code>方法</p>
+<pre><code>@Override
+public void onStartup(ServletContext servletContext) throws ServletException {
+    registerContextLoaderListener(servletContext);
+}
+
+
+
+protected void registerContextLoaderListener(ServletContext servletContext) {
+    WebApplicationContext rootAppContext = createRootApplicationContext();
+    if (rootAppContext != null) {
+        servletContext.addListener(new ContextLoaderListener(rootAppContext));
+    }
+    else {
+        logger.debug(&quot;No ContextLoaderListener registered, as &quot; +
+                &quot;createRootApplicationContext() did not return an application context&quot;);
+    }
+}</code></pre><p>这里调用了<code>createRootApplicationContext</code>方法创建<code>Spring</code>容器，然后创建了<code>ContextLoaderListener</code>监听器，注册到<code>servletContext</code>中，所以使用注解式配置ssm的时候，在<code>contextLoaderListener</code>被触发的时候，容器已经被创建好了，而使用配置文件的方式就是在触发<code>contextLoaderListener</code>的时候创建<code>Spring</code>容器和<code>SpringMVC</code>容器</p>
+<pre><code>@Override
+protected WebApplicationContext createRootApplicationContext() {
+    Class&lt;?&gt;[] configClasses = getRootConfigClasses();
+    if (!ObjectUtils.isEmpty(configClasses)) {
+        //创建Spring容器
+        AnnotationConfigWebApplicationContext rootAppContext = new AnnotationConfigWebApplicationContext();
+        rootAppContext.register(configClasses);
+        return rootAppContext;
+    }
+    else {
+        return null;
+    }
+}</code></pre><p>可以看到创建了<code>Spring</code>容器并且调用了我们实现的<code>getRootConfigClasses</code>方法，把获得的<code>Class</code>注册到<code>Spring容器中</code>，然后只要调用<code>Spring</code>容器的<code>refresh</code>方法就能在容器中实例化它们</p>
+<h4 id="registerDispatcherServlet-servletContext"><a href="#registerDispatcherServlet-servletContext" class="headerlink" title="registerDispatcherServlet(servletContext)"></a>registerDispatcherServlet(servletContext)</h4><pre><code>protected void registerDispatcherServlet(ServletContext servletContext) {
+    String servletName = getServletName();
+    Assert.hasLength(servletName, &quot;getServletName() must not return empty or null&quot;);
+
+    WebApplicationContext servletAppContext = createServletApplicationContext();
+    Assert.notNull(servletAppContext,
+            &quot;createServletApplicationContext() did not return an application &quot; +
+            &quot;context for servlet [&quot; + servletName + &quot;]&quot;);
+
+    DispatcherServlet dispatcherServlet = new DispatcherServlet(servletAppContext);
+    ServletRegistration.Dynamic registration = servletContext.addServlet(servletName, dispatcherServlet);
+    Assert.notNull(registration,
+            &quot;Failed to register servlet with name &#39;&quot; + servletName + &quot;&#39;.&quot; +
+            &quot;Check if there is another servlet registered under the same name.&quot;);
+
+    registration.setLoadOnStartup(1);
+    registration.addMapping(getServletMappings());
+    registration.setAsyncSupported(isAsyncSupported());
+
+    Filter[] filters = getServletFilters();
+    if (!ObjectUtils.isEmpty(filters)) {
+        for (Filter filter : filters) {
+            registerServletFilter(servletContext, filter);
+        }
+    }
+
+    customizeRegistration(registration);
+}</code></pre><p><code>createServletApplicationContext</code>创建<code>SpringMVC</code>容器</p>
+<pre><code>@Override
+protected WebApplicationContext createServletApplicationContext() {
+    AnnotationConfigWebApplicationContext servletAppContext = new AnnotationConfigWebApplicationContext();
+    Class&lt;?&gt;[] configClasses = getServletConfigClasses();
+    if (!ObjectUtils.isEmpty(configClasses)) {
+        servletAppContext.register(configClasses);
+    }
+    return servletAppContext;
+}</code></pre><p>同样创建了一个<code>AnnotationConfigWebApplicationContext</code>对象，然后调用我们实现的<code>getServletConfigClasses</code>将获取的<code>Class</code>注册到<code>SpringMVC</code>容器中</p>
+<p>接着开始注册<code>DispatcherServlet</code>，创建<code>DispatcherServlet</code>对象绑定到<code>servetContext</code>中，并将<code>SpringMVC</code>容器传入<code>DispatcherServlet</code></p>
+<pre><code>registration.setLoadOnStartup(1);
+registration.addMapping(getServletMappings());
+registration.setAsyncSupported(isAsyncSupported());</code></pre><p>配置启动优先级，配置<code>serlvet</code>映射方式</p>
+<p>还有后面调用<code>getServletFilters</code>方法获取过滤器</p>
+<h3 id="疑问"><a href="#疑问" class="headerlink" title="疑问"></a>疑问</h3><p>在使用配置文件方式的时候，创建<code>SpringMVC</code>容器</p>
+<pre><code>wac = createWebApplicationContext(rootContext);</code></pre><p>将<code>Spring</code>作为父容器传入，所以<code>SpringMVC</code>容器中能取出在<code>Spring</code>容器中的对象</p>
+<p>而这里使用注解方式了，没发现两个容器的关联</p>
+<p>原来在两个容器关联的代码在<code>ContextLoaderListener</code>中的<code>initWebApplicationContext</code>方法中</p>
+<pre><code>if (this.context instanceof ConfigurableWebApplicationContext) {
+    ConfigurableWebApplicationContext cwac = (ConfigurableWebApplicationContext) this.context;
+    if (!cwac.isActive()) {
+        // The context has not yet been refreshed -&gt; provide services such as
+        // setting the parent context, setting the application context id, etc
+        if (cwac.getParent() == null) {
+            // The context instance was injected without an explicit parent -&gt;
+            // determine parent for root web application context, if any.
+            ApplicationContext parent = loadParentContext(servletContext);
+            cwac.setParent(parent);
+        }
+        configureAndRefreshWebApplicationContext(cwac, servletContext);
+    }
+}</code></pre><p>调用了<code>setParent</code>方法将<code>Spring</code>容器作为<code>SpringMVC</code>的父容器</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
@@ -2739,7 +2784,7 @@ public Object applyBeanPostProcessorsAfterInitialization(Object existingBean, St
               
                 <a href="/archives/%20%7C%7C%20archive">
               
-                  <span class="site-state-item-count">86</span>
+                  <span class="site-state-item-count">85</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

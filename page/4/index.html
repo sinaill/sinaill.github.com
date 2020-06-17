@@ -248,291 +248,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/shiro%E9%AA%8C%E8%AF%81%E6%8E%88%E6%9D%83%E6%90%AD%E5%BB%BA/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/shiro%E9%AA%8C%E8%AF%81%E6%8E%88%E6%9D%83%E6%90%AD%E5%BB%BA/" itemprop="url">shiro验证与授权搭建</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/shiro/" itemprop="url" rel="index">
-                    <span itemprop="name">shiro</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="导入包"><a href="#导入包" class="headerlink" title="导入包"></a>导入包</h3><pre><code>        &lt;!-- shiro核心包 --&gt;
-        &lt;dependency&gt;  
-            &lt;groupId&gt;org.apache.shiro&lt;/groupId&gt;  
-            &lt;artifactId&gt;shiro-core&lt;/artifactId&gt;  
-            &lt;version&gt;1.3.2&lt;/version&gt;  
-        &lt;/dependency&gt;  
-        &lt;!-- 添加shiro web支持 --&gt;
-        &lt;dependency&gt;  
-            &lt;groupId&gt;org.apache.shiro&lt;/groupId&gt;  
-            &lt;artifactId&gt;shiro-web&lt;/artifactId&gt;  
-            &lt;version&gt;1.3.2&lt;/version&gt;  
-        &lt;/dependency&gt;  
-        &lt;!-- 添加shiro spring整合 --&gt;
-        &lt;dependency&gt;  
-            &lt;groupId&gt;org.apache.shiro&lt;/groupId&gt;  
-            &lt;artifactId&gt;shiro-spring&lt;/artifactId&gt;  
-            &lt;version&gt;1.3.2&lt;/version&gt;  
-        &lt;/dependency&gt;
-        &lt;dependency&gt;
-            &lt;groupId&gt;net.sf.ehcache&lt;/groupId&gt;
-            &lt;artifactId&gt;ehcache-core&lt;/artifactId&gt;
-            &lt;version&gt;2.4.3&lt;/version&gt;
-        &lt;/dependency&gt;
-        &lt;dependency&gt;
-            &lt;groupId&gt;org.apache.shiro&lt;/groupId&gt;
-            &lt;artifactId&gt;shiro-ehcache&lt;/artifactId&gt;
-            &lt;version&gt;1.3.2&lt;/version&gt;
-        &lt;/dependency&gt;</code></pre><h3 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h3><p>在spring配置文件中需要配置</p>
-<pre><code>&lt;!--shiro 核心--&gt;
-&lt;bean id=&quot;securityManager&quot; class=&quot;org.apache.shiro.web.mgt.DefaultWebSecurityManager&quot;&gt;
-    &lt;property name=&quot;cacheManager&quot; ref=&quot;cacheManager&quot;/&gt;
-    &lt;!-- Single realm app.  If you have multiple realms, use the &#39;realms&#39; property instead. --&gt;
-    &lt;property name=&quot;sessionMode&quot; value=&quot;native&quot;/&gt;
-    &lt;property name=&quot;realm&quot; ref=&quot;ShiroRealm&quot;&gt;&lt;/property&gt;
-    &lt;!--或者可以配置多个realm--&gt;
-    &lt;property name=&quot;realms&quot;&gt;
-        &lt;list&gt;
-            &lt;ref bean=&quot;jdbcRealm&quot;/&gt;
-            &lt;ref bean=&quot;secondRealm&quot;/&gt;
-        &lt;/list&gt;
-    &lt;/property&gt;
-
-    &lt;!--可以设置多realm验证策略,realm可以在下面authenticator中注入，但使用到授权时--&gt;
-    &lt;!--只能在securityManager中注入--&gt;
-    &lt;property name=&quot;authenticator&quot; ref=&quot;authenticator&quot;&gt;&lt;/property&gt;
-&lt;/bean&gt;
-
-&lt;bean id=&quot;authenticator&quot; 
-    class=&quot;org.apache.shiro.authc.pam.ModularRealmAuthenticator&quot;&gt;
-    &lt;property name=&quot;authenticationStrategy&quot;&gt;
-        &lt;bean class=&quot;org.apache.shiro.authc.pam.AtLeastOneSuccessfulStrategy&quot;&gt;&lt;/bean&gt;
-    &lt;/property&gt;
-&lt;/bean&gt;
-
-&lt;!--缓存管理--&gt;
-&lt;bean id=&quot;cacheManager&quot; class=&quot;org.apache.shiro.cache.ehcache.EhCacheManager&quot;&gt;
-    &lt;!-- Set a net.sf.ehcache.CacheManager instance here if you already have one.  If not, a new one
-         will be creaed with a default config:
-         &lt;property name=&quot;cacheManager&quot; ref=&quot;ehCacheManager&quot;/&gt; --&gt;
-    &lt;!-- If you don&#39;t have a pre-built net.sf.ehcache.CacheManager instance to inject, but you want
-         a specific Ehcache configuration to be used, specify that here.  If you don&#39;t, a default
-         will be used.: --&gt;
-    &lt;property name=&quot;cacheManagerConfigFile&quot; value=&quot;classpath:ehcache.xml&quot;/&gt;
-&lt;/bean&gt;
-&lt;!--注入自定义realm--&gt;
-&lt;bean id=&quot;ShiroRealm&quot; class=&quot;crj.mspro.realm.ShiroRealm&quot;&gt;
-    &lt;!--匹配器--&gt;
-    &lt;property name=&quot;credentialsMatcher&quot;&gt;
-        &lt;bean class=&quot;org.apache.shiro.authc.credential.HashedCredentialsMatcher&quot;&gt;
-            &lt;property name=&quot;hashAlgorithmName&quot; value=&quot;MD5&quot;&gt;&lt;/property&gt;
-            &lt;property name=&quot;hashIterations&quot; value=&quot;1024&quot;&gt;&lt;/property&gt;
-        &lt;/bean&gt;
-    &lt;/property&gt;
-&lt;/bean&gt;
-
-&lt;!-- Shiro生命周期处理器--&gt;
-&lt;bean id=&quot;lifecycleBeanPostProcessor&quot; class=&quot;org.apache.shiro.spring.LifecycleBeanPostProcessor&quot;/&gt;
-
-&lt;!--自定义LogoutFilter,退出--&gt;
-&lt;bean id=&quot;logoutFilter&quot; class=&quot;org.apache.shiro.web.filter.authc.LogoutFilter&quot;&gt;
-    &lt;property name=&quot;redirectUrl&quot; value=&quot;/main.jsp&quot;/&gt;
-&lt;/bean&gt;
-
-&lt;!--配置 ShiroFilter--&gt;
-&lt;!--id 必须和 web.xml 文件中配置的 DelegatingFilterProxy 的 &lt;filter-name&gt; 一致.
-    若不一致, 则会抛出: NoSuchBeanDefinitionException. 因为 Shiro 会来 IOC 容器中查找和 &lt;filter-name&gt; 名字对应的 filter bean.--&gt;
-&lt;bean id=&quot;shiroFilter&quot; class=&quot;org.apache.shiro.spring.web.ShiroFilterFactoryBean&quot;&gt;
-    &lt;property name=&quot;securityManager&quot; ref=&quot;securityManager&quot;/&gt;
-    &lt;!--进入需要验证页面时跳转--&gt;
-    &lt;property name=&quot;loginUrl&quot; value=&quot;/main.jsp&quot;/&gt;
-    &lt;property name=&quot;successUrl&quot; value=&quot;/main.jsp&quot;/&gt;
-    &lt;property name=&quot;unauthorizedUrl&quot; value=&quot;/unauthorized.jsp&quot;/&gt;
-    &lt;!-- The &#39;filters&#39; property is not necessary since any declared javax.servlet.Filter bean
-         defined will be automatically acquired and available via its beanName in chain
-         definitions, but you can perform overrides or parent/child consolidated configuration
-         here if you like: --&gt;
-     &lt;property name=&quot;filters&quot;&gt;
-        &lt;map&gt;
-            &lt;!--修改默认过滤器--&gt;
-            &lt;entry key=&quot;logout&quot; value-ref=&quot;logoutFilter&quot;/&gt;
-        &lt;/map&gt;
-    &lt;/property&gt; 
-
-    &lt;!--  
-        配置哪些页面需要受保护. 
-        以及访问这些页面需要的权限. 
-        1). anon 可以被匿名访问
-        2). authc 必须认证(即登录)后才可能访问的页面. 
-        3). logout 登出.
-        4). roles 角色过滤器
-    --&gt;
-    &lt;property name=&quot;filterChainDefinitions&quot;&gt;
-        &lt;value&gt;
-            /logout = logout
-            /easyui-jquery/** = anon
-            /main.jsp = anon
-            /js/** = anon
-            /login = anon
-            /css/** = anon
-            /** = authc
-        &lt;/value&gt;
-    &lt;/property&gt;
-    &lt;!--此变量可以用实例工厂方法注入--&gt;
-
-
-&lt;/bean&gt;</code></pre><p>工厂类</p>
-<pre><code>public class FilterChainDefinitionMapBuilder {
-
-    public LinkedHashMap&lt;String, String&gt; buildFilterChainDefinitionMap(){
-        LinkedHashMap&lt;String, String&gt; map = new LinkedHashMap&lt;&gt;();
-
-        map.put(&quot;/login.jsp&quot;, &quot;anon&quot;);
-        map.put(&quot;/shiro/login&quot;, &quot;anon&quot;);
-        map.put(&quot;/shiro/logout&quot;, &quot;logout&quot;);
-        map.put(&quot;/user.jsp&quot;, &quot;authc,roles[user]&quot;);
-        map.put(&quot;/admin.jsp&quot;, &quot;authc,roles[admin]&quot;);
-        map.put(&quot;/list.jsp&quot;, &quot;user&quot;);
-
-        map.put(&quot;/**&quot;, &quot;authc&quot;);
-
-        return map;
-    }
-
-}
-</code></pre>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/shiro%E9%AA%8C%E8%AF%81/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -784,6 +499,163 @@ assertCredentialsMatch(token, info);</code></pre><p>第一条调用了我们自�
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/set%E9%9B%86%E5%90%88/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/set%E9%9B%86%E5%90%88/" itemprop="url">set集合</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h3><p><code>Set</code>集合中的元素是唯一的，不可重复（取决于<code>hashCode和equals</code>方法），也就是说具有唯一性。</p>
+<p><code>Set</code>集合中元素不保证存取顺序，并不存在索引。</p>
+<h3 id="HashSet"><a href="#HashSet" class="headerlink" title="HashSet"></a>HashSet</h3><p><code>HashSet</code>实际上是基于<code>HashMap</code>实现的，HashSet中有一成员变量</p>
+<p><code>private transient HashMap&lt;E,Object&gt; map</code></p>
+<p><code>HashSet</code>使用了<code>HashMap</code>的<code>key</code>来存储集合元素，也就是说<code>HashSet</code>可以存储一个<code>null</code>元素，并且不能有重复元素</p>
+<pre><code>private static final Object PRESENT = new Object()
+
+   public boolean add(E e) {
+       return map.put(e, PRESENT)==null;
+   }</code></pre><p>由于<code>HashMap</code>的无序性，所以<code>HashSet</code>也是无序性的</p>
+<h3 id="LinkedHashSet"><a href="#LinkedHashSet" class="headerlink" title="LinkedHashSet"></a>LinkedHashSet</h3><p><code>LinkedHashSet</code>是<code>HashSet</code>的一个子类，<code>LinkedHashSet</code>也根据<code>HashCode</code>的值来决定元素的存储位置，但同时它还用一个链表来维护元素的插入顺序，插入的时候既要计算<code>hashCode</code>还要维护链表，而遍历的时候只需要按照链表来访问元素。</p>
+<p><code>LinkedHashSet</code>只有四个构造方法，构造方法调用了<code>HashSet</code>一个构造方法</p>
+<pre><code>HashSet(int initialCapacity, float loadFactor, boolean dummy) {
+    map = new LinkedHashMap&lt;&gt;(initialCapacity, loadFactor);
+}</code></pre><p>可以看出，是基于<code>LinkedHashMap</code>实现，<code>HashSet</code>存储元素用的<code>HashMap</code>，而LinkedHashSet存储元素用的<code>LinkedHashMap</code>。</p>
+<h3 id="TreeSet"><a href="#TreeSet" class="headerlink" title="TreeSet"></a>TreeSet</h3><p><code>TreeSet</code>是一个有序集合，本质上属于二叉树，实现了<code>SortedSet</code>接口所以具有了对元素排序的功能，要实现对元素的排序，需要在构造方法中传入一个<code>comparator</code>或者元素实现了<code>comparable</code>接口。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/shiro%E6%8E%88%E6%9D%83/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -951,163 +823,6 @@ assertCredentialsMatch(token, info);</code></pre><p>第一条调用了我们自�
     }
     return info;
 }</code></pre>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/set%E9%9B%86%E5%90%88/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/set%E9%9B%86%E5%90%88/" itemprop="url">set集合</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h3><p><code>Set</code>集合中的元素是唯一的，不可重复（取决于<code>hashCode和equals</code>方法），也就是说具有唯一性。</p>
-<p><code>Set</code>集合中元素不保证存取顺序，并不存在索引。</p>
-<h3 id="HashSet"><a href="#HashSet" class="headerlink" title="HashSet"></a>HashSet</h3><p><code>HashSet</code>实际上是基于<code>HashMap</code>实现的，HashSet中有一成员变量</p>
-<p><code>private transient HashMap&lt;E,Object&gt; map</code></p>
-<p><code>HashSet</code>使用了<code>HashMap</code>的<code>key</code>来存储集合元素，也就是说<code>HashSet</code>可以存储一个<code>null</code>元素，并且不能有重复元素</p>
-<pre><code>private static final Object PRESENT = new Object()
-
-   public boolean add(E e) {
-       return map.put(e, PRESENT)==null;
-   }</code></pre><p>由于<code>HashMap</code>的无序性，所以<code>HashSet</code>也是无序性的</p>
-<h3 id="LinkedHashSet"><a href="#LinkedHashSet" class="headerlink" title="LinkedHashSet"></a>LinkedHashSet</h3><p><code>LinkedHashSet</code>是<code>HashSet</code>的一个子类，<code>LinkedHashSet</code>也根据<code>HashCode</code>的值来决定元素的存储位置，但同时它还用一个链表来维护元素的插入顺序，插入的时候既要计算<code>hashCode</code>还要维护链表，而遍历的时候只需要按照链表来访问元素。</p>
-<p><code>LinkedHashSet</code>只有四个构造方法，构造方法调用了<code>HashSet</code>一个构造方法</p>
-<pre><code>HashSet(int initialCapacity, float loadFactor, boolean dummy) {
-    map = new LinkedHashMap&lt;&gt;(initialCapacity, loadFactor);
-}</code></pre><p>可以看出，是基于<code>LinkedHashMap</code>实现，<code>HashSet</code>存储元素用的<code>HashMap</code>，而LinkedHashSet存储元素用的<code>LinkedHashMap</code>。</p>
-<h3 id="TreeSet"><a href="#TreeSet" class="headerlink" title="TreeSet"></a>TreeSet</h3><p><code>TreeSet</code>是一个有序集合，本质上属于二叉树，实现了<code>SortedSet</code>接口所以具有了对元素排序的功能，要实现对元素的排序，需要在构造方法中传入一个<code>comparator</code>或者元素实现了<code>comparable</code>接口。</p>
-
           
         
       
@@ -2518,6 +2233,157 @@ while(keyIterator.hasNext()) {
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/mysql%20error%201045/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/mysql%20error%201045/" itemprop="url">mysql error 1045</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/mysql/" itemprop="url" rel="index">
+                    <span itemprop="name">mysql</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>解决方法如下：</p>
+<p>进入mysql的bin目录</p>
+<p>命令行运行mysqld –skip-grant-tables</p>
+<p>新建命令行mysql -u -root -p 空密码直接进入数据库</p>
+<p>登录成功后输入：update mysql.user set authentication_string=password(‘你的密码’) where user=’root’ and host=’localhost’;</p>
+<p>让设置的密码生效：flush privileges;</p>
+<p>输入\q退出mysql</p>
+<p>关闭第一个命令行窗口尝试开启mysql服务发生错误，mysql服务无法启动</p>
+<p>到任务管理器中结束mysqld.exe进程</p>
+<p>再次启动mysql服务成功</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
@@ -2568,7 +2434,7 @@ while(keyIterator.hasNext()) {
               
                 <a href="/archives/%20%7C%7C%20archive">
               
-                  <span class="site-state-item-count">86</span>
+                  <span class="site-state-item-count">85</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

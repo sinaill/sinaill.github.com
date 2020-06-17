@@ -248,305 +248,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/SpringServletContainerInitializer%E4%B8%8Ejava%20config%E9%85%8D%E7%BD%AE/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/SpringServletContainerInitializer%E4%B8%8Ejava%20config%E9%85%8D%E7%BD%AE/" itemprop="url">SpringServletContainerInitializer与java config配置</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
-                    <span itemprop="name">框架</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="ServletContainerInitializer"><a href="#ServletContainerInitializer" class="headerlink" title="ServletContainerInitializer"></a>ServletContainerInitializer</h3><p>这是<code>serlvet3.0</code>的特性，它主要是用来实现<code>java config</code>的方式来配置框架，比如ssm，它通过编程的方式代理<code>web.xml</code>配置文件，通过编程的方式注册<code>serlvet</code>、<code>filter</code>、<code>Listener</code>等组件</p>
-<p><code>serlvet</code>容器在启动时会扫描应用中所有<code>jar</code>包下的<code>META-INF/services/javax.servlet.ServletContainerInitializer</code>文件，文件中的内容为实现了<code>ServletContainerInitializer</code>的实现类的全限定名</p>
-<p>容器会自动创建它的实例，并且调用接口方法<code>onStartup</code></p>
-<p><code>@handlesTypes</code>注解在实现了<code>servletContainerInitializer</code>的类上，决定可以这个类可以处理的类型，作为第一个参数<code>set</code>类型，被传到<code>onStartup</code>方法中</p>
-<h3 id="SpringServletContainerInitializer"><a href="#SpringServletContainerInitializer" class="headerlink" title="SpringServletContainerInitializer"></a>SpringServletContainerInitializer</h3><p>在<code>spring-web-4.17.RELEASE.jar</code>的<code>META-INF</code>目录的<code>services</code>下找到文件<code>javax.servlet.ServlerContainerInitializer</code>，其中内容为</p>
-<pre><code>org.springframework.web.SpringServletContainerInitializer</code></pre><p>查看这个类</p>
-<pre><code>@HandlesTypes(WebApplicationInitializer.class)
-public class SpringServletContainerInitializer implements ServletContainerInitializer {
-
-    @Override
-    public void onStartup(Set&lt;Class&lt;?&gt;&gt; webAppInitializerClasses, ServletContext servletContext)
-            throws ServletException {
-
-        List&lt;WebApplicationInitializer&gt; initializers = new LinkedList&lt;WebApplicationInitializer&gt;();
-
-        if (webAppInitializerClasses != null) {
-            for (Class&lt;?&gt; waiClass : webAppInitializerClasses) {
-                // Be defensive: Some servlet containers provide us with invalid classes,
-                // no matter what @HandlesTypes says...
-                if (!waiClass.isInterface() &amp;&amp; !Modifier.isAbstract(waiClass.getModifiers()) &amp;&amp;
-                        WebApplicationInitializer.class.isAssignableFrom(waiClass)) {
-                    try {
-                        initializers.add((WebApplicationInitializer) waiClass.newInstance());
-                    }
-                    catch (Throwable ex) {
-                        throw new ServletException(&quot;Failed to instantiate WebApplicationInitializer class&quot;, ex);
-                    }
-                }
-            }
-        }
-
-        if (initializers.isEmpty()) {
-            servletContext.log(&quot;No Spring WebApplicationInitializer types detected on classpath&quot;);
-            return;
-        }
-
-        AnnotationAwareOrderComparator.sort(initializers);
-        servletContext.log(&quot;Spring WebApplicationInitializers detected on classpath: &quot; + initializers);
-
-        for (WebApplicationInitializer initializer : initializers) {
-            initializer.onStartup(servletContext);
-        }
-    }
-
-}</code></pre><p>我们看到类上有<code>handlesTypes</code>注解，值为<code>WebApplicationInitializer.class</code></p>
-<p>断点调试查看<code>onStartup</code>方法第一个参数</p>
-<p><img src="https://raw.githubusercontent.com/sinaill/pic/master/wenAppInitializerClasses.jpg" alt="webApplicationInitializerClasses"></p>
-<p>确实把我们定义的继承了<code>WebApplicationInitializer</code>的子类<code>AbstractAnnotationConfigDispatcherServletInitializer</code>的类传入了</p>
-<pre><code>public class WebInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
-    protected Class&lt;?&gt;[] getRootConfigClasses() {
-        return new Class&lt;?&gt;[]{RootConfig.class};
-    }
-
-    protected Class&lt;?&gt;[] getServletConfigClasses() {
-        return new Class&lt;?&gt;[]{MvcConfig.class};
-    }
-
-    protected String[] getServletMappings() {
-        return new String[]{&quot;/&quot;};
-    }
-
-}</code></pre><h3 id="开始配置"><a href="#开始配置" class="headerlink" title="开始配置"></a>开始配置</h3><p>最后容器会调用<code>WebApplicationInitializer</code>接口的<code>onStartup</code>方法，也就是调用我们上面的那个类来开始配置</p>
-<p>由于我们是继承的<code>AbstractAnnotationConfigDispatcherServletInitializer</code>，所以该方法调用的是<code>AbstractDispatcherServletInitializer</code>的<code>onStartup</code>方法</p>
-<pre><code>@Override
-public void onStartup(ServletContext servletContext) throws ServletException {
-    super.onStartup(servletContext);
-    registerDispatcherServlet(servletContext);
-}</code></pre><h4 id="super-onStartup-servletContext"><a href="#super-onStartup-servletContext" class="headerlink" title="super.onStartup(servletContext)"></a>super.onStartup(servletContext)</h4><p>调用了父类<code>AbstractContextLoaderInitializer</code>的<code>onStartup</code>方法</p>
-<pre><code>@Override
-public void onStartup(ServletContext servletContext) throws ServletException {
-    registerContextLoaderListener(servletContext);
-}
-
-
-
-protected void registerContextLoaderListener(ServletContext servletContext) {
-    WebApplicationContext rootAppContext = createRootApplicationContext();
-    if (rootAppContext != null) {
-        servletContext.addListener(new ContextLoaderListener(rootAppContext));
-    }
-    else {
-        logger.debug(&quot;No ContextLoaderListener registered, as &quot; +
-                &quot;createRootApplicationContext() did not return an application context&quot;);
-    }
-}</code></pre><p>这里调用了<code>createRootApplicationContext</code>方法创建<code>Spring</code>容器，然后创建了<code>ContextLoaderListener</code>监听器，注册到<code>servletContext</code>中，所以使用注解式配置ssm的时候，在<code>contextLoaderListener</code>被触发的时候，容器已经被创建好了，而使用配置文件的方式就是在触发<code>contextLoaderListener</code>的时候创建<code>Spring</code>容器和<code>SpringMVC</code>容器</p>
-<pre><code>@Override
-protected WebApplicationContext createRootApplicationContext() {
-    Class&lt;?&gt;[] configClasses = getRootConfigClasses();
-    if (!ObjectUtils.isEmpty(configClasses)) {
-        //创建Spring容器
-        AnnotationConfigWebApplicationContext rootAppContext = new AnnotationConfigWebApplicationContext();
-        rootAppContext.register(configClasses);
-        return rootAppContext;
-    }
-    else {
-        return null;
-    }
-}</code></pre><p>可以看到创建了<code>Spring</code>容器并且调用了我们实现的<code>getRootConfigClasses</code>方法，把获得的<code>Class</code>注册到<code>Spring容器中</code>，然后只要调用<code>Spring</code>容器的<code>refresh</code>方法就能在容器中实例化它们</p>
-<h4 id="registerDispatcherServlet-servletContext"><a href="#registerDispatcherServlet-servletContext" class="headerlink" title="registerDispatcherServlet(servletContext)"></a>registerDispatcherServlet(servletContext)</h4><pre><code>protected void registerDispatcherServlet(ServletContext servletContext) {
-    String servletName = getServletName();
-    Assert.hasLength(servletName, &quot;getServletName() must not return empty or null&quot;);
-
-    WebApplicationContext servletAppContext = createServletApplicationContext();
-    Assert.notNull(servletAppContext,
-            &quot;createServletApplicationContext() did not return an application &quot; +
-            &quot;context for servlet [&quot; + servletName + &quot;]&quot;);
-
-    DispatcherServlet dispatcherServlet = new DispatcherServlet(servletAppContext);
-    ServletRegistration.Dynamic registration = servletContext.addServlet(servletName, dispatcherServlet);
-    Assert.notNull(registration,
-            &quot;Failed to register servlet with name &#39;&quot; + servletName + &quot;&#39;.&quot; +
-            &quot;Check if there is another servlet registered under the same name.&quot;);
-
-    registration.setLoadOnStartup(1);
-    registration.addMapping(getServletMappings());
-    registration.setAsyncSupported(isAsyncSupported());
-
-    Filter[] filters = getServletFilters();
-    if (!ObjectUtils.isEmpty(filters)) {
-        for (Filter filter : filters) {
-            registerServletFilter(servletContext, filter);
-        }
-    }
-
-    customizeRegistration(registration);
-}</code></pre><p><code>createServletApplicationContext</code>创建<code>SpringMVC</code>容器</p>
-<pre><code>@Override
-protected WebApplicationContext createServletApplicationContext() {
-    AnnotationConfigWebApplicationContext servletAppContext = new AnnotationConfigWebApplicationContext();
-    Class&lt;?&gt;[] configClasses = getServletConfigClasses();
-    if (!ObjectUtils.isEmpty(configClasses)) {
-        servletAppContext.register(configClasses);
-    }
-    return servletAppContext;
-}</code></pre><p>同样创建了一个<code>AnnotationConfigWebApplicationContext</code>对象，然后调用我们实现的<code>getServletConfigClasses</code>将获取的<code>Class</code>注册到<code>SpringMVC</code>容器中</p>
-<p>接着开始注册<code>DispatcherServlet</code>，创建<code>DispatcherServlet</code>对象绑定到<code>servetContext</code>中，并将<code>SpringMVC</code>容器传入<code>DispatcherServlet</code></p>
-<pre><code>registration.setLoadOnStartup(1);
-registration.addMapping(getServletMappings());
-registration.setAsyncSupported(isAsyncSupported());</code></pre><p>配置启动优先级，配置<code>serlvet</code>映射方式</p>
-<p>还有后面调用<code>getServletFilters</code>方法获取过滤器</p>
-<h3 id="疑问"><a href="#疑问" class="headerlink" title="疑问"></a>疑问</h3><p>在使用配置文件方式的时候，创建<code>SpringMVC</code>容器</p>
-<pre><code>wac = createWebApplicationContext(rootContext);</code></pre><p>将<code>Spring</code>作为父容器传入，所以<code>SpringMVC</code>容器中能取出在<code>Spring</code>容器中的对象</p>
-<p>而这里使用注解方式了，没发现两个容器的关联</p>
-<p>原来在两个容器关联的代码在<code>ContextLoaderListener</code>中的<code>initWebApplicationContext</code>方法中</p>
-<pre><code>if (this.context instanceof ConfigurableWebApplicationContext) {
-    ConfigurableWebApplicationContext cwac = (ConfigurableWebApplicationContext) this.context;
-    if (!cwac.isActive()) {
-        // The context has not yet been refreshed -&gt; provide services such as
-        // setting the parent context, setting the application context id, etc
-        if (cwac.getParent() == null) {
-            // The context instance was injected without an explicit parent -&gt;
-            // determine parent for root web application context, if any.
-            ApplicationContext parent = loadParentContext(servletContext);
-            cwac.setParent(parent);
-        }
-        configureAndRefreshWebApplicationContext(cwac, servletContext);
-    }
-}</code></pre><p>调用了<code>setParent</code>方法将<code>Spring</code>容器作为<code>SpringMVC</code>的父容器</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/SpringMvc%E8%8E%B7%E5%8F%96HandlerExecutionChain%E5%92%8CHandlerAdapter/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -3889,6 +3590,384 @@ private ModelAndView getModelAndView(ModelAndViewContainer mavContainer,
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/ReentrantReadWriteLock%E7%9A%84%E5%85%B1%E4%BA%AB%E9%94%81%E5%92%8C%E7%8B%AC%E4%BA%AB%E9%94%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/ReentrantReadWriteLock%E7%9A%84%E5%85%B1%E4%BA%AB%E9%94%81%E5%92%8C%E7%8B%AC%E4%BA%AB%E9%94%81/" itemprop="url">ReentrantReadWriteLock的共享锁和独享锁</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="共享锁和独享锁操作state"><a href="#共享锁和独享锁操作state" class="headerlink" title="共享锁和独享锁操作state"></a>共享锁和独享锁操作state</h3><p>ReentrantReadWriteLock中共享锁和独享锁对锁的操作还是共同操作一个变量<code>state</code>，那怎么区分这个<code>state</code>是共享锁取得锁还是独享锁取得锁呢</p>
+<p>从ReentrantReadWriteLock的源码我们来看</p>
+<pre><code>static final int SHARED_SHIFT   = 16
+
+static final int EXCLUSIVE_MASK = (1 &lt;&lt; SHARED_SHIFT) - 1
+
+/** Returns the number of shared holds represented in count  */
+static int sharedCount(int c)    { return c &gt;&gt;&gt; SHARED_SHIFT; }
+/** Returns the number of exclusive holds represented in count  */
+static int exclusiveCount(int c) { return c &amp; EXCLUSIVE_MASK; }</code></pre><p>下面两个方法传入<code>state</code>，返回共享锁取得锁次数和独享锁取得锁次数</p>
+<p>其中获取共享锁次数的方式为将<code>state</code>无符号右移16位</p>
+<p>获取独享锁次数的方式为将<code>state</code>与<code>EXCLUSIVE_MASK</code>进行并运算，<code>EXCLUSIVE_MASK</code>为32位int型，前16位为0，后16位为1</p>
+<p>所以<code>state</code>区分独享锁和共享锁次数的方法为，将<code>state</code>32位一分为二，前16位用来表示共享锁获取次数，后16位用来表示独享锁获取次数</p>
+<h3 id="共享锁和独享锁在获取锁时的区别"><a href="#共享锁和独享锁在获取锁时的区别" class="headerlink" title="共享锁和独享锁在获取锁时的区别"></a>共享锁和独享锁在获取锁时的区别</h3><p>读锁用的就是共享锁，我们知道多个线程是可以同时获取读锁的</p>
+<p>读锁获取锁的源码如下</p>
+<pre><code>public final void acquireShared(int arg) {
+    if (tryAcquireShared(arg) &lt; 0)
+        doAcquireShared(arg);
+}</code></pre><p>而写锁获取锁的源码如下</p>
+<pre><code>public final void acquire(int arg) {
+    if (!tryAcquire(arg) &amp;&amp;
+        acquireQueued(addWaiter(Node.EXCLUSIVE), arg))
+        selfInterrupt();
+}</code></pre><p>都是一样的先尝试获取锁，失败之后放入<code>waitingqueue</code>等待唤醒</p>
+<p>我们看获取锁有什么区别，下面是获取独享锁</p>
+<pre><code>protected final boolean tryAcquire(int acquires) {
+    /*
+     * Walkthrough:
+     * 1. If read count nonzero or write count nonzero
+     *    and owner is a different thread, fail.
+     * 2. If count would saturate, fail. (This can only
+     *    happen if count is already nonzero.)
+     * 3. Otherwise, this thread is eligible for lock if
+     *    it is either a reentrant acquire or
+     *    queue policy allows it. If so, update state
+     *    and set owner.
+     */
+    Thread current = Thread.currentThread();
+    int c = getState();
+    int w = exclusiveCount(c);
+    if (c != 0) {
+        // (Note: if c != 0 and w == 0 then shared count != 0)
+        if (w == 0 || current != getExclusiveOwnerThread())
+            return false;
+        if (w + exclusiveCount(acquires) &gt; MAX_COUNT)
+            throw new Error(&quot;Maximum lock count exceeded&quot;);
+        // Reentrant acquire
+        setState(c + acquires);
+        return true;
+    }
+    if (writerShouldBlock() ||
+        !compareAndSetState(c, c + acquires))
+        return false;
+    setExclusiveOwnerThread(current);
+    return true;
+}</code></pre><p>当c!=0且w==0时，说明存在线程获取了读锁，没有线程获取了写锁，此时想要获取写锁，则需要进入waitingqueue排队</p>
+<p>当c==0时，即没有线程获取写锁和读锁，线程直接获取写锁</p>
+<p>读锁想重入写锁需要进入waitingqueue</p>
+<p>下面是获取共享锁</p>
+<pre><code>protected final int tryAcquireShared(int unused) {
+    /*
+     * Walkthrough:
+     * 1. If write lock held by another thread, fail.
+     * 2. Otherwise, this thread is eligible for
+     *    lock wrt state, so ask if it should block
+     *    because of queue policy. If not, try
+     *    to grant by CASing state and updating count.
+     *    Note that step does not check for reentrant
+     *    acquires, which is postponed to full version
+     *    to avoid having to check hold count in
+     *    the more typical non-reentrant case.
+     * 3. If step 2 fails either because thread
+     *    apparently not eligible or CAS fails or count
+     *    saturated, chain to version with full retry loop.
+     */
+    Thread current = Thread.currentThread();
+    int c = getState();
+    if (exclusiveCount(c) != 0 &amp;&amp;
+        getExclusiveOwnerThread() != current)
+        return -1;
+    int r = sharedCount(c);
+    if (!readerShouldBlock() &amp;&amp;
+        r &lt; MAX_COUNT &amp;&amp;
+        compareAndSetState(c, c + SHARED_UNIT)) {
+        if (r == 0) {
+            firstReader = current;
+            firstReaderHoldCount = 1;
+        } else if (firstReader == current) {
+            firstReaderHoldCount++;
+        } else {
+            HoldCounter rh = cachedHoldCounter;
+            if (rh == null || rh.tid != getThreadId(current))
+                cachedHoldCounter = rh = readHolds.get();
+            else if (rh.count == 0)
+                readHolds.set(rh);
+            rh.count++;
+        }
+        return 1;
+    }
+    return fullTryAcquireShared(current);
+}</code></pre><p>共享锁对应的也先获取独享锁获取次数，如果已经有获取独享锁的线程了，那就进waitingqueue</p>
+<p>如果此时没有线程获取独享锁，且waitingqueue中也没有exclusive模式的Node在排队，直接获取读锁，并且因为不像独享锁，它的特性exclusive使得它可以用<code>state</code>来记录重入的次数，而共享锁可以多个线程同时获取锁，所以这里用了<code>ThreadLocal</code>在线程中存放每个读锁重入的次数</p>
+<p>如果是写锁要重入读锁，可以直接获取读锁</p>
+<p><strong>根据以上特性我们可以初步总结到，当没有线程获取到写锁时，多个线程都可以获取到读锁，并且不需要进入waitingqueue，但是当有线程尝试获取写锁时，由于已经有线程获取了读锁，所以它要进入waitingqueue，此时后续想要获取读锁的线程也只能进入waitingqueue</strong></p>
+<h3 id="共享锁和独享锁唤醒successor的区别"><a href="#共享锁和独享锁唤醒successor的区别" class="headerlink" title="共享锁和独享锁唤醒successor的区别"></a>共享锁和独享锁唤醒successor的区别</h3><h4 id="setHeadAndPropagate"><a href="#setHeadAndPropagate" class="headerlink" title="setHeadAndPropagate"></a>setHeadAndPropagate</h4><p>我们知道，独享锁只有在<code>unlock()</code>的时候才会唤醒下个被挂起的线程，而waitingqueue中共享锁模式的Node总共有两次换新下个被挂起的线程，一次在被唤醒获取到锁之后，一次是在<code>unlock()</code></p>
+<pre><code>private void setHeadAndPropagate(Node node, int propagate) {
+    Node h = head; // Record old head for check below
+    setHead(node);
+    /*
+     * Try to signal next queued node if:
+     *   Propagation was indicated by caller,
+     *     or was recorded (as h.waitStatus either before
+     *     or after setHead) by a previous operation
+     *     (note: this uses sign-check of waitStatus because
+     *      PROPAGATE status may transition to SIGNAL.)
+     * and
+     *   The next node is waiting in shared mode,
+     *     or we don&#39;t know, because it appears null
+     *
+     * The conservatism in both of these checks may cause
+     * unnecessary wake-ups, but only when there are multiple
+     * racing acquires/releases, so most need signals now or soon
+     * anyway.
+     */
+    if (propagate &gt; 0 || h == null || h.waitStatus &lt; 0 ||
+        (h = head) == null || h.waitStatus &lt; 0) {
+        Node s = node.next;
+        if (s == null || s.isShared())
+            doReleaseShared();
+    }
+}</code></pre><p>当Node中线程获取到锁之后，会将自己设置为头节点Head，但是共享锁比起独享锁在这一步多了操作</p>
+<pre><code>private void setHeadAndPropagate(Node node, int propagate) {
+    Node h = head; // Record old head for check below
+    setHead(node);
+    /*
+     * Try to signal next queued node if:
+     *   Propagation was indicated by caller,
+     *     or was recorded (as h.waitStatus either before
+     *     or after setHead) by a previous operation
+     *     (note: this uses sign-check of waitStatus because
+     *      PROPAGATE status may transition to SIGNAL.)
+     * and
+     *   The next node is waiting in shared mode,
+     *     or we don&#39;t know, because it appears null
+     *
+     * The conservatism in both of these checks may cause
+     * unnecessary wake-ups, but only when there are multiple
+     * racing acquires/releases, so most need signals now or soon
+     * anyway.
+     */
+    if (propagate &gt; 0 || h == null || h.waitStatus &lt; 0 ||
+        (h = head) == null || h.waitStatus &lt; 0) {
+        Node s = node.next;
+        if (s == null || s.isShared())
+            doReleaseShared();
+    }
+}</code></pre><p>可以看到最后调用了<code>doReleaseShared()</code>方法，唤醒下一个节点如果这个节点模式也为<code>Shared</code></p>
+<p>而在<code>unlock()</code>中</p>
+<pre><code>public final boolean releaseShared(int arg) {
+    if (tryReleaseShared(arg)) {
+        doReleaseShared();
+        return true;
+    }
+    return false;
+}</code></pre><p>也调用了<code>doReleaseShared()</code>方法唤醒下一个节点</p>
+<pre><code>private void doReleaseShared() {
+    /*
+     * Ensure that a release propagates, even if there are other
+     * in-progress acquires/releases.  This proceeds in the usual
+     * way of trying to unparkSuccessor of head if it needs
+     * signal. But if it does not, status is set to PROPAGATE to
+     * ensure that upon release, propagation continues.
+     * Additionally, we must loop in case a new node is added
+     * while we are doing this. Also, unlike other uses of
+     * unparkSuccessor, we need to know if CAS to reset status
+     * fails, if so rechecking.
+     */
+    for (;;) {
+        Node h = head;
+        if (h != null &amp;&amp; h != tail) {
+            int ws = h.waitStatus;
+            if (ws == Node.SIGNAL) {
+                if (!compareAndSetWaitStatus(h, Node.SIGNAL, 0))
+                    continue;            // loop to recheck cases
+                unparkSuccessor(h);
+            }
+            else if (ws == 0 &amp;&amp;
+                     !compareAndSetWaitStatus(h, 0, Node.PROPAGATE))
+                continue;                // loop on failed CAS
+        }
+        if (h == head)                   // loop if head changed
+            break;
+    }
+}</code></pre><p>这就是唤醒下一个节点的源码，是一个for循环，只有<code>h==head</code>才能跳出循环</p>
+<p>共享锁多出的这一步获取锁之后唤醒下一个模式为<code>shared</code>的节点的线程，目的应该是将多个连续的<code>shared</code>节点的线程都唤醒</p>
+<p>但是在这一步可能会出现的问题是，如果唤醒下一个<code>shared</code>，在它获取锁将自己设置为Head之前，此时来到<code>h==head</code>，则循环结束，正好是一个链式唤醒<br>如果在下一个<code>shared</code>获取锁将自己设置为Head之后，此时h!=head，这样会造成什么后果，多个线程在执行自己代码之前，循环唤醒下个节点，这叫”调用风暴”，这极大地加速了唤醒后继节点的速度，提升了效率，同时该方法内部的CAS操作又保证了多个线程同时唤醒一个节点时，只有一个线程能操作成功。<br>直到下一个<code>exclusive</code>，因为有线程持有读锁，所以唤醒的线程获取不了写锁，唤醒终止，此时<code>head</code>不变，<code>h==head</code>恒成立，所有<code>doReleaseShared</code>循环结束，获取读锁的线程执行自己代码</p>
+<h4 id="unlock"><a href="#unlock" class="headerlink" title="unlock"></a>unlock</h4><p>两种锁在这一步相似</p>
+<pre><code>protected final boolean tryReleaseShared(int unused) {
+    Thread current = Thread.currentThread();
+    if (firstReader == current) {
+        // assert firstReaderHoldCount &gt; 0;
+        if (firstReaderHoldCount == 1)
+            firstReader = null;
+        else
+            firstReaderHoldCount--;
+    } else {
+        HoldCounter rh = cachedHoldCounter;
+        if (rh == null || rh.tid != getThreadId(current))
+            rh = readHolds.get();
+        int count = rh.count;
+        if (count &lt;= 1) {
+            readHolds.remove();
+            if (count &lt;= 0)
+                throw unmatchedUnlockException();
+        }
+        --rh.count;
+    }
+    for (;;) {
+        int c = getState();
+        int nextc = c - SHARED_UNIT;
+        if (compareAndSetState(c, nextc))
+            // Releasing the read lock has no effect on readers,
+            // but it may allow waiting writers to proceed if
+            // both read and write locks are now free.
+            return nextc == 0;
+    }
+}</code></pre><p>最后这个for循环作用，只用当读锁全部释放完，且没有线程占有写锁的情况下，共享锁会唤醒下一个节点</p>
+<p>为什么要强调没有线程占有写锁，我想可能是写锁重入读锁的问题，当写锁重入读锁，读锁<code>unlock()</code>的时候，也就是这一步，加这个条件，此时会尝试唤醒下一个线程，并且会改变<code>waitStatus</code>的状态为0(每次要唤醒下一个节点，都会把头节点<code>waitStatus</code>从<code>signal</code>变为0)，会导致什么后果呢</p>
+<pre><code>public final boolean release(int arg) {
+    if (tryRelease(arg)) {
+        Node h = head;
+        if (h != null &amp;&amp; h.waitStatus != 0)
+            unparkSuccessor(h);
+        return true;
+    }
+    return false;
+}</code></pre><p><code>waitStatus</code>变为0，这里无法唤醒下一个waitingqueue节点的线程</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/SpringMVC%E4%B8%ADdataBinder%E5%85%A5%E5%8F%82%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -4283,384 +4362,6 @@ private &lt;T&gt; T doConvert(Object value, Class&lt;T&gt; requiredType, MethodP
 <p>在这个过程中，通过<code>BeanWrapperImpl</code>中的<code>cachedIntrospectionResults</code>获取所有属性的<code>PropertyDescriptor</code>对象，通过这个对象中的属性的<code>get</code>,<code>set</code>方法确认属性的具体类型，然后开始和我们上面一样的转换过程</p>
 <p>转换完之后调用<code>PropertyDescriptor</code>中属性的<code>set</code>方法将值注入类中</p>
 <p>循环完成之后就完成了对将请求中属性绑定到入参的类中</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/ReentrantReadWriteLock%E7%9A%84%E5%85%B1%E4%BA%AB%E9%94%81%E5%92%8C%E7%8B%AC%E4%BA%AB%E9%94%81/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/ReentrantReadWriteLock%E7%9A%84%E5%85%B1%E4%BA%AB%E9%94%81%E5%92%8C%E7%8B%AC%E4%BA%AB%E9%94%81/" itemprop="url">ReentrantReadWriteLock的共享锁和独享锁</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="共享锁和独享锁操作state"><a href="#共享锁和独享锁操作state" class="headerlink" title="共享锁和独享锁操作state"></a>共享锁和独享锁操作state</h3><p>ReentrantReadWriteLock中共享锁和独享锁对锁的操作还是共同操作一个变量<code>state</code>，那怎么区分这个<code>state</code>是共享锁取得锁还是独享锁取得锁呢</p>
-<p>从ReentrantReadWriteLock的源码我们来看</p>
-<pre><code>static final int SHARED_SHIFT   = 16
-
-static final int EXCLUSIVE_MASK = (1 &lt;&lt; SHARED_SHIFT) - 1
-
-/** Returns the number of shared holds represented in count  */
-static int sharedCount(int c)    { return c &gt;&gt;&gt; SHARED_SHIFT; }
-/** Returns the number of exclusive holds represented in count  */
-static int exclusiveCount(int c) { return c &amp; EXCLUSIVE_MASK; }</code></pre><p>下面两个方法传入<code>state</code>，返回共享锁取得锁次数和独享锁取得锁次数</p>
-<p>其中获取共享锁次数的方式为将<code>state</code>无符号右移16位</p>
-<p>获取独享锁次数的方式为将<code>state</code>与<code>EXCLUSIVE_MASK</code>进行并运算，<code>EXCLUSIVE_MASK</code>为32位int型，前16位为0，后16位为1</p>
-<p>所以<code>state</code>区分独享锁和共享锁次数的方法为，将<code>state</code>32位一分为二，前16位用来表示共享锁获取次数，后16位用来表示独享锁获取次数</p>
-<h3 id="共享锁和独享锁在获取锁时的区别"><a href="#共享锁和独享锁在获取锁时的区别" class="headerlink" title="共享锁和独享锁在获取锁时的区别"></a>共享锁和独享锁在获取锁时的区别</h3><p>读锁用的就是共享锁，我们知道多个线程是可以同时获取读锁的</p>
-<p>读锁获取锁的源码如下</p>
-<pre><code>public final void acquireShared(int arg) {
-    if (tryAcquireShared(arg) &lt; 0)
-        doAcquireShared(arg);
-}</code></pre><p>而写锁获取锁的源码如下</p>
-<pre><code>public final void acquire(int arg) {
-    if (!tryAcquire(arg) &amp;&amp;
-        acquireQueued(addWaiter(Node.EXCLUSIVE), arg))
-        selfInterrupt();
-}</code></pre><p>都是一样的先尝试获取锁，失败之后放入<code>waitingqueue</code>等待唤醒</p>
-<p>我们看获取锁有什么区别，下面是获取独享锁</p>
-<pre><code>protected final boolean tryAcquire(int acquires) {
-    /*
-     * Walkthrough:
-     * 1. If read count nonzero or write count nonzero
-     *    and owner is a different thread, fail.
-     * 2. If count would saturate, fail. (This can only
-     *    happen if count is already nonzero.)
-     * 3. Otherwise, this thread is eligible for lock if
-     *    it is either a reentrant acquire or
-     *    queue policy allows it. If so, update state
-     *    and set owner.
-     */
-    Thread current = Thread.currentThread();
-    int c = getState();
-    int w = exclusiveCount(c);
-    if (c != 0) {
-        // (Note: if c != 0 and w == 0 then shared count != 0)
-        if (w == 0 || current != getExclusiveOwnerThread())
-            return false;
-        if (w + exclusiveCount(acquires) &gt; MAX_COUNT)
-            throw new Error(&quot;Maximum lock count exceeded&quot;);
-        // Reentrant acquire
-        setState(c + acquires);
-        return true;
-    }
-    if (writerShouldBlock() ||
-        !compareAndSetState(c, c + acquires))
-        return false;
-    setExclusiveOwnerThread(current);
-    return true;
-}</code></pre><p>当c!=0且w==0时，说明存在线程获取了读锁，没有线程获取了写锁，此时想要获取写锁，则需要进入waitingqueue排队</p>
-<p>当c==0时，即没有线程获取写锁和读锁，线程直接获取写锁</p>
-<p>读锁想重入写锁需要进入waitingqueue</p>
-<p>下面是获取共享锁</p>
-<pre><code>protected final int tryAcquireShared(int unused) {
-    /*
-     * Walkthrough:
-     * 1. If write lock held by another thread, fail.
-     * 2. Otherwise, this thread is eligible for
-     *    lock wrt state, so ask if it should block
-     *    because of queue policy. If not, try
-     *    to grant by CASing state and updating count.
-     *    Note that step does not check for reentrant
-     *    acquires, which is postponed to full version
-     *    to avoid having to check hold count in
-     *    the more typical non-reentrant case.
-     * 3. If step 2 fails either because thread
-     *    apparently not eligible or CAS fails or count
-     *    saturated, chain to version with full retry loop.
-     */
-    Thread current = Thread.currentThread();
-    int c = getState();
-    if (exclusiveCount(c) != 0 &amp;&amp;
-        getExclusiveOwnerThread() != current)
-        return -1;
-    int r = sharedCount(c);
-    if (!readerShouldBlock() &amp;&amp;
-        r &lt; MAX_COUNT &amp;&amp;
-        compareAndSetState(c, c + SHARED_UNIT)) {
-        if (r == 0) {
-            firstReader = current;
-            firstReaderHoldCount = 1;
-        } else if (firstReader == current) {
-            firstReaderHoldCount++;
-        } else {
-            HoldCounter rh = cachedHoldCounter;
-            if (rh == null || rh.tid != getThreadId(current))
-                cachedHoldCounter = rh = readHolds.get();
-            else if (rh.count == 0)
-                readHolds.set(rh);
-            rh.count++;
-        }
-        return 1;
-    }
-    return fullTryAcquireShared(current);
-}</code></pre><p>共享锁对应的也先获取独享锁获取次数，如果已经有获取独享锁的线程了，那就进waitingqueue</p>
-<p>如果此时没有线程获取独享锁，且waitingqueue中也没有exclusive模式的Node在排队，直接获取读锁，并且因为不像独享锁，它的特性exclusive使得它可以用<code>state</code>来记录重入的次数，而共享锁可以多个线程同时获取锁，所以这里用了<code>ThreadLocal</code>在线程中存放每个读锁重入的次数</p>
-<p>如果是写锁要重入读锁，可以直接获取读锁</p>
-<p><strong>根据以上特性我们可以初步总结到，当没有线程获取到写锁时，多个线程都可以获取到读锁，并且不需要进入waitingqueue，但是当有线程尝试获取写锁时，由于已经有线程获取了读锁，所以它要进入waitingqueue，此时后续想要获取读锁的线程也只能进入waitingqueue</strong></p>
-<h3 id="共享锁和独享锁唤醒successor的区别"><a href="#共享锁和独享锁唤醒successor的区别" class="headerlink" title="共享锁和独享锁唤醒successor的区别"></a>共享锁和独享锁唤醒successor的区别</h3><h4 id="setHeadAndPropagate"><a href="#setHeadAndPropagate" class="headerlink" title="setHeadAndPropagate"></a>setHeadAndPropagate</h4><p>我们知道，独享锁只有在<code>unlock()</code>的时候才会唤醒下个被挂起的线程，而waitingqueue中共享锁模式的Node总共有两次换新下个被挂起的线程，一次在被唤醒获取到锁之后，一次是在<code>unlock()</code></p>
-<pre><code>private void setHeadAndPropagate(Node node, int propagate) {
-    Node h = head; // Record old head for check below
-    setHead(node);
-    /*
-     * Try to signal next queued node if:
-     *   Propagation was indicated by caller,
-     *     or was recorded (as h.waitStatus either before
-     *     or after setHead) by a previous operation
-     *     (note: this uses sign-check of waitStatus because
-     *      PROPAGATE status may transition to SIGNAL.)
-     * and
-     *   The next node is waiting in shared mode,
-     *     or we don&#39;t know, because it appears null
-     *
-     * The conservatism in both of these checks may cause
-     * unnecessary wake-ups, but only when there are multiple
-     * racing acquires/releases, so most need signals now or soon
-     * anyway.
-     */
-    if (propagate &gt; 0 || h == null || h.waitStatus &lt; 0 ||
-        (h = head) == null || h.waitStatus &lt; 0) {
-        Node s = node.next;
-        if (s == null || s.isShared())
-            doReleaseShared();
-    }
-}</code></pre><p>当Node中线程获取到锁之后，会将自己设置为头节点Head，但是共享锁比起独享锁在这一步多了操作</p>
-<pre><code>private void setHeadAndPropagate(Node node, int propagate) {
-    Node h = head; // Record old head for check below
-    setHead(node);
-    /*
-     * Try to signal next queued node if:
-     *   Propagation was indicated by caller,
-     *     or was recorded (as h.waitStatus either before
-     *     or after setHead) by a previous operation
-     *     (note: this uses sign-check of waitStatus because
-     *      PROPAGATE status may transition to SIGNAL.)
-     * and
-     *   The next node is waiting in shared mode,
-     *     or we don&#39;t know, because it appears null
-     *
-     * The conservatism in both of these checks may cause
-     * unnecessary wake-ups, but only when there are multiple
-     * racing acquires/releases, so most need signals now or soon
-     * anyway.
-     */
-    if (propagate &gt; 0 || h == null || h.waitStatus &lt; 0 ||
-        (h = head) == null || h.waitStatus &lt; 0) {
-        Node s = node.next;
-        if (s == null || s.isShared())
-            doReleaseShared();
-    }
-}</code></pre><p>可以看到最后调用了<code>doReleaseShared()</code>方法，唤醒下一个节点如果这个节点模式也为<code>Shared</code></p>
-<p>而在<code>unlock()</code>中</p>
-<pre><code>public final boolean releaseShared(int arg) {
-    if (tryReleaseShared(arg)) {
-        doReleaseShared();
-        return true;
-    }
-    return false;
-}</code></pre><p>也调用了<code>doReleaseShared()</code>方法唤醒下一个节点</p>
-<pre><code>private void doReleaseShared() {
-    /*
-     * Ensure that a release propagates, even if there are other
-     * in-progress acquires/releases.  This proceeds in the usual
-     * way of trying to unparkSuccessor of head if it needs
-     * signal. But if it does not, status is set to PROPAGATE to
-     * ensure that upon release, propagation continues.
-     * Additionally, we must loop in case a new node is added
-     * while we are doing this. Also, unlike other uses of
-     * unparkSuccessor, we need to know if CAS to reset status
-     * fails, if so rechecking.
-     */
-    for (;;) {
-        Node h = head;
-        if (h != null &amp;&amp; h != tail) {
-            int ws = h.waitStatus;
-            if (ws == Node.SIGNAL) {
-                if (!compareAndSetWaitStatus(h, Node.SIGNAL, 0))
-                    continue;            // loop to recheck cases
-                unparkSuccessor(h);
-            }
-            else if (ws == 0 &amp;&amp;
-                     !compareAndSetWaitStatus(h, 0, Node.PROPAGATE))
-                continue;                // loop on failed CAS
-        }
-        if (h == head)                   // loop if head changed
-            break;
-    }
-}</code></pre><p>这就是唤醒下一个节点的源码，是一个for循环，只有<code>h==head</code>才能跳出循环</p>
-<p>共享锁多出的这一步获取锁之后唤醒下一个模式为<code>shared</code>的节点的线程，目的应该是将多个连续的<code>shared</code>节点的线程都唤醒</p>
-<p>但是在这一步可能会出现的问题是，如果唤醒下一个<code>shared</code>，在它获取锁将自己设置为Head之前，此时来到<code>h==head</code>，则循环结束，正好是一个链式唤醒<br>如果在下一个<code>shared</code>获取锁将自己设置为Head之后，此时h!=head，这样会造成什么后果，多个线程在执行自己代码之前，循环唤醒下个节点，这叫”调用风暴”，这极大地加速了唤醒后继节点的速度，提升了效率，同时该方法内部的CAS操作又保证了多个线程同时唤醒一个节点时，只有一个线程能操作成功。<br>直到下一个<code>exclusive</code>，因为有线程持有读锁，所以唤醒的线程获取不了写锁，唤醒终止，此时<code>head</code>不变，<code>h==head</code>恒成立，所有<code>doReleaseShared</code>循环结束，获取读锁的线程执行自己代码</p>
-<h4 id="unlock"><a href="#unlock" class="headerlink" title="unlock"></a>unlock</h4><p>两种锁在这一步相似</p>
-<pre><code>protected final boolean tryReleaseShared(int unused) {
-    Thread current = Thread.currentThread();
-    if (firstReader == current) {
-        // assert firstReaderHoldCount &gt; 0;
-        if (firstReaderHoldCount == 1)
-            firstReader = null;
-        else
-            firstReaderHoldCount--;
-    } else {
-        HoldCounter rh = cachedHoldCounter;
-        if (rh == null || rh.tid != getThreadId(current))
-            rh = readHolds.get();
-        int count = rh.count;
-        if (count &lt;= 1) {
-            readHolds.remove();
-            if (count &lt;= 0)
-                throw unmatchedUnlockException();
-        }
-        --rh.count;
-    }
-    for (;;) {
-        int c = getState();
-        int nextc = c - SHARED_UNIT;
-        if (compareAndSetState(c, nextc))
-            // Releasing the read lock has no effect on readers,
-            // but it may allow waiting writers to proceed if
-            // both read and write locks are now free.
-            return nextc == 0;
-    }
-}</code></pre><p>最后这个for循环作用，只用当读锁全部释放完，且没有线程占有写锁的情况下，共享锁会唤醒下一个节点</p>
-<p>为什么要强调没有线程占有写锁，我想可能是写锁重入读锁的问题，当写锁重入读锁，读锁<code>unlock()</code>的时候，也就是这一步，加这个条件，此时会尝试唤醒下一个线程，并且会改变<code>waitStatus</code>的状态为0(每次要唤醒下一个节点，都会把头节点<code>waitStatus</code>从<code>signal</code>变为0)，会导致什么后果呢</p>
-<pre><code>public final boolean release(int arg) {
-    if (tryRelease(arg)) {
-        Node h = head;
-        if (h != null &amp;&amp; h.waitStatus != 0)
-            unparkSuccessor(h);
-        return true;
-    }
-    return false;
-}</code></pre><p><code>waitStatus</code>变为0，这里无法唤醒下一个waitingqueue节点的线程</p>
 
           
         
@@ -5386,6 +5087,419 @@ public final boolean release(int arg) {
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/Mysql%E5%9F%BA%E7%A1%80%E8%AF%AD%E5%8F%A5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/Mysql%E5%9F%BA%E7%A1%80%E8%AF%AD%E5%8F%A5/" itemprop="url">Mysql基础语句</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/mysql/" itemprop="url" rel="index">
+                    <span itemprop="name">mysql</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="运行环境"><a href="#运行环境" class="headerlink" title="运行环境"></a>运行环境</h3><p>系统：win10 1803 mysql版本：5.7.24 可视化管理工具：Navicat Premium</p>
+<h3 id="基本语句"><a href="#基本语句" class="headerlink" title="基本语句"></a>基本语句</h3><h4 id="建库，删库"><a href="#建库，删库" class="headerlink" title="建库，删库"></a>建库，删库</h4><p><code>CREATE DATABASE database-name</code></p>
+<p><code>drop database database-name</code></p>
+<h4 id="建表，删表"><a href="#建表，删表" class="headerlink" title="建表，删表"></a>建表，删表</h4><h5 id="建表模板"><a href="#建表模板" class="headerlink" title="建表模板"></a>建表模板</h5><pre><code>create table 库名.表名(
+    字段名1 类型[(宽度) 约束条件],
+    ···
+)</code></pre><p><code>create table table_new like table_old</code></p>
+<h5 id="常用约束条件"><a href="#常用约束条件" class="headerlink" title="常用约束条件"></a>常用约束条件</h5><p><code>primary key (PK)</code> #标识该字段为该表的主键，可以唯一的标识记录，主键就是不为空且唯一当然其还有加速查询的作用<br><code>foreign key (FK)</code> #标识该字段为该表的外键，用来建立表与表的关联关系<br><code>not null</code> #标识该字段不能为空<br><code>unique key (UK)</code> #标识该字段的值是唯一的<br><code>auto_increment</code> #标识该字段的值自动增长（整数类型，而且为主键）<br><code>default</code> #为该字段设置默认值<br><code>unsigned</code> #将整型设置为无符号即正数<br><code>zerofill</code> #不够使用0进行填充</p>
+<h5 id="显示宽度"><a href="#显示宽度" class="headerlink" title="显示宽度"></a>显示宽度</h5><p>对于数字型，指定显示宽度不影响存储范围，使用zerofill约束条件后，实际显示宽度小于指定显示宽度时，自动加0代替，大于显示宽度时，按实际宽度显示</p>
+<p>对于字符型(utf8)，指定显示宽度即指定存储字符个数 (最大65535-3/3)</p>
+<p><code>TINYINT[(M)] [UNSIGNED] [ZEROFILL]</code> M默认为4</p>
+<p><code>SMALLINT[(M)] [UNSIGNED] [ZEROFILL]</code> M默认为6</p>
+<p><code>MEDIUMINT[(M)] [UNSIGNED] [ZEROFILL]</code> M默认为9</p>
+<p><code>INT[(M)] [UNSIGNED] [ZEROFILL]</code> M默认为11</p>
+<p><code>BIGINT[(M)] [UNSIGNED] [ZEROFILL]</code> M默认为20</p>
+<h5 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h5><h6 id="数字型"><a href="#数字型" class="headerlink" title="数字型"></a>数字型</h6><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>大小</th>
+<th>范围（有符号）</th>
+<th>范围（无符号）</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>TINYINT</td>
+<td>1字节</td>
+<td>(-128，127)</td>
+<td>(0，255)</td>
+<td>小整数值</td>
+</tr>
+<tr>
+<td>SMALLINT</td>
+<td>2字节</td>
+<td>(-32768，32767)</td>
+<td>(0，65535)</td>
+<td>大整数值</td>
+</tr>
+<tr>
+<td>MEDIUMINT</td>
+<td>3字节</td>
+<td>(-8388608，8388607)</td>
+<td>(0，16777215)</td>
+<td>大整数值</td>
+</tr>
+<tr>
+<td>INT或INTEGER</td>
+<td>4字节</td>
+<td>(-2147483648，2147483647)</td>
+<td>(0，4294967295)</td>
+<td>大整数值</td>
+</tr>
+<tr>
+<td>BIGINT</td>
+<td>8字节</td>
+<td>(-9233372036854775808，9223372036854775807)</td>
+<td>(0，18446744073709551615)</td>
+<td>极大整数值</td>
+</tr>
+<tr>
+<td>FLOAT</td>
+<td>4字节</td>
+<td>(-3.402 823466E+38，1.175494351E-38)，0，(1.175494351E-38，3.402823466351E+38)</td>
+<td>0，(1.175494351E-38，3.402823466 E+38)</td>
+<td>单精度浮点数值</td>
+</tr>
+<tr>
+<td>DOUBLE</td>
+<td>8字节</td>
+<td>(1.7976931348623157E+308，2.2250738585072014E-308)，0，(2.2250738585072014E-308，1.797 693 134 862 315 7 E+308)</td>
+<td>0，(2.2250738585072014E-308，1.7976931348623157E+308)</td>
+<td>双精度浮点数值</td>
+</tr>
+<tr>
+<td>DECIMAL</td>
+<td>对DECIMAL(M,D) ，如果M&gt;D，为M+2否则为D+2</td>
+<td>依赖于M和D的值</td>
+<td>依赖于M和D的值</td>
+<td>小数值</td>
+</tr>
+</tbody></table>
+<h6 id="字符型"><a href="#字符型" class="headerlink" title="字符型"></a>字符型</h6><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>大小</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>CHAR</td>
+<td>0-255字节</td>
+<td>定长字符串</td>
+</tr>
+<tr>
+<td>VARCHAR</td>
+<td>0-65535字节</td>
+<td>变长字符串</td>
+</tr>
+<tr>
+<td>TINYBLOB</td>
+<td>0-255字节</td>
+<td>不超过255个字符的二进制字符串</td>
+</tr>
+<tr>
+<td>TINYTEXT</td>
+<td>0-255字节</td>
+<td>短文本字符串</td>
+</tr>
+<tr>
+<td>BLOB</td>
+<td>0-65535字节</td>
+<td>二进制形式的长文本数据</td>
+</tr>
+<tr>
+<td>TEXT</td>
+<td>0-65535字节</td>
+<td>长文本数据</td>
+</tr>
+<tr>
+<td>MEDIUMBLOB</td>
+<td>0-16777215字节</td>
+<td>二进制形式的中等长度文本数据</td>
+</tr>
+<tr>
+<td>MEDIUMTEXT</td>
+<td>0-16777215字节</td>
+<td>中等长度文本数据</td>
+</tr>
+<tr>
+<td>LOGNGBLOB</td>
+<td>0-4294967295字节</td>
+<td>二进制形式的极大文本数据</td>
+</tr>
+<tr>
+<td>LONGTEXT</td>
+<td>0-4294967295字节</td>
+<td>极大文本数据</td>
+</tr>
+</tbody></table>
+<h6 id="枚举和集合"><a href="#枚举和集合" class="headerlink" title="枚举和集合"></a>枚举和集合</h6><p>ENUM （最多65535个成员） 64KB<br>SET （最多64个成员） 64KB</p>
+<h6 id="时间类型"><a href="#时间类型" class="headerlink" title="时间类型"></a>时间类型</h6><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>大小</th>
+<th>范围</th>
+<th>格式</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>DATE</td>
+<td>3</td>
+<td>1000-01-01/9999-12-31</td>
+<td>YYYY-MM-DD</td>
+<td>日期值</td>
+</tr>
+<tr>
+<td>TIME</td>
+<td>3</td>
+<td>-838:59:59/838:59:59</td>
+<td>HH:MM:SS</td>
+<td>时间值或持续时间</td>
+</tr>
+<tr>
+<td>YEAR</td>
+<td>1</td>
+<td>1901/2155</td>
+<td>YYYY</td>
+<td>年份值</td>
+</tr>
+<tr>
+<td>DATETIME</td>
+<td>8</td>
+<td>1000-01-01 00:00:00/9999-12-31 23:59:59</td>
+<td>YYYY-MM-DD HH:MM:SS</td>
+<td>混合日期和时间值</td>
+</tr>
+<tr>
+<td>TIMESTAMP</td>
+<td>8</td>
+<td>1970-01-01 00:00:00/2037 年某时</td>
+<td>YYYYMMDD HHMMSS</td>
+<td>混合日期和时间值，时间戳</td>
+</tr>
+</tbody></table>
+<h5 id="删表"><a href="#删表" class="headerlink" title="删表"></a>删表</h5><p><code>drop table 表格</code></p>
+<h4 id="CRUD"><a href="#CRUD" class="headerlink" title="CRUD"></a>CRUD</h4><p><code>insert into 表格(字段···) values(值···),(),()···</code></p>
+<p><code>select * from table where 字段+条件</code></p>
+<p><code>update 表格 set 列名 where 字段+条件</code></p>
+<p><code>delete from 表格 where 字段+条件</code></p>
+<h4 id="查看字段"><a href="#查看字段" class="headerlink" title="查看字段"></a>查看字段</h4><p><code>desc 表名</code></p>
+<h4 id="分页"><a href="#分页" class="headerlink" title="分页"></a>分页</h4><p><code>limit x,y</code></p>
+<p>从第x条开始，查询y条记录</p>
+<h4 id="更改表"><a href="#更改表" class="headerlink" title="更改表"></a>更改表</h4><h5 id="更改表名"><a href="#更改表名" class="headerlink" title="更改表名"></a>更改表名</h5><p><code>alter table 表名 rename 新表名</code></p>
+<h5 id="更改列名"><a href="#更改列名" class="headerlink" title="更改列名"></a>更改列名</h5><p><code>ALTER TABLE 表名 CHANGE 旧字段 新字段 旧类型</code></p>
+<h5 id="新增列"><a href="#新增列" class="headerlink" title="新增列"></a>新增列</h5><p><code>alter table 表名 add column 新字段 类型</code></p>
+<h5 id="删除列"><a href="#删除列" class="headerlink" title="删除列"></a>删除列</h5><p><code>alter table 表名 drop column 字段</code></p>
+<h5 id="修改表列类型"><a href="#修改表列类型" class="headerlink" title="修改表列类型"></a>修改表列类型</h5><p><code>alter table 表名 modify 字段 新类型</code></p>
+<h5 id="删除约束"><a href="#删除约束" class="headerlink" title="删除约束"></a>删除约束</h5><p><code>alter table 表名 drop constraint 约束名字</code></p>
+<h5 id="添加一个表的字段的约束并指定默认值"><a href="#添加一个表的字段的约束并指定默认值" class="headerlink" title="添加一个表的字段的约束并指定默认值"></a>添加一个表的字段的约束并指定默认值</h5><p><code>alter table 表名 add constraint 约束名字 约束类型 for 字段</code></p>
+<h4 id="主外键关联"><a href="#主外键关联" class="headerlink" title="主外键关联"></a>主外键关联</h4><p>添加外键约束</p>
+<p>alter table 子表 add foreign key(子表外键字段) references 父表(父表主键字段)</p>
+<h4 id="创建索引"><a href="#创建索引" class="headerlink" title="创建索引"></a>创建索引</h4><h5 id="ALTER-TABLE"><a href="#ALTER-TABLE" class="headerlink" title="ALTER TABLE"></a>ALTER TABLE</h5><p><code>ALTER TABLE 表名 ADD INDEX 索引名 (column_list)</code></p>
+<p>索引名index_name可选，缺省时，MySQL将根据第一个索引列赋一个名称,column_list指出对哪些列进行索引，多列时各列之间用逗号分隔</p>
+<p><code>ALTER TABLE 表名 ADD UNIQUE (column_list)</code></p>
+<p><code>ALTER TABLE 表名 ADD PRIMARY KEY (column_list)</code></p>
+<h5 id="CREATE-TABLE"><a href="#CREATE-TABLE" class="headerlink" title="CREATE TABLE"></a>CREATE TABLE</h5><p><code>CREATE INDEX index_name ON table_name (column_list)</code></p>
+<p><code>CREATE UNIQUE INDEX index_name ON table_name (column_list)</code></p>
+<h4 id="删除索引"><a href="#删除索引" class="headerlink" title="删除索引"></a>删除索引</h4><p><code>DROP INDEX 索引名 ON 表名</code></p>
+<p><code>ALTER TABLE 表名 DROP INDEX 索引名</code></p>
+<p><code>ALTER TABLE 表名 DROP PRIMARY KEY</code></p>
+<p>其中，前两条语句是等价的，删除掉table_name中的索引index_name。</p>
+<p>第3条语句只在删除PRIMARY KEY索引时使用，因为一个表只可能有一个PRIMARY KEY索引，因此不需要指定索引名。如果没有创建PRIMARY KEY索引，但表具有一个或多个UNIQUE索引，则MySQL将删除第一个UNIQUE索引。</p>
+<p>如果从表中删除了某列，则索引会受到影响。对于多列组合的索引，如果删除其中的某列，则该列也会从索引中删除。如果删除组成索引的所有列，则整个索引将被删除。</p>
+<h4 id="查看索引"><a href="#查看索引" class="headerlink" title="查看索引"></a>查看索引</h4><p><code>show index from 表名</code></p>
+<h3 id="多表查询"><a href="#多表查询" class="headerlink" title="多表查询"></a>多表查询</h3><h4 id="内连接-inner-join"><a href="#内连接-inner-join" class="headerlink" title="内连接(inner join)"></a>内连接(inner join)</h4><p>只返回两张表中所有满足连接条件的行，即使用比较运算符根据每个表中共有的列的值匹配两个表中的行。(inner关键字是可省略的)</p>
+<p><code>select * from 表名1 a [INNER] join 表名2 b on a.字段+条件+b.字段（建议使用）</code></p>
+<p><code>select * from 表名1 a,表名2 b where a.字段+条件+b.字段</code></p>
+<h4 id="外连接-outer-join"><a href="#外连接-outer-join" class="headerlink" title="外连接(outer join)"></a>外连接(outer join)</h4><p>使用外连接不但返回符合连接和查询条件的数据行，还返回不符合条件的一些行</p>
+<p>左外连接、右外连接。(outer关键字可省略)。</p>
+<p>共同点：都返回符合连接条件和查询条件（即：内连接）的数据行</p>
+<p>不同点：</p>
+<ul>
+<li><p>左外连接还返回左表中不符合连接条件，但符合查询条件的数据行。(所谓左表，就是写在left join关键字左边的表)</p>
+</li>
+<li><p>右外连接还返回右表中不符合连接条件，但符合查询条件的数据行。(所谓右表，就是写在right join关键字右边的表)</p>
+</li>
+</ul>
+<p>左查询<code>left join</code></p>
+<p><code>select 字段 from 表1 left join 表2 on 表1.字段+条件+表2.字段</code></p>
+<p>右查询 <code>right join</code></p>
+<p><code>select 字段 from 表1 left join 表2 on 表1.字段+条件+表2.字段</code></p>
+<h3 id="交叉连接-cross-join"><a href="#交叉连接-cross-join" class="headerlink" title="交叉连接(cross join)"></a>交叉连接(cross join)</h3><p>因为没有连接条件，所进行的表与表间的所有行的连接,结果集中的总行数就是两张表中总行数的乘积(笛卡尔积)</p>
+<p><code>select * from 表名1 a,表名2 b</code></p>
+<p><code>select * from 表名1 a cross join 表名2 b</code></p>
+<h3 id="联合查询"><a href="#联合查询" class="headerlink" title="联合查询"></a>联合查询</h3><p>将多次查询(多条select语句), 在记录上进行拼接(字段不会增加)，每一条select语句获取的字段数必须严格一致(但是字段类型无关)</p>
+<p><code>union all</code> 保留所有(不去重)</p>
+<p><code>union [distinct]</code> 去重</p>
+<h3 id="Mysql常用函数"><a href="#Mysql常用函数" class="headerlink" title="Mysql常用函数"></a>Mysql常用函数</h3><h4 id="聚合函数"><a href="#聚合函数" class="headerlink" title="聚合函数"></a>聚合函数</h4><p>(1)找出最大值：max(字段名)</p>
+<p>(2)找出最小值: min(字段名)</p>
+<p>(3)求平均数：avg(字段名)</p>
+<p>(4)求和：sum(字段名)</p>
+<p>(5)统计记录 count(字段名)，不包含null，count(*)统计所有记录</p>
+<h4 id="日期函数"><a href="#日期函数" class="headerlink" title="日期函数"></a>日期函数</h4><p><img src="http://wx1.sinaimg.cn/large/96b7c0f4gy1g1bh3eakchj20uw0hvwn7.jpg" alt=""></p>
+<p>格式化参数：</p>
+<p>%y 表示两位数字年份。例如：（2017返回17）<br>%Y 表示四位数字年份。例如：（2017返回2017）<br>%m 表示两位数字月份。例如：（01,02，….，12）<br>%c 表示数字的月份。例如：（1,2,3,4…..,12）<br>%M 表示月明，英文名称。<br>%d 表示两位数字的天数。例如：（01,02,03,…..31）<br>%e 表示数字的天数。例如（1,2,3,4,…..,31）<br>%H 表示两位数字的小时数，24小时制。例如：（01,02，…..，24）<br>%i 表示两位数字的分钟数。例如：（01,02…,60）<br>%S %s 表示两位数字的秒数。例如：（01,02…,60）</p>
+<h4 id="字符串类函数"><a href="#字符串类函数" class="headerlink" title="字符串类函数"></a>字符串类函数</h4><p>(1)CONCAT(s1,s2,s3,…..) 连接字符串<br>例如：SELECT CONCAT(‘1’,’2’) FROM DUAL;<br>输出：12</p>
+<p>(2)LOWER(s) 将字符串全部变成小写<br>例如：SELECT LOWER(‘ABC’) FROM DUAL;<br>输出：abc</p>
+<p>(3)UPPER(s) 将字符串全部变成大写<br>例如：SELECT UPPER(‘abc’) FROM DUAL;<br>输出：ABC</p>
+<p>(4)LTRIM(s) 去除字符串左侧的空格<br>例如：select LTRIM(‘ abc’) from dual;<br>输出：abc</p>
+<p>(5)RTRIM(s) 去除字符串右侧的空格<br>例如：select LTRIM(‘abc ‘) from dual;<br>输出：abc</p>
+<p>(6)TRIM(s) 去除字符串左右两侧的空格<br>例如：select LTRIM( ‘abc ‘) from dual;<br>输出：abc</p>
+<p>(7)LPAD(s,len,pad) 用字符串pad来对s左侧进行填充，直至长度达到len<br>例如：SELECT LPAD(‘1’,5,’0’) FROM DUAL;<br>输出：00001</p>
+<p>(8)RPAD(s,len,pad) 用字符串pad来对s右侧进行填充，直至长度达到len<br>例如：SELECT RPAD(‘1’,5,’0’) FROM DUAL;<br>输出：10000</p>
+<p>(9)REPEAT(s,x) 将s重复x后返回<br>例如：select REPEAT(‘a’,5) from dual;<br>输出：aaaaa</p>
+<p>(10)REPLACE(s,form,target) 将字符串中包含form的字符替换成target<br>例如：SELECT REPLACE(‘abc’,’a’,’A’) FROM DUAL;<br>输出：Abc</p>
+<p>(11)STRCMP(s1,s2) 比较s1与s2，如果相同返回0，s2大于s1返回1，s2小于s1返回-1<br>例如：SELECT STRCMP(‘a’,’b’),STRCMP(‘a’,’a’),STRCMP(‘b’,’a’) FROM DUAL;<br>输出：-1 0 1</p>
+<p>(12)LEFT(s,x) 返回字符串左侧x个字符<br>例如：SELECT LEFT(‘abc’,2) FROM DUAL;<br>输出：ab</p>
+<p>(13)RIGHT(s,x) 返回字符串右侧x个字符<br>例如：SELECT RIGHT(‘abc’,2) FROM DUAL;<br>输出：bc</p>
+<p>(14)MID(s,x,y) 返回字符串x位置开始y个字符<br>例如：SELECT MID(‘abcd’,3,2) FROM DUAL;<br>输出：cd</p>
+<p>(15)SUBSTRING(s,x,y) 返回字符串x位子开始y个字符，与MID基本一样<br>例如：SELECT SUBSTRING(‘abcd’,3,2) FROM DUAL;<br>输出：cd</p>
+<p>(16)INSERT(s,x,y,form) 将字符串x位置开始y个字符替换成form字符<br>例如：SELECT INSERT(‘abcd’,3,2,’FF’) FROM DUAL;<br>输出：abFF</p>
+<p>(17)LENGTH(s) 返回s的长度<br>例如：SELECT LENGTH(‘123’) FROM DUAL;<br>输出：3</p>
+<p>(18)REVERSE(s) 返回s颠倒顺序<br>例如：SELECT REVERSE(‘abc’) FROM DUAL;<br>输出：cba</p>
+<h4 id="转换类型函数"><a href="#转换类型函数" class="headerlink" title="转换类型函数"></a>转换类型函数</h4><p>CAST(v as type) 转换数据类型</p>
+<p>Type参数：</p>
+<p>字符型：CHAR<br>日期：DATE<br>时间：TIME<br>日期时间型：DATETIME<br>浮点数：DECIMAL<br>整数：SIGNED<br>无符号整数：UNSIGNED</p>
+<h4 id="数据库类函数"><a href="#数据库类函数" class="headerlink" title="数据库类函数"></a>数据库类函数</h4><p>DATABASE() 返回当前数据库名称<br>VERSION() 返回当前数据库版本<br>INET_ATON(ip) 返回数字表示的IP<br>INET_NTOA(num) 将数字表示的IP转换为IP<br>PASSWORD(s) 返回加密版本<br>MD5(s) 返回MD5加密值</p>
+<h4 id="数学函数"><a href="#数学函数" class="headerlink" title="数学函数"></a>数学函数</h4><p>ABS(X): 返回X的绝对值<br>MOD(N,M): 或%:返回N被M除的余数<br>FLOOR(X): 返回不大于X的最大整数值<br>CEILING(X): 返回不小于X的最小整数值<br>ROUND(X) : 返回参数X的四舍五入的一个整数<br>ROUND(X,D): 舍入函数。将参数X舍入到D小数位。 舍入算法取决于X的数据类型。如果未指定，则D默认为0。 D可能是负数，导致值X的小数点左边的D数字变为零</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
@@ -5436,7 +5550,7 @@ public final boolean release(int arg) {
               
                 <a href="/archives/%20%7C%7C%20archive">
               
-                  <span class="site-state-item-count">86</span>
+                  <span class="site-state-item-count">85</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

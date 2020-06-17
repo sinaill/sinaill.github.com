@@ -248,299 +248,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E6%B3%9B%E5%9E%8B/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/%E6%B3%9B%E5%9E%8B/" itemprop="url">泛型</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="什么是泛型，为什么要使用泛型"><a href="#什么是泛型，为什么要使用泛型" class="headerlink" title="什么是泛型，为什么要使用泛型"></a>什么是泛型，为什么要使用泛型</h3><p>泛型，即“参数化类型”。一提到参数，最熟悉的就是定义方法时有形参，然后调用此方法时传递实参。那么参数化类型怎么理解呢？顾名思义，就是将类型由原来的具体的类型参数化，类似于方法中的变量参数，此时类型也定义成参数形式（可以称之为类型形参），然后在使用/调用时传入具体的类型（类型实参）。</p>
-<p>泛型的本质是为了参数化类型（在不创建新的类型的情况下，通过泛型指定的不同类型来控制形参具体限制的类型）。也就是说在泛型使用过程中，操作的数据类型被指定为一个参数，这种参数类型可以用在类、接口和方法中，分别被称为泛型类、泛型接口、泛型方法。</p>
-<p>如果你定义了一个泛型（类、接口），那么Java规定，你不能在所有的静态方法、静态初块等所有静态内容中使用泛型的类型参数</p>
-<h3 id="泛型类"><a href="#泛型类" class="headerlink" title="泛型类"></a>泛型类</h3><pre><code>class generic&lt;T&gt;{
-    T element;
-}</code></pre><p>创建对象时指定T的参数类型例如<code>new generic&lt;Integer&gt;</code>，将成员变量的类型参数化</p>
-<h3 id="泛型接口"><a href="#泛型接口" class="headerlink" title="泛型接口"></a>泛型接口</h3><pre><code>interface generic&lt;T&gt;{
-    public T get();
-}</code></pre><p>若实现类中确定了参数类型，在实现接口时可以指定，<code>class a implements generic&lt;Integer&gt;</code>，若不确定参数类型，<code>class a&lt;T&gt; implements generic&lt;T&gt;</code>，用法一样</p>
-<h3 id="泛型方法"><a href="#泛型方法" class="headerlink" title="泛型方法"></a>泛型方法</h3><p>在非泛型类中定义泛型方法，格式为：修饰符 返回值类型 方法名(形参列表)</p>
-<ul>
-<li>public 与 返回值中间<T>非常重要，可以理解为声明此方法为泛型方法</li>
-<li>只有声明了<T>的方法才是泛型方法，泛型类中的使用了泛型的成员方法并不是泛型方法</li>
-<li><T>表明该方法将使用泛型类型T，此时才可以在方法中使用泛型类型T</li>
-<li>与泛型类的定义一样，此处T可以随便写为任意标识，常见的如T、E、K、V等形式的参数常用于表示泛型</li>
-</ul>
-<pre><code>class Method{
-    public &lt;T&gt; void out(T a){
-        System.out.println(a.getClass().getName());
-    }
-}
-
-public class Generic{
-    public static void main(String[] args) {
-        Method m = new Method();
-        m.out(&quot;sss&quot;);//输出java.lang.String
-        m.out(1);//输出java.lang.Integer
-    }
-}</code></pre><h3 id="通配符"><a href="#通配符" class="headerlink" title="通配符"></a>通配符</h3><ul>
-<li>？表示类型参数赋予不确定值，任意类型</li>
-<li><strong>只能用在声明类型、方法参数上，不能用在定义泛型类上</strong></li>
-</ul>
-<pre><code>public static void main(String[] args) {
-    List&lt;Integer&gt; l1 = new ArrayList&lt;Integer&gt;();
-    List&lt;String&gt; l2 = new ArrayList&lt;String&gt;();
-    l1.add(1);
-    l1.add(2);
-    l2.add(&quot;aaa&quot;);
-    l2.add(&quot;bbb&quot;);
-    out1(l1);
-    out1(l2);
-    out2(l1);
-    out2(l2);//报错
-}
-
-public static void out1(List&lt;?&gt; list){
-
-}
-public static void out2(List&lt;Integer&gt; list){
-
-}</code></pre><p>使用了通配符？定义的泛型变量和形参可以接受所有类型的同一泛型变量(不包括子类)，如下</p>
-<pre><code>// 用在形参上
-public static void test(List&lt;?&gt; list) {
-
- List&lt;?&gt; list2; // 用在声明变量上
- list2 = new ArrayList&lt;String&gt;();
- list2 = new ArrayList&lt;Integer&gt;();
- list2 = new ArrayList&lt;Object&gt;();
-
-}
-
-public static void main(String[] args) {
- test(new ArrayList&lt;String&gt;());
- test(new ArrayList&lt;Integer&gt;());
-}</code></pre><h3 id="泛型上下边界"><a href="#泛型上下边界" class="headerlink" title="泛型上下边界"></a>泛型上下边界</h3><p>在使用泛型的时候，我们还可以为传入的泛型类型实参进行上下边界的限制，如：类型实参只准传入某种类型的父类或某种类型的子类</p>
-<p>&lt;? extends T&gt;和&lt;? super T&gt;是Java泛型中的”通配符(Wildcards)”和”边界(Bounds)”的概念</p>
-<ul>
-<li>&lt;? extends T&gt;：是指 “上界通配符(Upper Bounds Wildcards)”，&lt;=</li>
-<li>&lt;? super T&gt;：是指 “下界通配符(Lower Bounds Wildcards)”，&gt;=</li>
-</ul>
-<ol>
-<li>定义泛型类时使用，限定参数范围</li>
-</ol>
-<pre><code>public class Generic&lt;T extends Number&gt;{
-    private T key;
-
-    public Generic(T key) {
-        this.key = key;
-    }
-
-    public T getKey(){
-        return key;
-    }
-}</code></pre><ol start="2">
-<li>作为变量时使用</li>
-</ol>
-<p><code>List</code>的<code>add</code>方法不能添加任何有意义的元素，但是可以接受现有的子类型<code>List</code>赋值</p>
-<pre><code>List&lt;? extends Number&gt; list = new ArrayList&lt;Integer&gt;();
-list.add(1);//报错</code></pre><ol start="3">
-<li>作为形参时使用</li>
-</ol>
-<pre><code>class Method{
-    public void out(List&lt;? extends Number&gt; a){
-
-    }
-}</code></pre><h3 id="泛型的继承"><a href="#泛型的继承" class="headerlink" title="泛型的继承"></a>泛型的继承</h3><pre><code>/**
- * 泛型继承
- *
- * 保留父类泛型 ----》泛型子类 
- * 不保留父类泛型 -----》子类按需实现
- *
- * 子类重写父类的方法，泛型类型随父类而定 子类使用父类的属性，该属性类型随父类定义的泛型
- *
- * @author Administrator
- *
- * @param &lt;T1&gt;
- * @param &lt;T2&gt;
- */
-public abstract class Father&lt;T1, T2&gt; {
-  T1 age;
-
-  public abstract void test(T2 name);
-}
-
-// 保留父类泛型 ----》泛型子类
-// 1）全部保留
-class C1&lt;T1, T2&gt; extends Father&lt;T1, T2&gt; {
-
-  @Override
-  public void test(T2 name) {
-
-  }
-}
-
-// 2) 部分保留
-class C2&lt;T1&gt; extends Father&lt;T1, Integer&gt; {
-
-  @Override
-  public void test(Integer name) {
-
-  }
-}
-
-// 不保留父类泛型 -----》子类按需实现
-// 1)具体类型
-class C3 extends Father&lt;String, Integer&gt; {
-
-  @Override
-  public void test(Integer name) {
-
-  }
-}
-
-// 2)没有具体类型
-// 泛型擦除：实现或继承父类的子类，没有指定类型，类似于Object
-class C4 extends Father {
-
-  @Override
-  public void test(Object name) {
-
-  }
-
-}</code></pre>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E7%94%9F%E4%BA%A7%E8%80%85%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%9E%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1293,6 +1000,217 @@ default Stream&lt;E&gt; stream() {
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" itemprop="url">排序算法</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="冒泡法"><a href="#冒泡法" class="headerlink" title="冒泡法"></a>冒泡法</h3><p>关键排序代码如下</p>
+<pre><code>public void bubble(int[] i){
+    int temp;
+    for(int j = 0;j &lt; i.length-1; j++){
+        for(int k = 0; k &lt; i.length - j -1; k++){
+            if(i[k] &gt; i[k+1]){
+                temp = i[k];
+                i[k] = i[k+1];
+                i[k+1] = temp;
+            }
+        }
+    }
+}</code></pre><p>用来对一万个10000内随机数进行排序，所消耗时间为 <strong>耗时：14329ms</strong></p>
+<h3 id="选择排序"><a href="#选择排序" class="headerlink" title="选择排序"></a>选择排序</h3><p>关键代码如下</p>
+<pre><code>public void selectionSort(int n[]) {
+    for (int i = 0; i &lt; n.length - 1; i++) {
+        int max = 0;
+        for (int j = 0; j &lt; n.length - i - 1; j++) {
+            if(n[max] &lt; n[j+1]){
+                max = j+1;
+            }
+        }
+        if (max != n.length-1-i) {
+            int temp;
+            temp = n[max];
+            n[max] = n[n.length-1-i];
+            n[n.length-1-i] = temp;
+        }
+    }
+}</code></pre><p>用来对一万个10000内随机数进行排序，所消耗时间为 <strong>耗时：2657ms</strong></p>
+<h3 id="插入排序"><a href="#插入排序" class="headerlink" title="插入排序"></a>插入排序</h3><p>关键代码如下</p>
+<pre><code>public void Insert(int n[]) {
+    for (int i = 1; i &lt; n.length; i++) {
+        int temp = i;
+        for (int j = i -1; j &gt;= 0 &amp;&amp; n[j] &gt; n[temp]; j--) {
+            exch(n, j, temp);
+            temp = j;
+        }
+    }
+}
+public void exch(int n[],int a,int b) {
+    int temp = n[a];
+    n[a] = n[b];
+    n[b] = temp;
+}</code></pre><p>用来对一万个10000内随机数进行排序，所消耗时间为 <strong>耗时：3107ms</strong></p>
+<h3 id="快速排序"><a href="#快速排序" class="headerlink" title="快速排序"></a>快速排序</h3><p>关键代码如下</p>
+<pre><code>    public void Quick(int n[],int left,int right) {
+        if(left &gt;= right){
+            return;
+        }
+        int key = PartSort(n, left, right);
+        Quick(n, left, key);
+        Quick(n, key+1, right);
+    }
+    public int PartSort(int n[],int left,int right) {
+        int key = n[left];
+        while(left &lt; right){
+            while (left &lt; right &amp;&amp; n[right] &gt;= key) {
+                right--;
+            }
+            n[left] = n[right];
+            while (left &lt; right &amp;&amp; n[left] &lt;= key) {
+                left++;
+            }
+            n[right] = n[left];
+        }
+        n[left] = key;
+        return left;
+    }
+}</code></pre><p>用来对一万个10000内随机数进行排序，所消耗时间为 <strong>耗时：16ms</strong></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E6%8E%88%E6%9D%83%E7%9A%84%E4%BD%BF%E7%94%A8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1543,217 +1461,6 @@ if (currentUser.isPermitted(&quot;printer:print:laserjet4400n&quot;)) {
 &lt;shiro:hasPermission name=&quot;user:create&quot;&gt;&lt;/shiro:hasPermission&gt;
 
 &lt;shiro:lacksPermission name=&quot;org:create&quot;&gt;&lt;/shiro:lacksPermission&gt;      </code></pre>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" itemprop="url">排序算法</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="冒泡法"><a href="#冒泡法" class="headerlink" title="冒泡法"></a>冒泡法</h3><p>关键排序代码如下</p>
-<pre><code>public void bubble(int[] i){
-    int temp;
-    for(int j = 0;j &lt; i.length-1; j++){
-        for(int k = 0; k &lt; i.length - j -1; k++){
-            if(i[k] &gt; i[k+1]){
-                temp = i[k];
-                i[k] = i[k+1];
-                i[k+1] = temp;
-            }
-        }
-    }
-}</code></pre><p>用来对一万个10000内随机数进行排序，所消耗时间为 <strong>耗时：14329ms</strong></p>
-<h3 id="选择排序"><a href="#选择排序" class="headerlink" title="选择排序"></a>选择排序</h3><p>关键代码如下</p>
-<pre><code>public void selectionSort(int n[]) {
-    for (int i = 0; i &lt; n.length - 1; i++) {
-        int max = 0;
-        for (int j = 0; j &lt; n.length - i - 1; j++) {
-            if(n[max] &lt; n[j+1]){
-                max = j+1;
-            }
-        }
-        if (max != n.length-1-i) {
-            int temp;
-            temp = n[max];
-            n[max] = n[n.length-1-i];
-            n[n.length-1-i] = temp;
-        }
-    }
-}</code></pre><p>用来对一万个10000内随机数进行排序，所消耗时间为 <strong>耗时：2657ms</strong></p>
-<h3 id="插入排序"><a href="#插入排序" class="headerlink" title="插入排序"></a>插入排序</h3><p>关键代码如下</p>
-<pre><code>public void Insert(int n[]) {
-    for (int i = 1; i &lt; n.length; i++) {
-        int temp = i;
-        for (int j = i -1; j &gt;= 0 &amp;&amp; n[j] &gt; n[temp]; j--) {
-            exch(n, j, temp);
-            temp = j;
-        }
-    }
-}
-public void exch(int n[],int a,int b) {
-    int temp = n[a];
-    n[a] = n[b];
-    n[b] = temp;
-}</code></pre><p>用来对一万个10000内随机数进行排序，所消耗时间为 <strong>耗时：3107ms</strong></p>
-<h3 id="快速排序"><a href="#快速排序" class="headerlink" title="快速排序"></a>快速排序</h3><p>关键代码如下</p>
-<pre><code>    public void Quick(int n[],int left,int right) {
-        if(left &gt;= right){
-            return;
-        }
-        int key = PartSort(n, left, right);
-        Quick(n, left, key);
-        Quick(n, key+1, right);
-    }
-    public int PartSort(int n[],int left,int right) {
-        int key = n[left];
-        while(left &lt; right){
-            while (left &lt; right &amp;&amp; n[right] &gt;= key) {
-                right--;
-            }
-            n[left] = n[right];
-            while (left &lt; right &amp;&amp; n[left] &lt;= key) {
-                left++;
-            }
-            n[right] = n[left];
-        }
-        n[left] = key;
-        return left;
-    }
-}</code></pre><p>用来对一万个10000内随机数进行排序，所消耗时间为 <strong>耗时：16ms</strong></p>
-
           
         
       
@@ -2916,6 +2623,351 @@ class ThreadReen extends Thread{
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E5%8F%8D%E5%B0%84%E5%9F%BA%E7%A1%80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/%E5%8F%8D%E5%B0%84%E5%9F%BA%E7%A1%80/" itemprop="url">反射基础</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="什么是反射"><a href="#什么是反射" class="headerlink" title="什么是反射"></a>什么是反射</h3><p>Java反射就是在运行状态中，对于任意一个类，都能够知道这个类的所有属性和方法；对于任意一个对象，都能够调用它的任意方法和属性；并且能改变它的属性。而这也是Java被视为动态（或准动态，为啥要说是准动态，因为一般而言的动态语言定义是程序运行时，允许改变程序结构或变量类型，这种语言称为动态语言。</p>
+<h3 id="反射能做什么"><a href="#反射能做什么" class="headerlink" title="反射能做什么"></a>反射能做什么</h3><p>我们知道反射机制允许程序在运行时取得任何一个已知名称的<code>class</code>的内部信息，包括包括其<code>modifiers</code>(修符)<code>fields</code>(属性)，<code>methods</code>(方法)等，并可于运行时改变<code>fields</code>内容或调用<code>methods</code>。那么我们便可以更灵活的编写代码，代码可以在运行时装配，无需在组件之间进行源代码链接，降低代码的耦合度；还有动态代理的实现等；但是需要注意的是反射使用不当会造成很高的资源消耗</p>
+<h3 id="Class对象"><a href="#Class对象" class="headerlink" title="Class对象"></a>Class对象</h3><p>每个通过关键字<code>class</code>标识的类，在内存中有且只有一个与之对应的<code>Class</code>对象来描述其类型信息，无论创建多少个实例对象，其依据的都是用一个<code>Class</code>对象。</p>
+<p>Java程序在运行时，Java运行时系统一直对所有的对象进行所谓的运行时类型标识，即所谓的RTTI。这项信息纪录了每个对象所属的类。虚拟机通常使用运行时类型信息选准正确方法去执行，用来保存这些类型信息的类是<code>Class</code>类。<code>Class</code>类封装一个对象和接口运行时的状态，当装载类时，<code>Class</code>类型的对象自动创建，所以可以在程序运行中获取类的内部信息。</p>
+<h3 id="获取类的内部信息"><a href="#获取类的内部信息" class="headerlink" title="获取类的内部信息"></a>获取类的内部信息</h3><h4 id="获取Class对象"><a href="#获取Class对象" class="headerlink" title="获取Class对象"></a>获取Class对象</h4><p>第一种：通过类名获得</p>
+<p><code>Class&lt;?&gt; class = ClassName.class;</code></p>
+<p>第二种：通过类名全路径获得：</p>
+<p><code>Class&lt;?&gt; class = Class.forName(&quot;类名全路径&quot;);</code></p>
+<p>第三种：通过实例对象获得：</p>
+<p><code>Class&lt;?&gt; class = object.getClass();</code></p>
+<h4 id="Field"><a href="#Field" class="headerlink" title="Field"></a>Field</h4><p><code>Field</code>提供有关类或接口的单个字段的信息和动态访问。 反射的字段可以是类（静态）字段或普通字段</p>
+<p><code>Class</code>对象提供了四个方法来获取<code>Field</code>对象</p>
+<ol>
+<li><code>getDeclaredField(String name)</code></li>
+</ol>
+<p>根据传入的方法名返回一个指定字段的<code>Field</code>对象</p>
+<ol start="2">
+<li><code>getDeclaredFields()</code></li>
+</ol>
+<p>返回的<code>Field</code>对象数组包含类或接口声明的所有字段</p>
+<ol start="3">
+<li><code>getField(String name)</code></li>
+</ol>
+<p>根据传入的方法名返回一个指定的公共成员字段的<code>Field</code>对象</p>
+<ol start="4">
+<li><code>getFields()</code></li>
+</ol>
+<p>返回一个<code>Field</code>对象数组，包含类或接口的所有可访问的公共字段</p>
+<p>区别：</p>
+<ul>
+<li><p>其中<code>getFields</code>方法返回一个<code>Field</code>类型数组，其中包含当前类的<code>public</code>字段，如果此类继承于某个父类，同时包括父类的public字段。其它的proteced和private字段，无论是属于当前类还是父类都不被此方法获取。</p>
+</li>
+<li><p><code>getDeclaredFields</code>方法返回一个<code>Field</code>类型数组，结果包含当前类的所有字段，<code>private、protected、public</code>或者无修饰符都在内。另外，此方法返回的结果不包括父类的任何字段。 此方法只是针对当前类的。</p>
+</li>
+</ul>
+<h4 id="Method"><a href="#Method" class="headerlink" title="Method"></a>Method</h4><p>方法提供有关类和接口上单一方法的信息和访问权限。可以是类方法或实例方法（包括抽象方法）</p>
+<p>Class对象提供了四个方法来获取Method对象，parameterTypes参数是形参的Class对象数组(new Class[]{})</p>
+<ol>
+<li><code>getDeclaredMethod(String name，Class&lt;?&gt;... parameterTypes)</code></li>
+</ol>
+<p>根据传入的方法名和一个Class对象数组(按顺序包含了方法的形参)返回一个指定的Method对象</p>
+<ol start="2">
+<li><code>getDeclaredMethods()</code></li>
+</ol>
+<p>返回的数组Method对象包含类或接口声明的所有字段</p>
+<ol start="3">
+<li><code>getMethod(String name， Class&lt;?&gt;... parameterTypes)</code></li>
+</ol>
+<p>根据传入的方法名和一个Class对象数组(按顺序包含了方法的形参)返回一个Method对象</p>
+<ol start="4">
+<li>getMethods()</li>
+</ol>
+<p>返回包含一个数组Method对象，包含类或接口的所有可访问的公共字段</p>
+<p>区别：</p>
+<ul>
+<li><p>其中<code>getMethods</code>方法返回一个<code>Method</code>类型数组，其中包含当前类的<code>public</code>字段，如果此类继承于某个父类，同时包括父类的<code>public</code>字段。其它的<code>proteced</code>和<code>private</code>字段，无论是属于当前类还是父类都不被此方法获取。</p>
+</li>
+<li><p><code>getDeclaremethods</code>方法返回一个<code>Method</code>类型数组，结果包含当前类的所有字段，<code>private、protected、public</code>或者无修饰符都在内。另外，此方法返回的结果不包括父类的任何字段。 此方法只是针对当前类的。</p>
+</li>
+</ul>
+<h4 id="Constructor"><a href="#Constructor" class="headerlink" title="Constructor"></a>Constructor</h4><p><code>Constructor</code>提供了一个类的单个构造函数的信息和访问</p>
+<p>1 <code>getConstructor(Class&lt;?&gt;... parameterTypes)</code></p>
+<p>根据传入的形参和一个Class对象数组(按顺序包含了方法的形参)返回指定构造函数</p>
+<ol start="2">
+<li><code>getConstructors()</code></li>
+</ol>
+<p>返回一个包含类中公共构造函数的Constructor数组</p>
+<ol start="3">
+<li><code>getDeclaredConstructor(Class&lt;?&gt;... parameterTypes)</code></li>
+</ol>
+<p>根据传入的形参和一个Class对象数组(按顺序包含了方法的形参)返回指定构造函数</p>
+<ol start="4">
+<li><code>getDeclaredConstructors()</code></li>
+</ol>
+<p>获取包含了所有声明的构造函数的<code>Constructor</code>数组</p>
+<p>区别：<code>getConstructors</code>获取的是类中修饰符为public的构造函数，<code>getDeclaredConstructors</code>获取的是类中所有声明的构造函数</p>
+<h3 id="具体运用"><a href="#具体运用" class="headerlink" title="具体运用"></a>具体运用</h3><pre><code>class reflect{
+    public char asc = &#39;a&#39;;
+    private int num;
+    private String string;
+    private int privateNum = 1;
+    public reflect(){
+
+    }
+
+    public reflect(int num,String string){
+        this.num = num;
+        this.string = string;
+    }
+
+    public int getNum() {
+        return num;
+    }
+
+    public void setNum(int num) {
+        this.num = num;
+    }
+
+    public String getString() {
+        return string;
+    }
+
+    public void setString(String string) {
+        this.string = string;
+    }
+
+    public int getNum(int i){
+        return num+i;
+    }
+
+    public void out(){
+        System.out.println(num+string);
+    }
+}
+
+class sonReflect extends reflect{
+
+    public boolean bool = true;
+    private float fnum;
+
+    public sonReflect() {
+
+    }
+
+    public sonReflect(float fnum) {
+        this.fnum = fnum;
+    }
+
+    public float getFnum() {
+        return fnum;
+    }
+
+    public void setFnum(float fnum) {
+        this.fnum = fnum;
+    }
+
+    public void out(){
+
+    }
+
+    private void privateOut(){
+
+    }
+}
+
+
+
+        reflect r = new reflect(1,&quot;1&quot;);
+        sonReflect sr = new sonReflect(1.1f);
+        Class&lt;?&gt; rc = r.getClass();
+        Class&lt;?&gt; src = sr.getClass();
+        //获取子类的Method
+        Method srcdeclaredMethod[] = src.getDeclaredMethods();
+        Method srcMethod[] = src.getMethods();
+        Arrays.asList(srcdeclaredMethod).forEach(m-&gt;System.out.print(m.getName()+&quot; &quot;));
+        System.out.println();
+        Arrays.asList(srcMethod).forEach(m-&gt;System.out.print(m.getName()+&quot; &quot;));
+        /* 输出为:
+         * out getFnum setFnum  和
+         * out getFnum setFnum getString getNum getNum setNum setString
+         * wait wait wait equals toString hashCode getClass notify notifyAll
+         * getDeclaredMethods只能获取到当前类声明的所有类型方法，而getMethods能
+         * 获取当前和从父类继承的public方法，例如privateOut方法它就无法获得
+         * */
+        System.out.println();
+        Field srcdeclaredField[] = src.getDeclaredFields();
+        Field srcField[] = src.getFields();
+        Arrays.asList(srcdeclaredField).forEach(m-&gt;System.out.print(m.getName()+&quot; &quot;));
+        System.out.println();
+        Arrays.asList(srcField).forEach(m-&gt;System.out.print(m.getName()+&quot; &quot;));
+        /* 输出为:
+         * bool fnum 和 bool asc,从结果看出getDeclaredFields方法获取到了自身公有和私有
+         * 属性,而getFields方法获取到了父类和子类的所有共有属性
+         * 
+         * */
+
+        Method m = rc.getMethod(&quot;getNum&quot;, new Class[]{int.class});
+        Method m1 = rc.getMethod(&quot;getNum&quot;);
+        System.out.println(m.invoke(r, 1));
+        System.out.println(m1.invoke(r));
+      //System.out.println(m1.invoke(r, 1));//抛出异常
+        /*输出为:2 1 和一个异常,通过形参数组确定具体
+         * 方法,再用invoke函数调用对象方法
+         */
+
+        Field f = rc.getDeclaredField(&quot;privateNum&quot;);
+//        Field f1 = rc.getField(&quot;privateNum&quot;); 
+//        System.out.println(f.get(r)+&quot; &quot;+f1.get(r));
+        f.setAccessible(true);
+        System.out.println(f.get(r));
+        /* 抛出两个异常,getField只能获取子类和父类的公有属性
+         * f为私有属性且没有get方法,需要setAccessible设为true
+         * 才能调用Field的get方法获取
+         */
+
+        try {
+            Class constructor = Class.forName(&quot;reflect.reflect&quot;);
+            Constructor con = constructor.getConstructor(new Class[]{int.class,String.class});
+            reflect nr = (reflect) con.newInstance(3,&quot;333&quot;);
+            nr.out();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        //除了class.newInstance，构造器也能用来创建实例</code></pre>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
@@ -2966,7 +3018,7 @@ class ThreadReen extends Thread{
               
                 <a href="/archives/%20%7C%7C%20archive">
               
-                  <span class="site-state-item-count">86</span>
+                  <span class="site-state-item-count">85</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
