@@ -345,15 +345,13 @@
 <p>计数信号量(Counting Semaphore)用来控制同时访问某个特定资源的操作数量，或者同时执行某个指定操作的数量。计数信号量还可以用来实现某种资源池，或者对容器施加边界。</p>
 <p>Semaphore中管理着一组虚拟的许可(permit)，许可的初始数量可通过构造函数来指定。在执行操作时可以首先获得许可(只要还有剩余的许可)，并在使用以后释放许可。如果没有许可，那么acquire将阻塞直到有许可(或者直到被中断或者操作超时)。release方法将返回一个许可给信号量。计算信号量的一种简化形式是二值信号量，即初始值为1的Semaphore。二值信号量可以用做互斥体(mutex)，并具备不可重入的加锁语义:谁拥有这个唯一的许可，谁就拥有了互斥锁。</p>
 <p>概念上讲，一个信号量管理许多的许可证(permit)。为了通过信号量，线程通过调用<code>acquire</code>请求许可。其实没有实际的许可对象,信号量仅维护一个计数。许可的数目是固定的，由此限制了通过的线程数量。其他线程可以通过调用 <code>release</code>释放许可。而且，许可不是必须由获取它的线程释放。<strong>事实上，任何线程都可以释放任意数目的许可，这可能会增加许可数目以至于超出初始数目。</strong></p>
-<h3 id="方法摘要"><a href="#方法摘要" class="headerlink" title="方法摘要"></a>方法摘要</h3><pre><code class="highlight plain">public Semaphore(int permits) &#123;
-    sync &#x3D; new NonfairSync(permits);
-&#125;
+<h3 id="方法摘要"><a href="#方法摘要" class="headerlink" title="方法摘要"></a>方法摘要</h3><pre><code>public Semaphore(int permits) {
+    sync = new NonfairSync(permits);
+}
 
-public Semaphore(int permits, boolean fair) &#123;
-    sync &#x3D; fair ? new FairSync(permits) : new NonfairSync(permits);
-&#125;</code></pre>
-
-<p>构造方法，也分公平锁和非公平锁，公平锁遵循FIFO原则</p>
+public Semaphore(int permits, boolean fair) {
+    sync = fair ? new FairSync(permits) : new NonfairSync(permits);
+}</code></pre><p>构造方法，也分公平锁和非公平锁，公平锁遵循FIFO原则</p>
 <ul>
 <li><code>void acquire()</code></li>
 </ul>
@@ -370,90 +368,86 @@ public Semaphore(int permits, boolean fair) &#123;
 <li><code>boolean hasQueuedThreads()</code></li>
 </ul>
 <p>查询是否有线程正在等待获取</p>
-<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><h4 id="模拟加同步锁"><a href="#模拟加同步锁" class="headerlink" title="模拟加同步锁"></a>模拟加同步锁</h4><pre><code class="highlight plain">class Store&#123;
-    private static int storage &#x3D; 0;
-    Semaphore semaphore &#x3D; new Semaphore(1);
-    public void add(int n) throws InterruptedException &#123;
+<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><h4 id="模拟加同步锁"><a href="#模拟加同步锁" class="headerlink" title="模拟加同步锁"></a>模拟加同步锁</h4><pre><code>class Store{
+    private static int storage = 0;
+    Semaphore semaphore = new Semaphore(1);
+    public void add(int n) throws InterruptedException {
         semaphore.acquire();
-        storage +&#x3D; n;
+        storage += n;
         semaphore.release();
-    &#125;
+    }
 
-    public void out()&#123;
+    public void out(){
         System.out.println(storage);
-    &#125;
-&#125;</code></pre>
+    }
+}</code></pre><p>设置信号量为1，这样可以保证多线程并发调用<code>add</code>方法时，只能单个线程运行，起到加锁效果</p>
+<h4 id="生产者消费者模型"><a href="#生产者消费者模型" class="headerlink" title="生产者消费者模型"></a>生产者消费者模型</h4><pre><code>
+public class Test { 
+    int count = 0; 
+    final Semaphore put = new Semaphore(5);// 初始令牌个数 
+    final Semaphore get = new Semaphore(0); 
+    final Semaphore mutex = new Semaphore(1); 
 
-<p>设置信号量为1，这样可以保证多线程并发调用<code>add</code>方法时，只能单个线程运行，起到加锁效果</p>
-<h4 id="生产者消费者模型"><a href="#生产者消费者模型" class="headerlink" title="生产者消费者模型"></a>生产者消费者模型</h4><pre><code class="highlight plain">
-public class Test &#123; 
-    int count &#x3D; 0; 
-    final Semaphore put &#x3D; new Semaphore(5);&#x2F;&#x2F; 初始令牌个数 
-    final Semaphore get &#x3D; new Semaphore(0); 
-    final Semaphore mutex &#x3D; new Semaphore(1); 
- 
-    public static void main(String[] args) &#123; 
-        Test t &#x3D; new Test(); 
+    public static void main(String[] args) { 
+        Test t = new Test(); 
         new Thread(t.new Producer()).start(); 
         new Thread(t.new Consumer()).start(); 
         new Thread(t.new Consumer()).start(); 
         new Thread(t.new Producer()).start(); 
-    &#125; 
- 
-    class Producer implements Runnable &#123; 
+    } 
+
+    class Producer implements Runnable { 
         @Override 
-        public void run() &#123; 
-            for (int i &#x3D; 0; i &lt; 5; i++) &#123; 
-                try &#123; 
+        public void run() { 
+            for (int i = 0; i &lt; 5; i++) { 
+                try { 
                     Thread.sleep(1000); 
-                &#125; catch (Exception e) &#123; 
+                } catch (Exception e) { 
                     e.printStackTrace(); 
-                &#125; 
-                try &#123; 
-                    put.acquire();&#x2F;&#x2F; 注意顺序 
+                } 
+                try { 
+                    put.acquire();// 注意顺序 
                     mutex.acquire(); 
                     count++; 
                     System.out.println(&quot;生产者&quot; + Thread.currentThread().getName() 
                             + &quot;已生产完成，商品数量：&quot; + count); 
-                &#125; catch (Exception e) &#123; 
+                } catch (Exception e) { 
                     e.printStackTrace(); 
-                &#125; finally &#123; 
+                } finally { 
                     mutex.release(); 
                     get.release(); 
-                &#125; 
- 
-            &#125; 
-        &#125; 
-    &#125; 
- 
-    class Consumer implements Runnable &#123; 
- 
+                } 
+
+            } 
+        } 
+    } 
+
+    class Consumer implements Runnable { 
+
         @Override 
-        public void run() &#123; 
-            for (int i &#x3D; 0; i &lt; 5; i++) &#123; 
-                try &#123; 
+        public void run() { 
+            for (int i = 0; i &lt; 5; i++) { 
+                try { 
                     Thread.sleep(1000); 
-                &#125; catch (InterruptedException e1) &#123; 
+                } catch (InterruptedException e1) { 
                     e1.printStackTrace(); 
-                &#125; 
-                try &#123; 
-                    get.acquire();&#x2F;&#x2F; 注意顺序 
+                } 
+                try { 
+                    get.acquire();// 注意顺序 
                     mutex.acquire(); 
                     count--; 
                     System.out.println(&quot;消费者&quot; + Thread.currentThread().getName() 
                             + &quot;已消费，剩余商品数量：&quot; + count); 
-                &#125; catch (Exception e) &#123; 
+                } catch (Exception e) { 
                     e.printStackTrace(); 
-                &#125; finally &#123; 
+                } finally { 
                     mutex.release(); 
                     put.release(); 
-                &#125; 
-            &#125; 
-        &#125; 
-    &#125; 
-&#125;</code></pre>
-
-<p>生产者受<code>put</code>初始信号量的限制，最多5个线程生产，生产完毕开始释放<code>get</code>信号量，虽然<code>get</code>信号量初始为0，但释放的信号量不受限制，所以生产完消费者线程开始消费，消费完毕又释放<code>put</code>信号量，启动生产</p>
+                } 
+            } 
+        } 
+    } 
+}</code></pre><p>生产者受<code>put</code>初始信号量的限制，最多5个线程生产，生产完毕开始释放<code>get</code>信号量，虽然<code>get</code>信号量初始为0，但释放的信号量不受限制，所以生产完消费者线程开始消费，消费完毕又释放<code>put</code>信号量，启动生产</p>
 <p>其中要注意<code>mutex</code>，初始信号量为1，即起到加锁效果，每次只能有一个线程运行，因为<code>count</code>为共享变量，还要注意<code>mutex</code>和<code>get</code>、<code>put</code>获取信号的顺序，<code>mute</code>确保只有本线程在运行，如果在<code>acquire</code>阻塞，将形成死锁</p>
 
       
@@ -485,8 +479,8 @@ public class Test &#123;
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/06/17/optional/" rel="next" title="option接口">
-                <i class="fa fa-chevron-left"></i> option接口
+              <a href="/2020/06/17/nio%E4%B8%8Eio%E7%AE%80%E5%8D%95%E8%81%8A%E5%A4%A9%E5%AE%A4demo/" rel="next" title="nio与io简单聊天室demo">
+                <i class="fa fa-chevron-left"></i> nio与io简单聊天室demo
               </a>
             
           </div>
@@ -495,8 +489,8 @@ public class Test &#123;
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2020/06/17/only_full_group_by/" rel="prev" title="group by关于sql_mode=only_full_group_by报错">
-                group by关于sql_mode=only_full_group_by报错 <i class="fa fa-chevron-right"></i>
+              <a href="/2020/06/17/optional/" rel="prev" title="option接口">
+                option接口 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>

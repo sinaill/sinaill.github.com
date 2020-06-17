@@ -342,35 +342,27 @@
       
         <h3 id="创建方法"><a href="#创建方法" class="headerlink" title="创建方法"></a>创建方法</h3><p><code>String str=new String(&quot;abc&quot;)</code></p>
 <p><strong>一共创建两个对象，其中new方法在堆中创建一个String对象，””为String特有的创建对象的方法，这行代码被执行的时候，JAVA虚拟机首先在字符串池中查找是否已经存在了值为”abc”的这么一个对象，它的判断依据是String类equals(Object obj)方法的返回值。如果有，则不再创建新的对象，直接返回已存在对象的引用；如果没有，则先创建这个对象，然后把它加入到字符串池中，再将它的引用返回</strong></p>
-<pre><code class="highlight plain">String str1 &#x3D; &quot;abc&quot;;
-String str2 &#x3D; new String(&quot;abc&quot;);
-System.out.println(str1 &#x3D;&#x3D; str2);</code></pre>
-
-<p><code>false</code></p>
+<pre><code>        String str1 = &quot;abc&quot;;
+        String str2 = new String(&quot;abc&quot;);
+        System.out.println(str1 == str2);</code></pre><p><code>false</code></p>
 <p><strong>str2指向堆中的对象，str1指向常量池中的对象</strong></p>
 <h3 id="intern方法"><a href="#intern方法" class="headerlink" title="intern方法"></a>intern方法</h3><p><code>string.intern()</code></p>
 <p>实例1：</p>
-<pre><code class="highlight plain">String str1 &#x3D; &quot;abc&quot;;
-String str2 &#x3D; new String(&quot;abc&quot;);
-str2 &#x3D; &quot;abc&quot;.intern();
-System.out.println(str1 &#x3D;&#x3D; str2);</code></pre>
-
-<p><code>true</code></p>
+<pre><code>        String str1 = &quot;abc&quot;;
+        String str2 = new String(&quot;abc&quot;);
+        str2 = &quot;abc&quot;.intern();
+        System.out.println(str1 == str2);</code></pre><p><code>true</code></p>
 <p><strong>会检查常量池中是否存在string，存在则返回池里的字符串引用；如果不存在则将string引用放入常量池中(jdk1.7后)。这样做可以避免在堆中不断的创建字符串对象，起到节省空间的作用。</strong></p>
 <p>实例2：</p>
-<pre><code class="highlight plain">String s3 &#x3D; new String(&quot;1&quot;) + new String(&quot;1&quot;);  
+<pre><code>String s3 = new String(&quot;1&quot;) + new String(&quot;1&quot;);  
 s3.intern();  
-String s4 &#x3D; &quot;11&quot;;  
-System.out.println(s3 &#x3D;&#x3D; s4);</code></pre>
-
-<p><code>true</code></p>
+String s4 = &quot;11&quot;;  
+System.out.println(s3 == s4);</code></pre><p><code>true</code></p>
 <p>实例3：</p>
-<pre><code class="highlight plain">String s3 &#x3D; new String(&quot;1&quot;) + new String(&quot;1&quot;);  
-String s4 &#x3D; &quot;11&quot;;  
+<pre><code>String s3 = new String(&quot;1&quot;) + new String(&quot;1&quot;);  
+String s4 = &quot;11&quot;;  
 s3.intern();  
-System.out.println(s3 &#x3D;&#x3D; s4);</code></pre>
-
-<p><code>false</code></p>
+System.out.println(s3 == s4);</code></pre><p><code>false</code></p>
 <p><strong>调换顺序后出现不同结果的原因</strong></p>
 <p><strong>1.String s3 = new String(“1”) + new String(“1”)，字符串常量池中生成“1” ，并在堆空间中生成s3引用指向的对象（内容为”11”）。注意此时常量池中是没有 “11”对象的</strong></p>
 <p><strong>2.实例2中s3.intern()，此时常量池中没有”11”对象，所以在常量池中存储s3引用(jdk1.7以后)，String s4 = “11”,首先从常量池中查看(equals方法)有无”11”对象，所以将s3引用传回去，所以结果true，而在实例3中，String s4 = “11”在s3.intern()方法前，此时常量池中已经有”11”对象，s3.intern()无效，所以s3还是指向堆中对象，所以结果false</strong></p>

@@ -79,12 +79,12 @@
 
 
 
-<meta name="description" content="成员内部类成员内部类是最普通的内部类，它在另一个类内部被定义，结构为 class Outter&amp;#123;  	class Inner&amp;#123; 	 	&amp;#125;  &amp;#125;  实例化内部类的方法为: Outter.Inner inner &#x3D; new Outter().new Inner();   内部类中可以访问到外部类中所有方法和成员变量，即使是private或者static">
+<meta name="description" content="成员内部类成员内部类是最普通的内部类，它在另一个类内部被定义，结构为 class Outter{      class Inner{      }  }实例化内部类的方法为: Outter.Inner inner &#x3D; new Outter().new Inner(); 内部类中可以访问到外部类中所有方法和成员变量，即使是private或者static，同理外部类也可以访问私有内部类的成员变量  普">
 <meta property="og:type" content="article">
 <meta property="og:title" content="内部类">
 <meta property="og:url" content="http://yoursite.com/2020/06/17/InnerClass/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="成员内部类成员内部类是最普通的内部类，它在另一个类内部被定义，结构为 class Outter&amp;#123;  	class Inner&amp;#123; 	 	&amp;#125;  &amp;#125;  实例化内部类的方法为: Outter.Inner inner &#x3D; new Outter().new Inner();   内部类中可以访问到外部类中所有方法和成员变量，即使是private或者static">
+<meta property="og:description" content="成员内部类成员内部类是最普通的内部类，它在另一个类内部被定义，结构为 class Outter{      class Inner{      }  }实例化内部类的方法为: Outter.Inner inner &#x3D; new Outter().new Inner(); 内部类中可以访问到外部类中所有方法和成员变量，即使是private或者static，同理外部类也可以访问私有内部类的成员变量  普">
 <meta property="article:published_time" content="2020-06-16T17:43:37.222Z">
 <meta property="article:modified_time" content="2020-06-16T17:43:37.222Z">
 <meta property="article:author" content="sinaill">
@@ -341,18 +341,14 @@
 
       
         <h3 id="成员内部类"><a href="#成员内部类" class="headerlink" title="成员内部类"></a>成员内部类</h3><p>成员内部类是最普通的内部类，它在另一个类内部被定义，结构为</p>
-<pre><code class="highlight plain">class Outter&#123;
+<pre><code>class Outter{
 
-	class Inner&#123;
-	
-	&#125;
+    class Inner{
 
-&#125;</code></pre>
+    }
 
-<p>实例化内部类的方法为:</p>
-<pre><code class="highlight plain">Outter.Inner inner &#x3D; new Outter().new Inner();</code></pre>
-
-<ol>
+}</code></pre><p>实例化内部类的方法为:</p>
+<pre><code>Outter.Inner inner = new Outter().new Inner();</code></pre><ol>
 <li><p>内部类中可以访问到外部类中所有方法和成员变量，即使是private或者static，同理外部类也可以访问私有内部类的成员变量</p>
 </li>
 <li><p><strong>普通内部类中不能定义static变量和方法，但可以定义静态常量</strong></p>
@@ -365,34 +361,28 @@
 </li>
 </ol>
 <h3 id="局部内部类"><a href="#局部内部类" class="headerlink" title="局部内部类"></a>局部内部类</h3><p>局部内部类是定义在一个方法或者一个作用域里面的类，它和成员内部类的区别在于局部内部类的访问仅限于方法内或者该作用域内，结构为</p>
-<pre><code class="highlight plain">class Outter&#123;
-	public void print(final int a)&#123;
-		class Inner&#123;
-			public void say()&#123;
-				System.out.println(a);
-			&#125;
-		&#125;
-		new Inner().say();
-	&#125;
-&#125;</code></pre>
-
-<p>1.拥有普通内部类特性</p>
+<pre><code>class Outter{
+    public void print(final int a){
+        class Inner{
+            public void say(){
+                System.out.println(a);
+            }
+        }
+        new Inner().say();
+    }
+}</code></pre><p>1.拥有普通内部类特性</p>
 <p>2.内部类的modifier只能为default</p>
 <p>3.在内部类和方法传入的参数必须是final类型</p>
 <h3 id="匿名内部类"><a href="#匿名内部类" class="headerlink" title="匿名内部类"></a>匿名内部类</h3><p>1.一个类用于继承其他类或是实现接口，并不需要增加额外的方法，只是对继承方法的事先或是覆盖。</p>
 <p>2.只是为了获得一个对象实例，不需要知道其实际类型。</p>
 <p>3.类名没有意义，也就是不需要使用到。</p>
 <p>例如在创建线程时</p>
-<pre><code class="highlight plain">Thread thread &#x3D; new Thread(new Runnable()&#123;
-       public void run()&#123;
-				
-	&#125;
-&#125;);</code></pre>
+<pre><code> Thread thread = new Thread(new Runnable(){
+           public void run(){
 
-<p>java8我们可以使用lambda来简化匿名内部类创建，以上代码可简化为</p>
-<pre><code class="highlight plain">Thread thread &#x3D; new Thread(()-&gt;&#123;&#125;);&#x2F;&#x2F;Runnable为函数式接口</code></pre>
-
-<h3 id="理解"><a href="#理解" class="headerlink" title="理解"></a>理解</h3><p>关于匿名内部类和局部内部类访问局部变量或者形参时，这是因为局部变量或形参与内部类的生存周期不同，当局部变量或形参被回收后，内部类的实例仍在，若此时访问它们，将会出错，所以局部变量和形参都是以构造函数的参数形式传入到匿名内部类中，相当于是复制了一份放到匿名内部类中，为了保持原始数据和复制后的数据相同，所以要使用final。<a href="http://blog.csdn.net/u014805893/article/details/53310521?locationNum=5&fps=1" target="_blank" rel="noopener">查看原理</a></p>
+        }
+    });</code></pre><p>java8我们可以使用lambda来简化匿名内部类创建，以上代码可简化为</p>
+<pre><code>Thread thread = new Thread(()-&gt;{});//Runnable为函数式接口</code></pre><h3 id="理解"><a href="#理解" class="headerlink" title="理解"></a>理解</h3><p>关于匿名内部类和局部内部类访问局部变量或者形参时，这是因为局部变量或形参与内部类的生存周期不同，当局部变量或形参被回收后，内部类的实例仍在，若此时访问它们，将会出错，所以局部变量和形参都是以构造函数的参数形式传入到匿名内部类中，相当于是复制了一份放到匿名内部类中，为了保持原始数据和复制后的数据相同，所以要使用final。<a href="http://blog.csdn.net/u014805893/article/details/53310521?locationNum=5&fps=1" target="_blank" rel="noopener">查看原理</a></p>
 <h3 id="java8新修改"><a href="#java8新修改" class="headerlink" title="java8新修改"></a>java8新修改</h3><p><strong>java8开始匿名内部类使用的外部变量不再被强制用final修饰。外部变量要么是final的，要么自初始化后值不会被改变，这两种都是可以在匿名内部类中使用且编译通过。</strong></p>
 <p><strong>Local variable br defined in an enclosing scope must be final or effectively final</strong></p>
 
@@ -419,8 +409,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/06/17/Cache%20of%20base%20date%20type/" rel="next" title="基本数据类型中的缓存">
-                <i class="fa fa-chevron-left"></i> 基本数据类型中的缓存
+              <a href="/2020/06/17/Function%20and%20Predicate/" rel="next" title="Predicate和Function">
+                <i class="fa fa-chevron-left"></i> Predicate和Function
               </a>
             
           </div>

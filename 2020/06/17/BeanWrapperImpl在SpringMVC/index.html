@@ -79,12 +79,12 @@
 
 
 
-<meta name="description" content="BeanWrapperImplBeanWrapper接口是用来操作javaBean属性，例如在SpringMVC中，在Databinder中也使用了BeanWrapperImpl来对入参的类进行属性设置和对应的将Request中传来的类型为String的参数转化为入参类对应的属性的类型 操作属性BeanWrapperImpl定义一个测试类 class Man&amp;#123;     private S">
+<meta name="description" content="BeanWrapperImplBeanWrapper接口是用来操作javaBean属性，例如在SpringMVC中，在Databinder中也使用了BeanWrapperImpl来对入参的类进行属性设置和对应的将Request中传来的类型为String的参数转化为入参类对应的属性的类型 操作属性BeanWrapperImpl定义一个测试类 class Man{     private String">
 <meta property="og:type" content="article">
 <meta property="og:title" content="BeanWrapperImpl初探">
 <meta property="og:url" content="http://yoursite.com/2020/06/17/BeanWrapperImpl%E5%9C%A8SpringMVC/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="BeanWrapperImplBeanWrapper接口是用来操作javaBean属性，例如在SpringMVC中，在Databinder中也使用了BeanWrapperImpl来对入参的类进行属性设置和对应的将Request中传来的类型为String的参数转化为入参类对应的属性的类型 操作属性BeanWrapperImpl定义一个测试类 class Man&amp;#123;     private S">
+<meta property="og:description" content="BeanWrapperImplBeanWrapper接口是用来操作javaBean属性，例如在SpringMVC中，在Databinder中也使用了BeanWrapperImpl来对入参的类进行属性设置和对应的将Request中传来的类型为String的参数转化为入参类对应的属性的类型 操作属性BeanWrapperImpl定义一个测试类 class Man{     private String">
 <meta property="article:published_time" content="2020-06-16T17:43:37.220Z">
 <meta property="article:modified_time" content="2020-06-16T17:43:37.221Z">
 <meta property="article:author" content="sinaill">
@@ -344,269 +344,250 @@
       
         <h3 id="BeanWrapperImpl"><a href="#BeanWrapperImpl" class="headerlink" title="BeanWrapperImpl"></a>BeanWrapperImpl</h3><p><code>BeanWrapper</code>接口是用来操作javaBean属性，例如在SpringMVC中，在<code>Databinder</code>中也使用了<code>BeanWrapperImpl</code>来对入参的类进行属性设置和对应的将<code>Request</code>中传来的类型为<code>String</code>的参数转化为入参类对应的属性的类型</p>
 <h3 id="操作属性"><a href="#操作属性" class="headerlink" title="操作属性"></a>操作属性</h3><h4 id="BeanWrapperImpl-1"><a href="#BeanWrapperImpl-1" class="headerlink" title="BeanWrapperImpl"></a>BeanWrapperImpl</h4><p>定义一个测试类</p>
-<pre><code class="highlight plain">class Man&#123;
+<pre><code>class Man{
     private String name;
     private int age;
 
-    public String getName() &#123;
+    public String getName() {
         return name;
-    &#125;
+    }
 
-    public void setName(String name) &#123;
-        this.name &#x3D; name;
-    &#125;
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public int getAge() &#123;
+    public int getAge() {
         return age;
-    &#125;
+    }
 
-    public void setAge(int age) &#123;
-        this.age &#x3D; age;
-    &#125;
+    public void setAge(int age) {
+        this.age = age;
+    }
 
     @Override
-    public String toString() &#123;
+    public String toString() {
         return this.name+ &quot; &quot;+ this.age;
-    &#125;
-&#125;</code></pre>
-
-<p>然后获取它的<code>BeanWrapper</code>实例</p>
-<pre><code class="highlight plain">@Test
-public void test2()&#123;
-    BeanWrapper bw &#x3D; PropertyAccessorFactory.forBeanPropertyAccess(new Man());
+    }
+}</code></pre><p>然后获取它的<code>BeanWrapper</code>实例</p>
+<pre><code>@Test
+public void test2(){
+    BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(new Man());
     bw.setPropertyValue(&quot;name&quot;, &quot;张三&quot;);
     bw.setPropertyValue(&quot;age&quot;, &quot;11&quot;);
     System.out.println(bw.getWrappedInstance().toString());
-&#125;</code></pre>
-
-<p>正好输出结果为</p>
-<pre><code class="highlight plain">张三 11</code></pre>
-
-<p>在没有调用<code>Man</code>对象自身的<code>set</code>方法的情况下，为<code>Man</code>对象的属性成功赋了值</p>
+}</code></pre><p>正好输出结果为</p>
+<pre><code>张三 11</code></pre><p>在没有调用<code>Man</code>对象自身的<code>set</code>方法的情况下，为<code>Man</code>对象的属性成功赋了值</p>
 <h4 id="CachedIntrospectionResults"><a href="#CachedIntrospectionResults" class="headerlink" title="CachedIntrospectionResults"></a>CachedIntrospectionResults</h4><p><code>CachedIntrospectionResults</code>为<code>BeanWrapperImpl</code>中的<code>final</code>私有属性</p>
 <p><code>BeanWrapperImpl</code>类能对属性进行操作主要在于<code>CachedIntrospectionResults</code>的作用</p>
 <p>看<code>CachedIntrospectionResults</code>的构造函数</p>
-<pre><code class="highlight plain">private CachedIntrospectionResults(Class&lt;?&gt; beanClass) throws BeansException &#123;
-	try &#123;
-		if (logger.isTraceEnabled()) &#123;
-			logger.trace(&quot;Getting BeanInfo for class [&quot; + beanClass.getName() + &quot;]&quot;);
-		&#125;
+<pre><code>private CachedIntrospectionResults(Class&lt;?&gt; beanClass) throws BeansException {
+    try {
+        if (logger.isTraceEnabled()) {
+            logger.trace(&quot;Getting BeanInfo for class [&quot; + beanClass.getName() + &quot;]&quot;);
+        }
 
-		BeanInfo beanInfo &#x3D; null;
-		for (BeanInfoFactory beanInfoFactory : beanInfoFactories) &#123;
-			beanInfo &#x3D; beanInfoFactory.getBeanInfo(beanClass);
-			if (beanInfo !&#x3D; null) &#123;
-				break;
-			&#125;
-		&#125;
-		if (beanInfo &#x3D;&#x3D; null) &#123;
-			&#x2F;&#x2F; If none of the factories supported the class, fall back to the default
-			beanInfo &#x3D; (shouldIntrospectorIgnoreBeaninfoClasses ?
-					Introspector.getBeanInfo(beanClass, Introspector.IGNORE_ALL_BEANINFO) :
-					Introspector.getBeanInfo(beanClass));
-		&#125;
-		this.beanInfo &#x3D; beanInfo;
+        BeanInfo beanInfo = null;
+        for (BeanInfoFactory beanInfoFactory : beanInfoFactories) {
+            beanInfo = beanInfoFactory.getBeanInfo(beanClass);
+            if (beanInfo != null) {
+                break;
+            }
+        }
+        if (beanInfo == null) {
+            // If none of the factories supported the class, fall back to the default
+            beanInfo = (shouldIntrospectorIgnoreBeaninfoClasses ?
+                    Introspector.getBeanInfo(beanClass, Introspector.IGNORE_ALL_BEANINFO) :
+                    Introspector.getBeanInfo(beanClass));
+        }
+        this.beanInfo = beanInfo;
 
-		if (logger.isTraceEnabled()) &#123;
-			logger.trace(&quot;Caching PropertyDescriptors for class [&quot; + beanClass.getName() + &quot;]&quot;);
-		&#125;
-		this.propertyDescriptorCache &#x3D; new LinkedHashMap&lt;String, PropertyDescriptor&gt;();
+        if (logger.isTraceEnabled()) {
+            logger.trace(&quot;Caching PropertyDescriptors for class [&quot; + beanClass.getName() + &quot;]&quot;);
+        }
+        this.propertyDescriptorCache = new LinkedHashMap&lt;String, PropertyDescriptor&gt;();
 
-		&#x2F;&#x2F; This call is slow so we do it once.
-		PropertyDescriptor[] pds &#x3D; this.beanInfo.getPropertyDescriptors();
-		for (PropertyDescriptor pd : pds) &#123;
-			if (Class.class.equals(beanClass) &amp;&amp;
-					(&quot;classLoader&quot;.equals(pd.getName()) ||  &quot;protectionDomain&quot;.equals(pd.getName()))) &#123;
-				&#x2F;&#x2F; Ignore Class.getClassLoader() and getProtectionDomain() methods - nobody needs to bind to those
-				continue;
-			&#125;
-			if (logger.isTraceEnabled()) &#123;
-				logger.trace(&quot;Found bean property &#39;&quot; + pd.getName() + &quot;&#39;&quot; +
-						(pd.getPropertyType() !&#x3D; null ? &quot; of type [&quot; + pd.getPropertyType().getName() + &quot;]&quot; : &quot;&quot;) +
-						(pd.getPropertyEditorClass() !&#x3D; null ?
-								&quot;; editor [&quot; + pd.getPropertyEditorClass().getName() + &quot;]&quot; : &quot;&quot;));
-			&#125;
-			pd &#x3D; buildGenericTypeAwarePropertyDescriptor(beanClass, pd);
-			this.propertyDescriptorCache.put(pd.getName(), pd);
-		&#125;
+        // This call is slow so we do it once.
+        PropertyDescriptor[] pds = this.beanInfo.getPropertyDescriptors();
+        for (PropertyDescriptor pd : pds) {
+            if (Class.class.equals(beanClass) &amp;&amp;
+                    (&quot;classLoader&quot;.equals(pd.getName()) ||  &quot;protectionDomain&quot;.equals(pd.getName()))) {
+                // Ignore Class.getClassLoader() and getProtectionDomain() methods - nobody needs to bind to those
+                continue;
+            }
+            if (logger.isTraceEnabled()) {
+                logger.trace(&quot;Found bean property &#39;&quot; + pd.getName() + &quot;&#39;&quot; +
+                        (pd.getPropertyType() != null ? &quot; of type [&quot; + pd.getPropertyType().getName() + &quot;]&quot; : &quot;&quot;) +
+                        (pd.getPropertyEditorClass() != null ?
+                                &quot;; editor [&quot; + pd.getPropertyEditorClass().getName() + &quot;]&quot; : &quot;&quot;));
+            }
+            pd = buildGenericTypeAwarePropertyDescriptor(beanClass, pd);
+            this.propertyDescriptorCache.put(pd.getName(), pd);
+        }
 
-		this.typeDescriptorCache &#x3D; new ConcurrentReferenceHashMap&lt;PropertyDescriptor, TypeDescriptor&gt;();
-	&#125;
-	catch (IntrospectionException ex) &#123;
-		throw new FatalBeanException(&quot;Failed to obtain BeanInfo for class [&quot; + beanClass.getName() + &quot;]&quot;, ex);
-	&#125;
-&#125;</code></pre>
-
-<p>主要看这段代码<code>PropertyDescriptor[] pds = this.beanInfo.getPropertyDescriptors();</code>，由传入的<code>Class</code>对象获取到<code>BeanInfo</code>对象，然后从这个对象获取<code>PropertyDescriptor[]</code>数组，有关于<code>PropertyDescriptor</code>类的作用为，存放了目标类中某个属性的<code>get</code>，<code>set</code>方法，就是用它们来对类的属性进行填充设置</p>
+        this.typeDescriptorCache = new ConcurrentReferenceHashMap&lt;PropertyDescriptor, TypeDescriptor&gt;();
+    }
+    catch (IntrospectionException ex) {
+        throw new FatalBeanException(&quot;Failed to obtain BeanInfo for class [&quot; + beanClass.getName() + &quot;]&quot;, ex);
+    }
+}</code></pre><p>主要看这段代码<code>PropertyDescriptor[] pds = this.beanInfo.getPropertyDescriptors();</code>，由传入的<code>Class</code>对象获取到<code>BeanInfo</code>对象，然后从这个对象获取<code>PropertyDescriptor[]</code>数组，有关于<code>PropertyDescriptor</code>类的作用为，存放了目标类中某个属性的<code>get</code>，<code>set</code>方法，就是用它们来对类的属性进行填充设置</p>
 <p>由于源代码太长，我们进行简单模拟一下实现原理</p>
-<pre><code class="highlight plain">@Test
-public void test3() throws Exception&#123;
-	&#x2F;&#x2F;构建&#96;BeanWrapperImpl对象&#96;
-    BeanWrapperImpl bw &#x3D; new BeanWrapperImpl(new Man());
-	&#x2F;&#x2F;反射获取getCachedIntrospectionResults放啊
-    Method getCachedIntrospectionResults &#x3D; bw.getClass().getDeclaredMethod(&quot;getCachedIntrospectionResults&quot;);
-	&#x2F;&#x2F;设置私有方法可访问
+<pre><code>@Test
+public void test3() throws Exception{
+    //构建`BeanWrapperImpl对象`
+    BeanWrapperImpl bw = new BeanWrapperImpl(new Man());
+    //反射获取getCachedIntrospectionResults放啊
+    Method getCachedIntrospectionResults = bw.getClass().getDeclaredMethod(&quot;getCachedIntrospectionResults&quot;);
+    //设置私有方法可访问
     getCachedIntrospectionResults.setAccessible(true);
-	&#x2F;&#x2F;反射调用方法获取CachedIntrospectionResults属性
-    CachedIntrospectionResults cir &#x3D; (CachedIntrospectionResults)getCachedIntrospectionResults.invoke(bw);
-	&#x2F;&#x2F;获取CachedIntrospectionResults变量内部的getPropertyDescriptor方法对象
-    Method method &#x3D; cir.getClass().getDeclaredMethod(&quot;getPropertyDescriptor&quot;,new Class[]&#123;String.class&#125;);
+    //反射调用方法获取CachedIntrospectionResults属性
+    CachedIntrospectionResults cir = (CachedIntrospectionResults)getCachedIntrospectionResults.invoke(bw);
+    //获取CachedIntrospectionResults变量内部的getPropertyDescriptor方法对象
+    Method method = cir.getClass().getDeclaredMethod(&quot;getPropertyDescriptor&quot;,new Class[]{String.class});
     method.setAccessible(true);
-	&#x2F;&#x2F;反射获取属性名为age的PropertyDescriptor变量
-    PropertyDescriptor agePropertyDescriptor &#x3D; (PropertyDescriptor)method.invoke(cir, &quot;age&quot;);
-	&#x2F;&#x2F;从PropertyDescriptor中获取&#96;set&#96;方法
-    Method ageWriteMethod &#x3D; agePropertyDescriptor.getWriteMethod();
-	&#x2F;&#x2F;调用set方法对属性进行设置
+    //反射获取属性名为age的PropertyDescriptor变量
+    PropertyDescriptor agePropertyDescriptor = (PropertyDescriptor)method.invoke(cir, &quot;age&quot;);
+    //从PropertyDescriptor中获取`set`方法
+    Method ageWriteMethod = agePropertyDescriptor.getWriteMethod();
+    //调用set方法对属性进行设置
     ageWriteMethod.invoke(bw.getWrappedInstance(), 11);
     System.out.println(bw.getWrappedInstance().toString());
 
-&#125;</code></pre>
-
-<p>结果输出的是<code>null 11</code>，成功对属性进行了设置</p>
+}</code></pre><p>结果输出的是<code>null 11</code>，成功对属性进行了设置</p>
 <h4 id="PropertyEditor"><a href="#PropertyEditor" class="headerlink" title="PropertyEditor"></a>PropertyEditor</h4><p>可以注意到我们在直接使用<code>BeanWrapperImpl</code>设置属性的时候，传入的属性会由<code>String</code>自动转化为对应的属性类型，比如我们给<code>age</code>传入的是<code>String</code>类型的11，自动转化成了<code>int</code>类型</p>
 <p><code>BeanWrapperImpl</code>在调用<code>PropertyDescrptor</code>的<code>WriteMethod</code>之前，对属性进行了转化，这个工作是由<code>PropertyEditor</code>在起作用，它内置了多个类型的转化器<code>PropertyEditor</code></p>
 <p>我们先看<code>BeanWrapperImpl</code>的构造函数</p>
-<pre><code class="highlight plain">public BeanWrapperImpl(Object object) &#123;
-	registerDefaultEditors();
-	setWrappedInstance(object);
-&#125;
+<pre><code>public BeanWrapperImpl(Object object) {
+    registerDefaultEditors();
+    setWrappedInstance(object);
+}
 
-protected void registerDefaultEditors() &#123;
-	this.defaultEditorsActive &#x3D; true;
-&#125;</code></pre>
+protected void registerDefaultEditors() {
+    this.defaultEditorsActive = true;
+}</code></pre><p>可以看到注册了默认属性编辑器，并且它是属于懒加载</p>
+<pre><code>public PropertyEditor getDefaultEditor(Class&lt;?&gt; requiredType) {
+    if (!this.defaultEditorsActive) {
+        return null;
+    }
+    if (this.overriddenDefaultEditors != null) {
+        PropertyEditor editor = this.overriddenDefaultEditors.get(requiredType);
+        if (editor != null) {
+            return editor;
+        }
+    }
+    if (this.defaultEditors == null) {
+        createDefaultEditors();
+    }
+    return this.defaultEditors.get(requiredType);
+}</code></pre><p>在需要对属性进行转化的时候，获取默认属性编辑器时，开始初始化内置的<code>PropertyEditor</code></p>
+<pre><code>private void createDefaultEditors() {
+    this.defaultEditors = new HashMap&lt;Class&lt;?&gt;, PropertyEditor&gt;(64);
 
-<p>可以看到注册了默认属性编辑器，并且它是属于懒加载</p>
-<pre><code class="highlight plain">public PropertyEditor getDefaultEditor(Class&lt;?&gt; requiredType) &#123;
-	if (!this.defaultEditorsActive) &#123;
-		return null;
-	&#125;
-	if (this.overriddenDefaultEditors !&#x3D; null) &#123;
-		PropertyEditor editor &#x3D; this.overriddenDefaultEditors.get(requiredType);
-		if (editor !&#x3D; null) &#123;
-			return editor;
-		&#125;
-	&#125;
-	if (this.defaultEditors &#x3D;&#x3D; null) &#123;
-		createDefaultEditors();
-	&#125;
-	return this.defaultEditors.get(requiredType);
-&#125;</code></pre>
+    // Simple editors, without parameterization capabilities.
+    // The JDK does not contain a default editor for any of these target types.
+    this.defaultEditors.put(Charset.class, new CharsetEditor());
+    this.defaultEditors.put(Class.class, new ClassEditor());
+    this.defaultEditors.put(Class[].class, new ClassArrayEditor());
+    this.defaultEditors.put(Currency.class, new CurrencyEditor());
+    this.defaultEditors.put(File.class, new FileEditor());
+    this.defaultEditors.put(InputStream.class, new InputStreamEditor());
+    this.defaultEditors.put(InputSource.class, new InputSourceEditor());
+    this.defaultEditors.put(Locale.class, new LocaleEditor());
+    this.defaultEditors.put(Pattern.class, new PatternEditor());
+    this.defaultEditors.put(Properties.class, new PropertiesEditor());
+    this.defaultEditors.put(Resource[].class, new ResourceArrayPropertyEditor());
+    this.defaultEditors.put(TimeZone.class, new TimeZoneEditor());
+    this.defaultEditors.put(URI.class, new URIEditor());
+    this.defaultEditors.put(URL.class, new URLEditor());
+    this.defaultEditors.put(UUID.class, new UUIDEditor());
+    if (zoneIdClass != null) {
+        this.defaultEditors.put(zoneIdClass, new ZoneIdEditor());
+    }
 
-<p>在需要对属性进行转化的时候，获取默认属性编辑器时，开始初始化内置的<code>PropertyEditor</code></p>
-<pre><code class="highlight plain">private void createDefaultEditors() &#123;
-	this.defaultEditors &#x3D; new HashMap&lt;Class&lt;?&gt;, PropertyEditor&gt;(64);
+    // Default instances of collection editors.
+    // Can be overridden by registering custom instances of those as custom editors.
+    this.defaultEditors.put(Collection.class, new CustomCollectionEditor(Collection.class));
+    this.defaultEditors.put(Set.class, new CustomCollectionEditor(Set.class));
+    this.defaultEditors.put(SortedSet.class, new CustomCollectionEditor(SortedSet.class));
+    this.defaultEditors.put(List.class, new CustomCollectionEditor(List.class));
+    this.defaultEditors.put(SortedMap.class, new CustomMapEditor(SortedMap.class));
 
-	&#x2F;&#x2F; Simple editors, without parameterization capabilities.
-	&#x2F;&#x2F; The JDK does not contain a default editor for any of these target types.
-	this.defaultEditors.put(Charset.class, new CharsetEditor());
-	this.defaultEditors.put(Class.class, new ClassEditor());
-	this.defaultEditors.put(Class[].class, new ClassArrayEditor());
-	this.defaultEditors.put(Currency.class, new CurrencyEditor());
-	this.defaultEditors.put(File.class, new FileEditor());
-	this.defaultEditors.put(InputStream.class, new InputStreamEditor());
-	this.defaultEditors.put(InputSource.class, new InputSourceEditor());
-	this.defaultEditors.put(Locale.class, new LocaleEditor());
-	this.defaultEditors.put(Pattern.class, new PatternEditor());
-	this.defaultEditors.put(Properties.class, new PropertiesEditor());
-	this.defaultEditors.put(Resource[].class, new ResourceArrayPropertyEditor());
-	this.defaultEditors.put(TimeZone.class, new TimeZoneEditor());
-	this.defaultEditors.put(URI.class, new URIEditor());
-	this.defaultEditors.put(URL.class, new URLEditor());
-	this.defaultEditors.put(UUID.class, new UUIDEditor());
-	if (zoneIdClass !&#x3D; null) &#123;
-		this.defaultEditors.put(zoneIdClass, new ZoneIdEditor());
-	&#125;
+    // Default editors for primitive arrays.
+    this.defaultEditors.put(byte[].class, new ByteArrayPropertyEditor());
+    this.defaultEditors.put(char[].class, new CharArrayPropertyEditor());
 
-	&#x2F;&#x2F; Default instances of collection editors.
-	&#x2F;&#x2F; Can be overridden by registering custom instances of those as custom editors.
-	this.defaultEditors.put(Collection.class, new CustomCollectionEditor(Collection.class));
-	this.defaultEditors.put(Set.class, new CustomCollectionEditor(Set.class));
-	this.defaultEditors.put(SortedSet.class, new CustomCollectionEditor(SortedSet.class));
-	this.defaultEditors.put(List.class, new CustomCollectionEditor(List.class));
-	this.defaultEditors.put(SortedMap.class, new CustomMapEditor(SortedMap.class));
+    // The JDK does not contain a default editor for char!
+    this.defaultEditors.put(char.class, new CharacterEditor(false));
+    this.defaultEditors.put(Character.class, new CharacterEditor(true));
 
-	&#x2F;&#x2F; Default editors for primitive arrays.
-	this.defaultEditors.put(byte[].class, new ByteArrayPropertyEditor());
-	this.defaultEditors.put(char[].class, new CharArrayPropertyEditor());
+    // Spring&#39;s CustomBooleanEditor accepts more flag values than the JDK&#39;s default editor.
+    this.defaultEditors.put(boolean.class, new CustomBooleanEditor(false));
+    this.defaultEditors.put(Boolean.class, new CustomBooleanEditor(true));
 
-	&#x2F;&#x2F; The JDK does not contain a default editor for char!
-	this.defaultEditors.put(char.class, new CharacterEditor(false));
-	this.defaultEditors.put(Character.class, new CharacterEditor(true));
+    // The JDK does not contain default editors for number wrapper types!
+    // Override JDK primitive number editors with our own CustomNumberEditor.
+    this.defaultEditors.put(byte.class, new CustomNumberEditor(Byte.class, false));
+    this.defaultEditors.put(Byte.class, new CustomNumberEditor(Byte.class, true));
+    this.defaultEditors.put(short.class, new CustomNumberEditor(Short.class, false));
+    this.defaultEditors.put(Short.class, new CustomNumberEditor(Short.class, true));
+    this.defaultEditors.put(int.class, new CustomNumberEditor(Integer.class, false));
+    this.defaultEditors.put(Integer.class, new CustomNumberEditor(Integer.class, true));
+    this.defaultEditors.put(long.class, new CustomNumberEditor(Long.class, false));
+    this.defaultEditors.put(Long.class, new CustomNumberEditor(Long.class, true));
+    this.defaultEditors.put(float.class, new CustomNumberEditor(Float.class, false));
+    this.defaultEditors.put(Float.class, new CustomNumberEditor(Float.class, true));
+    this.defaultEditors.put(double.class, new CustomNumberEditor(Double.class, false));
+    this.defaultEditors.put(Double.class, new CustomNumberEditor(Double.class, true));
+    this.defaultEditors.put(BigDecimal.class, new CustomNumberEditor(BigDecimal.class, true));
+    this.defaultEditors.put(BigInteger.class, new CustomNumberEditor(BigInteger.class, true));
 
-	&#x2F;&#x2F; Spring&#39;s CustomBooleanEditor accepts more flag values than the JDK&#39;s default editor.
-	this.defaultEditors.put(boolean.class, new CustomBooleanEditor(false));
-	this.defaultEditors.put(Boolean.class, new CustomBooleanEditor(true));
-
-	&#x2F;&#x2F; The JDK does not contain default editors for number wrapper types!
-	&#x2F;&#x2F; Override JDK primitive number editors with our own CustomNumberEditor.
-	this.defaultEditors.put(byte.class, new CustomNumberEditor(Byte.class, false));
-	this.defaultEditors.put(Byte.class, new CustomNumberEditor(Byte.class, true));
-	this.defaultEditors.put(short.class, new CustomNumberEditor(Short.class, false));
-	this.defaultEditors.put(Short.class, new CustomNumberEditor(Short.class, true));
-	this.defaultEditors.put(int.class, new CustomNumberEditor(Integer.class, false));
-	this.defaultEditors.put(Integer.class, new CustomNumberEditor(Integer.class, true));
-	this.defaultEditors.put(long.class, new CustomNumberEditor(Long.class, false));
-	this.defaultEditors.put(Long.class, new CustomNumberEditor(Long.class, true));
-	this.defaultEditors.put(float.class, new CustomNumberEditor(Float.class, false));
-	this.defaultEditors.put(Float.class, new CustomNumberEditor(Float.class, true));
-	this.defaultEditors.put(double.class, new CustomNumberEditor(Double.class, false));
-	this.defaultEditors.put(Double.class, new CustomNumberEditor(Double.class, true));
-	this.defaultEditors.put(BigDecimal.class, new CustomNumberEditor(BigDecimal.class, true));
-	this.defaultEditors.put(BigInteger.class, new CustomNumberEditor(BigInteger.class, true));
-
-	&#x2F;&#x2F; Only register config value editors if explicitly requested.
-	if (this.configValueEditorsActive) &#123;
-		StringArrayPropertyEditor sae &#x3D; new StringArrayPropertyEditor();
-		this.defaultEditors.put(String[].class, sae);
-		this.defaultEditors.put(short[].class, sae);
-		this.defaultEditors.put(int[].class, sae);
-		this.defaultEditors.put(long[].class, sae);
-	&#125;
-&#125;</code></pre>
-
-<p><code>createDefaultEditors</code>方法初始化了以上属性编辑器</p>
+    // Only register config value editors if explicitly requested.
+    if (this.configValueEditorsActive) {
+        StringArrayPropertyEditor sae = new StringArrayPropertyEditor();
+        this.defaultEditors.put(String[].class, sae);
+        this.defaultEditors.put(short[].class, sae);
+        this.defaultEditors.put(int[].class, sae);
+        this.defaultEditors.put(long[].class, sae);
+    }
+}
+</code></pre><p><code>createDefaultEditors</code>方法初始化了以上属性编辑器</p>
 <p>这些编辑器继承了<code>PropertyEditorSupport</code>，覆写它内部的<code>setAsText</code>方法来对<code>String</code>转化为其他类型变量</p>
 <p>例如我们这里使用的应该是<code>CustomNumberEditor</code>来将字符串<code>11</code>转化为<code>int</code>类型<code>11</code></p>
-<pre><code class="highlight plain">@Override
-public void setAsText(String text) throws IllegalArgumentException &#123;
-	if (this.allowEmpty &amp;&amp; !StringUtils.hasText(text)) &#123;
-		&#x2F;&#x2F; Treat empty String as null value.
-		setValue(null);
-	&#125;
-	else if (this.numberFormat !&#x3D; null) &#123;
-		&#x2F;&#x2F; Use given NumberFormat for parsing text.
-		setValue(NumberUtils.parseNumber(text, this.numberClass, this.numberFormat));
-	&#125;
-	else &#123;
-		&#x2F;&#x2F; Use default valueOf methods for parsing text.
-		setValue(NumberUtils.parseNumber(text, this.numberClass));
-	&#125;
-&#125;</code></pre>
-
-<p>将我们传入的<code>String</code>类型属性转化为对应的<code>numberClass</code></p>
+<pre><code>@Override
+public void setAsText(String text) throws IllegalArgumentException {
+    if (this.allowEmpty &amp;&amp; !StringUtils.hasText(text)) {
+        // Treat empty String as null value.
+        setValue(null);
+    }
+    else if (this.numberFormat != null) {
+        // Use given NumberFormat for parsing text.
+        setValue(NumberUtils.parseNumber(text, this.numberClass, this.numberFormat));
+    }
+    else {
+        // Use default valueOf methods for parsing text.
+        setValue(NumberUtils.parseNumber(text, this.numberClass));
+    }
+}</code></pre><p>将我们传入的<code>String</code>类型属性转化为对应的<code>numberClass</code></p>
 <p>接着我们使用代码模拟下这个过程，根据目标属性选择一个合适的<code>PropertyEditor</code></p>
-<pre><code class="highlight plain">@Test
-public void test3() throws Exception&#123;
-    BeanWrapperImpl bw &#x3D; new BeanWrapperImpl(new Man());
-    Method getCachedIntrospectionResults &#x3D; bw.getClass().getDeclaredMethod(&quot;getCachedIntrospectionResults&quot;);
+<pre><code>@Test
+public void test3() throws Exception{
+    BeanWrapperImpl bw = new BeanWrapperImpl(new Man());
+    Method getCachedIntrospectionResults = bw.getClass().getDeclaredMethod(&quot;getCachedIntrospectionResults&quot;);
     getCachedIntrospectionResults.setAccessible(true);
-    CachedIntrospectionResults cir &#x3D; (CachedIntrospectionResults)getCachedIntrospectionResults.invoke(bw);
-    Method method &#x3D; cir.getClass().getDeclaredMethod(&quot;getPropertyDescriptor&quot;,new Class[]&#123;String.class&#125;);
+    CachedIntrospectionResults cir = (CachedIntrospectionResults)getCachedIntrospectionResults.invoke(bw);
+    Method method = cir.getClass().getDeclaredMethod(&quot;getPropertyDescriptor&quot;,new Class[]{String.class});
     method.setAccessible(true);
-    PropertyDescriptor agePropertyDescriptor &#x3D; (PropertyDescriptor)method.invoke(cir, &quot;age&quot;);
-    Method ageWriteMethod &#x3D; agePropertyDescriptor.getWriteMethod();
-	&#x2F;&#x2F;根据目标属性的类选择对应的PropertyEditor
-    PropertyEditor propertyEditor &#x3D; bw.getDefaultEditor(ageWriteMethod.getParameterTypes()[0]);
-	&#x2F;&#x2F;转化
+    PropertyDescriptor agePropertyDescriptor = (PropertyDescriptor)method.invoke(cir, &quot;age&quot;);
+    Method ageWriteMethod = agePropertyDescriptor.getWriteMethod();
+    //根据目标属性的类选择对应的PropertyEditor
+    PropertyEditor propertyEditor = bw.getDefaultEditor(ageWriteMethod.getParameterTypes()[0]);
+    //转化
     propertyEditor.setAsText(&quot;11&quot;);
-	&#x2F;&#x2F;获取转化后的值
-    Object value &#x3D; propertyEditor.getValue();
+    //获取转化后的值
+    Object value = propertyEditor.getValue();
     ageWriteMethod.invoke(bw.getWrappedInstance(), value);
     System.out.println(bw.getWrappedInstance().toString());
 
-&#125;</code></pre>
-
-<h3 id="在SpringMVC中"><a href="#在SpringMVC中" class="headerlink" title="在SpringMVC中"></a>在SpringMVC中</h3><p>在<code>SpringMVC</code>中<code>BeanWrapperImpl</code>帮助我们将客户端发来的<code>Request</code>中的参数由<code>String</code>类型转化为我们需要的类型，它与<code>DataBinder</code>对象一起使用，在<code>DataBinder</code>中被初始化，然后传入了另一些<code>Converter</code>转换器，<code>BeanWrapperImpl</code>中有个<code>ConversionService</code>类型的成员变量，所有的转换器是以它为载体传入的</p>
+}</code></pre><h3 id="在SpringMVC中"><a href="#在SpringMVC中" class="headerlink" title="在SpringMVC中"></a>在SpringMVC中</h3><p>在<code>SpringMVC</code>中<code>BeanWrapperImpl</code>帮助我们将客户端发来的<code>Request</code>中的参数由<code>String</code>类型转化为我们需要的类型，它与<code>DataBinder</code>对象一起使用，在<code>DataBinder</code>中被初始化，然后传入了另一些<code>Converter</code>转换器，<code>BeanWrapperImpl</code>中有个<code>ConversionService</code>类型的成员变量，所有的转换器是以它为载体传入的</p>
 <p>常用场景为将<code>Request</code>中多个参数填充到方法的的某个入参类中，在其中进行必要的类型转换</p>
 
       
@@ -640,8 +621,8 @@ public void test3() throws Exception&#123;
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/06/17/@PathVariable%E5%8F%82%E4%B8%8E%E5%88%B0%E5%B0%86%E5%8F%82%E6%95%B0%E7%BB%91%E5%AE%9A%E5%88%B0%E5%85%A5%E5%8F%82Bean/" rel="next" title="注解@PathVariable参与到将参数绑定到入参Bean">
-                <i class="fa fa-chevron-left"></i> 注解@PathVariable参与到将参数绑定到入参Bean
+              <a href="/2020/06/17/@PathVariable%E6%B3%A8%E8%A7%A3/" rel="next" title="注解@PathVariable">
+                <i class="fa fa-chevron-left"></i> 注解@PathVariable
               </a>
             
           </div>
@@ -650,8 +631,8 @@ public void test3() throws Exception&#123;
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2020/06/17/@RequestParam%E4%BD%9C%E7%94%A8%E6%BA%90%E7%A0%81/" rel="prev" title="注解@RequestParam作用源码">
-                注解@RequestParam作用源码 <i class="fa fa-chevron-right"></i>
+              <a href="/2020/06/17/ArrayList/" rel="prev" title="ArrayList">
+                ArrayList <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>

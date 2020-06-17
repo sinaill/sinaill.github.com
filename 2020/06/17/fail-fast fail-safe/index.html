@@ -345,134 +345,115 @@
 <p>下面以ArrayList为例分析</p>
 <p>ArrayList继承于AbstractList，而AbstractList中定义了一个protected transient int modCount = 0，那么这个变量有什么作用呢</p>
 <p>我们看ArrayList中实现了Iterator接口的私有内部类ltr，有个变量接收了这个modCount</p>
-<pre><code class="highlight plain">int expectedModCount &#x3D; modCount;</code></pre>
-
-<p>当我们获取集合的迭代器对象Iterator时，这个动作发生</p>
-<pre><code class="highlight plain">public Iterator&lt;E&gt; iterator() &#123;
-    return new Itr();
-&#125;</code></pre>
-
-<p>然后看看改变集合结构的几个方法，例如add,remove</p>
+<pre><code>int expectedModCount = modCount;</code></pre><p>当我们获取集合的迭代器对象Iterator时，这个动作发生</p>
+<pre><code>    public Iterator&lt;E&gt; iterator() {
+        return new Itr();
+    }</code></pre><p>然后看看改变集合结构的几个方法，例如add,remove</p>
 <p>add方法：</p>
-<pre><code class="highlight plain">public boolean add(E e) &#123;
-    ensureCapacityInternal(size + 1);  &#x2F;&#x2F; Increments modCount!!
-    elementData[size++] &#x3D; e;
-    return true;
-&#125;
-private void ensureCapacityInternal(int minCapacity) &#123;
-    if (elementData &#x3D;&#x3D; DEFAULTCAPACITY_EMPTY_ELEMENTDATA) &#123;
-        minCapacity &#x3D; Math.max(DEFAULT_CAPACITY, minCapacity);
-    &#125;
+<pre><code>    public boolean add(E e) {
+        ensureCapacityInternal(size + 1);  // Increments modCount!!
+        elementData[size++] = e;
+        return true;
+    }
+    private void ensureCapacityInternal(int minCapacity) {
+        if (elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA) {
+            minCapacity = Math.max(DEFAULT_CAPACITY, minCapacity);
+        }
 
-    ensureExplicitCapacity(minCapacity);
-&#125;
+        ensureExplicitCapacity(minCapacity);
+    }
 
-private void ensureExplicitCapacity(int minCapacity) &#123;
-    modCount++;
+    private void ensureExplicitCapacity(int minCapacity) {
+        modCount++;
 
-    &#x2F;&#x2F; overflow-conscious code
-    if (minCapacity - elementData.length &gt; 0)
-        grow(minCapacity);
-&#125;</code></pre>
+        // overflow-conscious code
+        if (minCapacity - elementData.length &gt; 0)
+            grow(minCapacity);
+    }
+</code></pre><p>remove方法：</p>
+<pre><code>    public E remove(int index) {
+        rangeCheck(index);
 
-<p>remove方法：</p>
-<pre><code class="highlight plain">public E remove(int index) &#123;
-    rangeCheck(index);
+        modCount++;
+        E oldValue = elementData(index);
 
-    modCount++;
-    E oldValue &#x3D; elementData(index);
+        int numMoved = size - index - 1;
+        if (numMoved &gt; 0)
+            System.arraycopy(elementData, index+1, elementData, index,
+                             numMoved);
+        elementData[--size] = null; // clear to let GC do its work
 
-    int numMoved &#x3D; size - index - 1;
-    if (numMoved &gt; 0)
-        System.arraycopy(elementData, index+1, elementData, index,
-                         numMoved);
-    elementData[--size] &#x3D; null; &#x2F;&#x2F; clear to let GC do its work
-
-    return oldValue;
-&#125;</code></pre>
-
-<p><strong>我们发现在这些操作中都会将集合自身变量modCount自增1，会造成什么影响呢，接着往下看</strong></p>
+        return oldValue;
+    }</code></pre><p><strong>我们发现在这些操作中都会将集合自身变量modCount自增1，会造成什么影响呢，接着往下看</strong></p>
 <p>迭代器Iterator中的next()方法中调用了checkForComodification()</p>
 <p>查看方法checkForComodification：</p>
-<pre><code class="highlight plain">final void checkForComodification() &#123;
-          if (modCount !&#x3D; expectedModCount)
-              throw new ConcurrentModificationException();
-      &#125;</code></pre>
-
-<p>可以看到我们在获取下个元素时，Iterator会先比较modCount和expectedModCount，如果我们在迭代器遍历时调用了add或者remove等改变集合结构的方法时，modCount自增了，而expectedModCount不变，所以在此处会抛出ConcurrentModificationException</p>
+<pre><code>        final void checkForComodification() {
+            if (modCount != expectedModCount)
+                throw new ConcurrentModificationException();
+        }</code></pre><p>可以看到我们在获取下个元素时，Iterator会先比较modCount和expectedModCount，如果我们在迭代器遍历时调用了add或者remove等改变集合结构的方法时，modCount自增了，而expectedModCount不变，所以在此处会抛出ConcurrentModificationException</p>
 <p>但是如果是在我们自己遍历集合时想修改集合结构，而且不是多线程环境中的话，我们可以看Iterator中给我们提供的方法，在ArrayList中的内部类Iterator中给我们提供了一个remove方法</p>
-<pre><code class="highlight plain">public void remove() &#123;
-    if (lastRet &lt; 0)
-        throw new IllegalStateException();
-    checkForComodification();
+<pre><code>        public void remove() {
+            if (lastRet &lt; 0)
+                throw new IllegalStateException();
+            checkForComodification();
 
-    try &#123;
-        ArrayList.this.remove(lastRet);
-        cursor &#x3D; lastRet;
-        lastRet &#x3D; -1;
-        expectedModCount &#x3D; modCount;
-    &#125; catch (IndexOutOfBoundsException ex) &#123;
-        throw new ConcurrentModificationException();
-    &#125;
-&#125;</code></pre>
-
-<p>我们可以看到在移除元素后，重新对expectedModCount赋值，所以checkForComodification()不会抛出异常</p>
+            try {
+                ArrayList.this.remove(lastRet);
+                cursor = lastRet;
+                lastRet = -1;
+                expectedModCount = modCount;
+            } catch (IndexOutOfBoundsException ex) {
+                throw new ConcurrentModificationException();
+            }
+        }</code></pre><p>我们可以看到在移除元素后，重新对expectedModCount赋值，所以checkForComodification()不会抛出异常</p>
 <p>ArrayList还提供了一个更丰富的ListIterator内部类，是一个双向迭代器，可以双向遍历，在这里比Iterator多了add方法</p>
-<pre><code class="highlight plain">    public void add(E e) &#123;
+<pre><code>    public void add(E e) {
         checkForComodification();
 
-        try &#123;
-            int i &#x3D; cursor;
+        try {
+            int i = cursor;
             ArrayList.this.add(i, e);
-            cursor &#x3D; i + 1;
-            lastRet &#x3D; -1;
-            expectedModCount &#x3D; modCount;
-        &#125; catch (IndexOutOfBoundsException ex) &#123;
+            cursor = i + 1;
+            lastRet = -1;
+            expectedModCount = modCount;
+        } catch (IndexOutOfBoundsException ex) {
             throw new ConcurrentModificationException();
-        &#125;
-    &#125;
-&#125;</code></pre>
-
-<p>依旧是处理了expectedModCount = modCount。</p>
+        }
+    }
+}</code></pre><p>依旧是处理了expectedModCount = modCount。</p>
 <h3 id="fail-safe"><a href="#fail-safe" class="headerlink" title="fail-safe"></a>fail-safe</h3><p>以ArrayList的替代类CopyOnWriteArrayList为例分析，CopyOnWriteArrayList为何物？ArrayList 的一个线程安全的变体，其中所有可变操作（add、set 等等）都是通过对底层数组进行一次新的复制来实现的。 该类产生的开销比较大，但是在两种情况下，它非常适合使用。</p>
 <ol>
 <li>在不能或不想进行同步遍历，但又需要从并发线程中排除冲突时。</li>
 <li>当遍历操作的数量大大超过可变操作的数量时。</li>
 </ol>
 <p>查看迭代器</p>
-<pre><code class="highlight plain">public E next() &#123;
+<pre><code>public E next() {
     if (! hasNext())
         throw new NoSuchElementException();
     return (E) snapshot[cursor++];
-&#125;</code></pre>
-
-<p>没有像ArrayList的迭代器一样，它不需要检查expectedModCount = modCount</p>
+}</code></pre><p>没有像ArrayList的迭代器一样，它不需要检查expectedModCount = modCount</p>
 <p>再看add方法</p>
-<pre><code class="highlight plain">public boolean add(E paramE) &#123;    
-        ReentrantLock localReentrantLock &#x3D; this.lock;    
+<pre><code>public boolean add(E paramE) {    
+        ReentrantLock localReentrantLock = this.lock;    
         localReentrantLock.lock();    
-        try &#123;    
-            Object[] arrayOfObject1 &#x3D; getArray();    
-            int i &#x3D; arrayOfObject1.length;    
-            Object[] arrayOfObject2 &#x3D; Arrays.copyOf(arrayOfObject1, i + 1);    
-            arrayOfObject2[i] &#x3D; paramE;    
+        try {    
+            Object[] arrayOfObject1 = getArray();    
+            int i = arrayOfObject1.length;    
+            Object[] arrayOfObject2 = Arrays.copyOf(arrayOfObject1, i + 1);    
+            arrayOfObject2[i] = paramE;    
             setArray(arrayOfObject2);    
-            int j &#x3D; 1;    
+            int j = 1;    
             return j;    
-        &#125; finally &#123;    
+        } finally {    
             localReentrantLock.unlock();    
-        &#125;    
-    &#125;    
-    final void setArray(Object[] paramArrayOfObject) &#123;    
-        this.array &#x3D; paramArrayOfObject;    
-    &#125;</code></pre>
-
-<p>看关键代码：</p>
-<pre><code class="highlight plain">Object[] arrayOfObject2 &#x3D; Arrays.copyOf(arrayOfObject1, i + 1);    
-arrayOfObject2[i] &#x3D; paramE;    
-setArray(arrayOfObject2)</code></pre>
-
-<p>所以在多线程环境时，可以使用CopyOnWriterArrayList来替代，它们的原理为先复制原有集合，然后在复制集合上作修改，然后将原引用指向复制修改后的集合，而迭代器遍历集合是先接收CopyOnWriterArrayList中存储元素的数组，然后对其遍历。这样就达到了遍历和修改集合结构分别在不同的存储数组中。</p>
+        }    
+    }    
+    final void setArray(Object[] paramArrayOfObject) {    
+        this.array = paramArrayOfObject;    
+    }  </code></pre><p>看关键代码：</p>
+<pre><code>            Object[] arrayOfObject2 = Arrays.copyOf(arrayOfObject1, i + 1);    
+            arrayOfObject2[i] = paramE;    
+            setArray(arrayOfObject2)</code></pre><p>所以在多线程环境时，可以使用CopyOnWriterArrayList来替代，它们的原理为先复制原有集合，然后在复制集合上作修改，然后将原引用指向复制修改后的集合，而迭代器遍历集合是先接收CopyOnWriterArrayList中存储元素的数组，然后对其遍历。这样就达到了遍历和修改集合结构分别在不同的存储数组中。</p>
 
       
     </div>
@@ -503,8 +484,8 @@ setArray(arrayOfObject2)</code></pre>
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/06/17/consumer/" rel="next" title="consumer接口">
-                <i class="fa fa-chevron-left"></i> consumer接口
+              <a href="/2020/06/17/final/" rel="next" title="final关键字">
+                <i class="fa fa-chevron-left"></i> final关键字
               </a>
             
           </div>

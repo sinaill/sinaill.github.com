@@ -353,21 +353,17 @@
 <h3 id="final类型的静态属性"><a href="#final类型的静态属性" class="headerlink" title="final类型的静态属性"></a>final类型的静态属性</h3><ol>
 <li>当<code>final</code>属性编译时就确定时，访问该属性不会触发类的初始化，例如</li>
 </ol>
-<pre><code class="highlight plain">public static final int a &#x3D;1</code></pre>
-
-<p>在以下情况访问类变量<code>a</code>时，会触发初始化</p>
-<pre><code class="highlight plain">public static final int a;
-static&#123;
-    a &#x3D; 1;
+<pre><code>public static final int a =1</code></pre><p>在以下情况访问类变量<code>a</code>时，会触发初始化</p>
+<pre><code>public static final int a;
+static{
+    a = 1;
     System.out.println(&quot;out&quot;);
-&#125;</code></pre>
+}</code></pre><p>和</p>
+<pre><code>public static int a;
 
-<p>和</p>
-<pre><code class="highlight plain">public static int a;
-
-public ttt() &#123;
-    a &#x3D; 1;
-&#125;</code></pre>
+public ttt() {
+    a = 1;
+}</code></pre>
       
     </div>
     

@@ -248,7 +248,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/fail-fast%20fail-safe/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/final/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="sinaill">
@@ -267,7 +267,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/06/17/fail-fast%20fail-safe/" itemprop="url">fail-fast与fail-safe</a></h1>
+                <a class="post-title-link" href="/2020/06/17/final/" itemprop="url">final关键字</a></h1>
         
 
         <div class="post-meta">
@@ -341,325 +341,42 @@
       
         
           
-            <h3 id="fail-fast"><a href="#fail-fast" class="headerlink" title="fail-fast"></a>fail-fast</h3><p>java.util 包中的集合类都返回 fail-fast 迭代器，意味着在使用iterator遍历集合时，如果改变集合结构，将会抛出ConcurrentModificationException</p>
-<p>下面以ArrayList为例分析</p>
-<p>ArrayList继承于AbstractList，而AbstractList中定义了一个protected transient int modCount = 0，那么这个变量有什么作用呢</p>
-<p>我们看ArrayList中实现了Iterator接口的私有内部类ltr，有个变量接收了这个modCount</p>
-<pre><code class="highlight plain">int expectedModCount &#x3D; modCount;</code></pre>
+            <h3 id="final用法"><a href="#final用法" class="headerlink" title="final用法"></a>final用法</h3><p>1.final用来修饰类时，该类不可被继承</p>
+<p>2.final用来修饰方法时，方法不可被复写</p>
+<p>3.final修饰的基本变量时，值不可变，修饰的引用类型时，引用不可变，值可变</p>
+<h3 id="final类型成员变量初始化"><a href="#final类型成员变量初始化" class="headerlink" title="final类型成员变量初始化"></a>final类型成员变量初始化</h3><p>1.final修饰的成员变量没有默认值</p>
+<p>2.final初始化可以在三个地方<br>(1)声明的时候初始化<br>(2)构造函数里初始化(！ static &amp;&amp; final，一起时会报错)<br>(3)要是没有static修饰的话可以在非静态块里初始化,要是有static修饰的话可以在静态块里初始化</p>
+<p>3.使用final成员前要确保已经初始化</p>
+<h3 id="深入理解"><a href="#深入理解" class="headerlink" title="深入理解"></a>深入理解</h3><p>1.当final变量是基本数据类型以及String类型时，如果在编译期间能知道它的确切值，则编译器会把它当做编译期常量使用。也就是说在用到该final变量的地方，相当于直接访问的这个常量，不需要在运行时确定。</p>
+<pre><code>public class Test {
+    public static void main(String[] args)  {
+        String a = &quot;hello2&quot;; 
+        final String b = &quot;hello&quot;;
+        String d = &quot;hello&quot;;
+        String c = b + 2; 
+        String e = d + 2;
+        System.out.println((a == c));
+        System.out.println((a == e));
+    }
+}</code></pre><p><code>true false</code></p>
+<p>不过要注意，只有在编译期间能确切知道final变量值的情况下，编译器才会进行这样的优化</p>
+<pre><code>public class Test {
+    public static void main(String[] args)  {
+        String a = &quot;hello2&quot;; 
+        final String b = getHello();
+        String c = b + 2; 
+        System.out.println((a == c));
 
-<p>当我们获取集合的迭代器对象Iterator时，这个动作发生</p>
-<pre><code class="highlight plain">public Iterator&lt;E&gt; iterator() &#123;
-    return new Itr();
-&#125;</code></pre>
+    }
 
-<p>然后看看改变集合结构的几个方法，例如add,remove</p>
-<p>add方法：</p>
-<pre><code class="highlight plain">public boolean add(E e) &#123;
-    ensureCapacityInternal(size + 1);  &#x2F;&#x2F; Increments modCount!!
-    elementData[size++] &#x3D; e;
-    return true;
-&#125;
-private void ensureCapacityInternal(int minCapacity) &#123;
-    if (elementData &#x3D;&#x3D; DEFAULTCAPACITY_EMPTY_ELEMENTDATA) &#123;
-        minCapacity &#x3D; Math.max(DEFAULT_CAPACITY, minCapacity);
-    &#125;
-
-    ensureExplicitCapacity(minCapacity);
-&#125;
-
-private void ensureExplicitCapacity(int minCapacity) &#123;
-    modCount++;
-
-    &#x2F;&#x2F; overflow-conscious code
-    if (minCapacity - elementData.length &gt; 0)
-        grow(minCapacity);
-&#125;</code></pre>
-
-<p>remove方法：</p>
-<pre><code class="highlight plain">public E remove(int index) &#123;
-    rangeCheck(index);
-
-    modCount++;
-    E oldValue &#x3D; elementData(index);
-
-    int numMoved &#x3D; size - index - 1;
-    if (numMoved &gt; 0)
-        System.arraycopy(elementData, index+1, elementData, index,
-                         numMoved);
-    elementData[--size] &#x3D; null; &#x2F;&#x2F; clear to let GC do its work
-
-    return oldValue;
-&#125;</code></pre>
-
-<p><strong>我们发现在这些操作中都会将集合自身变量modCount自增1，会造成什么影响呢，接着往下看</strong></p>
-<p>迭代器Iterator中的next()方法中调用了checkForComodification()</p>
-<p>查看方法checkForComodification：</p>
-<pre><code class="highlight plain">final void checkForComodification() &#123;
-          if (modCount !&#x3D; expectedModCount)
-              throw new ConcurrentModificationException();
-      &#125;</code></pre>
-
-<p>可以看到我们在获取下个元素时，Iterator会先比较modCount和expectedModCount，如果我们在迭代器遍历时调用了add或者remove等改变集合结构的方法时，modCount自增了，而expectedModCount不变，所以在此处会抛出ConcurrentModificationException</p>
-<p>但是如果是在我们自己遍历集合时想修改集合结构，而且不是多线程环境中的话，我们可以看Iterator中给我们提供的方法，在ArrayList中的内部类Iterator中给我们提供了一个remove方法</p>
-<pre><code class="highlight plain">public void remove() &#123;
-    if (lastRet &lt; 0)
-        throw new IllegalStateException();
-    checkForComodification();
-
-    try &#123;
-        ArrayList.this.remove(lastRet);
-        cursor &#x3D; lastRet;
-        lastRet &#x3D; -1;
-        expectedModCount &#x3D; modCount;
-    &#125; catch (IndexOutOfBoundsException ex) &#123;
-        throw new ConcurrentModificationException();
-    &#125;
-&#125;</code></pre>
-
-<p>我们可以看到在移除元素后，重新对expectedModCount赋值，所以checkForComodification()不会抛出异常</p>
-<p>ArrayList还提供了一个更丰富的ListIterator内部类，是一个双向迭代器，可以双向遍历，在这里比Iterator多了add方法</p>
-<pre><code class="highlight plain">    public void add(E e) &#123;
-        checkForComodification();
-
-        try &#123;
-            int i &#x3D; cursor;
-            ArrayList.this.add(i, e);
-            cursor &#x3D; i + 1;
-            lastRet &#x3D; -1;
-            expectedModCount &#x3D; modCount;
-        &#125; catch (IndexOutOfBoundsException ex) &#123;
-            throw new ConcurrentModificationException();
-        &#125;
-    &#125;
-&#125;</code></pre>
-
-<p>依旧是处理了expectedModCount = modCount。</p>
-<h3 id="fail-safe"><a href="#fail-safe" class="headerlink" title="fail-safe"></a>fail-safe</h3><p>以ArrayList的替代类CopyOnWriteArrayList为例分析，CopyOnWriteArrayList为何物？ArrayList 的一个线程安全的变体，其中所有可变操作（add、set 等等）都是通过对底层数组进行一次新的复制来实现的。 该类产生的开销比较大，但是在两种情况下，它非常适合使用。</p>
-<ol>
-<li>在不能或不想进行同步遍历，但又需要从并发线程中排除冲突时。</li>
-<li>当遍历操作的数量大大超过可变操作的数量时。</li>
-</ol>
-<p>查看迭代器</p>
-<pre><code class="highlight plain">public E next() &#123;
-    if (! hasNext())
-        throw new NoSuchElementException();
-    return (E) snapshot[cursor++];
-&#125;</code></pre>
-
-<p>没有像ArrayList的迭代器一样，它不需要检查expectedModCount = modCount</p>
-<p>再看add方法</p>
-<pre><code class="highlight plain">public boolean add(E paramE) &#123;    
-        ReentrantLock localReentrantLock &#x3D; this.lock;    
-        localReentrantLock.lock();    
-        try &#123;    
-            Object[] arrayOfObject1 &#x3D; getArray();    
-            int i &#x3D; arrayOfObject1.length;    
-            Object[] arrayOfObject2 &#x3D; Arrays.copyOf(arrayOfObject1, i + 1);    
-            arrayOfObject2[i] &#x3D; paramE;    
-            setArray(arrayOfObject2);    
-            int j &#x3D; 1;    
-            return j;    
-        &#125; finally &#123;    
-            localReentrantLock.unlock();    
-        &#125;    
-    &#125;    
-    final void setArray(Object[] paramArrayOfObject) &#123;    
-        this.array &#x3D; paramArrayOfObject;    
-    &#125;</code></pre>
-
-<p>看关键代码：</p>
-<pre><code class="highlight plain">Object[] arrayOfObject2 &#x3D; Arrays.copyOf(arrayOfObject1, i + 1);    
-arrayOfObject2[i] &#x3D; paramE;    
-setArray(arrayOfObject2)</code></pre>
-
-<p>所以在多线程环境时，可以使用CopyOnWriterArrayList来替代，它们的原理为先复制原有集合，然后在复制集合上作修改，然后将原引用指向复制修改后的集合，而迭代器遍历集合是先接收CopyOnWriterArrayList中存储元素的数组，然后对其遍历。这样就达到了遍历和修改集合结构分别在不同的存储数组中。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/consumer/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/consumer/" itemprop="url">consumer接口</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="consumer"><a href="#consumer" class="headerlink" title="consumer"></a>consumer</h3><pre><code class="highlight plain">@FunctionalInterface
-public interface Consumer&lt;T&gt; &#123;
-
-    &#x2F;**
-     * Performs this operation on the given argument.
-     *
-     * @param t the input argument
-     *&#x2F;
-    void accept(T t);
-
-    &#x2F;**
-     * Returns a composed &#123;@code Consumer&#125; that performs, in sequence, this
-     * operation followed by the &#123;@code after&#125; operation. If performing either
-     * operation throws an exception, it is relayed to the caller of the
-     * composed operation.  If performing this operation throws an exception,
-     * the &#123;@code after&#125; operation will not be performed.
-     *
-     * @param after the operation to perform after this operation
-     * @return a composed &#123;@code Consumer&#125; that performs in sequence this
-     * operation followed by the &#123;@code after&#125; operation
-     * @throws NullPointerException if &#123;@code after&#125; is null
-     *&#x2F;
-    default Consumer&lt;T&gt; andThen(Consumer&lt;? super T&gt; after) &#123;
-        Objects.requireNonNull(after);
-        return (T t) -&gt; &#123; accept(t); after.accept(t); &#125;;
-    &#125;
-&#125;</code></pre>
-
-<p>consumer是一个函数式接口，可配合实现了Iterable的类和Iterator使用。</p>
-<pre><code class="highlight plain">List&lt;student&gt; a &#x3D; new ArrayList&lt;student&gt;();
-a.add(new student(1, &quot;aa&quot;));
-a.add(new student(2, &quot;bb&quot;));
-a.add(new student(3, &quot;cc&quot;));
-a.forEach(stu-&gt;stu.id&#x3D;4);
-a.forEach(stu-&gt;System.out::println)</code></pre>
-
-<p><code>4 4 4</code></p>
-<p>List继承自Collection，而Collection又实现了Iterable接口，接口的foreach方法如下：</p>
-<pre><code class="highlight plain">default void forEach(Consumer&lt;? super T&gt; action) &#123;
-    Objects.requireNonNull(action);
-    for (T t : this) &#123;
-        action.accept(t);
-    &#125;
-&#125;</code></pre>
-
-<p><strong>所以，此接口是用来处理集合中所有元素，Performs this operation on the given argument.</strong></p>
+    public static String getHello() {
+        return &quot;hello&quot;;
+    }
+}</code></pre><p><code>false</code></p>
+<p>2.final也可以用来修饰方法的形参，防止方法内部修改形参</p>
+<p>3.匿名内部类使用的外部变量必须为final</p>
+<p><strong>外部类和外部局部变量是作为构造方法的参数传入匿名内部类的</strong></p>
+<p>为什么在匿名内部类中引用外部对象要加final修饰符呢，因为，在匿名内部类中引用的外部对象受到外部线程的作用域的制约有其特定的生命周期，以线程为例，当外部的变量生命周期已经完结之后，内部的线程还在运行，怎么样解决这个外部生命周期已经结束而在内部却需要继续使用呢，这个时候就需要在外部变量中添加final修饰符，<strong>其实内部匿名类使用的这个变量就是外部变量的一个“复制品”</strong>，即使外部变量生命周期已经结束，内部的“复制品“依然可用。并且<strong>final保证复制品与原始变量保持一致</strong></p>
 
           
         
@@ -802,75 +519,708 @@ a.forEach(stu-&gt;System.out::println)</code></pre>
         
           
             <h3 id="comparable"><a href="#comparable" class="headerlink" title="comparable"></a>comparable</h3><p>集合中元素实现comparable，可以调用sort方法排序</p>
-<pre><code class="highlight plain">class user implements Comparable&lt;user&gt;&#123;
-	private int id;
-	private String name;
-	
-	public user() &#123;
-		super();
-	&#125;
-	public user(int id, String name) &#123;
-		this.id &#x3D; id;
-		this.name &#x3D; name;
-	&#125;
-	&#x2F;**
-	 * @return the id
-	 *&#x2F;
-	
-	
-	public int getId() &#123;
-		return id;
-	&#125;
-	&#x2F;* (non-Javadoc)
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
-	 *&#x2F;
-	@Override
-	public int compareTo(user o) &#123;
-		&#x2F;&#x2F; TODO Auto-generated method stub
-		return this.id-o.id;
-	&#125;
-	&#x2F;**
-	 * @param id the id to set
-	 *&#x2F;
-	public void setId(int id) &#123;
-		this.id &#x3D; id;
-	&#125;
-	&#x2F;**
-	 * @return the name
-	 *&#x2F;
-	public String getName() &#123;
-		return name;
-	&#125;
-	&#x2F;**
-	 * @param name the name to set
-	 *&#x2F;
-	public void setName(String name) &#123;
-		this.name &#x3D; name;
-	&#125;
-	
-&#125;</code></pre>
+<pre><code>class user implements Comparable&lt;user&gt;{
+    private int id;
+    private String name;
 
-<p>调用Collections.sort(List<T> list)</p>
-<pre><code class="highlight plain">List&lt;user&gt; users &#x3D; new ArrayList&lt;user&gt;();
-users.add(new user(1, &quot;sdg&quot;));
-users.add(new user(5, &quot;dsf&quot;));
-users.add(new user(2, &quot;xzcv&quot;));
-users.add(new user(4, &quot;derg&quot;));
-users.add(new user(3, &quot;dfg&quot;));
-Collections.sort(users);
-users.forEach(u-&gt;System.out.println(u.getId()));</code></pre>
+    public user() {
+        super();
+    }
+    public user(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+    /**
+     * @return the id
+     */
 
-<p>输出<br><code>1,2,3,4,5</code></p>
+
+    public int getId() {
+        return id;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(user o) {
+        // TODO Auto-generated method stub
+        return this.id-o.id;
+    }
+    /**
+     * @param id the id to set
+     */
+    public void setId(int id) {
+        this.id = id;
+    }
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
+    /**
+     * @param name the name to set
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+}</code></pre><p>调用Collections.sort(List<T> list)</p>
+<pre><code>        List&lt;user&gt; users = new ArrayList&lt;user&gt;();
+        users.add(new user(1, &quot;sdg&quot;));
+        users.add(new user(5, &quot;dsf&quot;));
+        users.add(new user(2, &quot;xzcv&quot;));
+        users.add(new user(4, &quot;derg&quot;));
+        users.add(new user(3, &quot;dfg&quot;));
+        Collections.sort(users);
+        users.forEach(u-&gt;System.out.println(u.getId()));</code></pre><p>输出<br><code>1,2,3,4,5</code></p>
 <h3 id="comparator"><a href="#comparator" class="headerlink" title="comparator"></a>comparator</h3><p>当集合中元素没有实现comparable接口时，可以使用Collections.sort(List<T> list, Comparator&lt;? super T&gt; c)进行排序</p>
-<pre><code class="highlight plain">List&lt;user&gt; users &#x3D; new ArrayList&lt;user&gt;();
-users.add(new user(1, &quot;sdg&quot;));
-users.add(new user(5, &quot;dsf&quot;));
-users.add(new user(2, &quot;xzcv&quot;));
-users.add(new user(4, &quot;derg&quot;));
-users.add(new user(3, &quot;dfg&quot;));
-Collections.sort(users,Comparator.comparing(user::getId));
-users.forEach(u-&gt;System.out.println(u.getId()));</code></pre>
-<p>输出<br><code>1,2,3,4,5</code></p>
+<pre><code>        List&lt;user&gt; users = new ArrayList&lt;user&gt;();
+        users.add(new user(1, &quot;sdg&quot;));
+        users.add(new user(5, &quot;dsf&quot;));
+        users.add(new user(2, &quot;xzcv&quot;));
+        users.add(new user(4, &quot;derg&quot;));
+        users.add(new user(3, &quot;dfg&quot;));
+        Collections.sort(users,Comparator.comparing(user::getId));
+        users.forEach(u-&gt;System.out.println(u.getId()));</code></pre><p>输出<br><code>1,2,3,4,5</code></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/consumer/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/consumer/" itemprop="url">consumer接口</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="consumer"><a href="#consumer" class="headerlink" title="consumer"></a>consumer</h3><pre><code>@FunctionalInterface
+public interface Consumer&lt;T&gt; {
+
+    /**
+     * Performs this operation on the given argument.
+     *
+     * @param t the input argument
+     */
+    void accept(T t);
+
+    /**
+     * Returns a composed {@code Consumer} that performs, in sequence, this
+     * operation followed by the {@code after} operation. If performing either
+     * operation throws an exception, it is relayed to the caller of the
+     * composed operation.  If performing this operation throws an exception,
+     * the {@code after} operation will not be performed.
+     *
+     * @param after the operation to perform after this operation
+     * @return a composed {@code Consumer} that performs in sequence this
+     * operation followed by the {@code after} operation
+     * @throws NullPointerException if {@code after} is null
+     */
+    default Consumer&lt;T&gt; andThen(Consumer&lt;? super T&gt; after) {
+        Objects.requireNonNull(after);
+        return (T t) -&gt; { accept(t); after.accept(t); };
+    }
+}</code></pre><p>consumer是一个函数式接口，可配合实现了Iterable的类和Iterator使用。</p>
+<pre><code>        List&lt;student&gt; a = new ArrayList&lt;student&gt;();
+        a.add(new student(1, &quot;aa&quot;));
+        a.add(new student(2, &quot;bb&quot;));
+        a.add(new student(3, &quot;cc&quot;));
+        a.forEach(stu-&gt;stu.id=4);
+        a.forEach(stu-&gt;System.out::println)</code></pre><p><code>4 4 4</code></p>
+<p>List继承自Collection，而Collection又实现了Iterable接口，接口的foreach方法如下：</p>
+<pre><code>    default void forEach(Consumer&lt;? super T&gt; action) {
+        Objects.requireNonNull(action);
+        for (T t : this) {
+            action.accept(t);
+        }
+    }</code></pre><p><strong>所以，此接口是用来处理集合中所有元素，Performs this operation on the given argument.</strong></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/ajax%E4%B8%ADjson%E5%92%8Cspringmvc/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/ajax%E4%B8%ADjson%E5%92%8Cspringmvc/" itemprop="url">ajax中json和SpringMVC</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">框架</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="json"><a href="#json" class="headerlink" title="json"></a>json</h3><p>json对象格式:<code>{&quot;param&quot;:&quot;value&quot;,&quot;param&quot;:&quot;value&quot;}</code></p>
+<p>普通js对象:<code>{param:&quot;value&quot;,param:&quot;value&quot;}</code></p>
+<p>js对象转json对象:</p>
+<ul>
+<li>先将js转json字符串：<code>JSON.stringify()</code></li>
+<li>将json字符串转json对象:<code>JSON.parse()</code></li>
+</ul>
+<h3 id="ajax中的contentType"><a href="#ajax中的contentType" class="headerlink" title="ajax中的contentType"></a>ajax中的contentType</h3><p>ajax中，没有指定<code>contentType</code>的话，Jquery默认使用<code>application/x-www-form-urlencoded</code>类型，data使用json对象格式,<code>springmvc</code>可以<code>@RequestParam</code>接收数据(变量同名不需要)</p>
+<p>指定<code>contentType</code>为<code>application/json</code>时，data必须为json字符串格式，springmvc接收数据要用<code>@RequestBody</code>注解</p>
+<pre><code>$.ajax({
+    type: &quot;post&quot;,
+    url:  &quot;mobile/notice/addMessageInfo.jspx&quot;,
+    contentType: &quot;application/json&quot;,
+    data:&quot;{&#39;name&#39;:&#39;zhangsan&#39;,&#39;age&#39;:&#39;15&#39;}&quot;,
+    dataType: &quot;json&quot;,
+    success: function(data) {
+        console.log(data);
+    },
+    error: function(msg) {
+        console.log(msg)
+    }
+})
+
+
+$.ajax({
+    type: &quot;post&quot;,
+    url:  &quot;mobile/notice/addMessageInfo.jspx&quot;,
+    data:{name:&#39;zhangsan&#39;,age:&#39;15&#39;},
+    dataType: &quot;json&quot;,
+    success: function(data) {
+        console.log(data);
+    },
+    error: function(msg) {
+        console.log(msg)
+    }
+})</code></pre>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/await%E3%80%81signal%E5%92%8CsignalAll%E6%BA%90%E7%A0%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/await%E3%80%81signal%E5%92%8CsignalAll%E6%BA%90%E7%A0%81/" itemprop="url">await、signal和signalAll源码</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="Condition"><a href="#Condition" class="headerlink" title="Condition"></a>Condition</h3><p><code>ReentrantLock</code>使用了<code>Condition</code>接口实现类<code>ConditionObject</code>来进行线程间通信，例如它的<code>await、signal</code>方法</p>
+<pre><code>public Condition newCondition() {
+    return sync.newCondition();
+}
+
+
+final ConditionObject newCondition() {
+    return new ConditionObject();
+}</code></pre><p>接着观察<code>ConditionObject</code>，用来挂起线程的队列结构和抢锁时抢不到锁的线程队列结构相同，使用的<code>Node</code>都为<code>AbstractQueuedSynchronizer</code>内部类，并且<code>ConditionObject</code>也创建<code>firstWaiter</code>和<code>lastWaiter</code>指向链表头尾</p>
+<p><img src="https://img-blog.csdnimg.cn/20190829203647414.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM1ODM1NjI0,size_16,color_FFFFFF,t_70" alt=""></p>
+<h3 id="await-方法"><a href="#await-方法" class="headerlink" title="await()方法"></a>await()方法</h3><pre><code>public final void await() throws InterruptedException {
+    if (Thread.interrupted())
+        throw new InterruptedException();
+    Node node = addConditionWaiter();//往conditionqueue中添加当前线程节点
+    int savedState = fullyRelease(node);//完全释放锁(可重入)并且唤醒下个线程
+    int interruptMode = 0;
+    while (!isOnSyncQueue(node)) {//如果节点不在waitqueue中
+        LockSupport.park(this);//线程挂起
+        if ((interruptMode = checkInterruptWhileWaiting(node)) != 0)
+            break;
+    }
+    //acquireQueued抢占锁，抢不到则挂起，无限循环
+    if (acquireQueued(node, savedState) &amp;&amp; interruptMode != THROW_IE)
+        interruptMode = REINTERRUPT;
+    if (node.nextWaiter != null) 
+        unlinkCancelledWaiters();//清除waitStatus为cancelled的节点
+    if (interruptMode != 0)
+        reportInterruptAfterWait(interruptMode);//处理中断，抛出异常或者中断当前线程
+}</code></pre><p><code>addConditionWaiter</code>往<code>conditionQueue</code>中增加节点</p>
+<pre><code>private Node addConditionWaiter() {
+    Node t = lastWaiter;
+    // If lastWaiter is cancelled, clean out.
+    if (t != null &amp;&amp; t.waitStatus != Node.CONDITION) {
+        unlinkCancelledWaiters();
+        t = lastWaiter;
+    }
+    Node node = new Node(Thread.currentThread(), Node.CONDITION);
+    if (t == null)
+        firstWaiter = node;
+    else
+        t.nextWaiter = node;
+    lastWaiter = node;
+    return node;
+}</code></pre><p>节点中依旧存放当前线程和<code>waitStatus</code></p>
+<pre><code>final int fullyRelease(Node node) {
+    boolean failed = true;
+    try {
+        int savedState = getState();
+        if (release(savedState)) {
+            failed = false;
+            return savedState;
+        } else {
+            throw new IllegalMonitorStateException();
+        }
+    } finally {
+        if (failed)
+            node.waitStatus = Node.CANCELLED;
+    }
+}</code></pre><p><code>fullyRelease</code>完全释放锁，唤醒<code>waitqueue</code>中下一个线程(unpark)</p>
+<p>接着一个<code>while</code>循环，<code>isOnSyncQueue(node)</code>判断这个节点是否在<code>waitqueue</code>，前面可以知道这个节点是在<code>conditionqueue</code>中，所以这里进入循环中，然后挂起线程</p>
+<p>线程被唤醒(unpark)后，<code>checkInterruptWhileWaiting</code>接着检测等待中是否被中断过，被中断的话直接<code>break</code>，跳出循环</p>
+<p><code>signal</code>前被中断，这里返回<code>THROW_IE</code>，<code>signal</code>后被中断则返回<code>REINTERRUPT</code>，没有中断返回 0</p>
+<p>而按照正常流程，这里跳出循环是由于<code>node</code>节点被从<code>conditionqueue</code>中被转移到<code>waitqueue</code>中</p>
+<p>接着到<code>acquireQueued(node, savedState)</code>方法，之前已经看过这个方法</p>
+<pre><code>final boolean acquireQueued(final Node node, int arg) {
+    boolean failed = true;
+    try {
+        boolean interrupted = false;
+        for (;;) {
+            final Node p = node.predecessor();
+            if (p == head &amp;&amp; tryAcquire(arg)) {
+                setHead(node);
+                p.next = null; // help GC
+                failed = false;
+                return interrupted;
+            }
+            if (shouldParkAfterFailedAcquire(p, node) &amp;&amp;
+                parkAndCheckInterrupt())
+                interrupted = true;
+        }
+    } finally {
+        if (failed)
+            cancelAcquire(node);
+    }
+}</code></pre><p>当<code>node</code>被转移到<code>waitqueue</code>之后，这个方法就发挥作用了，尝试抢锁，失败则被挂起，等待其他线程释放锁</p>
+<h3 id="signal-方法"><a href="#signal-方法" class="headerlink" title="signal()方法"></a>signal()方法</h3><pre><code>public final void signal() {
+    if (!isHeldExclusively())
+        throw new IllegalMonitorStateException();
+    Node first = firstWaiter;
+    if (first != null)
+        doSignal(first);
+}</code></pre><p>第一步就看到，想调用<code>signal</code>方法，必须先拿到锁</p>
+<pre><code>private void doSignal(Node first) {
+    do {
+        if ( (firstWaiter = first.nextWaiter) == null)
+            lastWaiter = null;
+        first.nextWaiter = null;
+    } while (!transferForSignal(first) &amp;&amp;
+             (first = firstWaiter) != null);
+}</code></pre><p><code>transferForSignal(first)</code>遍历<code>conditionqueue</code>，而且是从第一个开始</p>
+<pre><code>final boolean transferForSignal(Node node) {
+    /*
+     * If cannot change waitStatus, the node has been cancelled.
+     */
+    if (!compareAndSetWaitStatus(node, Node.CONDITION, 0))
+        return false;
+
+    /*
+     * Splice onto queue and try to set waitStatus of predecessor to
+     * indicate that thread is (probably) waiting. If cancelled or
+     * attempt to set waitStatus fails, wake up to resync (in which
+     * case the waitStatus can be transiently and harmlessly wrong).
+     */
+    Node p = enq(node);
+    int ws = p.waitStatus;
+    if (ws &gt; 0 || !compareAndSetWaitStatus(p, ws, Node.SIGNAL))
+        LockSupport.unpark(node.thread);
+    return true;
+}</code></pre><p>CAS将节点<code>waitStatus</code>从<code>Node.CONDITION</code>转为0，失败的话则是节点被取消，<code>waitStatus</code>被改变了</p>
+<p><code>enq(node)</code>之前获取锁释放锁源码已经看了，就是将<code>node</code>入队到<code>waitqueue</code>中，并且这里还将前节点<code>p</code>的<code>waitStatus</code>由默认0变为<code>Node.SIGNAL</code>，获取锁释放锁源码中完成这个的是<code>shouldParkAfterFailedAcquire</code>方法，所以这里返回<code>true</code></p>
+<p>这个<code>doSignal</code>方法遍历<code>conditionqueue</code>，只要成功将一个节点转移到<code>waitqueue</code>中，就停止，这样整个唤醒过程就完成了，接着等待该线程在<code>waitqueue</code>中被唤醒</p>
+<p>从源码看出，<code>await</code>被唤醒顺序按照谁先被<code>await</code>，因为是从<code>conditionqueue</code>第一个节点被放到<code>waitqueue</code>最后一个节点，被<code>signal</code>之后仍要等待<code>waitqueue</code>前面线程都运行完</p>
+<h3 id="signalAll"><a href="#signalAll" class="headerlink" title="signalAll()"></a>signalAll()</h3><pre><code>public final void signalAll() {
+    if (!isHeldExclusively())
+        throw new IllegalMonitorStateException();
+    Node first = firstWaiter;
+    if (first != null)
+        doSignalAll(first);
+}
+
+
+private void doSignalAll(Node first) {
+    lastWaiter = firstWaiter = null;
+    do {
+        Node next = first.nextWaiter;
+        first.nextWaiter = null;
+        transferForSignal(first);
+        first = next;
+    } while (first != null);
+}</code></pre><p>和<code>signal()</code>方法相比，这里跳出循环的条件少了<code>transferForSignal</code>的返回值，所以这里会将<code>conditionqueue</code>中所有节点转移到<code>waitqueue</code>中</p>
 
           
         
@@ -1098,480 +1448,6 @@ users.forEach(u-&gt;System.out.println(u.getId()));</code></pre>
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/await%E3%80%81signal%E5%92%8CsignalAll%E6%BA%90%E7%A0%81/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/await%E3%80%81signal%E5%92%8CsignalAll%E6%BA%90%E7%A0%81/" itemprop="url">await、signal和signalAll源码</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Condition"><a href="#Condition" class="headerlink" title="Condition"></a>Condition</h3><p><code>ReentrantLock</code>使用了<code>Condition</code>接口实现类<code>ConditionObject</code>来进行线程间通信，例如它的<code>await、signal</code>方法</p>
-<pre><code class="highlight plain">public Condition newCondition() &#123;
-    return sync.newCondition();
-&#125;
-
-
-final ConditionObject newCondition() &#123;
-    return new ConditionObject();
-&#125;</code></pre>
-
-<p>接着观察<code>ConditionObject</code>，用来挂起线程的队列结构和抢锁时抢不到锁的线程队列结构相同，使用的<code>Node</code>都为<code>AbstractQueuedSynchronizer</code>内部类，并且<code>ConditionObject</code>也创建<code>firstWaiter</code>和<code>lastWaiter</code>指向链表头尾</p>
-<p><img src="https://img-blog.csdnimg.cn/20190829203647414.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM1ODM1NjI0,size_16,color_FFFFFF,t_70" alt=""></p>
-<h3 id="await-方法"><a href="#await-方法" class="headerlink" title="await()方法"></a>await()方法</h3><pre><code class="highlight plain">public final void await() throws InterruptedException &#123;
-    if (Thread.interrupted())
-        throw new InterruptedException();
-    Node node &#x3D; addConditionWaiter();&#x2F;&#x2F;往conditionqueue中添加当前线程节点
-    int savedState &#x3D; fullyRelease(node);&#x2F;&#x2F;完全释放锁(可重入)并且唤醒下个线程
-    int interruptMode &#x3D; 0;
-    while (!isOnSyncQueue(node)) &#123;&#x2F;&#x2F;如果节点不在waitqueue中
-        LockSupport.park(this);&#x2F;&#x2F;线程挂起
-        if ((interruptMode &#x3D; checkInterruptWhileWaiting(node)) !&#x3D; 0)
-            break;
-    &#125;
-	&#x2F;&#x2F;acquireQueued抢占锁，抢不到则挂起，无限循环
-    if (acquireQueued(node, savedState) &amp;&amp; interruptMode !&#x3D; THROW_IE)
-        interruptMode &#x3D; REINTERRUPT;
-    if (node.nextWaiter !&#x3D; null) 
-        unlinkCancelledWaiters();&#x2F;&#x2F;清除waitStatus为cancelled的节点
-    if (interruptMode !&#x3D; 0)
-        reportInterruptAfterWait(interruptMode);&#x2F;&#x2F;处理中断，抛出异常或者中断当前线程
-&#125;</code></pre>
-
-<p><code>addConditionWaiter</code>往<code>conditionQueue</code>中增加节点</p>
-<pre><code class="highlight plain">private Node addConditionWaiter() &#123;
-    Node t &#x3D; lastWaiter;
-    &#x2F;&#x2F; If lastWaiter is cancelled, clean out.
-    if (t !&#x3D; null &amp;&amp; t.waitStatus !&#x3D; Node.CONDITION) &#123;
-        unlinkCancelledWaiters();
-        t &#x3D; lastWaiter;
-    &#125;
-    Node node &#x3D; new Node(Thread.currentThread(), Node.CONDITION);
-    if (t &#x3D;&#x3D; null)
-        firstWaiter &#x3D; node;
-    else
-        t.nextWaiter &#x3D; node;
-    lastWaiter &#x3D; node;
-    return node;
-&#125;</code></pre>
-<p>节点中依旧存放当前线程和<code>waitStatus</code></p>
-<pre><code class="highlight plain">final int fullyRelease(Node node) &#123;
-    boolean failed &#x3D; true;
-    try &#123;
-        int savedState &#x3D; getState();
-        if (release(savedState)) &#123;
-            failed &#x3D; false;
-            return savedState;
-        &#125; else &#123;
-            throw new IllegalMonitorStateException();
-        &#125;
-    &#125; finally &#123;
-        if (failed)
-            node.waitStatus &#x3D; Node.CANCELLED;
-    &#125;
-&#125;</code></pre>
-
-<p><code>fullyRelease</code>完全释放锁，唤醒<code>waitqueue</code>中下一个线程(unpark)</p>
-<p>接着一个<code>while</code>循环，<code>isOnSyncQueue(node)</code>判断这个节点是否在<code>waitqueue</code>，前面可以知道这个节点是在<code>conditionqueue</code>中，所以这里进入循环中，然后挂起线程</p>
-<p>线程被唤醒(unpark)后，<code>checkInterruptWhileWaiting</code>接着检测等待中是否被中断过，被中断的话直接<code>break</code>，跳出循环</p>
-<p><code>signal</code>前被中断，这里返回<code>THROW_IE</code>，<code>signal</code>后被中断则返回<code>REINTERRUPT</code>，没有中断返回 0</p>
-<p>而按照正常流程，这里跳出循环是由于<code>node</code>节点被从<code>conditionqueue</code>中被转移到<code>waitqueue</code>中</p>
-<p>接着到<code>acquireQueued(node, savedState)</code>方法，之前已经看过这个方法</p>
-<pre><code class="highlight plain">final boolean acquireQueued(final Node node, int arg) &#123;
-    boolean failed &#x3D; true;
-    try &#123;
-        boolean interrupted &#x3D; false;
-        for (;;) &#123;
-            final Node p &#x3D; node.predecessor();
-            if (p &#x3D;&#x3D; head &amp;&amp; tryAcquire(arg)) &#123;
-                setHead(node);
-                p.next &#x3D; null; &#x2F;&#x2F; help GC
-                failed &#x3D; false;
-                return interrupted;
-            &#125;
-            if (shouldParkAfterFailedAcquire(p, node) &amp;&amp;
-                parkAndCheckInterrupt())
-                interrupted &#x3D; true;
-        &#125;
-    &#125; finally &#123;
-        if (failed)
-            cancelAcquire(node);
-    &#125;
-&#125;</code></pre>
-
-<p>当<code>node</code>被转移到<code>waitqueue</code>之后，这个方法就发挥作用了，尝试抢锁，失败则被挂起，等待其他线程释放锁</p>
-<h3 id="signal-方法"><a href="#signal-方法" class="headerlink" title="signal()方法"></a>signal()方法</h3><pre><code class="highlight plain">public final void signal() &#123;
-    if (!isHeldExclusively())
-        throw new IllegalMonitorStateException();
-    Node first &#x3D; firstWaiter;
-    if (first !&#x3D; null)
-        doSignal(first);
-&#125;</code></pre>
-
-<p>第一步就看到，想调用<code>signal</code>方法，必须先拿到锁</p>
-<pre><code class="highlight plain">private void doSignal(Node first) &#123;
-    do &#123;
-        if ( (firstWaiter &#x3D; first.nextWaiter) &#x3D;&#x3D; null)
-            lastWaiter &#x3D; null;
-        first.nextWaiter &#x3D; null;
-    &#125; while (!transferForSignal(first) &amp;&amp;
-             (first &#x3D; firstWaiter) !&#x3D; null);
-&#125;</code></pre>
-
-<p><code>transferForSignal(first)</code>遍历<code>conditionqueue</code>，而且是从第一个开始</p>
-<pre><code class="highlight plain">final boolean transferForSignal(Node node) &#123;
-    &#x2F;*
-     * If cannot change waitStatus, the node has been cancelled.
-     *&#x2F;
-    if (!compareAndSetWaitStatus(node, Node.CONDITION, 0))
-        return false;
-
-    &#x2F;*
-     * Splice onto queue and try to set waitStatus of predecessor to
-     * indicate that thread is (probably) waiting. If cancelled or
-     * attempt to set waitStatus fails, wake up to resync (in which
-     * case the waitStatus can be transiently and harmlessly wrong).
-     *&#x2F;
-    Node p &#x3D; enq(node);
-    int ws &#x3D; p.waitStatus;
-    if (ws &gt; 0 || !compareAndSetWaitStatus(p, ws, Node.SIGNAL))
-        LockSupport.unpark(node.thread);
-    return true;
-&#125;</code></pre>
-
-<p>CAS将节点<code>waitStatus</code>从<code>Node.CONDITION</code>转为0，失败的话则是节点被取消，<code>waitStatus</code>被改变了</p>
-<p><code>enq(node)</code>之前获取锁释放锁源码已经看了，就是将<code>node</code>入队到<code>waitqueue</code>中，并且这里还将前节点<code>p</code>的<code>waitStatus</code>由默认0变为<code>Node.SIGNAL</code>，获取锁释放锁源码中完成这个的是<code>shouldParkAfterFailedAcquire</code>方法，所以这里返回<code>true</code></p>
-<p>这个<code>doSignal</code>方法遍历<code>conditionqueue</code>，只要成功将一个节点转移到<code>waitqueue</code>中，就停止，这样整个唤醒过程就完成了，接着等待该线程在<code>waitqueue</code>中被唤醒</p>
-<p>从源码看出，<code>await</code>被唤醒顺序按照谁先被<code>await</code>，因为是从<code>conditionqueue</code>第一个节点被放到<code>waitqueue</code>最后一个节点，被<code>signal</code>之后仍要等待<code>waitqueue</code>前面线程都运行完</p>
-<h3 id="signalAll"><a href="#signalAll" class="headerlink" title="signalAll()"></a>signalAll()</h3><pre><code class="highlight plain">public final void signalAll() &#123;
-    if (!isHeldExclusively())
-        throw new IllegalMonitorStateException();
-    Node first &#x3D; firstWaiter;
-    if (first !&#x3D; null)
-        doSignalAll(first);
-&#125;
-
-
-private void doSignalAll(Node first) &#123;
-    lastWaiter &#x3D; firstWaiter &#x3D; null;
-    do &#123;
-        Node next &#x3D; first.nextWaiter;
-        first.nextWaiter &#x3D; null;
-        transferForSignal(first);
-        first &#x3D; next;
-    &#125; while (first !&#x3D; null);
-&#125;</code></pre>
-
-<p>和<code>signal()</code>方法相比，这里跳出循环的条件少了<code>transferForSignal</code>的返回值，所以这里会将<code>conditionqueue</code>中所有节点转移到<code>waitqueue</code>中</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/ajax%E4%B8%ADjson%E5%92%8Cspringmvc/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/ajax%E4%B8%ADjson%E5%92%8Cspringmvc/" itemprop="url">ajax中json和SpringMVC</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
-                    <span itemprop="name">框架</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="json"><a href="#json" class="headerlink" title="json"></a>json</h3><p>json对象格式:<code>{&quot;param&quot;:&quot;value&quot;,&quot;param&quot;:&quot;value&quot;}</code></p>
-<p>普通js对象:<code>{param:&quot;value&quot;,param:&quot;value&quot;}</code></p>
-<p>js对象转json对象:</p>
-<ul>
-<li>先将js转json字符串：<code>JSON.stringify()</code></li>
-<li>将json字符串转json对象:<code>JSON.parse()</code></li>
-</ul>
-<h3 id="ajax中的contentType"><a href="#ajax中的contentType" class="headerlink" title="ajax中的contentType"></a>ajax中的contentType</h3><p>ajax中，没有指定<code>contentType</code>的话，Jquery默认使用<code>application/x-www-form-urlencoded</code>类型，data使用json对象格式,<code>springmvc</code>可以<code>@RequestParam</code>接收数据(变量同名不需要)</p>
-<p>指定<code>contentType</code>为<code>application/json</code>时，data必须为json字符串格式，springmvc接收数据要用<code>@RequestBody</code>注解</p>
-<pre><code class="highlight plain">$.ajax(&#123;
-    type: &quot;post&quot;,
-    url:  &quot;mobile&#x2F;notice&#x2F;addMessageInfo.jspx&quot;,
-    contentType: &quot;application&#x2F;json&quot;,
-    data:&quot;&#123;&#39;name&#39;:&#39;zhangsan&#39;,&#39;age&#39;:&#39;15&#39;&#125;&quot;,
-    dataType: &quot;json&quot;,
-    success: function(data) &#123;
-        console.log(data);
-    &#125;,
-    error: function(msg) &#123;
-        console.log(msg)
-    &#125;
-&#125;)
-
-
-$.ajax(&#123;
-    type: &quot;post&quot;,
-    url:  &quot;mobile&#x2F;notice&#x2F;addMessageInfo.jspx&quot;,
-    data:&#123;name:&#39;zhangsan&#39;,age:&#39;15&#39;&#125;,
-    dataType: &quot;json&quot;,
-    success: function(data) &#123;
-        console.log(data);
-    &#125;,
-    error: function(msg) &#123;
-        console.log(msg)
-    &#125;
-&#125;)</code></pre>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/ThreadLocal/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1667,76 +1543,62 @@ $.ajax(&#123;
           
             <h3 id="什么是ThreadLocal"><a href="#什么是ThreadLocal" class="headerlink" title="什么是ThreadLocal"></a>什么是ThreadLocal</h3><p><code>ThreadLocal</code>一般称为线程本地变量，它是一种特殊的线程绑定机制，将变量与线程绑定在一起，为每一个线程维护一个独立的变量副本。通过<code>ThreadLocal</code>可以将对象的可见范围限制在同一个线程内。</p>
 <h3 id="查看源码"><a href="#查看源码" class="headerlink" title="查看源码"></a>查看源码</h3><p>先查看<code>get</code>方法</p>
-<pre><code class="highlight plain">public void set(T value) &#123;
-    Thread t &#x3D; Thread.currentThread();
-    ThreadLocalMap map &#x3D; getMap(t);
-    if (map !&#x3D; null)
+<pre><code>public void set(T value) {
+    Thread t = Thread.currentThread();
+    ThreadLocalMap map = getMap(t);
+    if (map != null)
         map.set(this, value);
     else
         createMap(t, value);
-&#125;</code></pre>
-
-<p>查看<code>getMap</code>方法</p>
-<pre><code class="highlight plain">ThreadLocalMap getMap(Thread t) &#123;
+}</code></pre><p>查看<code>getMap</code>方法</p>
+<pre><code>ThreadLocalMap getMap(Thread t) {
     return t.threadLocals;
-&#125;</code></pre>
+}</code></pre><p>查看ThreadLocalMap类,为键值对的数据结构，另外Thread类中定义了一个ThreadLocalMap类的变量。get方法中先获取线程t，再获取线程t中的ThreadLocalMap实例，如果不为空，设置一个新键值对，key为当前ThreadLocal实例，value为传入的参数value。如果为空，进入createMap方法</p>
+<pre><code>void createMap(Thread t, T firstValue) {
+    t.threadLocals = new ThreadLocalMap(this, firstValue);
+}
 
-<p>查看ThreadLocalMap类,为键值对的数据结构，另外Thread类中定义了一个ThreadLocalMap类的变量。get方法中先获取线程t，再获取线程t中的ThreadLocalMap实例，如果不为空，设置一个新键值对，key为当前ThreadLocal实例，value为传入的参数value。如果为空，进入createMap方法</p>
-<pre><code class="highlight plain">void createMap(Thread t, T firstValue) &#123;
-    t.threadLocals &#x3D; new ThreadLocalMap(this, firstValue);
-&#125;
-
-ThreadLocalMap(ThreadLocal&lt;?&gt; firstKey, Object firstValue) &#123;
-        table &#x3D; new Entry[INITIAL_CAPACITY];
-        int i &#x3D; firstKey.threadLocalHashCode &amp; (INITIAL_CAPACITY - 1);
-        table[i] &#x3D; new Entry(firstKey, firstValue);
-        size &#x3D; 1;
+ThreadLocalMap(ThreadLocal&lt;?&gt; firstKey, Object firstValue) {
+        table = new Entry[INITIAL_CAPACITY];
+        int i = firstKey.threadLocalHashCode &amp; (INITIAL_CAPACITY - 1);
+        table[i] = new Entry(firstKey, firstValue);
+        size = 1;
         setThreshold(INITIAL_CAPACITY);
-    &#125;</code></pre>
-
-<p>给当前线程t的<code>ThreadLocalMap</code>类的引用传入新实例，<code>key</code>为当前<code>ThreadLocal</code>，值为传入的参数<code>firstValue</code></p>
+    }</code></pre><p>给当前线程t的<code>ThreadLocalMap</code>类的引用传入新实例，<code>key</code>为当前<code>ThreadLocal</code>，值为传入的参数<code>firstValue</code></p>
 <p>查看<code>get</code>方法</p>
-<pre><code class="highlight plain">public T get() &#123;
-    Thread t &#x3D; Thread.currentThread();
-    ThreadLocalMap map &#x3D; getMap(t);
-    if (map !&#x3D; null) &#123;
-        ThreadLocalMap.Entry e &#x3D; map.getEntry(this);
-        if (e !&#x3D; null) &#123;
+<pre><code>public T get() {
+    Thread t = Thread.currentThread();
+    ThreadLocalMap map = getMap(t);
+    if (map != null) {
+        ThreadLocalMap.Entry e = map.getEntry(this);
+        if (e != null) {
             @SuppressWarnings(&quot;unchecked&quot;)
-            T result &#x3D; (T)e.value;
+            T result = (T)e.value;
             return result;
-        &#125;
-    &#125;
+        }
+    }
     return setInitialValue();
-&#125;</code></pre>
-
-<p>先获取当前线程t，再获取t中的<code>ThreadLocalMap</code>实例<code>map</code>，如果<code>map</code>不为空</p>
-<pre><code class="highlight plain">private Entry getEntry(ThreadLocal&lt;?&gt; key) &#123;
-    int i &#x3D; key.threadLocalHashCode &amp; (table.length - 1);
-    Entry e &#x3D; table[i];
-    if (e !&#x3D; null &amp;&amp; e.get() &#x3D;&#x3D; key)
+}</code></pre><p>先获取当前线程t，再获取t中的<code>ThreadLocalMap</code>实例<code>map</code>，如果<code>map</code>不为空</p>
+<pre><code>private Entry getEntry(ThreadLocal&lt;?&gt; key) {
+    int i = key.threadLocalHashCode &amp; (table.length - 1);
+    Entry e = table[i];
+    if (e != null &amp;&amp; e.get() == key)
         return e;
     else
         return getEntryAfterMiss(key, i, e);
-&#125;</code></pre>
-
-<p>通过传入的<code>ThreadLocal</code>实例为<code>key</code>值获取对应键值对<code>Entry</code></p>
-<pre><code class="highlight plain">static class Entry extends WeakReference&lt;ThreadLocal&lt;?&gt;&gt; &#123;
-    &#x2F;** The value associated with this ThreadLocal. *&#x2F;
+}</code></pre><p>通过传入的<code>ThreadLocal</code>实例为<code>key</code>值获取对应键值对<code>Entry</code></p>
+<pre><code>static class Entry extends WeakReference&lt;ThreadLocal&lt;?&gt;&gt; {
+    /** The value associated with this ThreadLocal. */
     Object value;
 
-    Entry(ThreadLocal&lt;?&gt; k, Object v) &#123;
+    Entry(ThreadLocal&lt;?&gt; k, Object v) {
         super(k);
-        value &#x3D; v;
-    &#125;
-&#125;</code></pre>
-
-<p><code>Entry</code>中的<code>value</code>就是键值对中与当前<code>ThreadLocal</code>实例对应的<code>value</code>键值，<code>map</code>为空时，即调用<code>get</code>方法之前没有调用过<code>set</code>方法，<code>get</code>返回默认值(null)，可覆写</p>
-<pre><code class="highlight plain">protected T initialValue() &#123;
+        value = v;
+    }
+}</code></pre><p><code>Entry</code>中的<code>value</code>就是键值对中与当前<code>ThreadLocal</code>实例对应的<code>value</code>键值，<code>map</code>为空时，即调用<code>get</code>方法之前没有调用过<code>set</code>方法，<code>get</code>返回默认值(null)，可覆写</p>
+<pre><code>protected T initialValue() {
     return null;
-&#125;</code></pre>
-
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p><code>Thread</code>类中存有<code>ThreadLocalMap</code>的引用，<code>ThreadLocalMap</code>类的定义在<code>ThreadLocal</code>中。</p>
+}</code></pre><h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p><code>Thread</code>类中存有<code>ThreadLocalMap</code>的引用，<code>ThreadLocalMap</code>类的定义在<code>ThreadLocal</code>中。</p>
 <p>调用<code>ThreadLocal</code>的<code>set</code>方法时，先获取当前线程，查看线程中<code>ThreadLocalMap</code>引用为不为空，若为空，为当前线程创建<code>ThreadLocalMap</code>实例，传入键值对<code>key</code>为当前<code>ThreadLocal</code>实例，<code>value</code>为<code>set</code>方法传入的参数值。若不为空，为<code>ThreadLocalMap</code>实例添加新键值对，<code>key</code>为当前<code>ThreadLocal</code>实例，<code>value</code>为<code>set</code>方法传入的参数值。</p>
 <p>调用<code>ThreadLocal</code>的<code>get</code>方法时，如果之前为调用过<code>set</code>方法或<code>ThreadLocalMap</code>实例中<code>key</code>没有与当前<code>ThreadLocal</code>实例对应的，则返回一个默认值<code>null</code>。照旧先获取当前线程，获取线程中<code>ThreadLocalMap</code>实例，再根据当前<code>ThreadLocal</code>实例获取对应的键值对<code>Entry</code>，从而获取线程中存储的变量副本。</p>
 <p>为什么不用一个<code>map Entry&lt;Thread,value&gt;</code>来存储所有线程和线程变量副本，<code>map</code>过大会造成哈希冲突，造成性能变差。</p>
@@ -1883,35 +1745,27 @@ ThreadLocalMap(ThreadLocal&lt;?&gt; firstKey, Object firstValue) &#123;
           
             <h3 id="创建方法"><a href="#创建方法" class="headerlink" title="创建方法"></a>创建方法</h3><p><code>String str=new String(&quot;abc&quot;)</code></p>
 <p><strong>一共创建两个对象，其中new方法在堆中创建一个String对象，””为String特有的创建对象的方法，这行代码被执行的时候，JAVA虚拟机首先在字符串池中查找是否已经存在了值为”abc”的这么一个对象，它的判断依据是String类equals(Object obj)方法的返回值。如果有，则不再创建新的对象，直接返回已存在对象的引用；如果没有，则先创建这个对象，然后把它加入到字符串池中，再将它的引用返回</strong></p>
-<pre><code class="highlight plain">String str1 &#x3D; &quot;abc&quot;;
-String str2 &#x3D; new String(&quot;abc&quot;);
-System.out.println(str1 &#x3D;&#x3D; str2);</code></pre>
-
-<p><code>false</code></p>
+<pre><code>        String str1 = &quot;abc&quot;;
+        String str2 = new String(&quot;abc&quot;);
+        System.out.println(str1 == str2);</code></pre><p><code>false</code></p>
 <p><strong>str2指向堆中的对象，str1指向常量池中的对象</strong></p>
 <h3 id="intern方法"><a href="#intern方法" class="headerlink" title="intern方法"></a>intern方法</h3><p><code>string.intern()</code></p>
 <p>实例1：</p>
-<pre><code class="highlight plain">String str1 &#x3D; &quot;abc&quot;;
-String str2 &#x3D; new String(&quot;abc&quot;);
-str2 &#x3D; &quot;abc&quot;.intern();
-System.out.println(str1 &#x3D;&#x3D; str2);</code></pre>
-
-<p><code>true</code></p>
+<pre><code>        String str1 = &quot;abc&quot;;
+        String str2 = new String(&quot;abc&quot;);
+        str2 = &quot;abc&quot;.intern();
+        System.out.println(str1 == str2);</code></pre><p><code>true</code></p>
 <p><strong>会检查常量池中是否存在string，存在则返回池里的字符串引用；如果不存在则将string引用放入常量池中(jdk1.7后)。这样做可以避免在堆中不断的创建字符串对象，起到节省空间的作用。</strong></p>
 <p>实例2：</p>
-<pre><code class="highlight plain">String s3 &#x3D; new String(&quot;1&quot;) + new String(&quot;1&quot;);  
+<pre><code>String s3 = new String(&quot;1&quot;) + new String(&quot;1&quot;);  
 s3.intern();  
-String s4 &#x3D; &quot;11&quot;;  
-System.out.println(s3 &#x3D;&#x3D; s4);</code></pre>
-
-<p><code>true</code></p>
+String s4 = &quot;11&quot;;  
+System.out.println(s3 == s4);</code></pre><p><code>true</code></p>
 <p>实例3：</p>
-<pre><code class="highlight plain">String s3 &#x3D; new String(&quot;1&quot;) + new String(&quot;1&quot;);  
-String s4 &#x3D; &quot;11&quot;;  
+<pre><code>String s3 = new String(&quot;1&quot;) + new String(&quot;1&quot;);  
+String s4 = &quot;11&quot;;  
 s3.intern();  
-System.out.println(s3 &#x3D;&#x3D; s4);</code></pre>
-
-<p><code>false</code></p>
+System.out.println(s3 == s4);</code></pre><p><code>false</code></p>
 <p><strong>调换顺序后出现不同结果的原因</strong></p>
 <p><strong>1.String s3 = new String(“1”) + new String(“1”)，字符串常量池中生成“1” ，并在堆空间中生成s3引用指向的对象（内容为”11”）。注意此时常量池中是没有 “11”对象的</strong></p>
 <p><strong>2.实例2中s3.intern()，此时常量池中没有”11”对象，所以在常量池中存储s3引用(jdk1.7以后)，String s4 = “11”,首先从常量池中查看(equals方法)有无”11”对象，所以将s3引用传回去，所以结果true，而在实例3中，String s4 = “11”在s3.intern()方法前，此时常量池中已经有”11”对象，s3.intern()无效，所以s3还是指向堆中对象，所以结果false</strong></p>
@@ -2057,537 +1911,473 @@ System.out.println(s3 &#x3D;&#x3D; s4);</code></pre>
         
           
             <h3 id="测试代码准备"><a href="#测试代码准备" class="headerlink" title="测试代码准备"></a>测试代码准备</h3><h4 id="测试类"><a href="#测试类" class="headerlink" title="测试类"></a>测试类</h4><p>Sping Bean定义</p>
-<pre><code class="highlight plain">public interface userDao &#123;
-	void query();
-&#125;
+<pre><code>public interface userDao {
+    void query();
+}
 
 
-public class userDaoImpl implements userDao, InitializingBean &#123;
-	@Override
-	public void query() &#123;
-		System.out.println(&quot;query&quot;);
-	&#125;
+public class userDaoImpl implements userDao, InitializingBean {
+    @Override
+    public void query() {
+        System.out.println(&quot;query&quot;);
+    }
 
-	@PostConstruct
-	public void PostConstruct()&#123;
-		System.out.println(&quot;this is PostConstruct method&quot;);
-	&#125;
-	@PreDestroy
-	public void destroy()&#123;
-		System.out.println(&quot;this is a PreDestroy method&quot;);
-	&#125;
+    @PostConstruct
+    public void PostConstruct(){
+        System.out.println(&quot;this is PostConstruct method&quot;);
+    }
+    @PreDestroy
+    public void destroy(){
+        System.out.println(&quot;this is a PreDestroy method&quot;);
+    }
 
-	@Override
-	public void afterPropertiesSet()&#123;
-		System.out.println(&quot;this is a afterPropertiesSet method&quot;);
-	&#125;
+    @Override
+    public void afterPropertiesSet(){
+        System.out.println(&quot;this is a afterPropertiesSet method&quot;);
+    }
 
-	public void init()&#123;
-		System.out.println(&quot;this is init method&quot;);
-	&#125;
-&#125;</code></pre>
-
-<p>配置类</p>
-<pre><code class="highlight plain">@Configuration
+    public void init(){
+        System.out.println(&quot;this is init method&quot;);
+    }
+}</code></pre><p>配置类</p>
+<pre><code>@Configuration
 @ComponentScan(&quot;org.springframework.test&quot;)
-public class springConfig &#123;
-	@Bean(initMethod &#x3D; &quot;init&quot;, name &#x3D; &quot;userDaoImpl&quot;)
-	public userDaoImpl get()&#123;
-		return new userDaoImpl();
-	&#125;
-&#125;</code></pre>
+public class springConfig {
+    @Bean(initMethod = &quot;init&quot;, name = &quot;userDaoImpl&quot;)
+    public userDaoImpl get(){
+        return new userDaoImpl();
+    }
+}</code></pre><p>自定义<code>BeanPostProcessor</code></p>
+<pre><code>@Component
+public class MyBeanPostProcessor implements BeanPostProcessor {
+    @Override
+    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+        System.out.println(&quot;this is BeanPostProcessor method&quot;);
+        return bean;
+    }
+}</code></pre><p>启动<code>Spring</code>容器</p>
+<pre><code>public class Test {
+    public static void main(String args[]){
+        AnnotationConfigApplicationContext annotationConfigApplicationContext =
+                new AnnotationConfigApplicationContext(springConfig.class);
+        userDao userdao = (userDao) annotationConfigApplicationContext.getBean(&quot;userDaoImpl&quot;);
+        userdao.query();
+    }
+}</code></pre><h3 id="Bean的创建和初始化"><a href="#Bean的创建和初始化" class="headerlink" title="Bean的创建和初始化"></a>Bean的创建和初始化</h3><p><code>AnnotationConfigApplicationContext</code>的父类<code>GenericApplicationContext</code>的无参构造函数创建了<code>Spring</code>的工厂</p>
+<pre><code>public GenericApplicationContext() {
+    this.beanFactory = new DefaultListableBeanFactory();
+}</code></pre><p>然后在它自身构造函数中的<code>refresh()</code>方法中开始创建和初始化<code>Spring Bean</code></p>
+<pre><code>public AnnotationConfigApplicationContext(Class&lt;?&gt;... componentClasses) {
+    this();
+    register(componentClasses);
+    refresh();
+}</code></pre><p><code>refresh</code>方法中</p>
+<pre><code>// Instantiate all remaining (non-lazy-init) singletons.
+finishBeanFactoryInitialization(beanFactory);</code></pre><p>这里调用同个类中的<code>finishBeanFactoryInitialization</code>方法开始创建所有非懒加载的单例<code>Spring Bean</code>，在这个方法中调用之前创建好的工厂<code>DefaultListableBeanFactory</code>实例来创建<code>Spring Bean</code></p>
+<pre><code>// Instantiate all remaining (non-lazy-init) singletons.
+beanFactory.preInstantiateSingletons();</code></pre><p>查看这个方法</p>
+<pre><code>@Override
+public void preInstantiateSingletons() throws BeansException {
+    if (logger.isTraceEnabled()) {
+        logger.trace(&quot;Pre-instantiating singletons in &quot; + this);
+    }
 
-<p>自定义<code>BeanPostProcessor</code></p>
-<pre><code class="highlight plain">@Component
-public class MyBeanPostProcessor implements BeanPostProcessor &#123;
-	@Override
-	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException &#123;
-		System.out.println(&quot;this is BeanPostProcessor method&quot;);
-		return bean;
-	&#125;
-&#125;</code></pre>
-
-<p>启动<code>Spring</code>容器</p>
-<pre><code class="highlight plain">public class Test &#123;
-	public static void main(String args[])&#123;
-		AnnotationConfigApplicationContext annotationConfigApplicationContext &#x3D;
-				new AnnotationConfigApplicationContext(springConfig.class);
-		userDao userdao &#x3D; (userDao) annotationConfigApplicationContext.getBean(&quot;userDaoImpl&quot;);
-		userdao.query();
-	&#125;
-&#125;</code></pre>
-
-<h3 id="Bean的创建和初始化"><a href="#Bean的创建和初始化" class="headerlink" title="Bean的创建和初始化"></a>Bean的创建和初始化</h3><p><code>AnnotationConfigApplicationContext</code>的父类<code>GenericApplicationContext</code>的无参构造函数创建了<code>Spring</code>的工厂</p>
-<pre><code class="highlight plain">public GenericApplicationContext() &#123;
-	this.beanFactory &#x3D; new DefaultListableBeanFactory();
-&#125;</code></pre>
-
-<p>然后在它自身构造函数中的<code>refresh()</code>方法中开始创建和初始化<code>Spring Bean</code></p>
-<pre><code class="highlight plain">public AnnotationConfigApplicationContext(Class&lt;?&gt;... componentClasses) &#123;
-	this();
-	register(componentClasses);
-	refresh();
-&#125;</code></pre>
-
-<p><code>refresh</code>方法中</p>
-<pre><code class="highlight plain">&#x2F;&#x2F; Instantiate all remaining (non-lazy-init) singletons.
-finishBeanFactoryInitialization(beanFactory);</code></pre>
-
-<p>这里调用同个类中的<code>finishBeanFactoryInitialization</code>方法开始创建所有非懒加载的单例<code>Spring Bean</code>，在这个方法中调用之前创建好的工厂<code>DefaultListableBeanFactory</code>实例来创建<code>Spring Bean</code></p>
-<pre><code class="highlight plain">&#x2F;&#x2F; Instantiate all remaining (non-lazy-init) singletons.
-beanFactory.preInstantiateSingletons();</code></pre>
-
-<p>查看这个方法</p>
-<pre><code class="highlight plain">@Override
-public void preInstantiateSingletons() throws BeansException &#123;
-	if (logger.isTraceEnabled()) &#123;
-		logger.trace(&quot;Pre-instantiating singletons in &quot; + this);
-	&#125;
-
-	&#x2F;&#x2F; Iterate over a copy to allow for init methods which in turn register new bean definitions.
-	&#x2F;&#x2F; While this may not be part of the regular factory bootstrap, it does otherwise work fine.
-	&#x2F;&#x2F;BeanDefinition是存储要由Spring创建的类的信息，例如是否懒加载，单例等
-	&#x2F;&#x2F;beanDefinitionNames指代要实例化的类的名字
-	List&lt;String&gt; beanNames &#x3D; new ArrayList&lt;&gt;(this.beanDefinitionNames);
-	&#x2F;&#x2F;遍历开始实例化Spring Bean
-	&#x2F;&#x2F; Trigger initialization of all non-lazy singleton beans...
-	for (String beanName : beanNames) &#123;
-		RootBeanDefinition bd &#x3D; getMergedLocalBeanDefinition(beanName);
-		if (!bd.isAbstract() &amp;&amp; bd.isSingleton() &amp;&amp; !bd.isLazyInit()) &#123;
-			if (isFactoryBean(beanName)) &#123;
-				Object bean &#x3D; getBean(FACTORY_BEAN_PREFIX + beanName);
-				if (bean instanceof FactoryBean) &#123;
-					final FactoryBean&lt;?&gt; factory &#x3D; (FactoryBean&lt;?&gt;) bean;
-					boolean isEagerInit;
-					if (System.getSecurityManager() !&#x3D; null &amp;&amp; factory instanceof SmartFactoryBean) &#123;
-						isEagerInit &#x3D; AccessController.doPrivileged((PrivilegedAction&lt;Boolean&gt;)
-										((SmartFactoryBean&lt;?&gt;) factory)::isEagerInit,
-								getAccessControlContext());
-					&#125;
-					else &#123;
-						isEagerInit &#x3D; (factory instanceof SmartFactoryBean &amp;&amp;
-								((SmartFactoryBean&lt;?&gt;) factory).isEagerInit());
-					&#125;
-					if (isEagerInit) &#123;
-						getBean(beanName);
-					&#125;
-				&#125;
-			&#125;
-			else &#123;
-				getBean(beanName);
-			&#125;
-		&#125;
-	&#125;</code></pre>
-
-<p>从<code>getBean(beanName)</code>进入，直接找实例化部分的代码</p>
+    // Iterate over a copy to allow for init methods which in turn register new bean definitions.
+    // While this may not be part of the regular factory bootstrap, it does otherwise work fine.
+    //BeanDefinition是存储要由Spring创建的类的信息，例如是否懒加载，单例等
+    //beanDefinitionNames指代要实例化的类的名字
+    List&lt;String&gt; beanNames = new ArrayList&lt;&gt;(this.beanDefinitionNames);
+    //遍历开始实例化Spring Bean
+    // Trigger initialization of all non-lazy singleton beans...
+    for (String beanName : beanNames) {
+        RootBeanDefinition bd = getMergedLocalBeanDefinition(beanName);
+        if (!bd.isAbstract() &amp;&amp; bd.isSingleton() &amp;&amp; !bd.isLazyInit()) {
+            if (isFactoryBean(beanName)) {
+                Object bean = getBean(FACTORY_BEAN_PREFIX + beanName);
+                if (bean instanceof FactoryBean) {
+                    final FactoryBean&lt;?&gt; factory = (FactoryBean&lt;?&gt;) bean;
+                    boolean isEagerInit;
+                    if (System.getSecurityManager() != null &amp;&amp; factory instanceof SmartFactoryBean) {
+                        isEagerInit = AccessController.doPrivileged((PrivilegedAction&lt;Boolean&gt;)
+                                        ((SmartFactoryBean&lt;?&gt;) factory)::isEagerInit,
+                                getAccessControlContext());
+                    }
+                    else {
+                        isEagerInit = (factory instanceof SmartFactoryBean &amp;&amp;
+                                ((SmartFactoryBean&lt;?&gt;) factory).isEagerInit());
+                    }
+                    if (isEagerInit) {
+                        getBean(beanName);
+                    }
+                }
+            }
+            else {
+                getBean(beanName);
+            }
+        }
+    }</code></pre><p>从<code>getBean(beanName)</code>进入，直接找实例化部分的代码</p>
 <p>在实例化<code>Spring Bean</code>之前，遍历了一次<code>BeanPostProcessor</code>，在<code>Spring Bean</code>生命周期中需要多次遍历这组<code>BeanPostProcessor</code>，它们是</p>
 <p><img src="https://raw.githubusercontent.com/sinaill/pic/master/BeanPostProcessor.jpg" alt="BeanPostProcessor.jpg"></p>
 <p>除了<code>MyBeanPostProcessor</code>是我们自定义的<code>BeanPostProcessor</code>，其它都是由<code>Spring</code>注入</p>
 <p>在实例化之前，进行了以下操作</p>
-<pre><code class="highlight plain">@Nullable
-protected Object resolveBeforeInstantiation(String beanName, RootBeanDefinition mbd) &#123;
-	Object bean &#x3D; null;
-	if (!Boolean.FALSE.equals(mbd.beforeInstantiationResolved)) &#123;
-		&#x2F;&#x2F; Make sure bean class is actually resolved at this point.
-		if (!mbd.isSynthetic() &amp;&amp; hasInstantiationAwareBeanPostProcessors()) &#123;
-			Class&lt;?&gt; targetType &#x3D; determineTargetType(beanName, mbd);
-			if (targetType !&#x3D; null) &#123;
-				bean &#x3D; applyBeanPostProcessorsBeforeInstantiation(targetType, beanName);
-				if (bean !&#x3D; null) &#123;
-					bean &#x3D; applyBeanPostProcessorsAfterInitialization(bean, beanName);
-				&#125;
-			&#125;
-		&#125;
-		mbd.beforeInstantiationResolved &#x3D; (bean !&#x3D; null);
-	&#125;
-	return bean;
-&#125;</code></pre>
-
-<p>如果这里返回的<code>bean</code>不为<code>null</code>，则后面会跳过<code>Spring</code>实例化过程，将这里的<code>bean</code>作为实例化好的对象</p>
-<pre><code class="highlight plain">@Nullable
-protected Object applyBeanPostProcessorsBeforeInstantiation(Class&lt;?&gt; beanClass, String beanName) &#123;
-	for (BeanPostProcessor bp : getBeanPostProcessors()) &#123;
-		if (bp instanceof InstantiationAwareBeanPostProcessor) &#123;
-			InstantiationAwareBeanPostProcessor ibp &#x3D; (InstantiationAwareBeanPostProcessor) bp;
-			Object result &#x3D; ibp.postProcessBeforeInstantiation(beanClass, beanName);
-			if (result !&#x3D; null) &#123;
-				return result;
-			&#125;
-		&#125;
-	&#125;
-	return null;
-&#125;</code></pre>
-
-<p>这个方法属于<code>DefaultListableBeanFactory</code>，调用实现了<code>InstantiationAwareBeanPostProcessor</code>接口的<code>BeanPostProcessor</code>的<code>postProcessBeforeInstantiation</code>方法，传入的参数为要实例化的类的<code>Class</code>对象和类名</p>
+<pre><code>@Nullable
+protected Object resolveBeforeInstantiation(String beanName, RootBeanDefinition mbd) {
+    Object bean = null;
+    if (!Boolean.FALSE.equals(mbd.beforeInstantiationResolved)) {
+        // Make sure bean class is actually resolved at this point.
+        if (!mbd.isSynthetic() &amp;&amp; hasInstantiationAwareBeanPostProcessors()) {
+            Class&lt;?&gt; targetType = determineTargetType(beanName, mbd);
+            if (targetType != null) {
+                bean = applyBeanPostProcessorsBeforeInstantiation(targetType, beanName);
+                if (bean != null) {
+                    bean = applyBeanPostProcessorsAfterInitialization(bean, beanName);
+                }
+            }
+        }
+        mbd.beforeInstantiationResolved = (bean != null);
+    }
+    return bean;
+}</code></pre><p>如果这里返回的<code>bean</code>不为<code>null</code>，则后面会跳过<code>Spring</code>实例化过程，将这里的<code>bean</code>作为实例化好的对象</p>
+<pre><code>@Nullable
+protected Object applyBeanPostProcessorsBeforeInstantiation(Class&lt;?&gt; beanClass, String beanName) {
+    for (BeanPostProcessor bp : getBeanPostProcessors()) {
+        if (bp instanceof InstantiationAwareBeanPostProcessor) {
+            InstantiationAwareBeanPostProcessor ibp = (InstantiationAwareBeanPostProcessor) bp;
+            Object result = ibp.postProcessBeforeInstantiation(beanClass, beanName);
+            if (result != null) {
+                return result;
+            }
+        }
+    }
+    return null;
+}</code></pre><p>这个方法属于<code>DefaultListableBeanFactory</code>，调用实现了<code>InstantiationAwareBeanPostProcessor</code>接口的<code>BeanPostProcessor</code>的<code>postProcessBeforeInstantiation</code>方法，传入的参数为要实例化的类的<code>Class</code>对象和类名</p>
 <p>其中实现了这个接口的有<code>ImportAwareBeanPostProcessor</code>，<code>CommonAnnotationBeanPostProcessor</code>和<code>AutowiredAnnotationBeanPostProcessor</code>，这三个<code>BeanPostProcessor</code>均返回<code>null</code></p>
 <p>这里可以定义一个<code>BeanPostProcessor</code>实现<code>InstantiationAwareBeanPostProcessor</code>接口，可以根据传入的<code>Class</code>类型或者类名字决定要不要由我们自己来实例化这个类</p>
 <p>如果返回的不是<code>null</code>而是我们自己实例化好的类，从代码看还要再遍历一次<code>BeanPostProcessor</code></p>
-<pre><code class="highlight plain">@Override
+<pre><code>@Override
 public Object applyBeanPostProcessorsAfterInitialization(Object existingBean, String beanName)
-		throws BeansException &#123;
+        throws BeansException {
 
-	Object result &#x3D; existingBean;
-	for (BeanPostProcessor processor : getBeanPostProcessors()) &#123;
-		Object current &#x3D; processor.postProcessAfterInitialization(result, beanName);
-		&#x2F;&#x2F;如果BeanPostProcessor返回一个null，则返回上一个BeanPostProcessor
-		&#x2F;&#x2F;返回的对象
-		if (current &#x3D;&#x3D; null) &#123;
-			return result;
-		&#125;
-		result &#x3D; current;
-	&#125;
-	return result;
-&#125;</code></pre>
-
-<p>将由我们自己实例的对象传入，其他<code>Spring</code>注入的<code>BeanPostProcessor</code>基本直接返回对象本身，到我们自定义的那个替代<code>Spring</code>实例化的<code>BeanPostProcessor</code>时，也可以直接返回该对象，有点类似一条初始化链，中间一个<code>BeanPostProcessor</code>返回<code>null</code>时，链子断开然后返回上一个<code>BeanPostProcessor</code>处理后的对象</p>
+    Object result = existingBean;
+    for (BeanPostProcessor processor : getBeanPostProcessors()) {
+        Object current = processor.postProcessAfterInitialization(result, beanName);
+        //如果BeanPostProcessor返回一个null，则返回上一个BeanPostProcessor
+        //返回的对象
+        if (current == null) {
+            return result;
+        }
+        result = current;
+    }
+    return result;
+}</code></pre><p>将由我们自己实例的对象传入，其他<code>Spring</code>注入的<code>BeanPostProcessor</code>基本直接返回对象本身，到我们自定义的那个替代<code>Spring</code>实例化的<code>BeanPostProcessor</code>时，也可以直接返回该对象，有点类似一条初始化链，中间一个<code>BeanPostProcessor</code>返回<code>null</code>时，链子断开然后返回上一个<code>BeanPostProcessor</code>处理后的对象</p>
 <p>接着是实例化的代码</p>
-<pre><code class="highlight plain">protected BeanWrapper createBeanInstance(String beanName, RootBeanDefinition mbd, @Nullable Object[] args) &#123;
-	&#x2F;&#x2F; Make sure bean class is actually resolved at this point.
-	Class&lt;?&gt; beanClass &#x3D; resolveBeanClass(mbd, beanName);
+<pre><code>protected BeanWrapper createBeanInstance(String beanName, RootBeanDefinition mbd, @Nullable Object[] args) {
+    // Make sure bean class is actually resolved at this point.
+    Class&lt;?&gt; beanClass = resolveBeanClass(mbd, beanName);
 
-	if (beanClass !&#x3D; null &amp;&amp; !Modifier.isPublic(beanClass.getModifiers()) &amp;&amp; !mbd.isNonPublicAccessAllowed()) &#123;
-		throw new BeanCreationException(mbd.getResourceDescription(), beanName,
-				&quot;Bean class isn&#39;t public, and non-public access not allowed: &quot; + beanClass.getName());
-	&#125;
+    if (beanClass != null &amp;&amp; !Modifier.isPublic(beanClass.getModifiers()) &amp;&amp; !mbd.isNonPublicAccessAllowed()) {
+        throw new BeanCreationException(mbd.getResourceDescription(), beanName,
+                &quot;Bean class isn&#39;t public, and non-public access not allowed: &quot; + beanClass.getName());
+    }
 
-	Supplier&lt;?&gt; instanceSupplier &#x3D; mbd.getInstanceSupplier();
-	if (instanceSupplier !&#x3D; null) &#123;
-		return obtainFromSupplier(instanceSupplier, beanName);
-	&#125;
-	&#x2F;&#x2F;工厂方法
-	if (mbd.getFactoryMethodName() !&#x3D; null) &#123;
-		return instantiateUsingFactoryMethod(beanName, mbd, args);
-	&#125;
+    Supplier&lt;?&gt; instanceSupplier = mbd.getInstanceSupplier();
+    if (instanceSupplier != null) {
+        return obtainFromSupplier(instanceSupplier, beanName);
+    }
+    //工厂方法
+    if (mbd.getFactoryMethodName() != null) {
+        return instantiateUsingFactoryMethod(beanName, mbd, args);
+    }
 
-	&#x2F;&#x2F; Shortcut when re-creating the same bean...
-	boolean resolved &#x3D; false;
-	boolean autowireNecessary &#x3D; false;
-	if (args &#x3D;&#x3D; null) &#123;
-		synchronized (mbd.constructorArgumentLock) &#123;
-			if (mbd.resolvedConstructorOrFactoryMethod !&#x3D; null) &#123;
-				resolved &#x3D; true;
-				autowireNecessary &#x3D; mbd.constructorArgumentsResolved;
-			&#125;
-		&#125;
-	&#125;
-	if (resolved) &#123;
-		if (autowireNecessary) &#123;
-			return autowireConstructor(beanName, mbd, null, null);
-		&#125;
-		else &#123;
-			return instantiateBean(beanName, mbd);
-		&#125;
-	&#125;
+    // Shortcut when re-creating the same bean...
+    boolean resolved = false;
+    boolean autowireNecessary = false;
+    if (args == null) {
+        synchronized (mbd.constructorArgumentLock) {
+            if (mbd.resolvedConstructorOrFactoryMethod != null) {
+                resolved = true;
+                autowireNecessary = mbd.constructorArgumentsResolved;
+            }
+        }
+    }
+    if (resolved) {
+        if (autowireNecessary) {
+            return autowireConstructor(beanName, mbd, null, null);
+        }
+        else {
+            return instantiateBean(beanName, mbd);
+        }
+    }
 
-	&#x2F;&#x2F; Candidate constructors for autowiring?
-	Constructor&lt;?&gt;[] ctors &#x3D; determineConstructorsFromBeanPostProcessors(beanClass, beanName);
-	if (ctors !&#x3D; null || mbd.getResolvedAutowireMode() &#x3D;&#x3D; AUTOWIRE_CONSTRUCTOR ||
-			mbd.hasConstructorArgumentValues() || !ObjectUtils.isEmpty(args)) &#123;
-		return autowireConstructor(beanName, mbd, ctors, args);
-	&#125;
+    // Candidate constructors for autowiring?
+    Constructor&lt;?&gt;[] ctors = determineConstructorsFromBeanPostProcessors(beanClass, beanName);
+    if (ctors != null || mbd.getResolvedAutowireMode() == AUTOWIRE_CONSTRUCTOR ||
+            mbd.hasConstructorArgumentValues() || !ObjectUtils.isEmpty(args)) {
+        return autowireConstructor(beanName, mbd, ctors, args);
+    }
 
-	&#x2F;&#x2F; Preferred constructors for default construction?
-	ctors &#x3D; mbd.getPreferredConstructors();
-	if (ctors !&#x3D; null) &#123;
-		return autowireConstructor(beanName, mbd, ctors, null);
-	&#125;
+    // Preferred constructors for default construction?
+    ctors = mbd.getPreferredConstructors();
+    if (ctors != null) {
+        return autowireConstructor(beanName, mbd, ctors, null);
+    }
 
-	&#x2F;&#x2F; No special handling: simply use no-arg constructor.
-	return instantiateBean(beanName, mbd);
-&#125;</code></pre>
-
-
-
-<p>由于我们在配置类<code>springConfig</code>中使用的工厂方法来实例化类，所以这里走的</p>
-<pre><code class="highlight plain">if (mbd.getFactoryMethodName() !&#x3D; null) &#123;
-	return instantiateUsingFactoryMethod(beanName, mbd, args);
-&#125;</code></pre>
-
-<p>找到我们在配置类中用<code>@Bean</code>注解的对应的方法进行实例化</p>
+    // No special handling: simply use no-arg constructor.
+    return instantiateBean(beanName, mbd);
+}</code></pre><p>由于我们在配置类<code>springConfig</code>中使用的工厂方法来实例化类，所以这里走的</p>
+<pre><code>if (mbd.getFactoryMethodName() != null) {
+    return instantiateUsingFactoryMethod(beanName, mbd, args);
+}</code></pre><p>找到我们在配置类中用<code>@Bean</code>注解的对应的方法进行实例化</p>
 <p>这里如果我们不是用得工厂方法，而是正常的<code>@Repository</code>，则下面还要经过<code>determineConstructorsFromBeanPostProcessors</code></p>
-<pre><code class="highlight plain">@Nullable
+<pre><code>@Nullable
 protected Constructor&lt;?&gt;[] determineConstructorsFromBeanPostProcessors(@Nullable Class&lt;?&gt; beanClass, String beanName)
-		throws BeansException &#123;
+        throws BeansException {
 
-	if (beanClass !&#x3D; null &amp;&amp; hasInstantiationAwareBeanPostProcessors()) &#123;
-		for (BeanPostProcessor bp : getBeanPostProcessors()) &#123;
-			if (bp instanceof SmartInstantiationAwareBeanPostProcessor) &#123;
-				SmartInstantiationAwareBeanPostProcessor ibp &#x3D; (SmartInstantiationAwareBeanPostProcessor) bp;
-				Constructor&lt;?&gt;[] ctors &#x3D; ibp.determineCandidateConstructors(beanClass, beanName);
-				if (ctors !&#x3D; null) &#123;
-					return ctors;
-				&#125;
-			&#125;
-		&#125;
-	&#125;
-	return null;
-&#125;</code></pre>
-
-<p>主要是用来完成构造器注入的</p>
+    if (beanClass != null &amp;&amp; hasInstantiationAwareBeanPostProcessors()) {
+        for (BeanPostProcessor bp : getBeanPostProcessors()) {
+            if (bp instanceof SmartInstantiationAwareBeanPostProcessor) {
+                SmartInstantiationAwareBeanPostProcessor ibp = (SmartInstantiationAwareBeanPostProcessor) bp;
+                Constructor&lt;?&gt;[] ctors = ibp.determineCandidateConstructors(beanClass, beanName);
+                if (ctors != null) {
+                    return ctors;
+                }
+            }
+        }
+    }
+    return null;
+}</code></pre><p>主要是用来完成构造器注入的</p>
 <p>实例化完之后，接着马上第二次遍历<code>BeanPostProcessor</code></p>
-<pre><code class="highlight plain">protected void applyMergedBeanDefinitionPostProcessors(RootBeanDefinition mbd, Class&lt;?&gt; beanType, String beanName) &#123;
-	for (BeanPostProcessor bp : getBeanPostProcessors()) &#123;
-		if (bp instanceof MergedBeanDefinitionPostProcessor) &#123;
-			MergedBeanDefinitionPostProcessor bdp &#x3D; (MergedBeanDefinitionPostProcessor) bp;
-			bdp.postProcessMergedBeanDefinition(mbd, beanType, beanName);
-		&#125;
-	&#125;
-&#125;</code></pre>
-
-<p>先放着，大致是完成了对注入元素注解的预解析</p>
+<pre><code>protected void applyMergedBeanDefinitionPostProcessors(RootBeanDefinition mbd, Class&lt;?&gt; beanType, String beanName) {
+    for (BeanPostProcessor bp : getBeanPostProcessors()) {
+        if (bp instanceof MergedBeanDefinitionPostProcessor) {
+            MergedBeanDefinitionPostProcessor bdp = (MergedBeanDefinitionPostProcessor) bp;
+            bdp.postProcessMergedBeanDefinition(mbd, beanType, beanName);
+        }
+    }
+}</code></pre><p>先放着，大致是完成了对注入元素注解的预解析</p>
 <p>不过实现了这个接口的有<code>CommonAnnotationBeanPostProcessor</code>，<code>AutowiredAnnotationBeanPostProcessor</code>和<code>ApplicationListenerDetector</code>，最后这个类的实现的方法为将<code>beanName</code>添加到它类变量<code>singleonNames</code>中</p>
 <p><code>CommonAnnotationBeanPostProcessor</code>先调用父类<code>InitDestroyAnnotationBeanPostProcessor</code>解析<code>Bean</code>中有关生命周期的注解<code>@PostConstruct</code>和<code>@PreDestroy</code>，然后解析需要<code>@AutoWire</code>和<code>@Resource</code>注入的配置</p>
 <p>然后是填充类属性</p>
-<pre><code class="highlight plain">populateBean(beanName, mbd, instanceWrapper)</code></pre>
-
-<p>内部又遍历一次<code>BeanPostProcessor</code></p>
-<pre><code class="highlight plain">if (!mbd.isSynthetic() &amp;&amp; hasInstantiationAwareBeanPostProcessors()) &#123;
-	for (BeanPostProcessor bp : getBeanPostProcessors()) &#123;
-		if (bp instanceof InstantiationAwareBeanPostProcessor) &#123;
-			InstantiationAwareBeanPostProcessor ibp &#x3D; (InstantiationAwareBeanPostProcessor) bp;
-			if (!ibp.postProcessAfterInstantiation(bw.getWrappedInstance(), beanName)) &#123;
-				continueWithPropertyPopulation &#x3D; false;
-				break;
-			&#125;
-		&#125;
-	&#125;
-&#125;</code></pre>
-
-<p>这次与第一次遍历<code>BeanPostProcessor</code>向对应，第一次调用的<code>postProcessBeforeInstantiation</code>方法，这里则调用的<code>postProcessAfterInstantiation</code></p>
+<pre><code>populateBean(beanName, mbd, instanceWrapper)</code></pre><p>内部又遍历一次<code>BeanPostProcessor</code></p>
+<pre><code>if (!mbd.isSynthetic() &amp;&amp; hasInstantiationAwareBeanPostProcessors()) {
+    for (BeanPostProcessor bp : getBeanPostProcessors()) {
+        if (bp instanceof InstantiationAwareBeanPostProcessor) {
+            InstantiationAwareBeanPostProcessor ibp = (InstantiationAwareBeanPostProcessor) bp;
+            if (!ibp.postProcessAfterInstantiation(bw.getWrappedInstance(), beanName)) {
+                continueWithPropertyPopulation = false;
+                break;
+            }
+        }
+    }
+}</code></pre><p>这次与第一次遍历<code>BeanPostProcessor</code>向对应，第一次调用的<code>postProcessBeforeInstantiation</code>方法，这里则调用的<code>postProcessAfterInstantiation</code></p>
 <p>这里传入的参数为实例化好的对象和类名</p>
 <p>其中实现了这个接口的有<code>ImportAwareBeanPostProcessor</code>，<code>CommonAnnotationBeanPostProcessor</code>和<code>AutowiredAnnotationBeanPostProcessor</code>，这三个<code>BeanPostProcessor</code>均返回<code>true</code></p>
 <p>如果有我们自定义的<code>BeanPostProcessor</code>并且实现了接口<code>InstantiationAwareBeanPostProcessor</code>，在这里返回<code>false</code>时，会停止后面的填充属性流程</p>
 <p>然后又遍历一次<code>BeanPostProcessor</code></p>
-<pre><code class="highlight plain">for (BeanPostProcessor bp : getBeanPostProcessors()) &#123;
-	if (bp instanceof InstantiationAwareBeanPostProcessor) &#123;
-		InstantiationAwareBeanPostProcessor ibp &#x3D; (InstantiationAwareBeanPostProcessor) bp;
-		PropertyValues pvsToUse &#x3D; ibp.postProcessProperties(pvs, bw.getWrappedInstance(), beanName);
-		if (pvsToUse &#x3D;&#x3D; null) &#123;
-			if (filteredPds &#x3D;&#x3D; null) &#123;
-				filteredPds &#x3D; filterPropertyDescriptorsForDependencyCheck(bw, mbd.allowCaching);
-			&#125;
-			pvsToUse &#x3D; ibp.postProcessPropertyValues(pvs, filteredPds, bw.getWrappedInstance(), beanName);
-			if (pvsToUse &#x3D;&#x3D; null) &#123;
-				return;
-			&#125;
-		&#125;
-		pvs &#x3D; pvsToUse;
-	&#125;
-&#125;</code></pre>
-
-<p>主要是注入<code>@Resource</code>和<code>Autowire</code>，先放着</p>
+<pre><code>for (BeanPostProcessor bp : getBeanPostProcessors()) {
+    if (bp instanceof InstantiationAwareBeanPostProcessor) {
+        InstantiationAwareBeanPostProcessor ibp = (InstantiationAwareBeanPostProcessor) bp;
+        PropertyValues pvsToUse = ibp.postProcessProperties(pvs, bw.getWrappedInstance(), beanName);
+        if (pvsToUse == null) {
+            if (filteredPds == null) {
+                filteredPds = filterPropertyDescriptorsForDependencyCheck(bw, mbd.allowCaching);
+            }
+            pvsToUse = ibp.postProcessPropertyValues(pvs, filteredPds, bw.getWrappedInstance(), beanName);
+            if (pvsToUse == null) {
+                return;
+            }
+        }
+        pvs = pvsToUse;
+    }
+}</code></pre><p>主要是注入<code>@Resource</code>和<code>Autowire</code>，先放着</p>
 <p><code>populateBean</code>流程完成</p>
-<pre><code class="highlight plain">exposedObject &#x3D; initializeBean(beanName, exposedObject, mbd);</code></pre>
+<pre><code>exposedObject = initializeBean(beanName, exposedObject, mbd);</code></pre><p>初始化流程</p>
+<pre><code>protected Object initializeBean(final String beanName, final Object bean, @Nullable RootBeanDefinition mbd) {
+    if (System.getSecurityManager() != null) {
+        AccessController.doPrivileged((PrivilegedAction&lt;Object&gt;) () -&gt; {
+            invokeAwareMethods(beanName, bean);
+            return null;
+        }, getAccessControlContext());
+    }
+    else {
+        invokeAwareMethods(beanName, bean);
+    }
 
-<p>初始化流程</p>
-<pre><code class="highlight plain">protected Object initializeBean(final String beanName, final Object bean, @Nullable RootBeanDefinition mbd) &#123;
-	if (System.getSecurityManager() !&#x3D; null) &#123;
-		AccessController.doPrivileged((PrivilegedAction&lt;Object&gt;) () -&gt; &#123;
-			invokeAwareMethods(beanName, bean);
-			return null;
-		&#125;, getAccessControlContext());
-	&#125;
-	else &#123;
-		invokeAwareMethods(beanName, bean);
-	&#125;
+    Object wrappedBean = bean;
+    if (mbd == null || !mbd.isSynthetic()) {
+        //这里处理@PostConstruct
+        wrappedBean = applyBeanPostProcessorsBeforeInitialization(wrappedBean, beanName);
+    }
 
-	Object wrappedBean &#x3D; bean;
-	if (mbd &#x3D;&#x3D; null || !mbd.isSynthetic()) &#123;
-		&#x2F;&#x2F;这里处理@PostConstruct
-		wrappedBean &#x3D; applyBeanPostProcessorsBeforeInitialization(wrappedBean, beanName);
-	&#125;
+    try {
+        //这里处理了实现接口InitializingBean的afterPropertiesSet方法(void无参)
+        //然后再调用init方法(Bean中init-method属性)
+        invokeInitMethods(beanName, wrappedBean, mbd);
+    }
+    catch (Throwable ex) {
+        throw new BeanCreationException(
+                (mbd != null ? mbd.getResourceDescription() : null),
+                beanName, &quot;Invocation of init method failed&quot;, ex);
+    }
+    if (mbd == null || !mbd.isSynthetic()) {
+        wrappedBean = applyBeanPostProcessorsAfterInitialization(wrappedBean, beanName);
+    }
 
-	try &#123;
-		&#x2F;&#x2F;这里处理了实现接口InitializingBean的afterPropertiesSet方法(void无参)
-		&#x2F;&#x2F;然后再调用init方法(Bean中init-method属性)
-		invokeInitMethods(beanName, wrappedBean, mbd);
-	&#125;
-	catch (Throwable ex) &#123;
-		throw new BeanCreationException(
-				(mbd !&#x3D; null ? mbd.getResourceDescription() : null),
-				beanName, &quot;Invocation of init method failed&quot;, ex);
-	&#125;
-	if (mbd &#x3D;&#x3D; null || !mbd.isSynthetic()) &#123;
-		wrappedBean &#x3D; applyBeanPostProcessorsAfterInitialization(wrappedBean, beanName);
-	&#125;
-
-	return wrappedBean;
-&#125;</code></pre>
-
-<p>先看<code>invokeAwareMethods(beanName, bean)</code></p>
-<pre><code class="highlight plain">private void invokeAwareMethods(final String beanName, final Object bean) &#123;
-	if (bean instanceof Aware) &#123;
-		if (bean instanceof BeanNameAware) &#123;
-			((BeanNameAware) bean).setBeanName(beanName);
-		&#125;
-		if (bean instanceof BeanClassLoaderAware) &#123;
-			ClassLoader bcl &#x3D; getBeanClassLoader();
-			if (bcl !&#x3D; null) &#123;
-				((BeanClassLoaderAware) bean).setBeanClassLoader(bcl);
-			&#125;
-		&#125;
-		if (bean instanceof BeanFactoryAware) &#123;
-			((BeanFactoryAware) bean).setBeanFactory(AbstractAutowireCapableBeanFactory.this);
-		&#125;
-	&#125;
-&#125;</code></pre>
-
-<p>看<code>Bean</code>是否实现这几个接口，然后执行对应操作</p>
+    return wrappedBean;
+}</code></pre><p>先看<code>invokeAwareMethods(beanName, bean)</code></p>
+<pre><code>private void invokeAwareMethods(final String beanName, final Object bean) {
+    if (bean instanceof Aware) {
+        if (bean instanceof BeanNameAware) {
+            ((BeanNameAware) bean).setBeanName(beanName);
+        }
+        if (bean instanceof BeanClassLoaderAware) {
+            ClassLoader bcl = getBeanClassLoader();
+            if (bcl != null) {
+                ((BeanClassLoaderAware) bean).setBeanClassLoader(bcl);
+            }
+        }
+        if (bean instanceof BeanFactoryAware) {
+            ((BeanFactoryAware) bean).setBeanFactory(AbstractAutowireCapableBeanFactory.this);
+        }
+    }
+}</code></pre><p>看<code>Bean</code>是否实现这几个接口，然后执行对应操作</p>
 <p>然后到<code>wrappedBean = applyBeanPostProcessorsBeforeInitialization(wrappedBean, beanName);</code></p>
-<pre><code class="highlight plain">@Override
+<pre><code>@Override
 public Object applyBeanPostProcessorsBeforeInitialization(Object existingBean, String beanName)
-		throws BeansException &#123;
+        throws BeansException {
 
-	Object result &#x3D; existingBean;
-	for (BeanPostProcessor processor : getBeanPostProcessors()) &#123;
-		Object current &#x3D; processor.postProcessBeforeInitialization(result, beanName);
-		if (current &#x3D;&#x3D; null) &#123;
-			return result;
-		&#125;
-		result &#x3D; current;
-	&#125;
-	return result;
-&#125;</code></pre>
-
-<p>又遍历一次<code>BeanPostProcessor</code>，调用的<code>postProcessBeforeInitialization</code>方法</p>
+    Object result = existingBean;
+    for (BeanPostProcessor processor : getBeanPostProcessors()) {
+        Object current = processor.postProcessBeforeInitialization(result, beanName);
+        if (current == null) {
+            return result;
+        }
+        result = current;
+    }
+    return result;
+}</code></pre><p>又遍历一次<code>BeanPostProcessor</code>，调用的<code>postProcessBeforeInitialization</code>方法</p>
 <p>这里涉及到生命周期中的<code>@PostConstruct</code>方法，由<code>CommonAnnotationBeanPostProcessor</code>提供实现，<code>@PostConstruct</code>注解的方法就是在这被调用的</p>
 <p>然后到<code>invokeInitMethods(beanName, wrappedBean, mbd);</code></p>
 <p>在这里面，如果<code>Bean</code>实现了<code>InitializingBean</code>接口，则调用<code>afterPropertiesSet</code>方法，在这之后接着调用<code>init</code>方法，这个<code>init</code>方法指的<code>Spring</code>配置中的<code>init-method</code>属性</p>
 <p>接着<code>wrappedBean = applyBeanPostProcessorsAfterInitialization(wrappedBean, beanName)</code>，又遍历<code>BeanPostProcessor</code></p>
-<pre><code class="highlight plain">public Object applyBeanPostProcessorsAfterInitialization(Object existingBean, String beanName)
-		throws BeansException &#123;
+<pre><code>public Object applyBeanPostProcessorsAfterInitialization(Object existingBean, String beanName)
+        throws BeansException {
 
-	Object result &#x3D; existingBean;
-	for (BeanPostProcessor processor : getBeanPostProcessors()) &#123;
-		Object current &#x3D; processor.postProcessAfterInitialization(result, beanName);
-		if (current &#x3D;&#x3D; null) &#123;
-			return result;
-		&#125;
-		result &#x3D; current;
-	&#125;
-	return result;
-&#125;</code></pre>
-
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>总共经过7次后置处理器</p>
+    Object result = existingBean;
+    for (BeanPostProcessor processor : getBeanPostProcessors()) {
+        Object current = processor.postProcessAfterInitialization(result, beanName);
+        if (current == null) {
+            return result;
+        }
+        result = current;
+    }
+    return result;
+}</code></pre><h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>总共经过7次后置处理器</p>
 <ol>
 <li>第一次在创建实例之前，如果这里有后置处理器直接返回对应的类的实例，则跳过后面创建过程</li>
 </ol>
-<pre><code class="highlight plain">protected Object applyBeanPostProcessorsBeforeInstantiation(Class&lt;?&gt; beanClass, String beanName) &#123;
-	for (BeanPostProcessor bp : getBeanPostProcessors()) &#123;
-		if (bp instanceof InstantiationAwareBeanPostProcessor) &#123;
-			InstantiationAwareBeanPostProcessor ibp &#x3D; (InstantiationAwareBeanPostProcessor) bp;
-			Object result &#x3D; ibp.postProcessBeforeInstantiation(beanClass, beanName);
-			if (result !&#x3D; null) &#123;
-				return result;
-			&#125;
-		&#125;
-	&#125;
-	return null;
-&#125;</code></pre>
-
-<ol start="2">
+<pre><code>protected Object applyBeanPostProcessorsBeforeInstantiation(Class&lt;?&gt; beanClass, String beanName) {
+    for (BeanPostProcessor bp : getBeanPostProcessors()) {
+        if (bp instanceof InstantiationAwareBeanPostProcessor) {
+            InstantiationAwareBeanPostProcessor ibp = (InstantiationAwareBeanPostProcessor) bp;
+            Object result = ibp.postProcessBeforeInstantiation(beanClass, beanName);
+            if (result != null) {
+                return result;
+            }
+        }
+    }
+    return null;
+}</code></pre><ol start="2">
 <li>之后是第二次调用后置处理器，同样也是在创建实例之前，找寻合适的构造器方法，主要是找到构造器注入方法，否则接下来使用默认无参构造方法来创建实例，如果这里找到构造器注入，则调用这个构造器实例化这个类，同时注入需要的属性</li>
 </ol>
-<pre><code class="highlight plain">protected Constructor&lt;?&gt;[] determineConstructorsFromBeanPostProcessors(@Nullable Class&lt;?&gt; beanClass, String beanName)
-		throws BeansException &#123;
+<pre><code>protected Constructor&lt;?&gt;[] determineConstructorsFromBeanPostProcessors(@Nullable Class&lt;?&gt; beanClass, String beanName)
+        throws BeansException {
 
-	if (beanClass !&#x3D; null &amp;&amp; hasInstantiationAwareBeanPostProcessors()) &#123;
-		for (BeanPostProcessor bp : getBeanPostProcessors()) &#123;
-			if (bp instanceof SmartInstantiationAwareBeanPostProcessor) &#123;
-				SmartInstantiationAwareBeanPostProcessor ibp &#x3D; (SmartInstantiationAwareBeanPostProcessor) bp;
-				Constructor&lt;?&gt;[] ctors &#x3D; ibp.determineCandidateConstructors(beanClass, beanName);
-				if (ctors !&#x3D; null) &#123;
-					return ctors;
-				&#125;
-			&#125;
-		&#125;
-	&#125;
-	return null;
-&#125;</code></pre>
-
-<ol start="3">
+    if (beanClass != null &amp;&amp; hasInstantiationAwareBeanPostProcessors()) {
+        for (BeanPostProcessor bp : getBeanPostProcessors()) {
+            if (bp instanceof SmartInstantiationAwareBeanPostProcessor) {
+                SmartInstantiationAwareBeanPostProcessor ibp = (SmartInstantiationAwareBeanPostProcessor) bp;
+                Constructor&lt;?&gt;[] ctors = ibp.determineCandidateConstructors(beanClass, beanName);
+                if (ctors != null) {
+                    return ctors;
+                }
+            }
+        }
+    }
+    return null;
+}</code></pre><ol start="3">
 <li>第三次调用后置处理器，主要解析<code>Bean</code>中有关生命周期的注解<code>@PostConstruct</code>和<code>@PreDestroy</code>，然后解析需要<code>@AutoWired</code>和<code>@Resource</code>注入的配置</li>
 </ol>
-<pre><code class="highlight plain">protected void applyMergedBeanDefinitionPostProcessors(RootBeanDefinition mbd, Class&lt;?&gt; beanType, String beanName) &#123;
-	for (BeanPostProcessor bp : getBeanPostProcessors()) &#123;
-		if (bp instanceof MergedBeanDefinitionPostProcessor) &#123;
-			MergedBeanDefinitionPostProcessor bdp &#x3D; (MergedBeanDefinitionPostProcessor) bp;
-			bdp.postProcessMergedBeanDefinition(mbd, beanType, beanName);
-		&#125;
-	&#125;
-&#125;</code></pre>
-
-<ol start="4">
+<pre><code>protected void applyMergedBeanDefinitionPostProcessors(RootBeanDefinition mbd, Class&lt;?&gt; beanType, String beanName) {
+    for (BeanPostProcessor bp : getBeanPostProcessors()) {
+        if (bp instanceof MergedBeanDefinitionPostProcessor) {
+            MergedBeanDefinitionPostProcessor bdp = (MergedBeanDefinitionPostProcessor) bp;
+            bdp.postProcessMergedBeanDefinition(mbd, beanType, beanName);
+        }
+    }
+}</code></pre><ol start="4">
 <li>第四次调用后置处理器，还是在初始化之前，当有一个返回<code>false</code>，跳过实例内部属性注入过程</li>
 </ol>
-<pre><code class="highlight plain">if (!mbd.isSynthetic() &amp;&amp; hasInstantiationAwareBeanPostProcessors()) &#123;
-	for (BeanPostProcessor bp : getBeanPostProcessors()) &#123;
-		if (bp instanceof InstantiationAwareBeanPostProcessor) &#123;
-			InstantiationAwareBeanPostProcessor ibp &#x3D; (InstantiationAwareBeanPostProcessor) bp;
-			if (!ibp.postProcessAfterInstantiation(bw.getWrappedInstance(), beanName)) &#123;
-				continueWithPropertyPopulation &#x3D; false;
-				break;
-			&#125;
-		&#125;
-	&#125;
-&#125;</code></pre>
-
-<ol start="5">
+<pre><code>if (!mbd.isSynthetic() &amp;&amp; hasInstantiationAwareBeanPostProcessors()) {
+    for (BeanPostProcessor bp : getBeanPostProcessors()) {
+        if (bp instanceof InstantiationAwareBeanPostProcessor) {
+            InstantiationAwareBeanPostProcessor ibp = (InstantiationAwareBeanPostProcessor) bp;
+            if (!ibp.postProcessAfterInstantiation(bw.getWrappedInstance(), beanName)) {
+                continueWithPropertyPopulation = false;
+                break;
+            }
+        }
+    }
+}</code></pre><ol start="5">
 <li>第五次调用后置处理器，进行内部属性注入，<code>@Autowired</code> <code>@Resource</code></li>
 </ol>
-<pre><code class="highlight plain">for (BeanPostProcessor bp : getBeanPostProcessors()) &#123;
-	if (bp instanceof InstantiationAwareBeanPostProcessor) &#123;
-		InstantiationAwareBeanPostProcessor ibp &#x3D; (InstantiationAwareBeanPostProcessor) bp;
-		PropertyValues pvsToUse &#x3D; ibp.postProcessProperties(pvs, bw.getWrappedInstance(), beanName);
-		if (pvsToUse &#x3D;&#x3D; null) &#123;
-			if (filteredPds &#x3D;&#x3D; null) &#123;
-				filteredPds &#x3D; filterPropertyDescriptorsForDependencyCheck(bw, mbd.allowCaching);
-			&#125;
-			pvsToUse &#x3D; ibp.postProcessPropertyValues(pvs, filteredPds, bw.getWrappedInstance(), beanName);
-			if (pvsToUse &#x3D;&#x3D; null) &#123;
-				return;
-			&#125;
-		&#125;
-		pvs &#x3D; pvsToUse;
-	&#125;
-&#125;</code></pre>
-
-<ol start="6">
+<pre><code>for (BeanPostProcessor bp : getBeanPostProcessors()) {
+    if (bp instanceof InstantiationAwareBeanPostProcessor) {
+        InstantiationAwareBeanPostProcessor ibp = (InstantiationAwareBeanPostProcessor) bp;
+        PropertyValues pvsToUse = ibp.postProcessProperties(pvs, bw.getWrappedInstance(), beanName);
+        if (pvsToUse == null) {
+            if (filteredPds == null) {
+                filteredPds = filterPropertyDescriptorsForDependencyCheck(bw, mbd.allowCaching);
+            }
+            pvsToUse = ibp.postProcessPropertyValues(pvs, filteredPds, bw.getWrappedInstance(), beanName);
+            if (pvsToUse == null) {
+                return;
+            }
+        }
+        pvs = pvsToUse;
+    }
+}</code></pre><ol start="6">
 <li>第六次调用后置处理器，开始初始化，处理<code>@PostConstruct</code>注解方法</li>
 </ol>
-<pre><code class="highlight plain">public Object applyBeanPostProcessorsBeforeInitialization(Object existingBean, String beanName)
-		throws BeansException &#123;
+<pre><code>public Object applyBeanPostProcessorsBeforeInitialization(Object existingBean, String beanName)
+        throws BeansException {
 
-	Object result &#x3D; existingBean;
-	for (BeanPostProcessor processor : getBeanPostProcessors()) &#123;
-		Object current &#x3D; processor.postProcessBeforeInitialization(result, beanName);
-		if (current &#x3D;&#x3D; null) &#123;
-			return result;
-		&#125;
-		result &#x3D; current;
-	&#125;
-	return result;
-&#125;</code></pre>
-
-<ol start="7">
+    Object result = existingBean;
+    for (BeanPostProcessor processor : getBeanPostProcessors()) {
+        Object current = processor.postProcessBeforeInitialization(result, beanName);
+        if (current == null) {
+            return result;
+        }
+        result = current;
+    }
+    return result;
+}</code></pre><ol start="7">
 <li>第七次调用后置处理器</li>
 </ol>
-<pre><code class="highlight plain">@Override
+<pre><code>@Override
 public Object applyBeanPostProcessorsAfterInitialization(Object existingBean, String beanName)
-		throws BeansException &#123;
+        throws BeansException {
 
-	Object result &#x3D; existingBean;
-	for (BeanPostProcessor processor : getBeanPostProcessors()) &#123;
-		Object current &#x3D; processor.postProcessAfterInitialization(result, beanName);
-		if (current &#x3D;&#x3D; null) &#123;
-			return result;
-		&#125;
-		result &#x3D; current;
-	&#125;
-	return result;
-&#125;</code></pre>
-
-<h3 id="附加"><a href="#附加" class="headerlink" title="附加"></a>附加</h3><p>这几个后置处理器在<code>AnnotationConfigUtils</code>中的<code>registerBeanDefinition</code>方法中注册到<code>DefaultListableBeanFactory</code>的<code>beanDefinitionNames</code>和<code>beanDefinitionMap</code>中</p>
+    Object result = existingBean;
+    for (BeanPostProcessor processor : getBeanPostProcessors()) {
+        Object current = processor.postProcessAfterInitialization(result, beanName);
+        if (current == null) {
+            return result;
+        }
+        result = current;
+    }
+    return result;
+}</code></pre><h3 id="附加"><a href="#附加" class="headerlink" title="附加"></a>附加</h3><p>这几个后置处理器在<code>AnnotationConfigUtils</code>中的<code>registerBeanDefinition</code>方法中注册到<code>DefaultListableBeanFactory</code>的<code>beanDefinitionNames</code>和<code>beanDefinitionMap</code>中</p>
 <p>使用注解式配置ssm时，这个过程发生在容器refresh的时候    ，在创建工厂对象后调用<code>loadBeanDefinitions</code>方法开始注册</p>
 
           
@@ -2731,65 +2521,59 @@ public Object applyBeanPostProcessorsAfterInitialization(Object existingBean, St
         
           
             <h3 id="构造器注入"><a href="#构造器注入" class="headerlink" title="构造器注入"></a>构造器注入</h3><p>构造器注入作用在第二次后置处理器调用，找到合适构造器后，用它实例化类的同时，注入依赖属性</p>
-<pre><code class="highlight plain">public class userServiceImpl implements userService&#123;
+<pre><code>public class userServiceImpl implements userService{
 
-	private userDao userdao;
-	@Autowired
-	public userServiceImpl(userDao userdao)&#123;
-		this.userdao &#x3D; userdao;
-	&#125;
+    private userDao userdao;
+    @Autowired
+    public userServiceImpl(userDao userdao){
+        this.userdao = userdao;
+    }
 
-	@Override
-	public void query() &#123;
-		userdao.query();
-	&#125;
-&#125;</code></pre>
+    @Override
+    public void query() {
+        userdao.query();
+    }
+}</code></pre><p><code>Autowired</code>注解可省略，当不需要无参构造函数时</p>
+<h3 id="set方法注入"><a href="#set方法注入" class="headerlink" title="set方法注入"></a>set方法注入</h3><pre><code>public class userServiceImpl implements userService{
 
-<p><code>Autowired</code>注解可省略，当不需要无参构造函数时</p>
-<h3 id="set方法注入"><a href="#set方法注入" class="headerlink" title="set方法注入"></a>set方法注入</h3><pre><code class="highlight plain">public class userServiceImpl implements userService&#123;
-
-	private userDao userdao;
-	@Override
-	public void query() &#123;
-		userdao.query();
-	&#125;
-	@Autowired
-	public void setuserDao(userDao userdao)&#123;
-		this.userdao &#x3D; userdao;
-	&#125;
+    private userDao userdao;
+    @Override
+    public void query() {
+        userdao.query();
+    }
+    @Autowired
+    public void setuserDao(userDao userdao){
+        this.userdao = userdao;
+    }
 
 
-&#125;</code></pre>
-
-<h3 id="普通属性注入"><a href="#普通属性注入" class="headerlink" title="普通属性注入"></a>普通属性注入</h3><p>使用<code>@Value</code>注解</p>
+}</code></pre><h3 id="普通属性注入"><a href="#普通属性注入" class="headerlink" title="普通属性注入"></a>普通属性注入</h3><p>使用<code>@Value</code>注解</p>
 <h3 id="Method-Injection方法注入"><a href="#Method-Injection方法注入" class="headerlink" title="Method Injection方法注入"></a>Method Injection方法注入</h3><p>Spring文档</p>
 <p>In most application scenarios, most beans in the container are singletons. When a singleton bean needs to collaborate with another singleton bean or a non-singleton bean needs to collaborate with another non-singleton bean, you typically handle the dependency by defining one bean as a property of the other. A problem arises when the bean lifecycles are different. Suppose singleton bean A needs to use non-singleton (prototype) bean B, perhaps on each method invocation on A. The container creates the singleton bean A only once, and thus only gets one opportunity to set the properties. The container cannot provide bean A with a new instance of bean B every time one is needed.</p>
 <p>当一个singleton的Bean A，内部依赖为prototype的Bean B，因为A只初始化一次，所以它的内部依赖B始终为同一个实例，如果要使每次用到B时都是新实例，就需要用到Method Injection</p>
 <p>文档要我们实现<code>ApplicationContextAware</code>接口，从而获得容器对象</p>
-<pre><code class="highlight plain">public class CommandManager implements ApplicationContextAware &#123;
+<pre><code>public class CommandManager implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;
 
-    public Object process(Map commandState) &#123;
-        &#x2F;&#x2F; grab a new instance of the appropriate Command
-        Command command &#x3D; createCommand();
-        &#x2F;&#x2F; set the state on the (hopefully brand new) Command instance
+    public Object process(Map commandState) {
+        // grab a new instance of the appropriate Command
+        Command command = createCommand();
+        // set the state on the (hopefully brand new) Command instance
         command.setState(commandState);
         return command.execute();
-    &#125;
+    }
 
-    protected Command createCommand() &#123;
-        &#x2F;&#x2F; notice the Spring API dependency!
+    protected Command createCommand() {
+        // notice the Spring API dependency!
         return this.applicationContext.getBean(&quot;command&quot;, Command.class);
-    &#125;
+    }
 
     public void setApplicationContext(
-            ApplicationContext applicationContext) throws BeansException &#123;
-        this.applicationContext &#x3D; applicationContext;
-    &#125;
-&#125;</code></pre>
-
-<p>官方例子中，实现接口，获取容器对象，每次使用这个类时都手动从容器获取这个对象的实例，从而每次都是新的实例B</p>
+            ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
+}</code></pre><p>官方例子中，实现接口，获取容器对象，每次使用这个类时都手动从容器获取这个对象的实例，从而每次都是新的实例B</p>
 <h3 id="depends-on"><a href="#depends-on" class="headerlink" title="depends-on"></a>depends-on</h3><p>文档中</p>
 <p>The depends-on attribute can explicitly force one or more beans to be initialized before the bean using this element is initialized</p>
 <p>depends-on属性可以强制在初始化使用这个元素的类之前初始化一个指定的类</p>

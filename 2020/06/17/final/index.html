@@ -347,35 +347,31 @@
 <p>2.final初始化可以在三个地方<br>(1)声明的时候初始化<br>(2)构造函数里初始化(！ static &amp;&amp; final，一起时会报错)<br>(3)要是没有static修饰的话可以在非静态块里初始化,要是有static修饰的话可以在静态块里初始化</p>
 <p>3.使用final成员前要确保已经初始化</p>
 <h3 id="深入理解"><a href="#深入理解" class="headerlink" title="深入理解"></a>深入理解</h3><p>1.当final变量是基本数据类型以及String类型时，如果在编译期间能知道它的确切值，则编译器会把它当做编译期常量使用。也就是说在用到该final变量的地方，相当于直接访问的这个常量，不需要在运行时确定。</p>
-<pre><code class="highlight plain">public class Test &#123;
-    public static void main(String[] args)  &#123;
-        String a &#x3D; &quot;hello2&quot;; 
-        final String b &#x3D; &quot;hello&quot;;
-        String d &#x3D; &quot;hello&quot;;
-        String c &#x3D; b + 2; 
-        String e &#x3D; d + 2;
-        System.out.println((a &#x3D;&#x3D; c));
-        System.out.println((a &#x3D;&#x3D; e));
-    &#125;
-&#125;</code></pre>
-
-<p><code>true false</code></p>
+<pre><code>public class Test {
+    public static void main(String[] args)  {
+        String a = &quot;hello2&quot;; 
+        final String b = &quot;hello&quot;;
+        String d = &quot;hello&quot;;
+        String c = b + 2; 
+        String e = d + 2;
+        System.out.println((a == c));
+        System.out.println((a == e));
+    }
+}</code></pre><p><code>true false</code></p>
 <p>不过要注意，只有在编译期间能确切知道final变量值的情况下，编译器才会进行这样的优化</p>
-<pre><code class="highlight plain">public class Test &#123;
-    public static void main(String[] args)  &#123;
-        String a &#x3D; &quot;hello2&quot;; 
-        final String b &#x3D; getHello();
-        String c &#x3D; b + 2; 
-        System.out.println((a &#x3D;&#x3D; c));
- 
-    &#125;
-     
-    public static String getHello() &#123;
-        return &quot;hello&quot;;
-    &#125;
-&#125;</code></pre>
+<pre><code>public class Test {
+    public static void main(String[] args)  {
+        String a = &quot;hello2&quot;; 
+        final String b = getHello();
+        String c = b + 2; 
+        System.out.println((a == c));
 
-<p><code>false</code></p>
+    }
+
+    public static String getHello() {
+        return &quot;hello&quot;;
+    }
+}</code></pre><p><code>false</code></p>
 <p>2.final也可以用来修饰方法的形参，防止方法内部修改形参</p>
 <p>3.匿名内部类使用的外部变量必须为final</p>
 <p><strong>外部类和外部局部变量是作为构造方法的参数传入匿名内部类的</strong></p>
@@ -404,8 +400,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/06/17/deference%20between%20sb%20and%20str/" rel="next" title="StringBuffer与String的区别">
-                <i class="fa fa-chevron-left"></i> StringBuffer与String的区别
+              <a href="/2020/06/17/comparable%20and%20comparator/" rel="next" title="comparable和comparator">
+                <i class="fa fa-chevron-left"></i> comparable和comparator
               </a>
             
           </div>
@@ -414,8 +410,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2020/06/17/io%E4%B8%AD%E7%9A%84%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F/" rel="prev" title="io中的装饰者模式">
-                io中的装饰者模式 <i class="fa fa-chevron-right"></i>
+              <a href="/2020/06/17/fail-fast%20fail-safe/" rel="prev" title="fail-fast与fail-safe">
+                fail-fast与fail-safe <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>

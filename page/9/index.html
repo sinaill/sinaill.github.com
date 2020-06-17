@@ -248,6 +248,340 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/@RequestParam%E4%BD%9C%E7%94%A8%E6%BA%90%E7%A0%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/@RequestParam%E4%BD%9C%E7%94%A8%E6%BA%90%E7%A0%81/" itemprop="url">注解@RequestParam作用源码</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">框架</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="RequestParam作用"><a href="#RequestParam作用" class="headerlink" title="@RequestParam作用"></a>@RequestParam作用</h3><p>在<code>Controller</code>方法的入参使用<code>@RequestParam</code>注解可以获取<code>Request</code>请求中的参数</p>
+<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><h4 id="普通变量"><a href="#普通变量" class="headerlink" title="普通变量"></a>普通变量</h4><p>依旧是查看解析<code>@RequestParam</code>注解的<code>RequestParamMethodArgumentResolver</code></p>
+<p><code>supportsParameter</code>方法如下</p>
+<pre><code>    @Override
+public boolean supportsParameter(MethodParameter parameter) {
+    Class&lt;?&gt; paramType = parameter.getParameterType();
+    if (parameter.hasParameterAnnotation(RequestParam.class)) {
+        if (Map.class.isAssignableFrom(paramType)) {
+            String paramName = parameter.getParameterAnnotation(RequestParam.class).value();
+            return StringUtils.hasText(paramName);
+        }
+        else {
+            return true;
+        }
+    }
+    else {
+        if (parameter.hasParameterAnnotation(RequestPart.class)) {
+            return false;
+        }
+        else if (MultipartFile.class.equals(paramType) || &quot;javax.servlet.http.Part&quot;.equals(paramType.getName())) {
+            return true;
+        }
+        else if (this.useDefaultResolution) {
+            return BeanUtils.isSimpleProperty(paramType);
+        }
+        else {
+            return false;
+        }
+    }
+}</code></pre><p>再看解析参数的<code>resolveArgument</code>方法</p>
+<pre><code>@Override
+public final Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+        NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+
+    Class&lt;?&gt; paramType = parameter.getParameterType();
+    NamedValueInfo namedValueInfo = getNamedValueInfo(parameter);
+    //取出请求中对应的属性arg
+    Object arg = resolveName(namedValueInfo.name, parameter, webRequest);
+    //请求中没有对应属性，arg为null
+    if (arg == null) {
+        //除了设置`defaultValue`，其他都会抛出异常
+        if (namedValueInfo.defaultValue != null) {
+            arg = resolveDefaultValue(namedValueInfo.defaultValue);
+        }
+        else if (namedValueInfo.required &amp;&amp; !parameter.getParameterType().getName().equals(&quot;java.util.Optional&quot;)) {
+            handleMissingValue(namedValueInfo.name, parameter);
+        }
+        arg = handleNullValue(namedValueInfo.name, arg, paramType);
+    }
+    //arg为&quot;&quot;时并且设置了defaultValue时，arg接收处理后的defaultValue
+    else if (&quot;&quot;.equals(arg) &amp;&amp; namedValueInfo.defaultValue != null) {
+        arg = resolveDefaultValue(namedValueInfo.defaultValue);
+    }
+
+    if (binderFactory != null) {
+        WebDataBinder binder = binderFactory.createBinder(webRequest, null, namedValueInfo.name);
+        arg = binder.convertIfNecessary(arg, paramType, parameter);
+    }
+
+    handleResolvedValue(arg, namedValueInfo.name, parameter, mavContainer, webRequest);
+
+    return arg;
+}</code></pre><p><code>NamedValueInfo</code>是用来存放<code>@RequestParam</code>注解中参数的类，包括<code>value</code>，<code>required</code>，<code>defaultValue</code></p>
+<pre><code>private NamedValueInfo getNamedValueInfo(MethodParameter parameter) {
+    NamedValueInfo namedValueInfo = this.namedValueInfoCache.get(parameter);
+    if (namedValueInfo == null) {
+        namedValueInfo = createNamedValueInfo(parameter);
+        namedValueInfo = updateNamedValueInfo(parameter, namedValueInfo);
+        this.namedValueInfoCache.put(parameter, namedValueInfo);
+    }
+    return namedValueInfo;
+}
+
+
+@Override
+protected NamedValueInfo createNamedValueInfo(MethodParameter parameter) {
+    RequestParam ann = parameter.getParameterAnnotation(RequestParam.class);
+    //不存在`@requestParam`时，用无参构造方法
+    return (ann != null ? new RequestParamNamedValueInfo(ann) : new RequestParamNamedValueInfo());
+}
+
+//构造方法
+    public RequestParamNamedValueInfo() {
+        super(&quot;&quot;, false, ValueConstants.DEFAULT_NONE);
+    }
+
+    public RequestParamNamedValueInfo(RequestParam annotation) {
+        super(annotation.value(), annotation.required(), annotation.defaultValue());
+    }</code></pre><p>然后要对<code>NameValueInfo</code>进行update，处理当没有<code>@RequestParam</code>注解或者<code>@RequestParam</code>注解没有设置<code>value</code>值的导致<code>NameValueInfo</code>的<code>name</code>属性为<code>&quot;&quot;</code>的情况</p>
+<pre><code>private NamedValueInfo updateNamedValueInfo(MethodParameter parameter, NamedValueInfo info) {
+    String name = info.name;
+    if (info.name.length() == 0) {
+        name = parameter.getParameterName();
+        if (name == null) {
+            throw new IllegalArgumentException(&quot;Name for argument type [&quot; + parameter.getParameterType().getName() +
+                    &quot;] not available, and parameter name information not found in class file either.&quot;);
+        }
+    }
+    String defaultValue = (ValueConstants.DEFAULT_NONE.equals(info.defaultValue) ? null : info.defaultValue);
+    return new NamedValueInfo(name, info.required, defaultValue);
+}</code></pre><p>当<code>name</code>长度为0，取入参的变量名，作为<code>name</code>，如果没有设置<code>defaultValue</code>，这里则将<code>defaultValue</code>设置为<code>ValueConstants.DEFAULT_NONE</code></p>
+<p>然后看<code>resloveName</code>方法</p>
+<pre><code>@Override
+protected Object resolveName(String name, MethodParameter parameter, NativeWebRequest webRequest) throws Exception {
+    HttpServletRequest servletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
+    MultipartHttpServletRequest multipartRequest =
+            WebUtils.getNativeRequest(servletRequest, MultipartHttpServletRequest.class);
+    Object arg;
+
+    if (MultipartFile.class.equals(parameter.getParameterType())) {
+        assertIsMultipartRequest(servletRequest);
+        Assert.notNull(multipartRequest, &quot;Expected MultipartHttpServletRequest: is a MultipartResolver configured?&quot;);
+        arg = multipartRequest.getFile(name);
+    }
+    else if (isMultipartFileCollection(parameter)) {
+        assertIsMultipartRequest(servletRequest);
+        Assert.notNull(multipartRequest, &quot;Expected MultipartHttpServletRequest: is a MultipartResolver configured?&quot;);
+        arg = multipartRequest.getFiles(name);
+    }
+    else if (isMultipartFileArray(parameter)) {
+        assertIsMultipartRequest(servletRequest);
+        Assert.notNull(multipartRequest, &quot;Expected MultipartHttpServletRequest: is a MultipartResolver configured?&quot;);
+        List&lt;MultipartFile&gt; multipartFiles = multipartRequest.getFiles(name);
+        arg = multipartFiles.toArray(new MultipartFile[multipartFiles.size()]);
+    }
+    else if (&quot;javax.servlet.http.Part&quot;.equals(parameter.getParameterType().getName())) {
+        assertIsMultipartRequest(servletRequest);
+        arg = servletRequest.getPart(name);
+    }
+    else if (isPartCollection(parameter)) {
+        assertIsMultipartRequest(servletRequest);
+        arg = new ArrayList&lt;Object&gt;(servletRequest.getParts());
+    }
+    else if (isPartArray(parameter)) {
+        assertIsMultipartRequest(servletRequest);
+        arg = RequestPartResolver.resolvePart(servletRequest);
+    }
+    else {
+        arg = null;
+        if (multipartRequest != null) {
+            List&lt;MultipartFile&gt; files = multipartRequest.getFiles(name);
+            if (!files.isEmpty()) {
+                arg = (files.size() == 1 ? files.get(0) : files);
+            }
+        }
+        if (arg == null) {
+            String[] paramValues = webRequest.getParameterValues(name);
+            if (paramValues != null) {
+                arg = (paramValues.length == 1 ? paramValues[0] : paramValues);
+            }
+        }
+    }
+
+    return arg;
+}</code></pre><p>看最下面，以<code>name</code>从<code>request</code>请求中取出对应属性，然后返回给<code>resolveArgument</code>方法，经<code>dataBinder</code>转换为入参类型之后返回，然后作为反射调用<code>Controller</code>方法的参数</p>
+<h4 id="java-util-Map"><a href="#java-util-Map" class="headerlink" title="java.util.Map"></a>java.util.Map</h4><p>入参为<code>java.util.Map</code>类型，且前面有<code>@ReqeustParam</code>注解并且<code>value</code>为空时，作用在入参上的参数解析器为<code>RequestParamMapMethodArgumentResolver</code></p>
+<pre><code>@Override
+public boolean supportsParameter(MethodParameter parameter) {
+    RequestParam ann = parameter.getParameterAnnotation(RequestParam.class);
+    if (ann != null) {
+        if (Map.class.isAssignableFrom(parameter.getParameterType())) {
+            return !StringUtils.hasText(ann.value());
+        }
+    }
+    return false;
+}
+
+@Override
+public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+        NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+
+    Class&lt;?&gt; paramType = parameter.getParameterType();
+
+    Map&lt;String, String[]&gt; parameterMap = webRequest.getParameterMap();
+    if (MultiValueMap.class.isAssignableFrom(paramType)) {
+        MultiValueMap&lt;String, String&gt; result = new LinkedMultiValueMap&lt;String, String&gt;(parameterMap.size());
+        for (Map.Entry&lt;String, String[]&gt; entry : parameterMap.entrySet()) {
+            for (String value : entry.getValue()) {
+                result.add(entry.getKey(), value);
+            }
+        }
+        return result;
+    }
+    else {
+        Map&lt;String, String&gt; result = new LinkedHashMap&lt;String, String&gt;(parameterMap.size());
+        for (Map.Entry&lt;String, String[]&gt; entry : parameterMap.entrySet()) {
+            if (entry.getValue().length &gt; 0) {
+                result.put(entry.getKey(), entry.getValue()[0]);
+            }
+        }
+        return result;
+    }
+}</code></pre><p>获取请求中参数时是用的<code>getParameterMap</code>方法以参数名为key和参数值为value的方式，获取一个<code>Map</code>类型的入参，将它返回作为反射调用该<code>Controller</code>方法的参数</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/ArrayList/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -348,444 +682,88 @@
 <p>Shared empty array instance used for empty instances.</p>
 <p><code>private static final Object[] DEFAULTCAPACITY_EMPTY_ELEMENTDATA = {};</code></p>
 <p>两个的区别是，上面的是初始化容量为0时共享的array instance，下面的是以默认容量初始化时共享的array instance.</p>
-<pre><code class="highlight plain">&#x2F;**
+<pre><code>/**
      * The array buffer into which the elements of the ArrayList are stored.
      * The capacity of the ArrayList is the length of this array buffer. Any
-     * empty ArrayList with elementData &#x3D;&#x3D; DEFAULTCAPACITY_EMPTY_ELEMENTDATA
+     * empty ArrayList with elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA
      * will be expanded to DEFAULT_CAPACITY when the first element is added.
-     *&#x2F;
-	   transient Object[] elementData;</code></pre>
-
-<p>存储元素的Object数组，empty ArrayList with elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA will be expanded to DEFAULT_CAPACITY when the first element is added</p>
-<h3 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h3><pre><code class="highlight plain">&#x2F;**
- * Constructs an empty list with an initial capacity of ten.
- *&#x2F;
-public ArrayList() &#123;
-    this.elementData &#x3D; DEFAULTCAPACITY_EMPTY_ELEMENTDATA;
-&#125;</code></pre>
-<p>无参构造函数时，Constructs an empty list with an initial capacity of ten</p>
-<pre><code class="highlight plain">&#x2F;**
+     */
+       transient Object[] elementData;</code></pre><p>存储元素的Object数组，empty ArrayList with elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA will be expanded to DEFAULT_CAPACITY when the first element is added</p>
+<h3 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h3><pre><code>    /**
+     * Constructs an empty list with an initial capacity of ten.
+     */
+    public ArrayList() {
+        this.elementData = DEFAULTCAPACITY_EMPTY_ELEMENTDATA;
+    }</code></pre><p>无参构造函数时，Constructs an empty list with an initial capacity of ten</p>
+<pre><code>/**
      * Constructs an empty list with the specified initial capacity.
      *
      * @param  initialCapacity  the initial capacity of the list
      * @throws IllegalArgumentException if the specified initial capacity
      *         is negative
-     *&#x2F;
-    public ArrayList(int initialCapacity) &#123;
-        if (initialCapacity &gt; 0) &#123;
-            this.elementData &#x3D; new Object[initialCapacity];
-        &#125; else if (initialCapacity &#x3D;&#x3D; 0) &#123;
-            this.elementData &#x3D; EMPTY_ELEMENTDATA;
-        &#125; else &#123;
+     */
+    public ArrayList(int initialCapacity) {
+        if (initialCapacity &gt; 0) {
+            this.elementData = new Object[initialCapacity];
+        } else if (initialCapacity == 0) {
+            this.elementData = EMPTY_ELEMENTDATA;
+        } else {
             throw new IllegalArgumentException(&quot;Illegal Capacity: &quot;+
                                                initialCapacity);
-        &#125;
-    &#125;</code></pre>
-
-<p>int类型为参数的构造函数，构造确定容量的ArrayList，<strong>而不是默认的10位</strong></p>
-<pre><code class="highlight plain">&#x2F;**
+        }
+    }</code></pre><p>int类型为参数的构造函数，构造确定容量的ArrayList，<strong>而不是默认的10位</strong></p>
+<pre><code>/**
      * Constructs a list containing the elements of the specified
      * collection, in the order they are returned by the collection&#39;s
      * iterator.
      *
      * @param c the collection whose elements are to be placed into this list
      * @throws NullPointerException if the specified collection is null
-     *&#x2F;
-    public ArrayList(Collection&lt;? extends E&gt; c) &#123;
-        elementData &#x3D; c.toArray();
-        if ((size &#x3D; elementData.length) !&#x3D; 0) &#123;
-            &#x2F;&#x2F; c.toArray might (incorrectly) not return Object[] (see 6260652)
-            if (elementData.getClass() !&#x3D; Object[].class)
-                elementData &#x3D; Arrays.copyOf(elementData, size, Object[].class);
-        &#125; else &#123;
-            &#x2F;&#x2F; replace with empty array.
-            this.elementData &#x3D; EMPTY_ELEMENTDATA;
-        &#125;
-    &#125;</code></pre>
+     */
+    public ArrayList(Collection&lt;? extends E&gt; c) {
+        elementData = c.toArray();
+        if ((size = elementData.length) != 0) {
+            // c.toArray might (incorrectly) not return Object[] (see 6260652)
+            if (elementData.getClass() != Object[].class)
+                elementData = Arrays.copyOf(elementData, size, Object[].class);
+        } else {
+            // replace with empty array.
+            this.elementData = EMPTY_ELEMENTDATA;
+        }
+    }</code></pre><p>可传入List或者Set类型参数，由它们存放的内容来实例化ArrayList</p>
+<h3 id="遍历方法"><a href="#遍历方法" class="headerlink" title="遍历方法"></a>遍历方法</h3><pre><code>        List&lt;String&gt; a = new ArrayList&lt;String&gt;();
+        a.add(&quot;abc&quot;);
+        a.add(&quot;ddd&quot;);
+        a.add(&quot;ccc&quot;);
 
-<p>可传入List或者Set类型参数，由它们存放的内容来实例化ArrayList</p>
-<h3 id="遍历方法"><a href="#遍历方法" class="headerlink" title="遍历方法"></a>遍历方法</h3><pre><code class="highlight plain">List&lt;String&gt; a &#x3D; new ArrayList&lt;String&gt;();
-a.add(&quot;abc&quot;);
-a.add(&quot;ddd&quot;);
-a.add(&quot;ccc&quot;);
+        for (String string : a) {
+            System.out.println(string);
+        }
 
-for (String string : a) &#123;
-	System.out.println(string);
-&#125;
+        Iterator&lt;String&gt; it = a.iterator();
+        while(it.hasNext()){    
+            System.out.println(it.next());
+        }
 
-Iterator&lt;String&gt; it &#x3D; a.iterator();
-while(it.hasNext())&#123;	
-	System.out.println(it.next());
-&#125;
+        a.forEach(str-&gt;system.out.println(str))</code></pre><h3 id="自动扩容"><a href="#自动扩容" class="headerlink" title="自动扩容"></a>自动扩容</h3><pre><code>    private void grow(int minCapacity) {
+        // overflow-conscious code
+        int oldCapacity = elementData.length;
+        int newCapacity = oldCapacity + (oldCapacity &gt;&gt; 1);
+        if (newCapacity - minCapacity &lt; 0)
+            newCapacity = minCapacity;
+        if (newCapacity - MAX_ARRAY_SIZE &gt; 0)
+            newCapacity = hugeCapacity(minCapacity);
+        // minCapacity is usually close to size, so this is a win:
+        elementData = Arrays.copyOf(elementData, newCapacity);
+    }
 
-a.forEach(str-&gt;system.out.println(str))</code></pre>
-
-<h3 id="自动扩容"><a href="#自动扩容" class="headerlink" title="自动扩容"></a>自动扩容</h3><pre><code class="highlight plain"> private void grow(int minCapacity) &#123;
-     &#x2F;&#x2F; overflow-conscious code
-     int oldCapacity &#x3D; elementData.length;
-     int newCapacity &#x3D; oldCapacity + (oldCapacity &gt;&gt; 1);
-     if (newCapacity - minCapacity &lt; 0)
-         newCapacity &#x3D; minCapacity;
-     if (newCapacity - MAX_ARRAY_SIZE &gt; 0)
-         newCapacity &#x3D; hugeCapacity(minCapacity);
-     &#x2F;&#x2F; minCapacity is usually close to size, so this is a win:
-     elementData &#x3D; Arrays.copyOf(elementData, newCapacity);
- &#125;
-
-private static int hugeCapacity(int minCapacity) &#123;
-     if (minCapacity &lt; 0) &#x2F;&#x2F; overflow
-         throw new OutOfMemoryError();
-     return (minCapacity &gt; MAX_ARRAY_SIZE) ?
-         Integer.MAX_VALUE :
-         MAX_ARRAY_SIZE;
- &#125;</code></pre>
-
-<p>先1.5倍扩容，如果还是不够，直接设置为当前size，再比较MAX_ARRAY_SIZE，扩容后新容量大于它时，且minCapacity即当前包含元素个数&lt;MAX_ARRAY_SIZE，则新容量设置为MAX_ARRAY_SIZE。<br>反之，扩容后新容量和当前包含元素个数都都大于MAX_ARRAY_SIZE时，新容量设置为Integer.MAX_VALUE</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/@RequestParam%E4%BD%9C%E7%94%A8%E6%BA%90%E7%A0%81/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/@RequestParam%E4%BD%9C%E7%94%A8%E6%BA%90%E7%A0%81/" itemprop="url">注解@RequestParam作用源码</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
-                    <span itemprop="name">框架</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="RequestParam作用"><a href="#RequestParam作用" class="headerlink" title="@RequestParam作用"></a>@RequestParam作用</h3><p>在<code>Controller</code>方法的入参使用<code>@RequestParam</code>注解可以获取<code>Request</code>请求中的参数</p>
-<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><h4 id="普通变量"><a href="#普通变量" class="headerlink" title="普通变量"></a>普通变量</h4><p>依旧是查看解析<code>@RequestParam</code>注解的<code>RequestParamMethodArgumentResolver</code></p>
-<p><code>supportsParameter</code>方法如下</p>
-<pre><code class="highlight plain">	@Override
-public boolean supportsParameter(MethodParameter parameter) &#123;
-	Class&lt;?&gt; paramType &#x3D; parameter.getParameterType();
-	if (parameter.hasParameterAnnotation(RequestParam.class)) &#123;
-		if (Map.class.isAssignableFrom(paramType)) &#123;
-			String paramName &#x3D; parameter.getParameterAnnotation(RequestParam.class).value();
-			return StringUtils.hasText(paramName);
-		&#125;
-		else &#123;
-			return true;
-		&#125;
-	&#125;
-	else &#123;
-		if (parameter.hasParameterAnnotation(RequestPart.class)) &#123;
-			return false;
-		&#125;
-		else if (MultipartFile.class.equals(paramType) || &quot;javax.servlet.http.Part&quot;.equals(paramType.getName())) &#123;
-			return true;
-		&#125;
-		else if (this.useDefaultResolution) &#123;
-			return BeanUtils.isSimpleProperty(paramType);
-		&#125;
-		else &#123;
-			return false;
-		&#125;
-	&#125;
-&#125;</code></pre>
-
-<p>再看解析参数的<code>resolveArgument</code>方法</p>
-<pre><code class="highlight plain">@Override
-public final Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception &#123;
-
-	Class&lt;?&gt; paramType &#x3D; parameter.getParameterType();
-	NamedValueInfo namedValueInfo &#x3D; getNamedValueInfo(parameter);
-	&#x2F;&#x2F;取出请求中对应的属性arg
-	Object arg &#x3D; resolveName(namedValueInfo.name, parameter, webRequest);
-	&#x2F;&#x2F;请求中没有对应属性，arg为null
-	if (arg &#x3D;&#x3D; null) &#123;
-		&#x2F;&#x2F;除了设置&#96;defaultValue&#96;，其他都会抛出异常
-		if (namedValueInfo.defaultValue !&#x3D; null) &#123;
-			arg &#x3D; resolveDefaultValue(namedValueInfo.defaultValue);
-		&#125;
-		else if (namedValueInfo.required &amp;&amp; !parameter.getParameterType().getName().equals(&quot;java.util.Optional&quot;)) &#123;
-			handleMissingValue(namedValueInfo.name, parameter);
-		&#125;
-		arg &#x3D; handleNullValue(namedValueInfo.name, arg, paramType);
-	&#125;
-	&#x2F;&#x2F;arg为&quot;&quot;时并且设置了defaultValue时，arg接收处理后的defaultValue
-	else if (&quot;&quot;.equals(arg) &amp;&amp; namedValueInfo.defaultValue !&#x3D; null) &#123;
-		arg &#x3D; resolveDefaultValue(namedValueInfo.defaultValue);
-	&#125;
-
-	if (binderFactory !&#x3D; null) &#123;
-		WebDataBinder binder &#x3D; binderFactory.createBinder(webRequest, null, namedValueInfo.name);
-		arg &#x3D; binder.convertIfNecessary(arg, paramType, parameter);
-	&#125;
-
-	handleResolvedValue(arg, namedValueInfo.name, parameter, mavContainer, webRequest);
-
-	return arg;
-&#125;</code></pre>
-
-<p><code>NamedValueInfo</code>是用来存放<code>@RequestParam</code>注解中参数的类，包括<code>value</code>，<code>required</code>，<code>defaultValue</code></p>
-<pre><code class="highlight plain">private NamedValueInfo getNamedValueInfo(MethodParameter parameter) &#123;
-	NamedValueInfo namedValueInfo &#x3D; this.namedValueInfoCache.get(parameter);
-	if (namedValueInfo &#x3D;&#x3D; null) &#123;
-		namedValueInfo &#x3D; createNamedValueInfo(parameter);
-		namedValueInfo &#x3D; updateNamedValueInfo(parameter, namedValueInfo);
-		this.namedValueInfoCache.put(parameter, namedValueInfo);
-	&#125;
-	return namedValueInfo;
-&#125;
-
-
-@Override
-protected NamedValueInfo createNamedValueInfo(MethodParameter parameter) &#123;
-	RequestParam ann &#x3D; parameter.getParameterAnnotation(RequestParam.class);
-	&#x2F;&#x2F;不存在&#96;@requestParam&#96;时，用无参构造方法
-	return (ann !&#x3D; null ? new RequestParamNamedValueInfo(ann) : new RequestParamNamedValueInfo());
-&#125;
-
-&#x2F;&#x2F;构造方法
-	public RequestParamNamedValueInfo() &#123;
-		super(&quot;&quot;, false, ValueConstants.DEFAULT_NONE);
-	&#125;
-
-	public RequestParamNamedValueInfo(RequestParam annotation) &#123;
-		super(annotation.value(), annotation.required(), annotation.defaultValue());
-	&#125;</code></pre>
-
-<p>然后要对<code>NameValueInfo</code>进行update，处理当没有<code>@RequestParam</code>注解或者<code>@RequestParam</code>注解没有设置<code>value</code>值的导致<code>NameValueInfo</code>的<code>name</code>属性为<code>&quot;&quot;</code>的情况</p>
-<pre><code class="highlight plain">private NamedValueInfo updateNamedValueInfo(MethodParameter parameter, NamedValueInfo info) &#123;
-	String name &#x3D; info.name;
-	if (info.name.length() &#x3D;&#x3D; 0) &#123;
-		name &#x3D; parameter.getParameterName();
-		if (name &#x3D;&#x3D; null) &#123;
-			throw new IllegalArgumentException(&quot;Name for argument type [&quot; + parameter.getParameterType().getName() +
-					&quot;] not available, and parameter name information not found in class file either.&quot;);
-		&#125;
-	&#125;
-	String defaultValue &#x3D; (ValueConstants.DEFAULT_NONE.equals(info.defaultValue) ? null : info.defaultValue);
-	return new NamedValueInfo(name, info.required, defaultValue);
-&#125;</code></pre>
-<p>当<code>name</code>长度为0，取入参的变量名，作为<code>name</code>，如果没有设置<code>defaultValue</code>，这里则将<code>defaultValue</code>设置为<code>ValueConstants.DEFAULT_NONE</code></p>
-<p>然后看<code>resloveName</code>方法</p>
-<pre><code class="highlight plain">@Override
-protected Object resolveName(String name, MethodParameter parameter, NativeWebRequest webRequest) throws Exception &#123;
-	HttpServletRequest servletRequest &#x3D; webRequest.getNativeRequest(HttpServletRequest.class);
-	MultipartHttpServletRequest multipartRequest &#x3D;
-			WebUtils.getNativeRequest(servletRequest, MultipartHttpServletRequest.class);
-	Object arg;
-
-	if (MultipartFile.class.equals(parameter.getParameterType())) &#123;
-		assertIsMultipartRequest(servletRequest);
-		Assert.notNull(multipartRequest, &quot;Expected MultipartHttpServletRequest: is a MultipartResolver configured?&quot;);
-		arg &#x3D; multipartRequest.getFile(name);
-	&#125;
-	else if (isMultipartFileCollection(parameter)) &#123;
-		assertIsMultipartRequest(servletRequest);
-		Assert.notNull(multipartRequest, &quot;Expected MultipartHttpServletRequest: is a MultipartResolver configured?&quot;);
-		arg &#x3D; multipartRequest.getFiles(name);
-	&#125;
-	else if (isMultipartFileArray(parameter)) &#123;
-		assertIsMultipartRequest(servletRequest);
-		Assert.notNull(multipartRequest, &quot;Expected MultipartHttpServletRequest: is a MultipartResolver configured?&quot;);
-		List&lt;MultipartFile&gt; multipartFiles &#x3D; multipartRequest.getFiles(name);
-		arg &#x3D; multipartFiles.toArray(new MultipartFile[multipartFiles.size()]);
-	&#125;
-	else if (&quot;javax.servlet.http.Part&quot;.equals(parameter.getParameterType().getName())) &#123;
-		assertIsMultipartRequest(servletRequest);
-		arg &#x3D; servletRequest.getPart(name);
-	&#125;
-	else if (isPartCollection(parameter)) &#123;
-		assertIsMultipartRequest(servletRequest);
-		arg &#x3D; new ArrayList&lt;Object&gt;(servletRequest.getParts());
-	&#125;
-	else if (isPartArray(parameter)) &#123;
-		assertIsMultipartRequest(servletRequest);
-		arg &#x3D; RequestPartResolver.resolvePart(servletRequest);
-	&#125;
-	else &#123;
-		arg &#x3D; null;
-		if (multipartRequest !&#x3D; null) &#123;
-			List&lt;MultipartFile&gt; files &#x3D; multipartRequest.getFiles(name);
-			if (!files.isEmpty()) &#123;
-				arg &#x3D; (files.size() &#x3D;&#x3D; 1 ? files.get(0) : files);
-			&#125;
-		&#125;
-		if (arg &#x3D;&#x3D; null) &#123;
-			String[] paramValues &#x3D; webRequest.getParameterValues(name);
-			if (paramValues !&#x3D; null) &#123;
-				arg &#x3D; (paramValues.length &#x3D;&#x3D; 1 ? paramValues[0] : paramValues);
-			&#125;
-		&#125;
-	&#125;
-
-	return arg;
-&#125;</code></pre>
-
-<p>看最下面，以<code>name</code>从<code>request</code>请求中取出对应属性，然后返回给<code>resolveArgument</code>方法，经<code>dataBinder</code>转换为入参类型之后返回，然后作为反射调用<code>Controller</code>方法的参数</p>
-<h4 id="java-util-Map"><a href="#java-util-Map" class="headerlink" title="java.util.Map"></a>java.util.Map</h4><p>入参为<code>java.util.Map</code>类型，且前面有<code>@ReqeustParam</code>注解并且<code>value</code>为空时，作用在入参上的参数解析器为<code>RequestParamMapMethodArgumentResolver</code></p>
-<pre><code class="highlight plain">@Override
-public boolean supportsParameter(MethodParameter parameter) &#123;
-	RequestParam ann &#x3D; parameter.getParameterAnnotation(RequestParam.class);
-	if (ann !&#x3D; null) &#123;
-		if (Map.class.isAssignableFrom(parameter.getParameterType())) &#123;
-			return !StringUtils.hasText(ann.value());
-		&#125;
-	&#125;
-	return false;
-&#125;
-
-@Override
-public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception &#123;
-
-	Class&lt;?&gt; paramType &#x3D; parameter.getParameterType();
-
-	Map&lt;String, String[]&gt; parameterMap &#x3D; webRequest.getParameterMap();
-	if (MultiValueMap.class.isAssignableFrom(paramType)) &#123;
-		MultiValueMap&lt;String, String&gt; result &#x3D; new LinkedMultiValueMap&lt;String, String&gt;(parameterMap.size());
-		for (Map.Entry&lt;String, String[]&gt; entry : parameterMap.entrySet()) &#123;
-			for (String value : entry.getValue()) &#123;
-				result.add(entry.getKey(), value);
-			&#125;
-		&#125;
-		return result;
-	&#125;
-	else &#123;
-		Map&lt;String, String&gt; result &#x3D; new LinkedHashMap&lt;String, String&gt;(parameterMap.size());
-		for (Map.Entry&lt;String, String[]&gt; entry : parameterMap.entrySet()) &#123;
-			if (entry.getValue().length &gt; 0) &#123;
-				result.put(entry.getKey(), entry.getValue()[0]);
-			&#125;
-		&#125;
-		return result;
-	&#125;
-&#125;</code></pre>
-
-<p>获取请求中参数时是用的<code>getParameterMap</code>方法以参数名为key和参数值为value的方式，获取一个<code>Map</code>类型的入参，将它返回作为反射调用该<code>Controller</code>方法的参数</p>
+   private static int hugeCapacity(int minCapacity) {
+        if (minCapacity &lt; 0) // overflow
+            throw new OutOfMemoryError();
+        return (minCapacity &gt; MAX_ARRAY_SIZE) ?
+            Integer.MAX_VALUE :
+            MAX_ARRAY_SIZE;
+    }</code></pre><p>先1.5倍扩容，如果还是不够，直接设置为当前size，再比较MAX_ARRAY_SIZE，扩容后新容量大于它时，且minCapacity即当前包含元素个数&lt;MAX_ARRAY_SIZE，则新容量设置为MAX_ARRAY_SIZE。<br>反之，扩容后新容量和当前包含元素个数都都大于MAX_ARRAY_SIZE时，新容量设置为Integer.MAX_VALUE</p>
 
           
         
@@ -929,443 +907,251 @@ public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer m
           
             <h3 id="BeanWrapperImpl"><a href="#BeanWrapperImpl" class="headerlink" title="BeanWrapperImpl"></a>BeanWrapperImpl</h3><p><code>BeanWrapper</code>接口是用来操作javaBean属性，例如在SpringMVC中，在<code>Databinder</code>中也使用了<code>BeanWrapperImpl</code>来对入参的类进行属性设置和对应的将<code>Request</code>中传来的类型为<code>String</code>的参数转化为入参类对应的属性的类型</p>
 <h3 id="操作属性"><a href="#操作属性" class="headerlink" title="操作属性"></a>操作属性</h3><h4 id="BeanWrapperImpl-1"><a href="#BeanWrapperImpl-1" class="headerlink" title="BeanWrapperImpl"></a>BeanWrapperImpl</h4><p>定义一个测试类</p>
-<pre><code class="highlight plain">class Man&#123;
+<pre><code>class Man{
     private String name;
     private int age;
 
-    public String getName() &#123;
+    public String getName() {
         return name;
-    &#125;
+    }
 
-    public void setName(String name) &#123;
-        this.name &#x3D; name;
-    &#125;
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public int getAge() &#123;
+    public int getAge() {
         return age;
-    &#125;
+    }
 
-    public void setAge(int age) &#123;
-        this.age &#x3D; age;
-    &#125;
+    public void setAge(int age) {
+        this.age = age;
+    }
 
     @Override
-    public String toString() &#123;
+    public String toString() {
         return this.name+ &quot; &quot;+ this.age;
-    &#125;
-&#125;</code></pre>
-
-<p>然后获取它的<code>BeanWrapper</code>实例</p>
-<pre><code class="highlight plain">@Test
-public void test2()&#123;
-    BeanWrapper bw &#x3D; PropertyAccessorFactory.forBeanPropertyAccess(new Man());
+    }
+}</code></pre><p>然后获取它的<code>BeanWrapper</code>实例</p>
+<pre><code>@Test
+public void test2(){
+    BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(new Man());
     bw.setPropertyValue(&quot;name&quot;, &quot;张三&quot;);
     bw.setPropertyValue(&quot;age&quot;, &quot;11&quot;);
     System.out.println(bw.getWrappedInstance().toString());
-&#125;</code></pre>
-
-<p>正好输出结果为</p>
-<pre><code class="highlight plain">张三 11</code></pre>
-
-<p>在没有调用<code>Man</code>对象自身的<code>set</code>方法的情况下，为<code>Man</code>对象的属性成功赋了值</p>
+}</code></pre><p>正好输出结果为</p>
+<pre><code>张三 11</code></pre><p>在没有调用<code>Man</code>对象自身的<code>set</code>方法的情况下，为<code>Man</code>对象的属性成功赋了值</p>
 <h4 id="CachedIntrospectionResults"><a href="#CachedIntrospectionResults" class="headerlink" title="CachedIntrospectionResults"></a>CachedIntrospectionResults</h4><p><code>CachedIntrospectionResults</code>为<code>BeanWrapperImpl</code>中的<code>final</code>私有属性</p>
 <p><code>BeanWrapperImpl</code>类能对属性进行操作主要在于<code>CachedIntrospectionResults</code>的作用</p>
 <p>看<code>CachedIntrospectionResults</code>的构造函数</p>
-<pre><code class="highlight plain">private CachedIntrospectionResults(Class&lt;?&gt; beanClass) throws BeansException &#123;
-	try &#123;
-		if (logger.isTraceEnabled()) &#123;
-			logger.trace(&quot;Getting BeanInfo for class [&quot; + beanClass.getName() + &quot;]&quot;);
-		&#125;
+<pre><code>private CachedIntrospectionResults(Class&lt;?&gt; beanClass) throws BeansException {
+    try {
+        if (logger.isTraceEnabled()) {
+            logger.trace(&quot;Getting BeanInfo for class [&quot; + beanClass.getName() + &quot;]&quot;);
+        }
 
-		BeanInfo beanInfo &#x3D; null;
-		for (BeanInfoFactory beanInfoFactory : beanInfoFactories) &#123;
-			beanInfo &#x3D; beanInfoFactory.getBeanInfo(beanClass);
-			if (beanInfo !&#x3D; null) &#123;
-				break;
-			&#125;
-		&#125;
-		if (beanInfo &#x3D;&#x3D; null) &#123;
-			&#x2F;&#x2F; If none of the factories supported the class, fall back to the default
-			beanInfo &#x3D; (shouldIntrospectorIgnoreBeaninfoClasses ?
-					Introspector.getBeanInfo(beanClass, Introspector.IGNORE_ALL_BEANINFO) :
-					Introspector.getBeanInfo(beanClass));
-		&#125;
-		this.beanInfo &#x3D; beanInfo;
+        BeanInfo beanInfo = null;
+        for (BeanInfoFactory beanInfoFactory : beanInfoFactories) {
+            beanInfo = beanInfoFactory.getBeanInfo(beanClass);
+            if (beanInfo != null) {
+                break;
+            }
+        }
+        if (beanInfo == null) {
+            // If none of the factories supported the class, fall back to the default
+            beanInfo = (shouldIntrospectorIgnoreBeaninfoClasses ?
+                    Introspector.getBeanInfo(beanClass, Introspector.IGNORE_ALL_BEANINFO) :
+                    Introspector.getBeanInfo(beanClass));
+        }
+        this.beanInfo = beanInfo;
 
-		if (logger.isTraceEnabled()) &#123;
-			logger.trace(&quot;Caching PropertyDescriptors for class [&quot; + beanClass.getName() + &quot;]&quot;);
-		&#125;
-		this.propertyDescriptorCache &#x3D; new LinkedHashMap&lt;String, PropertyDescriptor&gt;();
+        if (logger.isTraceEnabled()) {
+            logger.trace(&quot;Caching PropertyDescriptors for class [&quot; + beanClass.getName() + &quot;]&quot;);
+        }
+        this.propertyDescriptorCache = new LinkedHashMap&lt;String, PropertyDescriptor&gt;();
 
-		&#x2F;&#x2F; This call is slow so we do it once.
-		PropertyDescriptor[] pds &#x3D; this.beanInfo.getPropertyDescriptors();
-		for (PropertyDescriptor pd : pds) &#123;
-			if (Class.class.equals(beanClass) &amp;&amp;
-					(&quot;classLoader&quot;.equals(pd.getName()) ||  &quot;protectionDomain&quot;.equals(pd.getName()))) &#123;
-				&#x2F;&#x2F; Ignore Class.getClassLoader() and getProtectionDomain() methods - nobody needs to bind to those
-				continue;
-			&#125;
-			if (logger.isTraceEnabled()) &#123;
-				logger.trace(&quot;Found bean property &#39;&quot; + pd.getName() + &quot;&#39;&quot; +
-						(pd.getPropertyType() !&#x3D; null ? &quot; of type [&quot; + pd.getPropertyType().getName() + &quot;]&quot; : &quot;&quot;) +
-						(pd.getPropertyEditorClass() !&#x3D; null ?
-								&quot;; editor [&quot; + pd.getPropertyEditorClass().getName() + &quot;]&quot; : &quot;&quot;));
-			&#125;
-			pd &#x3D; buildGenericTypeAwarePropertyDescriptor(beanClass, pd);
-			this.propertyDescriptorCache.put(pd.getName(), pd);
-		&#125;
+        // This call is slow so we do it once.
+        PropertyDescriptor[] pds = this.beanInfo.getPropertyDescriptors();
+        for (PropertyDescriptor pd : pds) {
+            if (Class.class.equals(beanClass) &amp;&amp;
+                    (&quot;classLoader&quot;.equals(pd.getName()) ||  &quot;protectionDomain&quot;.equals(pd.getName()))) {
+                // Ignore Class.getClassLoader() and getProtectionDomain() methods - nobody needs to bind to those
+                continue;
+            }
+            if (logger.isTraceEnabled()) {
+                logger.trace(&quot;Found bean property &#39;&quot; + pd.getName() + &quot;&#39;&quot; +
+                        (pd.getPropertyType() != null ? &quot; of type [&quot; + pd.getPropertyType().getName() + &quot;]&quot; : &quot;&quot;) +
+                        (pd.getPropertyEditorClass() != null ?
+                                &quot;; editor [&quot; + pd.getPropertyEditorClass().getName() + &quot;]&quot; : &quot;&quot;));
+            }
+            pd = buildGenericTypeAwarePropertyDescriptor(beanClass, pd);
+            this.propertyDescriptorCache.put(pd.getName(), pd);
+        }
 
-		this.typeDescriptorCache &#x3D; new ConcurrentReferenceHashMap&lt;PropertyDescriptor, TypeDescriptor&gt;();
-	&#125;
-	catch (IntrospectionException ex) &#123;
-		throw new FatalBeanException(&quot;Failed to obtain BeanInfo for class [&quot; + beanClass.getName() + &quot;]&quot;, ex);
-	&#125;
-&#125;</code></pre>
-
-<p>主要看这段代码<code>PropertyDescriptor[] pds = this.beanInfo.getPropertyDescriptors();</code>，由传入的<code>Class</code>对象获取到<code>BeanInfo</code>对象，然后从这个对象获取<code>PropertyDescriptor[]</code>数组，有关于<code>PropertyDescriptor</code>类的作用为，存放了目标类中某个属性的<code>get</code>，<code>set</code>方法，就是用它们来对类的属性进行填充设置</p>
+        this.typeDescriptorCache = new ConcurrentReferenceHashMap&lt;PropertyDescriptor, TypeDescriptor&gt;();
+    }
+    catch (IntrospectionException ex) {
+        throw new FatalBeanException(&quot;Failed to obtain BeanInfo for class [&quot; + beanClass.getName() + &quot;]&quot;, ex);
+    }
+}</code></pre><p>主要看这段代码<code>PropertyDescriptor[] pds = this.beanInfo.getPropertyDescriptors();</code>，由传入的<code>Class</code>对象获取到<code>BeanInfo</code>对象，然后从这个对象获取<code>PropertyDescriptor[]</code>数组，有关于<code>PropertyDescriptor</code>类的作用为，存放了目标类中某个属性的<code>get</code>，<code>set</code>方法，就是用它们来对类的属性进行填充设置</p>
 <p>由于源代码太长，我们进行简单模拟一下实现原理</p>
-<pre><code class="highlight plain">@Test
-public void test3() throws Exception&#123;
-	&#x2F;&#x2F;构建&#96;BeanWrapperImpl对象&#96;
-    BeanWrapperImpl bw &#x3D; new BeanWrapperImpl(new Man());
-	&#x2F;&#x2F;反射获取getCachedIntrospectionResults放啊
-    Method getCachedIntrospectionResults &#x3D; bw.getClass().getDeclaredMethod(&quot;getCachedIntrospectionResults&quot;);
-	&#x2F;&#x2F;设置私有方法可访问
+<pre><code>@Test
+public void test3() throws Exception{
+    //构建`BeanWrapperImpl对象`
+    BeanWrapperImpl bw = new BeanWrapperImpl(new Man());
+    //反射获取getCachedIntrospectionResults放啊
+    Method getCachedIntrospectionResults = bw.getClass().getDeclaredMethod(&quot;getCachedIntrospectionResults&quot;);
+    //设置私有方法可访问
     getCachedIntrospectionResults.setAccessible(true);
-	&#x2F;&#x2F;反射调用方法获取CachedIntrospectionResults属性
-    CachedIntrospectionResults cir &#x3D; (CachedIntrospectionResults)getCachedIntrospectionResults.invoke(bw);
-	&#x2F;&#x2F;获取CachedIntrospectionResults变量内部的getPropertyDescriptor方法对象
-    Method method &#x3D; cir.getClass().getDeclaredMethod(&quot;getPropertyDescriptor&quot;,new Class[]&#123;String.class&#125;);
+    //反射调用方法获取CachedIntrospectionResults属性
+    CachedIntrospectionResults cir = (CachedIntrospectionResults)getCachedIntrospectionResults.invoke(bw);
+    //获取CachedIntrospectionResults变量内部的getPropertyDescriptor方法对象
+    Method method = cir.getClass().getDeclaredMethod(&quot;getPropertyDescriptor&quot;,new Class[]{String.class});
     method.setAccessible(true);
-	&#x2F;&#x2F;反射获取属性名为age的PropertyDescriptor变量
-    PropertyDescriptor agePropertyDescriptor &#x3D; (PropertyDescriptor)method.invoke(cir, &quot;age&quot;);
-	&#x2F;&#x2F;从PropertyDescriptor中获取&#96;set&#96;方法
-    Method ageWriteMethod &#x3D; agePropertyDescriptor.getWriteMethod();
-	&#x2F;&#x2F;调用set方法对属性进行设置
+    //反射获取属性名为age的PropertyDescriptor变量
+    PropertyDescriptor agePropertyDescriptor = (PropertyDescriptor)method.invoke(cir, &quot;age&quot;);
+    //从PropertyDescriptor中获取`set`方法
+    Method ageWriteMethod = agePropertyDescriptor.getWriteMethod();
+    //调用set方法对属性进行设置
     ageWriteMethod.invoke(bw.getWrappedInstance(), 11);
     System.out.println(bw.getWrappedInstance().toString());
 
-&#125;</code></pre>
-
-<p>结果输出的是<code>null 11</code>，成功对属性进行了设置</p>
+}</code></pre><p>结果输出的是<code>null 11</code>，成功对属性进行了设置</p>
 <h4 id="PropertyEditor"><a href="#PropertyEditor" class="headerlink" title="PropertyEditor"></a>PropertyEditor</h4><p>可以注意到我们在直接使用<code>BeanWrapperImpl</code>设置属性的时候，传入的属性会由<code>String</code>自动转化为对应的属性类型，比如我们给<code>age</code>传入的是<code>String</code>类型的11，自动转化成了<code>int</code>类型</p>
 <p><code>BeanWrapperImpl</code>在调用<code>PropertyDescrptor</code>的<code>WriteMethod</code>之前，对属性进行了转化，这个工作是由<code>PropertyEditor</code>在起作用，它内置了多个类型的转化器<code>PropertyEditor</code></p>
 <p>我们先看<code>BeanWrapperImpl</code>的构造函数</p>
-<pre><code class="highlight plain">public BeanWrapperImpl(Object object) &#123;
-	registerDefaultEditors();
-	setWrappedInstance(object);
-&#125;
+<pre><code>public BeanWrapperImpl(Object object) {
+    registerDefaultEditors();
+    setWrappedInstance(object);
+}
 
-protected void registerDefaultEditors() &#123;
-	this.defaultEditorsActive &#x3D; true;
-&#125;</code></pre>
+protected void registerDefaultEditors() {
+    this.defaultEditorsActive = true;
+}</code></pre><p>可以看到注册了默认属性编辑器，并且它是属于懒加载</p>
+<pre><code>public PropertyEditor getDefaultEditor(Class&lt;?&gt; requiredType) {
+    if (!this.defaultEditorsActive) {
+        return null;
+    }
+    if (this.overriddenDefaultEditors != null) {
+        PropertyEditor editor = this.overriddenDefaultEditors.get(requiredType);
+        if (editor != null) {
+            return editor;
+        }
+    }
+    if (this.defaultEditors == null) {
+        createDefaultEditors();
+    }
+    return this.defaultEditors.get(requiredType);
+}</code></pre><p>在需要对属性进行转化的时候，获取默认属性编辑器时，开始初始化内置的<code>PropertyEditor</code></p>
+<pre><code>private void createDefaultEditors() {
+    this.defaultEditors = new HashMap&lt;Class&lt;?&gt;, PropertyEditor&gt;(64);
 
-<p>可以看到注册了默认属性编辑器，并且它是属于懒加载</p>
-<pre><code class="highlight plain">public PropertyEditor getDefaultEditor(Class&lt;?&gt; requiredType) &#123;
-	if (!this.defaultEditorsActive) &#123;
-		return null;
-	&#125;
-	if (this.overriddenDefaultEditors !&#x3D; null) &#123;
-		PropertyEditor editor &#x3D; this.overriddenDefaultEditors.get(requiredType);
-		if (editor !&#x3D; null) &#123;
-			return editor;
-		&#125;
-	&#125;
-	if (this.defaultEditors &#x3D;&#x3D; null) &#123;
-		createDefaultEditors();
-	&#125;
-	return this.defaultEditors.get(requiredType);
-&#125;</code></pre>
+    // Simple editors, without parameterization capabilities.
+    // The JDK does not contain a default editor for any of these target types.
+    this.defaultEditors.put(Charset.class, new CharsetEditor());
+    this.defaultEditors.put(Class.class, new ClassEditor());
+    this.defaultEditors.put(Class[].class, new ClassArrayEditor());
+    this.defaultEditors.put(Currency.class, new CurrencyEditor());
+    this.defaultEditors.put(File.class, new FileEditor());
+    this.defaultEditors.put(InputStream.class, new InputStreamEditor());
+    this.defaultEditors.put(InputSource.class, new InputSourceEditor());
+    this.defaultEditors.put(Locale.class, new LocaleEditor());
+    this.defaultEditors.put(Pattern.class, new PatternEditor());
+    this.defaultEditors.put(Properties.class, new PropertiesEditor());
+    this.defaultEditors.put(Resource[].class, new ResourceArrayPropertyEditor());
+    this.defaultEditors.put(TimeZone.class, new TimeZoneEditor());
+    this.defaultEditors.put(URI.class, new URIEditor());
+    this.defaultEditors.put(URL.class, new URLEditor());
+    this.defaultEditors.put(UUID.class, new UUIDEditor());
+    if (zoneIdClass != null) {
+        this.defaultEditors.put(zoneIdClass, new ZoneIdEditor());
+    }
 
-<p>在需要对属性进行转化的时候，获取默认属性编辑器时，开始初始化内置的<code>PropertyEditor</code></p>
-<pre><code class="highlight plain">private void createDefaultEditors() &#123;
-	this.defaultEditors &#x3D; new HashMap&lt;Class&lt;?&gt;, PropertyEditor&gt;(64);
+    // Default instances of collection editors.
+    // Can be overridden by registering custom instances of those as custom editors.
+    this.defaultEditors.put(Collection.class, new CustomCollectionEditor(Collection.class));
+    this.defaultEditors.put(Set.class, new CustomCollectionEditor(Set.class));
+    this.defaultEditors.put(SortedSet.class, new CustomCollectionEditor(SortedSet.class));
+    this.defaultEditors.put(List.class, new CustomCollectionEditor(List.class));
+    this.defaultEditors.put(SortedMap.class, new CustomMapEditor(SortedMap.class));
 
-	&#x2F;&#x2F; Simple editors, without parameterization capabilities.
-	&#x2F;&#x2F; The JDK does not contain a default editor for any of these target types.
-	this.defaultEditors.put(Charset.class, new CharsetEditor());
-	this.defaultEditors.put(Class.class, new ClassEditor());
-	this.defaultEditors.put(Class[].class, new ClassArrayEditor());
-	this.defaultEditors.put(Currency.class, new CurrencyEditor());
-	this.defaultEditors.put(File.class, new FileEditor());
-	this.defaultEditors.put(InputStream.class, new InputStreamEditor());
-	this.defaultEditors.put(InputSource.class, new InputSourceEditor());
-	this.defaultEditors.put(Locale.class, new LocaleEditor());
-	this.defaultEditors.put(Pattern.class, new PatternEditor());
-	this.defaultEditors.put(Properties.class, new PropertiesEditor());
-	this.defaultEditors.put(Resource[].class, new ResourceArrayPropertyEditor());
-	this.defaultEditors.put(TimeZone.class, new TimeZoneEditor());
-	this.defaultEditors.put(URI.class, new URIEditor());
-	this.defaultEditors.put(URL.class, new URLEditor());
-	this.defaultEditors.put(UUID.class, new UUIDEditor());
-	if (zoneIdClass !&#x3D; null) &#123;
-		this.defaultEditors.put(zoneIdClass, new ZoneIdEditor());
-	&#125;
+    // Default editors for primitive arrays.
+    this.defaultEditors.put(byte[].class, new ByteArrayPropertyEditor());
+    this.defaultEditors.put(char[].class, new CharArrayPropertyEditor());
 
-	&#x2F;&#x2F; Default instances of collection editors.
-	&#x2F;&#x2F; Can be overridden by registering custom instances of those as custom editors.
-	this.defaultEditors.put(Collection.class, new CustomCollectionEditor(Collection.class));
-	this.defaultEditors.put(Set.class, new CustomCollectionEditor(Set.class));
-	this.defaultEditors.put(SortedSet.class, new CustomCollectionEditor(SortedSet.class));
-	this.defaultEditors.put(List.class, new CustomCollectionEditor(List.class));
-	this.defaultEditors.put(SortedMap.class, new CustomMapEditor(SortedMap.class));
+    // The JDK does not contain a default editor for char!
+    this.defaultEditors.put(char.class, new CharacterEditor(false));
+    this.defaultEditors.put(Character.class, new CharacterEditor(true));
 
-	&#x2F;&#x2F; Default editors for primitive arrays.
-	this.defaultEditors.put(byte[].class, new ByteArrayPropertyEditor());
-	this.defaultEditors.put(char[].class, new CharArrayPropertyEditor());
+    // Spring&#39;s CustomBooleanEditor accepts more flag values than the JDK&#39;s default editor.
+    this.defaultEditors.put(boolean.class, new CustomBooleanEditor(false));
+    this.defaultEditors.put(Boolean.class, new CustomBooleanEditor(true));
 
-	&#x2F;&#x2F; The JDK does not contain a default editor for char!
-	this.defaultEditors.put(char.class, new CharacterEditor(false));
-	this.defaultEditors.put(Character.class, new CharacterEditor(true));
+    // The JDK does not contain default editors for number wrapper types!
+    // Override JDK primitive number editors with our own CustomNumberEditor.
+    this.defaultEditors.put(byte.class, new CustomNumberEditor(Byte.class, false));
+    this.defaultEditors.put(Byte.class, new CustomNumberEditor(Byte.class, true));
+    this.defaultEditors.put(short.class, new CustomNumberEditor(Short.class, false));
+    this.defaultEditors.put(Short.class, new CustomNumberEditor(Short.class, true));
+    this.defaultEditors.put(int.class, new CustomNumberEditor(Integer.class, false));
+    this.defaultEditors.put(Integer.class, new CustomNumberEditor(Integer.class, true));
+    this.defaultEditors.put(long.class, new CustomNumberEditor(Long.class, false));
+    this.defaultEditors.put(Long.class, new CustomNumberEditor(Long.class, true));
+    this.defaultEditors.put(float.class, new CustomNumberEditor(Float.class, false));
+    this.defaultEditors.put(Float.class, new CustomNumberEditor(Float.class, true));
+    this.defaultEditors.put(double.class, new CustomNumberEditor(Double.class, false));
+    this.defaultEditors.put(Double.class, new CustomNumberEditor(Double.class, true));
+    this.defaultEditors.put(BigDecimal.class, new CustomNumberEditor(BigDecimal.class, true));
+    this.defaultEditors.put(BigInteger.class, new CustomNumberEditor(BigInteger.class, true));
 
-	&#x2F;&#x2F; Spring&#39;s CustomBooleanEditor accepts more flag values than the JDK&#39;s default editor.
-	this.defaultEditors.put(boolean.class, new CustomBooleanEditor(false));
-	this.defaultEditors.put(Boolean.class, new CustomBooleanEditor(true));
-
-	&#x2F;&#x2F; The JDK does not contain default editors for number wrapper types!
-	&#x2F;&#x2F; Override JDK primitive number editors with our own CustomNumberEditor.
-	this.defaultEditors.put(byte.class, new CustomNumberEditor(Byte.class, false));
-	this.defaultEditors.put(Byte.class, new CustomNumberEditor(Byte.class, true));
-	this.defaultEditors.put(short.class, new CustomNumberEditor(Short.class, false));
-	this.defaultEditors.put(Short.class, new CustomNumberEditor(Short.class, true));
-	this.defaultEditors.put(int.class, new CustomNumberEditor(Integer.class, false));
-	this.defaultEditors.put(Integer.class, new CustomNumberEditor(Integer.class, true));
-	this.defaultEditors.put(long.class, new CustomNumberEditor(Long.class, false));
-	this.defaultEditors.put(Long.class, new CustomNumberEditor(Long.class, true));
-	this.defaultEditors.put(float.class, new CustomNumberEditor(Float.class, false));
-	this.defaultEditors.put(Float.class, new CustomNumberEditor(Float.class, true));
-	this.defaultEditors.put(double.class, new CustomNumberEditor(Double.class, false));
-	this.defaultEditors.put(Double.class, new CustomNumberEditor(Double.class, true));
-	this.defaultEditors.put(BigDecimal.class, new CustomNumberEditor(BigDecimal.class, true));
-	this.defaultEditors.put(BigInteger.class, new CustomNumberEditor(BigInteger.class, true));
-
-	&#x2F;&#x2F; Only register config value editors if explicitly requested.
-	if (this.configValueEditorsActive) &#123;
-		StringArrayPropertyEditor sae &#x3D; new StringArrayPropertyEditor();
-		this.defaultEditors.put(String[].class, sae);
-		this.defaultEditors.put(short[].class, sae);
-		this.defaultEditors.put(int[].class, sae);
-		this.defaultEditors.put(long[].class, sae);
-	&#125;
-&#125;</code></pre>
-
-<p><code>createDefaultEditors</code>方法初始化了以上属性编辑器</p>
+    // Only register config value editors if explicitly requested.
+    if (this.configValueEditorsActive) {
+        StringArrayPropertyEditor sae = new StringArrayPropertyEditor();
+        this.defaultEditors.put(String[].class, sae);
+        this.defaultEditors.put(short[].class, sae);
+        this.defaultEditors.put(int[].class, sae);
+        this.defaultEditors.put(long[].class, sae);
+    }
+}
+</code></pre><p><code>createDefaultEditors</code>方法初始化了以上属性编辑器</p>
 <p>这些编辑器继承了<code>PropertyEditorSupport</code>，覆写它内部的<code>setAsText</code>方法来对<code>String</code>转化为其他类型变量</p>
 <p>例如我们这里使用的应该是<code>CustomNumberEditor</code>来将字符串<code>11</code>转化为<code>int</code>类型<code>11</code></p>
-<pre><code class="highlight plain">@Override
-public void setAsText(String text) throws IllegalArgumentException &#123;
-	if (this.allowEmpty &amp;&amp; !StringUtils.hasText(text)) &#123;
-		&#x2F;&#x2F; Treat empty String as null value.
-		setValue(null);
-	&#125;
-	else if (this.numberFormat !&#x3D; null) &#123;
-		&#x2F;&#x2F; Use given NumberFormat for parsing text.
-		setValue(NumberUtils.parseNumber(text, this.numberClass, this.numberFormat));
-	&#125;
-	else &#123;
-		&#x2F;&#x2F; Use default valueOf methods for parsing text.
-		setValue(NumberUtils.parseNumber(text, this.numberClass));
-	&#125;
-&#125;</code></pre>
-
-<p>将我们传入的<code>String</code>类型属性转化为对应的<code>numberClass</code></p>
+<pre><code>@Override
+public void setAsText(String text) throws IllegalArgumentException {
+    if (this.allowEmpty &amp;&amp; !StringUtils.hasText(text)) {
+        // Treat empty String as null value.
+        setValue(null);
+    }
+    else if (this.numberFormat != null) {
+        // Use given NumberFormat for parsing text.
+        setValue(NumberUtils.parseNumber(text, this.numberClass, this.numberFormat));
+    }
+    else {
+        // Use default valueOf methods for parsing text.
+        setValue(NumberUtils.parseNumber(text, this.numberClass));
+    }
+}</code></pre><p>将我们传入的<code>String</code>类型属性转化为对应的<code>numberClass</code></p>
 <p>接着我们使用代码模拟下这个过程，根据目标属性选择一个合适的<code>PropertyEditor</code></p>
-<pre><code class="highlight plain">@Test
-public void test3() throws Exception&#123;
-    BeanWrapperImpl bw &#x3D; new BeanWrapperImpl(new Man());
-    Method getCachedIntrospectionResults &#x3D; bw.getClass().getDeclaredMethod(&quot;getCachedIntrospectionResults&quot;);
+<pre><code>@Test
+public void test3() throws Exception{
+    BeanWrapperImpl bw = new BeanWrapperImpl(new Man());
+    Method getCachedIntrospectionResults = bw.getClass().getDeclaredMethod(&quot;getCachedIntrospectionResults&quot;);
     getCachedIntrospectionResults.setAccessible(true);
-    CachedIntrospectionResults cir &#x3D; (CachedIntrospectionResults)getCachedIntrospectionResults.invoke(bw);
-    Method method &#x3D; cir.getClass().getDeclaredMethod(&quot;getPropertyDescriptor&quot;,new Class[]&#123;String.class&#125;);
+    CachedIntrospectionResults cir = (CachedIntrospectionResults)getCachedIntrospectionResults.invoke(bw);
+    Method method = cir.getClass().getDeclaredMethod(&quot;getPropertyDescriptor&quot;,new Class[]{String.class});
     method.setAccessible(true);
-    PropertyDescriptor agePropertyDescriptor &#x3D; (PropertyDescriptor)method.invoke(cir, &quot;age&quot;);
-    Method ageWriteMethod &#x3D; agePropertyDescriptor.getWriteMethod();
-	&#x2F;&#x2F;根据目标属性的类选择对应的PropertyEditor
-    PropertyEditor propertyEditor &#x3D; bw.getDefaultEditor(ageWriteMethod.getParameterTypes()[0]);
-	&#x2F;&#x2F;转化
+    PropertyDescriptor agePropertyDescriptor = (PropertyDescriptor)method.invoke(cir, &quot;age&quot;);
+    Method ageWriteMethod = agePropertyDescriptor.getWriteMethod();
+    //根据目标属性的类选择对应的PropertyEditor
+    PropertyEditor propertyEditor = bw.getDefaultEditor(ageWriteMethod.getParameterTypes()[0]);
+    //转化
     propertyEditor.setAsText(&quot;11&quot;);
-	&#x2F;&#x2F;获取转化后的值
-    Object value &#x3D; propertyEditor.getValue();
+    //获取转化后的值
+    Object value = propertyEditor.getValue();
     ageWriteMethod.invoke(bw.getWrappedInstance(), value);
     System.out.println(bw.getWrappedInstance().toString());
 
-&#125;</code></pre>
-
-<h3 id="在SpringMVC中"><a href="#在SpringMVC中" class="headerlink" title="在SpringMVC中"></a>在SpringMVC中</h3><p>在<code>SpringMVC</code>中<code>BeanWrapperImpl</code>帮助我们将客户端发来的<code>Request</code>中的参数由<code>String</code>类型转化为我们需要的类型，它与<code>DataBinder</code>对象一起使用，在<code>DataBinder</code>中被初始化，然后传入了另一些<code>Converter</code>转换器，<code>BeanWrapperImpl</code>中有个<code>ConversionService</code>类型的成员变量，所有的转换器是以它为载体传入的</p>
+}</code></pre><h3 id="在SpringMVC中"><a href="#在SpringMVC中" class="headerlink" title="在SpringMVC中"></a>在SpringMVC中</h3><p>在<code>SpringMVC</code>中<code>BeanWrapperImpl</code>帮助我们将客户端发来的<code>Request</code>中的参数由<code>String</code>类型转化为我们需要的类型，它与<code>DataBinder</code>对象一起使用，在<code>DataBinder</code>中被初始化，然后传入了另一些<code>Converter</code>转换器，<code>BeanWrapperImpl</code>中有个<code>ConversionService</code>类型的成员变量，所有的转换器是以它为载体传入的</p>
 <p>常用场景为将<code>Request</code>中多个参数填充到方法的的某个入参类中，在其中进行必要的类型转换</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/@PathVariable%E5%8F%82%E4%B8%8E%E5%88%B0%E5%B0%86%E5%8F%82%E6%95%B0%E7%BB%91%E5%AE%9A%E5%88%B0%E5%85%A5%E5%8F%82Bean/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/@PathVariable%E5%8F%82%E4%B8%8E%E5%88%B0%E5%B0%86%E5%8F%82%E6%95%B0%E7%BB%91%E5%AE%9A%E5%88%B0%E5%85%A5%E5%8F%82Bean/" itemprop="url">注解@PathVariable参与到将参数绑定到入参Bean</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
-                    <span itemprop="name">框架</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>在参数为复杂类时，处理参数的参数处理器为<code>ModelAttributeMethodProcessor</code></p>
-<pre><code class="highlight plain">public void bind(ServletRequest request) &#123;
-	MutablePropertyValues mpvs &#x3D; new ServletRequestParameterPropertyValues(request);
-	MultipartRequest multipartRequest &#x3D; WebUtils.getNativeRequest(request, MultipartRequest.class);
-	if (multipartRequest !&#x3D; null) &#123;
-		bindMultipart(multipartRequest.getMultiFileMap(), mpvs);
-	&#125;
-	addBindValues(mpvs, request);
-	doBind(mpvs);
-&#125;</code></pre>
-
-<p>创建要绑定到类中变量的所有参数的key和value集合mpvs，构造函数中先从请求中获取所有变量名和值，不包括PathVariable变量，然后通过<code>addBindValues(mpvs, request)</code></p>
-<pre><code class="highlight plain">protected void addBindValues(MutablePropertyValues mpvs, ServletRequest request) &#123;
-	String attr &#x3D; HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE;
-	Map&lt;String, String&gt; uriVars &#x3D; (Map&lt;String, String&gt;) request.getAttribute(attr);
-	if (uriVars !&#x3D; null) &#123;
-		for (Entry&lt;String, String&gt; entry : uriVars.entrySet()) &#123;
-			if (mpvs.contains(entry.getKey())) &#123;
-				logger.warn(&quot;Skipping URI variable &#39;&quot; + entry.getKey()
-						+ &quot;&#39; since the request contains a bind value with the same name.&quot;);
-			&#125;
-			else &#123;
-				mpvs.addPropertyValue(entry.getKey(), entry.getValue());
-			&#125;
-		&#125;
-	&#125;
-&#125;</code></pre>
-
-<p>首先获取了所有PathVariable变量<code>uriVars</code></p>
-<p>当<code>uriVars</code>的key值不与<code>mpvs</code>中的任意key相同时，将PathVariable变量也绑入mpvs中。</p>
-<p>然后将<code>mpvs</code>绑定到对应入参<code>Bean</code></p>
-<p>所以也可以通过<code>@PathVariable</code>的方法将PathVariable绑入入参<code>Bean</code>中，当然参数名字和PathVariable的名字要对上</p>
 
           
         
@@ -1509,165 +1295,315 @@ public void test3() throws Exception&#123;
           
             <h3 id="PathVariable"><a href="#PathVariable" class="headerlink" title="@PathVariable"></a>@PathVariable</h3><p>通过 @PathVariable 可以将 URL 中占位符参数绑定到控制器处理方法的入参中：URL 中的 {xxx} 占位符可以通过@PathVariable(“xxx”) 绑定到操作方法的入参中</p>
 <h3 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h3><h4 id="注解java-util-Map类型"><a href="#注解java-util-Map类型" class="headerlink" title="注解java.util.Map类型"></a>注解java.util.Map类型</h4><p>依旧是查看处理<code>@PathVariable</code>注解的入参的参数解析处理器<code>PathVariableMapMethodArgumentResolver</code></p>
-<pre><code class="highlight plain">@Override
-public boolean supportsParameter(MethodParameter parameter) &#123;
-	PathVariable ann &#x3D; parameter.getParameterAnnotation(PathVariable.class);
-	return (ann !&#x3D; null &amp;&amp; (Map.class.isAssignableFrom(parameter.getParameterType()))
-			&amp;&amp; !StringUtils.hasText(ann.value()));
-&#125;
+<pre><code>@Override
+public boolean supportsParameter(MethodParameter parameter) {
+    PathVariable ann = parameter.getParameterAnnotation(PathVariable.class);
+    return (ann != null &amp;&amp; (Map.class.isAssignableFrom(parameter.getParameterType()))
+            &amp;&amp; !StringUtils.hasText(ann.value()));
+}
 
 
 @Override
 public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception &#123;
+        NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 
-	@SuppressWarnings(&quot;unchecked&quot;)
-	Map&lt;String, String&gt; uriTemplateVars &#x3D;
-			(Map&lt;String, String&gt;) webRequest.getAttribute(
-					HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
+    @SuppressWarnings(&quot;unchecked&quot;)
+    Map&lt;String, String&gt; uriTemplateVars =
+            (Map&lt;String, String&gt;) webRequest.getAttribute(
+                    HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
 
-	if (!CollectionUtils.isEmpty(uriTemplateVars)) &#123;
-		return new LinkedHashMap&lt;String, String&gt;(uriTemplateVars);
-	&#125;
-	else &#123;
-		return Collections.emptyMap();
-	&#125;
-&#125;</code></pre>
-
-<p>适用于<code>@PathVariable</code>注解的<code>java.util.Map</code>类型的入参，且<code>@PathVariable</code>注解的<code>value</code>为空</p>
+    if (!CollectionUtils.isEmpty(uriTemplateVars)) {
+        return new LinkedHashMap&lt;String, String&gt;(uriTemplateVars);
+    }
+    else {
+        return Collections.emptyMap();
+    }
+}</code></pre><p>适用于<code>@PathVariable</code>注解的<code>java.util.Map</code>类型的入参，且<code>@PathVariable</code>注解的<code>value</code>为空</p>
 <p><code>resolveArgument</code>方法中，把使用PathVariable方法传参的属性名和值获取到<code>java.util.Map&lt;String,Object&gt;</code>中然后返回，作为反射调用<code>Controller</code>方法的入参，这个适用于使用一个<code>java.util.Map</code>变量接收请求中多个PathVariable变量</p>
 <h4 id="注解其他变量"><a href="#注解其他变量" class="headerlink" title="注解其他变量"></a>注解其他变量</h4><p>注解入参不是<code>java.util.Map</code>类型时，使用的参数解析器为<code>PathVariableMethodArgumentResolver</code></p>
-<pre><code class="highlight plain">@Override
-public boolean supportsParameter(MethodParameter parameter) &#123;
-	if (!parameter.hasParameterAnnotation(PathVariable.class)) &#123;
-		return false;
-	&#125;
-	if (Map.class.isAssignableFrom(parameter.getParameterType())) &#123;
-		String paramName &#x3D; parameter.getParameterAnnotation(PathVariable.class).value();
-		return StringUtils.hasText(paramName);
-	&#125;
-	return true;
-&#125;</code></pre>
-
-<p><code>PathVariableMethodArgumentResolver</code>和<code>RequestParamMethodArgumentResolver</code>继承了<code>AbstractNamedValueMethodArgumentResolver</code></p>
-<pre><code class="highlight plain">@Override
+<pre><code>@Override
+public boolean supportsParameter(MethodParameter parameter) {
+    if (!parameter.hasParameterAnnotation(PathVariable.class)) {
+        return false;
+    }
+    if (Map.class.isAssignableFrom(parameter.getParameterType())) {
+        String paramName = parameter.getParameterAnnotation(PathVariable.class).value();
+        return StringUtils.hasText(paramName);
+    }
+    return true;
+}
+</code></pre><p><code>PathVariableMethodArgumentResolver</code>和<code>RequestParamMethodArgumentResolver</code>继承了<code>AbstractNamedValueMethodArgumentResolver</code></p>
+<pre><code>@Override
 public final Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception &#123;
+        NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 
-	Class&lt;?&gt; paramType &#x3D; parameter.getParameterType();
-	NamedValueInfo namedValueInfo &#x3D; getNamedValueInfo(parameter);
+    Class&lt;?&gt; paramType = parameter.getParameterType();
+    NamedValueInfo namedValueInfo = getNamedValueInfo(parameter);
 
-	Object arg &#x3D; resolveName(namedValueInfo.name, parameter, webRequest);
-	if (arg &#x3D;&#x3D; null) &#123;
-		if (namedValueInfo.defaultValue !&#x3D; null) &#123;
-			arg &#x3D; resolveDefaultValue(namedValueInfo.defaultValue);
-		&#125;
-		else if (namedValueInfo.required &amp;&amp; !parameter.getParameterType().getName().equals(&quot;java.util.Optional&quot;)) &#123;
-			handleMissingValue(namedValueInfo.name, parameter);
-		&#125;
-		arg &#x3D; handleNullValue(namedValueInfo.name, arg, paramType);
-	&#125;
-	else if (&quot;&quot;.equals(arg) &amp;&amp; namedValueInfo.defaultValue !&#x3D; null) &#123;
-		arg &#x3D; resolveDefaultValue(namedValueInfo.defaultValue);
-	&#125;
+    Object arg = resolveName(namedValueInfo.name, parameter, webRequest);
+    if (arg == null) {
+        if (namedValueInfo.defaultValue != null) {
+            arg = resolveDefaultValue(namedValueInfo.defaultValue);
+        }
+        else if (namedValueInfo.required &amp;&amp; !parameter.getParameterType().getName().equals(&quot;java.util.Optional&quot;)) {
+            handleMissingValue(namedValueInfo.name, parameter);
+        }
+        arg = handleNullValue(namedValueInfo.name, arg, paramType);
+    }
+    else if (&quot;&quot;.equals(arg) &amp;&amp; namedValueInfo.defaultValue != null) {
+        arg = resolveDefaultValue(namedValueInfo.defaultValue);
+    }
 
-	if (binderFactory !&#x3D; null) &#123;
-		WebDataBinder binder &#x3D; binderFactory.createBinder(webRequest, null, namedValueInfo.name);
-		arg &#x3D; binder.convertIfNecessary(arg, paramType, parameter);
-	&#125;
+    if (binderFactory != null) {
+        WebDataBinder binder = binderFactory.createBinder(webRequest, null, namedValueInfo.name);
+        arg = binder.convertIfNecessary(arg, paramType, parameter);
+    }
 
-	handleResolvedValue(arg, namedValueInfo.name, parameter, mavContainer, webRequest);
+    handleResolvedValue(arg, namedValueInfo.name, parameter, mavContainer, webRequest);
 
-	return arg;
-&#125;</code></pre>
-
-<p><code>getNamedValueInfo</code>获取存放<code>@PathVariable</code>注解的<code>value</code>、<code>required</code>、<code>default</code></p>
+    return arg;
+}</code></pre><p><code>getNamedValueInfo</code>获取存放<code>@PathVariable</code>注解的<code>value</code>、<code>required</code>、<code>default</code></p>
 <p><code>resolveName</code>根据注解的<code>value</code>从请求中获取对应的值</p>
-<pre><code class="highlight plain">protected Object resolveName(String name, MethodParameter parameter, NativeWebRequest request) throws Exception &#123;
-	Map&lt;String, String&gt; uriTemplateVars &#x3D;
-		(Map&lt;String, String&gt;) request.getAttribute(
-				HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
-	return (uriTemplateVars !&#x3D; null) ? uriTemplateVars.get(name) : null;
-&#125;</code></pre>
-
-<p>从请求中获取存放PathVariable的<code>java.util.Map</code>类的变量，怎么来的后面有解释，然后根据<code>value</code>从<code>Map</code>中获取对应的值</p>
+<pre><code>protected Object resolveName(String name, MethodParameter parameter, NativeWebRequest request) throws Exception {
+    Map&lt;String, String&gt; uriTemplateVars =
+        (Map&lt;String, String&gt;) request.getAttribute(
+                HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
+    return (uriTemplateVars != null) ? uriTemplateVars.get(name) : null;
+}</code></pre><p>从请求中获取存放PathVariable的<code>java.util.Map</code>类的变量，怎么来的后面有解释，然后根据<code>value</code>从<code>Map</code>中获取对应的值</p>
 <p>最后要注意<code>handleResolvedValue</code>方法</p>
-<pre><code class="highlight plain">protected void handleResolvedValue(Object arg, String name, MethodParameter parameter,
-		ModelAndViewContainer mavContainer, NativeWebRequest request) &#123;
+<pre><code>protected void handleResolvedValue(Object arg, String name, MethodParameter parameter,
+        ModelAndViewContainer mavContainer, NativeWebRequest request) {
 
-	String key &#x3D; View.PATH_VARIABLES;
-	int scope &#x3D; RequestAttributes.SCOPE_REQUEST;
-	Map&lt;String, Object&gt; pathVars &#x3D; (Map&lt;String, Object&gt;) request.getAttribute(key, scope);
-	if (pathVars &#x3D;&#x3D; null) &#123;
-		pathVars &#x3D; new HashMap&lt;String, Object&gt;();
-		request.setAttribute(key, pathVars, scope);
-	&#125;
-	pathVars.put(name, arg);
-&#125;</code></pre>
-
-<p>这里将PathVariable又以<code>View.PATH_VARIABLES</code>为键值放到<code>request</code>中，后面解析视图的时候会用到</p>
-<pre><code class="highlight plain">@Override
+    String key = View.PATH_VARIABLES;
+    int scope = RequestAttributes.SCOPE_REQUEST;
+    Map&lt;String, Object&gt; pathVars = (Map&lt;String, Object&gt;) request.getAttribute(key, scope);
+    if (pathVars == null) {
+        pathVars = new HashMap&lt;String, Object&gt;();
+        request.setAttribute(key, pathVars, scope);
+    }
+    pathVars.put(name, arg);
+}</code></pre><p>这里将PathVariable又以<code>View.PATH_VARIABLES</code>为键值放到<code>request</code>中，后面解析视图的时候会用到</p>
+<pre><code>@Override
 @SuppressWarnings(&quot;unchecked&quot;)
-protected Object resolveName(String name, MethodParameter parameter, NativeWebRequest request) throws Exception &#123;
-	Map&lt;String, String&gt; uriTemplateVars &#x3D;
-		(Map&lt;String, String&gt;) request.getAttribute(
-				HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
-	return (uriTemplateVars !&#x3D; null) ? uriTemplateVars.get(name) : null;
-&#125;</code></pre>
+protected Object resolveName(String name, MethodParameter parameter, NativeWebRequest request) throws Exception {
+    Map&lt;String, String&gt; uriTemplateVars =
+        (Map&lt;String, String&gt;) request.getAttribute(
+                HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
+    return (uriTemplateVars != null) ? uriTemplateVars.get(name) : null;
+}</code></pre><p>一样先从请求中获取存放了PathVariable类型的变量名和值的<code>java.util.Map</code>，然后以传入的<code>value</code>为key取出对应值返回，作为反射调用对应<code>Controller</code>方法的入参，也就顺利传给了我们注解了<code>@PathVariable</code>变量</p>
+<h4 id="关于获取PathVariable变量"><a href="#关于获取PathVariable变量" class="headerlink" title="关于获取PathVariable变量"></a>关于获取PathVariable变量</h4><pre><code>@Override
+protected void handleMatch(RequestMappingInfo info, String lookupPath, HttpServletRequest request) {
+    super.handleMatch(info, lookupPath, request);
 
-<p>一样先从请求中获取存放了PathVariable类型的变量名和值的<code>java.util.Map</code>，然后以传入的<code>value</code>为key取出对应值返回，作为反射调用对应<code>Controller</code>方法的入参，也就顺利传给了我们注解了<code>@PathVariable</code>变量</p>
-<h4 id="关于获取PathVariable变量"><a href="#关于获取PathVariable变量" class="headerlink" title="关于获取PathVariable变量"></a>关于获取PathVariable变量</h4><pre><code class="highlight plain">@Override
-protected void handleMatch(RequestMappingInfo info, String lookupPath, HttpServletRequest request) &#123;
-	super.handleMatch(info, lookupPath, request);
+    String bestPattern;
+    Map&lt;String, String&gt; uriVariables;
+    Map&lt;String, String&gt; decodedUriVariables;
 
-	String bestPattern;
-	Map&lt;String, String&gt; uriVariables;
-	Map&lt;String, String&gt; decodedUriVariables;
+    Set&lt;String&gt; patterns = info.getPatternsCondition().getPatterns();
+    if (patterns.isEmpty()) {
+        bestPattern = lookupPath;
+        uriVariables = Collections.emptyMap();
+        decodedUriVariables = Collections.emptyMap();
+    }
+    else {
+        bestPattern = patterns.iterator().next();
+        uriVariables = getPathMatcher().extractUriTemplateVariables(bestPattern, lookupPath);
+        decodedUriVariables = getUrlPathHelper().decodePathVariables(request, uriVariables);
+    }
 
-	Set&lt;String&gt; patterns &#x3D; info.getPatternsCondition().getPatterns();
-	if (patterns.isEmpty()) &#123;
-		bestPattern &#x3D; lookupPath;
-		uriVariables &#x3D; Collections.emptyMap();
-		decodedUriVariables &#x3D; Collections.emptyMap();
-	&#125;
-	else &#123;
-		bestPattern &#x3D; patterns.iterator().next();
-		uriVariables &#x3D; getPathMatcher().extractUriTemplateVariables(bestPattern, lookupPath);
-		decodedUriVariables &#x3D; getUrlPathHelper().decodePathVariables(request, uriVariables);
-	&#125;
+    request.setAttribute(BEST_MATCHING_PATTERN_ATTRIBUTE, bestPattern);
+    request.setAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, decodedUriVariables);
 
-	request.setAttribute(BEST_MATCHING_PATTERN_ATTRIBUTE, bestPattern);
-	request.setAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, decodedUriVariables);
+    if (isMatrixVariableContentAvailable()) {
+        Map&lt;String, MultiValueMap&lt;String, String&gt;&gt; matrixVars = extractMatrixVariables(request, uriVariables);
+        request.setAttribute(HandlerMapping.MATRIX_VARIABLES_ATTRIBUTE, matrixVars);
+    }
 
-	if (isMatrixVariableContentAvailable()) &#123;
-		Map&lt;String, MultiValueMap&lt;String, String&gt;&gt; matrixVars &#x3D; extractMatrixVariables(request, uriVariables);
-		request.setAttribute(HandlerMapping.MATRIX_VARIABLES_ATTRIBUTE, matrixVars);
-	&#125;
-
-	if (!info.getProducesCondition().getProducibleMediaTypes().isEmpty()) &#123;
-		Set&lt;MediaType&gt; mediaTypes &#x3D; info.getProducesCondition().getProducibleMediaTypes();
-		request.setAttribute(PRODUCIBLE_MEDIA_TYPES_ATTRIBUTE, mediaTypes);
-	&#125;
-&#125;</code></pre>
-
-<p>以上代码段属于在<code>RequestMappingHandlerMapping</code>获取<code>RequestMappingHandlerAdapter</code>的过程中，使用<code>url</code>匹配对应的<code>RequestMappingInfo</code>，匹配完之后最后对<code>url</code>解析，获取PathVariable</p>
-<pre><code class="highlight plain">uriVariables &#x3D; getPathMatcher().extractUriTemplateVariables(bestPattern, lookupPath);</code></pre>
-
-<p><code>bestPattern</code>指向被匹配的<code>@RequestMapping</code>的<code>value</code>，<code>lookupPath</code>指向<code>ServletPath</code></p>
+    if (!info.getProducesCondition().getProducibleMediaTypes().isEmpty()) {
+        Set&lt;MediaType&gt; mediaTypes = info.getProducesCondition().getProducibleMediaTypes();
+        request.setAttribute(PRODUCIBLE_MEDIA_TYPES_ATTRIBUTE, mediaTypes);
+    }
+}</code></pre><p>以上代码段属于在<code>RequestMappingHandlerMapping</code>获取<code>RequestMappingHandlerAdapter</code>的过程中，使用<code>url</code>匹配对应的<code>RequestMappingInfo</code>，匹配完之后最后对<code>url</code>解析，获取PathVariable</p>
+<pre><code>uriVariables = getPathMatcher().extractUriTemplateVariables(bestPattern, lookupPath);</code></pre><p><code>bestPattern</code>指向被匹配的<code>@RequestMapping</code>的<code>value</code>，<code>lookupPath</code>指向<code>ServletPath</code></p>
 <p>通过<code>extractUriTemplateVariables</code>方法获取{}中字符和对应<code>lookupPath</code>中对应的值</p>
-<pre><code class="highlight plain">@Override
-public Map&lt;String, String&gt; extractUriTemplateVariables(String pattern, String path) &#123;
-	Map&lt;String, String&gt; variables &#x3D; new LinkedHashMap&lt;String, String&gt;();
-	boolean result &#x3D; doMatch(pattern, path, true, variables);
-	Assert.state(result, &quot;Pattern \&quot;&quot; + pattern + &quot;\&quot; is not a match for \&quot;&quot; + path + &quot;\&quot;&quot;);
-	return variables;
-&#125;</code></pre>
-
-<p>返回的一个<code>java.util.Map&lt;String,String&gt;</code>类型的变量，存放了PathVariable的变量名和值</p>
+<pre><code>@Override
+public Map&lt;String, String&gt; extractUriTemplateVariables(String pattern, String path) {
+    Map&lt;String, String&gt; variables = new LinkedHashMap&lt;String, String&gt;();
+    boolean result = doMatch(pattern, path, true, variables);
+    Assert.state(result, &quot;Pattern \&quot;&quot; + pattern + &quot;\&quot; is not a match for \&quot;&quot; + path + &quot;\&quot;&quot;);
+    return variables;
+}</code></pre><p>返回的一个<code>java.util.Map&lt;String,String&gt;</code>类型的变量，存放了PathVariable的变量名和值</p>
 <p>然后进行url解码</p>
-<pre><code class="highlight plain">decodedUriVariables &#x3D; getUrlPathHelper().decodePathVariables(request, uriVariables);</code></pre>
+<pre><code>decodedUriVariables = getUrlPathHelper().decodePathVariables(request, uriVariables);</code></pre><p>解码后将它以<code>HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE</code>为变量名调用<code>Requrest</code>的<code>SetAttribute</code>方法放入请求中</p>
 
-<p>解码后将它以<code>HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE</code>为变量名调用<code>Requrest</code>的<code>SetAttribute</code>方法放入请求中</p>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/@PathVariable%E5%8F%82%E4%B8%8E%E5%88%B0%E5%B0%86%E5%8F%82%E6%95%B0%E7%BB%91%E5%AE%9A%E5%88%B0%E5%85%A5%E5%8F%82Bean/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/@PathVariable%E5%8F%82%E4%B8%8E%E5%88%B0%E5%B0%86%E5%8F%82%E6%95%B0%E7%BB%91%E5%AE%9A%E5%88%B0%E5%85%A5%E5%8F%82Bean/" itemprop="url">注解@PathVariable参与到将参数绑定到入参Bean</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">框架</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>在参数为复杂类时，处理参数的参数处理器为<code>ModelAttributeMethodProcessor</code></p>
+<pre><code>public void bind(ServletRequest request) {
+    MutablePropertyValues mpvs = new ServletRequestParameterPropertyValues(request);
+    MultipartRequest multipartRequest = WebUtils.getNativeRequest(request, MultipartRequest.class);
+    if (multipartRequest != null) {
+        bindMultipart(multipartRequest.getMultiFileMap(), mpvs);
+    }
+    addBindValues(mpvs, request);
+    doBind(mpvs);
+}</code></pre><p>创建要绑定到类中变量的所有参数的key和value集合mpvs，构造函数中先从请求中获取所有变量名和值，不包括PathVariable变量，然后通过<code>addBindValues(mpvs, request)</code></p>
+<pre><code>protected void addBindValues(MutablePropertyValues mpvs, ServletRequest request) {
+    String attr = HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE;
+    Map&lt;String, String&gt; uriVars = (Map&lt;String, String&gt;) request.getAttribute(attr);
+    if (uriVars != null) {
+        for (Entry&lt;String, String&gt; entry : uriVars.entrySet()) {
+            if (mpvs.contains(entry.getKey())) {
+                logger.warn(&quot;Skipping URI variable &#39;&quot; + entry.getKey()
+                        + &quot;&#39; since the request contains a bind value with the same name.&quot;);
+            }
+            else {
+                mpvs.addPropertyValue(entry.getKey(), entry.getValue());
+            }
+        }
+    }
+}</code></pre><p>首先获取了所有PathVariable变量<code>uriVars</code></p>
+<p>当<code>uriVars</code>的key值不与<code>mpvs</code>中的任意key相同时，将PathVariable变量也绑入mpvs中。</p>
+<p>然后将<code>mpvs</code>绑定到对应入参<code>Bean</code></p>
+<p>所以也可以通过<code>@PathVariable</code>的方法将PathVariable绑入入参<code>Bean</code>中，当然参数名字和PathVariable的名字要对上</p>
 
           
         
@@ -1811,93 +1747,89 @@ public Map&lt;String, String&gt; extractUriTemplateVariables(String pattern, Str
           
             <p>我们知道<code>@ModelAttribute</code>注解和<code>@RequestParam</code>注解加与不加都起作用，其中<code>@ModelAttribute</code>是以类名作为<code>value</code>，<code>@RequestParam</code>是以变量名作为<code>value</code></p>
 <p>还是看参数解析器集合的初始化</p>
-<pre><code class="highlight plain">private List&lt;HandlerMethodArgumentResolver&gt; getDefaultArgumentResolvers() &#123;
-	List&lt;HandlerMethodArgumentResolver&gt; resolvers &#x3D; new ArrayList&lt;HandlerMethodArgumentResolver&gt;();
+<pre><code>private List&lt;HandlerMethodArgumentResolver&gt; getDefaultArgumentResolvers() {
+    List&lt;HandlerMethodArgumentResolver&gt; resolvers = new ArrayList&lt;HandlerMethodArgumentResolver&gt;();
 
-	&#x2F;&#x2F; Annotation-based argument resolution
-	resolvers.add(new RequestParamMethodArgumentResolver(getBeanFactory(), false));
-	resolvers.add(new RequestParamMapMethodArgumentResolver());
-	resolvers.add(new PathVariableMethodArgumentResolver());
-	resolvers.add(new PathVariableMapMethodArgumentResolver());
-	resolvers.add(new MatrixVariableMethodArgumentResolver());
-	resolvers.add(new MatrixVariableMapMethodArgumentResolver());
-	resolvers.add(new ServletModelAttributeMethodProcessor(false));
-	resolvers.add(new RequestResponseBodyMethodProcessor(getMessageConverters()));
-	resolvers.add(new RequestPartMethodArgumentResolver(getMessageConverters()));
-	resolvers.add(new RequestHeaderMethodArgumentResolver(getBeanFactory()));
-	resolvers.add(new RequestHeaderMapMethodArgumentResolver());
-	resolvers.add(new ServletCookieValueMethodArgumentResolver(getBeanFactory()));
-	resolvers.add(new ExpressionValueMethodArgumentResolver(getBeanFactory()));
+    // Annotation-based argument resolution
+    resolvers.add(new RequestParamMethodArgumentResolver(getBeanFactory(), false));
+    resolvers.add(new RequestParamMapMethodArgumentResolver());
+    resolvers.add(new PathVariableMethodArgumentResolver());
+    resolvers.add(new PathVariableMapMethodArgumentResolver());
+    resolvers.add(new MatrixVariableMethodArgumentResolver());
+    resolvers.add(new MatrixVariableMapMethodArgumentResolver());
+    resolvers.add(new ServletModelAttributeMethodProcessor(false));
+    resolvers.add(new RequestResponseBodyMethodProcessor(getMessageConverters()));
+    resolvers.add(new RequestPartMethodArgumentResolver(getMessageConverters()));
+    resolvers.add(new RequestHeaderMethodArgumentResolver(getBeanFactory()));
+    resolvers.add(new RequestHeaderMapMethodArgumentResolver());
+    resolvers.add(new ServletCookieValueMethodArgumentResolver(getBeanFactory()));
+    resolvers.add(new ExpressionValueMethodArgumentResolver(getBeanFactory()));
 
-	&#x2F;&#x2F; Type-based argument resolution
-	resolvers.add(new ServletRequestMethodArgumentResolver());
-	resolvers.add(new ServletResponseMethodArgumentResolver());
-	resolvers.add(new HttpEntityMethodProcessor(getMessageConverters()));
-	resolvers.add(new RedirectAttributesMethodArgumentResolver());
-	resolvers.add(new ModelMethodProcessor());
-	resolvers.add(new MapMethodProcessor());
-	resolvers.add(new ErrorsMethodArgumentResolver());
-	resolvers.add(new SessionStatusMethodArgumentResolver());
-	resolvers.add(new UriComponentsBuilderMethodArgumentResolver());
+    // Type-based argument resolution
+    resolvers.add(new ServletRequestMethodArgumentResolver());
+    resolvers.add(new ServletResponseMethodArgumentResolver());
+    resolvers.add(new HttpEntityMethodProcessor(getMessageConverters()));
+    resolvers.add(new RedirectAttributesMethodArgumentResolver());
+    resolvers.add(new ModelMethodProcessor());
+    resolvers.add(new MapMethodProcessor());
+    resolvers.add(new ErrorsMethodArgumentResolver());
+    resolvers.add(new SessionStatusMethodArgumentResolver());
+    resolvers.add(new UriComponentsBuilderMethodArgumentResolver());
 
-	&#x2F;&#x2F; Custom arguments
-	if (getCustomArgumentResolvers() !&#x3D; null) &#123;
-		resolvers.addAll(getCustomArgumentResolvers());
-	&#125;
+    // Custom arguments
+    if (getCustomArgumentResolvers() != null) {
+        resolvers.addAll(getCustomArgumentResolvers());
+    }
 
-	&#x2F;&#x2F; Catch-all
-	resolvers.add(new RequestParamMethodArgumentResolver(getBeanFactory(), true));
-	resolvers.add(new ServletModelAttributeMethodProcessor(true));
+    // Catch-all
+    resolvers.add(new RequestParamMethodArgumentResolver(getBeanFactory(), true));
+    resolvers.add(new ServletModelAttributeMethodProcessor(true));
 
-	return resolvers;
-&#125;</code></pre>
-
-<p>最下面还有注释<code>Catch-all</code></p>
+    return resolvers;
+}</code></pre><p>最下面还有注释<code>Catch-all</code></p>
 <p>初始化了相同的<code>RequestParamMethodArgumentResolver</code>和<code>ServletModelAttributeMethodProcessor</code>，不同之处在于传入的<code>Boolean</code>值不同</p>
 <p>我们看两个的<code>support</code>方法</p>
-<pre><code class="highlight plain">@Override
-public boolean supportsParameter(MethodParameter parameter) &#123;
-	if (parameter.hasParameterAnnotation(ModelAttribute.class)) &#123;
-		return true;
-	&#125;
-	else if (this.annotationNotRequired) &#123;
-		return !BeanUtils.isSimpleProperty(parameter.getParameterType());
-	&#125;
-	else &#123;
-		return false;
-	&#125;
-&#125;
+<pre><code>@Override
+public boolean supportsParameter(MethodParameter parameter) {
+    if (parameter.hasParameterAnnotation(ModelAttribute.class)) {
+        return true;
+    }
+    else if (this.annotationNotRequired) {
+        return !BeanUtils.isSimpleProperty(parameter.getParameterType());
+    }
+    else {
+        return false;
+    }
+}
 
 
 @Override
-public boolean supportsParameter(MethodParameter parameter) &#123;
-	Class&lt;?&gt; paramType &#x3D; parameter.getParameterType();
-	if (parameter.hasParameterAnnotation(RequestParam.class)) &#123;
-		if (Map.class.isAssignableFrom(paramType)) &#123;
-			String paramName &#x3D; parameter.getParameterAnnotation(RequestParam.class).value();
-			return StringUtils.hasText(paramName);
-		&#125;
-		else &#123;
-			return true;
-		&#125;
-	&#125;
-	else &#123;
-		if (parameter.hasParameterAnnotation(RequestPart.class)) &#123;
-			return false;
-		&#125;
-		else if (MultipartFile.class.equals(paramType) || &quot;javax.servlet.http.Part&quot;.equals(paramType.getName())) &#123;
-			return true;
-		&#125;
-		else if (this.useDefaultResolution) &#123;
-			return BeanUtils.isSimpleProperty(paramType);
-		&#125;
-		else &#123;
-			return false;
-		&#125;
-	&#125;
-&#125;</code></pre>
-
-<p>两个变量<code>annotationNotRequired</code>和<code>useDefaultResolution</code>，当为<code>true</code>时，不需要两个注解也能当成有注解的情况处理，当然是要排在前面的参数解析器都不适用当前参数的情况</p>
+public boolean supportsParameter(MethodParameter parameter) {
+    Class&lt;?&gt; paramType = parameter.getParameterType();
+    if (parameter.hasParameterAnnotation(RequestParam.class)) {
+        if (Map.class.isAssignableFrom(paramType)) {
+            String paramName = parameter.getParameterAnnotation(RequestParam.class).value();
+            return StringUtils.hasText(paramName);
+        }
+        else {
+            return true;
+        }
+    }
+    else {
+        if (parameter.hasParameterAnnotation(RequestPart.class)) {
+            return false;
+        }
+        else if (MultipartFile.class.equals(paramType) || &quot;javax.servlet.http.Part&quot;.equals(paramType.getName())) {
+            return true;
+        }
+        else if (this.useDefaultResolution) {
+            return BeanUtils.isSimpleProperty(paramType);
+        }
+        else {
+            return false;
+        }
+    }
+}</code></pre><p>两个变量<code>annotationNotRequired</code>和<code>useDefaultResolution</code>，当为<code>true</code>时，不需要两个注解也能当成有注解的情况处理，当然是要排在前面的参数解析器都不适用当前参数的情况</p>
 
           
         

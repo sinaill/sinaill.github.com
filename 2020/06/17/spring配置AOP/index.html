@@ -352,11 +352,9 @@
 <li>织入(Weaving): 利用代理实现切面方法增强连接点方法的过程叫织入</li>
 </ul>
 <h4 id="Aspect"><a href="#Aspect" class="headerlink" title="Aspect"></a>Aspect</h4><p>声明一个切面有两种方法，一种是通过xml配置的方法</p>
-<pre><code class="highlight plain">&lt;bean id&#x3D;&quot;myAspect&quot; class&#x3D;&quot;org.xyz.NotVeryUsefulAspect&quot;&gt;
+<pre><code>&lt;bean id=&quot;myAspect&quot; class=&quot;org.xyz.NotVeryUsefulAspect&quot;&gt;
     &lt;!-- configure properties of the aspect here --&gt;
-&lt;&#x2F;bean&gt;</code></pre>
-
-<p>当然，配置的这个类上需要有<code>@Aspect</code>注解</p>
+&lt;/bean&gt;</code></pre><p>当然，配置的这个类上需要有<code>@Aspect</code>注解</p>
 <p>第二种就是注解配置的方法</p>
 <p>在需要声明为切面的类上配置<code>@Aspect</code>注解，但是，注意Spring文档中，However, note that the @Aspect annotation is not sufficient for autodetection in the classpath. For that purpose, you need to add a separate @Component annotation</p>
 <p>意思就是采用注解的方式声明，不仅需要<code>@Aspect</code>注解，还需要配置上<code>@Component</code>注解才行</p>
@@ -372,28 +370,22 @@
 <ol>
 <li>execution</li>
 </ol>
-<pre><code class="highlight plain">@Pointcut(&quot;execution(public String org.baeldung.dao.FooDao.findById(Long))&quot;)
+<pre><code>@Pointcut(&quot;execution(public String org.baeldung.dao.FooDao.findById(Long))&quot;)
 
-@Pointcut(&quot;execution(* org.baeldung.dao.FooDao.*(..))&quot;)</code></pre>
-
-<p>通过第一种指定特定方法或者第二种模糊匹配</p>
+@Pointcut(&quot;execution(* org.baeldung.dao.FooDao.*(..))&quot;)</code></pre><p>通过第一种指定特定方法或者第二种模糊匹配</p>
 <ol start="2">
 <li>within</li>
 </ol>
 <p>within是用来指定类型的，指定类型中的所有方法将被拦截</p>
-<pre><code class="highlight plain">@Pointcut(&quot;within(org.baeldung.dao.FooDao)&quot;)
+<pre><code>@Pointcut(&quot;within(org.baeldung.dao.FooDao)&quot;)
 
-@Pointcut(&quot;within(org.baeldung..*)&quot;)</code></pre>
-
-<p>指定某个类或者某个包下所有类的所有方法(子类型无效)</p>
+@Pointcut(&quot;within(org.baeldung..*)&quot;)</code></pre><p>指定某个类或者某个包下所有类的所有方法(子类型无效)</p>
 <ol start="3">
 <li>this and target</li>
 </ol>
-<pre><code class="highlight plain">@Pointcut(&quot;target(org.baeldung.dao.BarDao)&quot;)
+<pre><code>@Pointcut(&quot;target(org.baeldung.dao.BarDao)&quot;)
 
-@Pointcut(&quot;this(org.baeldung.dao.FooDao)&quot;)</code></pre>
-
-<p>其中target指代被代理的类(连接点方法所在的类)，this表示代理类，匹配条件为是给定值的类的实例</p>
+@Pointcut(&quot;this(org.baeldung.dao.FooDao)&quot;)</code></pre><p>其中target指代被代理的类(连接点方法所在的类)，this表示代理类，匹配条件为是给定值的类的实例</p>
 <ol start="4">
 <li>args</li>
 </ol>
@@ -409,80 +401,69 @@
 <li>@target</li>
 </ol>
 <p>与上面的target是不同的，这个是指定目标类(子类无效)要有指定的注解才能匹配，</p>
-<pre><code class="highlight plain">@Pointcut(&quot;@target(org.springframework.stereotype.Repository)&quot;)</code></pre>
-
-<ol start="6">
+<pre><code>@Pointcut(&quot;@target(org.springframework.stereotype.Repository)&quot;)</code></pre><ol start="6">
 <li>@args</li>
 </ol>
 <p>用来匹配参数带有指定注解的方法</p>
-<pre><code class="highlight plain">@Pointcut(&quot;@args(com.elim.spring.support.MyAnnotation)&quot;)</code></pre>
-
-<ol start="7">
+<pre><code>@Pointcut(&quot;@args(com.elim.spring.support.MyAnnotation)&quot;)</code></pre><ol start="7">
 <li>@within</li>
 </ol>
 <p>和<code>@target</code>差不多，但是<code>@within</code>范围更大，被注解类的子类中未被覆写的方法也匹配</p>
-<pre><code class="highlight plain">@Pointcut(&quot;@target(org.springframework.stereotype.Repository)&quot;)</code></pre>
-
-
-<ol start="8">
+<pre><code>@Pointcut(&quot;@target(org.springframework.stereotype.Repository)&quot;)</code></pre><ol start="8">
 <li>@annotation</li>
 </ol>
 <p>@annotation用于匹配方法上拥有指定注解的情况。</p>
-<pre><code class="highlight plain">@Point(&quot;@annotation(com.elim.spring.support.MyAnnotation)&quot;)</code></pre>
-
-<h3 id="五种通知方法"><a href="#五种通知方法" class="headerlink" title="五种通知方法"></a>五种通知方法</h3><pre><code class="highlight plain">@Aspect
+<pre><code>@Point(&quot;@annotation(com.elim.spring.support.MyAnnotation)&quot;)</code></pre><h3 id="五种通知方法"><a href="#五种通知方法" class="headerlink" title="五种通知方法"></a>五种通知方法</h3><pre><code>@Aspect
 @Component
-public class Log &#123;
-	@Pointcut(&quot;execution(* crj.ssm.service.*.*(..))&quot;)
-	private void startLog() &#123;
-		
-	&#125;
+public class Log {
+    @Pointcut(&quot;execution(* crj.ssm.service.*.*(..))&quot;)
+    private void startLog() {
 
-	@Before(&quot;startLog()&quot;)
-	public void beforeMethod(JoinPoint point) &#123;
-		System.out.println(&quot;@Before方法开始&quot;);
-		System.out.println(&quot;getSignature方法：&quot;+point.getSignature().getName());
-		&#x2F;&#x2F;获取目标方法的参数，返回的是Object[]
-		System.out.println(&quot;getArgs方法： &quot;+point.getArgs());
-		&#x2F;&#x2F;返回目标方法所在的类
-		System.out.println(&quot;getTarget方法：&quot;+point.getTarget());
-		&#x2F;&#x2F;也是返回目标方法所在的类
-		System.out.println(&quot;getThis方法&quot; +point.getThis());
-		System.out.println(&quot;@Before方法结束&quot;);
-	&#125;
+    }
 
-	@Around(&quot;startLog()&quot;)
-	public Object aroundMethod(ProceedingJoinPoint point) throws Throwable&#123;
-		System.out.println(&quot;@aroundMethod方法开始&quot;);
-		&#x2F;&#x2F;同上
-		System.out.println(point.getArgs());
-		Object object &#x3D; point.proceed(point.getArgs());
-		System.out.println(&quot;@aroundMethod方法结束&quot;);
-		return object;
-	&#125;
+    @Before(&quot;startLog()&quot;)
+    public void beforeMethod(JoinPoint point) {
+        System.out.println(&quot;@Before方法开始&quot;);
+        System.out.println(&quot;getSignature方法：&quot;+point.getSignature().getName());
+        //获取目标方法的参数，返回的是Object[]
+        System.out.println(&quot;getArgs方法： &quot;+point.getArgs());
+        //返回目标方法所在的类
+        System.out.println(&quot;getTarget方法：&quot;+point.getTarget());
+        //也是返回目标方法所在的类
+        System.out.println(&quot;getThis方法&quot; +point.getThis());
+        System.out.println(&quot;@Before方法结束&quot;);
+    }
 
-	@After(&quot;startLog()&quot;)
-	public void afterMethod(JoinPoint point) &#123;
-		System.out.println(&quot;@afterMethod方法开始&quot;);
-		System.out.println(&quot;this is after-method&quot;);
-		System.out.println(&quot;@afterMethod方法结束&quot;);
-	&#125;
+    @Around(&quot;startLog()&quot;)
+    public Object aroundMethod(ProceedingJoinPoint point) throws Throwable{
+        System.out.println(&quot;@aroundMethod方法开始&quot;);
+        //同上
+        System.out.println(point.getArgs());
+        Object object = point.proceed(point.getArgs());
+        System.out.println(&quot;@aroundMethod方法结束&quot;);
+        return object;
+    }
 
-	@AfterReturning(value &#x3D; &quot;startLog()&quot;, returning &#x3D; &quot;result&quot;)
-	public void afterReturningMethod(JoinPoint point, Object result) &#123;
-		System.out.println(&quot;@AfterReturning方法开始&quot;);
-		System.out.println(result);
-		System.out.println(&quot;@AfterReturning方法结束&quot;);
-	&#125;
+    @After(&quot;startLog()&quot;)
+    public void afterMethod(JoinPoint point) {
+        System.out.println(&quot;@afterMethod方法开始&quot;);
+        System.out.println(&quot;this is after-method&quot;);
+        System.out.println(&quot;@afterMethod方法结束&quot;);
+    }
 
-	@AfterThrowing(value &#x3D; &quot;startLog()&quot;, throwing &#x3D; &quot;ex&quot;)
-	public void afterThrowingMethod(JoinPoint point, Throwable ex) &#123;
-		System.out.println(&quot;this is afterThrowing-method&quot;);
-	&#125;
-&#125;</code></pre>
+    @AfterReturning(value = &quot;startLog()&quot;, returning = &quot;result&quot;)
+    public void afterReturningMethod(JoinPoint point, Object result) {
+        System.out.println(&quot;@AfterReturning方法开始&quot;);
+        System.out.println(result);
+        System.out.println(&quot;@AfterReturning方法结束&quot;);
+    }
 
-<p>执行顺序为</p>
-<pre><code class="highlight plain">prehandle方法
+    @AfterThrowing(value = &quot;startLog()&quot;, throwing = &quot;ex&quot;)
+    public void afterThrowingMethod(JoinPoint point, Throwable ex) {
+        System.out.println(&quot;this is afterThrowing-method&quot;);
+    }
+}</code></pre><p>执行顺序为</p>
+<pre><code>prehandle方法
 @aroundMethod方法开始
 getArgs方法[Ljava.lang.Object;@493d696c
 @Before方法开始
@@ -495,9 +476,9 @@ getThis方法crj.ssm.service.impl.PersonServiceImpl@177185be
 22:44:37.933 [http-bio-8080-exec-2] DEBUG org.mybatis.spring.SqlSessionUtils - Creating a new SqlSession
 22:44:37.946 [http-bio-8080-exec-2] DEBUG org.mybatis.spring.SqlSessionUtils - Registering transaction synchronization for SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@711b6130]
 22:44:37.960 [http-bio-8080-exec-2] DEBUG o.m.s.t.SpringManagedTransaction - JDBC Connection [com.mchange.v2.c3p0.impl.NewProxyConnection@21118e0c] will be managed by Spring
-22:44:37.967 [http-bio-8080-exec-2] DEBUG crj.ssm.dao.PersonDao.selectById - &#x3D;&#x3D;&gt;  Preparing: SELECT * from person where id &#x3D; ? 
-22:44:38.029 [http-bio-8080-exec-2] DEBUG crj.ssm.dao.PersonDao.selectById - &#x3D;&#x3D;&gt; Parameters: 1(Integer)
-22:44:38.065 [http-bio-8080-exec-2] DEBUG crj.ssm.dao.PersonDao.selectById - &lt;&#x3D;&#x3D;      Total: 1
+22:44:37.967 [http-bio-8080-exec-2] DEBUG crj.ssm.dao.PersonDao.selectById - ==&gt;  Preparing: SELECT * from person where id = ? 
+22:44:38.029 [http-bio-8080-exec-2] DEBUG crj.ssm.dao.PersonDao.selectById - ==&gt; Parameters: 1(Integer)
+22:44:38.065 [http-bio-8080-exec-2] DEBUG crj.ssm.dao.PersonDao.selectById - &lt;==      Total: 1
 22:44:38.078 [http-bio-8080-exec-2] DEBUG org.mybatis.spring.SqlSessionUtils - Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@711b6130]
 @aroundMethod方法结束
 @afterMethod方法开始
@@ -510,9 +491,7 @@ crj.ssm.entity.Person@77e5c255
 22:44:38.108 [http-bio-8080-exec-2] DEBUG org.mybatis.spring.SqlSessionUtils - Transaction synchronization deregistering SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@711b6130]
 22:44:38.108 [http-bio-8080-exec-2] DEBUG org.mybatis.spring.SqlSessionUtils - Transaction synchronization closing SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@711b6130]
 postHandle方法
-afterCompletion方法</code></pre>
-
-<p>先执行<code>@Around</code>方法，直到调用proceed方法前，调用<code>@Before</code>方法，然后就是执行目标方法，执行完目标方法，开始执行<code>@AfterMethod</code>方法，然后<code>@Around</code>方法执行完proceed返回值，然后是<code>@AfterReturning</code>方法。</p>
+afterCompletion方法</code></pre><p>先执行<code>@Around</code>方法，直到调用proceed方法前，调用<code>@Before</code>方法，然后就是执行目标方法，执行完目标方法，开始执行<code>@AfterMethod</code>方法，然后<code>@Around</code>方法执行完proceed返回值，然后是<code>@AfterReturning</code>方法。</p>
 
       
     </div>
@@ -553,8 +532,8 @@ afterCompletion方法</code></pre>
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2020/06/17/volatile/" rel="prev" title="volatile">
-                volatile <i class="fa fa-chevron-right"></i>
+              <a href="/2020/06/17/%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/" rel="prev" title="代理模式">
+                代理模式 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>

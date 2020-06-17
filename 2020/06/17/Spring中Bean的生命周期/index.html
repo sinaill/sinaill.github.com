@@ -79,12 +79,12 @@
 
 
 
-<meta name="description" content="测试代码准备测试类Sping Bean定义 public interface userDao &amp;#123; 	void query(); &amp;#125;   public class userDaoImpl implements userDao, InitializingBean &amp;#123; 	@Override 	public void query() &amp;#123; 		System.out.p">
+<meta name="description" content="测试代码准备测试类Sping Bean定义 public interface userDao {     void query(); }   public class userDaoImpl implements userDao, InitializingBean {     @Override     public void query() {         System.out.printl">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Spring中Bean的生命周期">
 <meta property="og:url" content="http://yoursite.com/2020/06/17/Spring%E4%B8%ADBean%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="测试代码准备测试类Sping Bean定义 public interface userDao &amp;#123; 	void query(); &amp;#125;   public class userDaoImpl implements userDao, InitializingBean &amp;#123; 	@Override 	public void query() &amp;#123; 		System.out.p">
+<meta property="og:description" content="测试代码准备测试类Sping Bean定义 public interface userDao {     void query(); }   public class userDaoImpl implements userDao, InitializingBean {     @Override     public void query() {         System.out.printl">
 <meta property="og:image" content="https://raw.githubusercontent.com/sinaill/pic/master/BeanPostProcessor.jpg">
 <meta property="article:published_time" content="2020-06-16T17:43:37.234Z">
 <meta property="article:modified_time" content="2020-06-16T17:43:37.234Z">
@@ -344,537 +344,473 @@
 
       
         <h3 id="测试代码准备"><a href="#测试代码准备" class="headerlink" title="测试代码准备"></a>测试代码准备</h3><h4 id="测试类"><a href="#测试类" class="headerlink" title="测试类"></a>测试类</h4><p>Sping Bean定义</p>
-<pre><code class="highlight plain">public interface userDao &#123;
-	void query();
-&#125;
+<pre><code>public interface userDao {
+    void query();
+}
 
 
-public class userDaoImpl implements userDao, InitializingBean &#123;
-	@Override
-	public void query() &#123;
-		System.out.println(&quot;query&quot;);
-	&#125;
+public class userDaoImpl implements userDao, InitializingBean {
+    @Override
+    public void query() {
+        System.out.println(&quot;query&quot;);
+    }
 
-	@PostConstruct
-	public void PostConstruct()&#123;
-		System.out.println(&quot;this is PostConstruct method&quot;);
-	&#125;
-	@PreDestroy
-	public void destroy()&#123;
-		System.out.println(&quot;this is a PreDestroy method&quot;);
-	&#125;
+    @PostConstruct
+    public void PostConstruct(){
+        System.out.println(&quot;this is PostConstruct method&quot;);
+    }
+    @PreDestroy
+    public void destroy(){
+        System.out.println(&quot;this is a PreDestroy method&quot;);
+    }
 
-	@Override
-	public void afterPropertiesSet()&#123;
-		System.out.println(&quot;this is a afterPropertiesSet method&quot;);
-	&#125;
+    @Override
+    public void afterPropertiesSet(){
+        System.out.println(&quot;this is a afterPropertiesSet method&quot;);
+    }
 
-	public void init()&#123;
-		System.out.println(&quot;this is init method&quot;);
-	&#125;
-&#125;</code></pre>
-
-<p>配置类</p>
-<pre><code class="highlight plain">@Configuration
+    public void init(){
+        System.out.println(&quot;this is init method&quot;);
+    }
+}</code></pre><p>配置类</p>
+<pre><code>@Configuration
 @ComponentScan(&quot;org.springframework.test&quot;)
-public class springConfig &#123;
-	@Bean(initMethod &#x3D; &quot;init&quot;, name &#x3D; &quot;userDaoImpl&quot;)
-	public userDaoImpl get()&#123;
-		return new userDaoImpl();
-	&#125;
-&#125;</code></pre>
+public class springConfig {
+    @Bean(initMethod = &quot;init&quot;, name = &quot;userDaoImpl&quot;)
+    public userDaoImpl get(){
+        return new userDaoImpl();
+    }
+}</code></pre><p>自定义<code>BeanPostProcessor</code></p>
+<pre><code>@Component
+public class MyBeanPostProcessor implements BeanPostProcessor {
+    @Override
+    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+        System.out.println(&quot;this is BeanPostProcessor method&quot;);
+        return bean;
+    }
+}</code></pre><p>启动<code>Spring</code>容器</p>
+<pre><code>public class Test {
+    public static void main(String args[]){
+        AnnotationConfigApplicationContext annotationConfigApplicationContext =
+                new AnnotationConfigApplicationContext(springConfig.class);
+        userDao userdao = (userDao) annotationConfigApplicationContext.getBean(&quot;userDaoImpl&quot;);
+        userdao.query();
+    }
+}</code></pre><h3 id="Bean的创建和初始化"><a href="#Bean的创建和初始化" class="headerlink" title="Bean的创建和初始化"></a>Bean的创建和初始化</h3><p><code>AnnotationConfigApplicationContext</code>的父类<code>GenericApplicationContext</code>的无参构造函数创建了<code>Spring</code>的工厂</p>
+<pre><code>public GenericApplicationContext() {
+    this.beanFactory = new DefaultListableBeanFactory();
+}</code></pre><p>然后在它自身构造函数中的<code>refresh()</code>方法中开始创建和初始化<code>Spring Bean</code></p>
+<pre><code>public AnnotationConfigApplicationContext(Class&lt;?&gt;... componentClasses) {
+    this();
+    register(componentClasses);
+    refresh();
+}</code></pre><p><code>refresh</code>方法中</p>
+<pre><code>// Instantiate all remaining (non-lazy-init) singletons.
+finishBeanFactoryInitialization(beanFactory);</code></pre><p>这里调用同个类中的<code>finishBeanFactoryInitialization</code>方法开始创建所有非懒加载的单例<code>Spring Bean</code>，在这个方法中调用之前创建好的工厂<code>DefaultListableBeanFactory</code>实例来创建<code>Spring Bean</code></p>
+<pre><code>// Instantiate all remaining (non-lazy-init) singletons.
+beanFactory.preInstantiateSingletons();</code></pre><p>查看这个方法</p>
+<pre><code>@Override
+public void preInstantiateSingletons() throws BeansException {
+    if (logger.isTraceEnabled()) {
+        logger.trace(&quot;Pre-instantiating singletons in &quot; + this);
+    }
 
-<p>自定义<code>BeanPostProcessor</code></p>
-<pre><code class="highlight plain">@Component
-public class MyBeanPostProcessor implements BeanPostProcessor &#123;
-	@Override
-	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException &#123;
-		System.out.println(&quot;this is BeanPostProcessor method&quot;);
-		return bean;
-	&#125;
-&#125;</code></pre>
-
-<p>启动<code>Spring</code>容器</p>
-<pre><code class="highlight plain">public class Test &#123;
-	public static void main(String args[])&#123;
-		AnnotationConfigApplicationContext annotationConfigApplicationContext &#x3D;
-				new AnnotationConfigApplicationContext(springConfig.class);
-		userDao userdao &#x3D; (userDao) annotationConfigApplicationContext.getBean(&quot;userDaoImpl&quot;);
-		userdao.query();
-	&#125;
-&#125;</code></pre>
-
-<h3 id="Bean的创建和初始化"><a href="#Bean的创建和初始化" class="headerlink" title="Bean的创建和初始化"></a>Bean的创建和初始化</h3><p><code>AnnotationConfigApplicationContext</code>的父类<code>GenericApplicationContext</code>的无参构造函数创建了<code>Spring</code>的工厂</p>
-<pre><code class="highlight plain">public GenericApplicationContext() &#123;
-	this.beanFactory &#x3D; new DefaultListableBeanFactory();
-&#125;</code></pre>
-
-<p>然后在它自身构造函数中的<code>refresh()</code>方法中开始创建和初始化<code>Spring Bean</code></p>
-<pre><code class="highlight plain">public AnnotationConfigApplicationContext(Class&lt;?&gt;... componentClasses) &#123;
-	this();
-	register(componentClasses);
-	refresh();
-&#125;</code></pre>
-
-<p><code>refresh</code>方法中</p>
-<pre><code class="highlight plain">&#x2F;&#x2F; Instantiate all remaining (non-lazy-init) singletons.
-finishBeanFactoryInitialization(beanFactory);</code></pre>
-
-<p>这里调用同个类中的<code>finishBeanFactoryInitialization</code>方法开始创建所有非懒加载的单例<code>Spring Bean</code>，在这个方法中调用之前创建好的工厂<code>DefaultListableBeanFactory</code>实例来创建<code>Spring Bean</code></p>
-<pre><code class="highlight plain">&#x2F;&#x2F; Instantiate all remaining (non-lazy-init) singletons.
-beanFactory.preInstantiateSingletons();</code></pre>
-
-<p>查看这个方法</p>
-<pre><code class="highlight plain">@Override
-public void preInstantiateSingletons() throws BeansException &#123;
-	if (logger.isTraceEnabled()) &#123;
-		logger.trace(&quot;Pre-instantiating singletons in &quot; + this);
-	&#125;
-
-	&#x2F;&#x2F; Iterate over a copy to allow for init methods which in turn register new bean definitions.
-	&#x2F;&#x2F; While this may not be part of the regular factory bootstrap, it does otherwise work fine.
-	&#x2F;&#x2F;BeanDefinition是存储要由Spring创建的类的信息，例如是否懒加载，单例等
-	&#x2F;&#x2F;beanDefinitionNames指代要实例化的类的名字
-	List&lt;String&gt; beanNames &#x3D; new ArrayList&lt;&gt;(this.beanDefinitionNames);
-	&#x2F;&#x2F;遍历开始实例化Spring Bean
-	&#x2F;&#x2F; Trigger initialization of all non-lazy singleton beans...
-	for (String beanName : beanNames) &#123;
-		RootBeanDefinition bd &#x3D; getMergedLocalBeanDefinition(beanName);
-		if (!bd.isAbstract() &amp;&amp; bd.isSingleton() &amp;&amp; !bd.isLazyInit()) &#123;
-			if (isFactoryBean(beanName)) &#123;
-				Object bean &#x3D; getBean(FACTORY_BEAN_PREFIX + beanName);
-				if (bean instanceof FactoryBean) &#123;
-					final FactoryBean&lt;?&gt; factory &#x3D; (FactoryBean&lt;?&gt;) bean;
-					boolean isEagerInit;
-					if (System.getSecurityManager() !&#x3D; null &amp;&amp; factory instanceof SmartFactoryBean) &#123;
-						isEagerInit &#x3D; AccessController.doPrivileged((PrivilegedAction&lt;Boolean&gt;)
-										((SmartFactoryBean&lt;?&gt;) factory)::isEagerInit,
-								getAccessControlContext());
-					&#125;
-					else &#123;
-						isEagerInit &#x3D; (factory instanceof SmartFactoryBean &amp;&amp;
-								((SmartFactoryBean&lt;?&gt;) factory).isEagerInit());
-					&#125;
-					if (isEagerInit) &#123;
-						getBean(beanName);
-					&#125;
-				&#125;
-			&#125;
-			else &#123;
-				getBean(beanName);
-			&#125;
-		&#125;
-	&#125;</code></pre>
-
-<p>从<code>getBean(beanName)</code>进入，直接找实例化部分的代码</p>
+    // Iterate over a copy to allow for init methods which in turn register new bean definitions.
+    // While this may not be part of the regular factory bootstrap, it does otherwise work fine.
+    //BeanDefinition是存储要由Spring创建的类的信息，例如是否懒加载，单例等
+    //beanDefinitionNames指代要实例化的类的名字
+    List&lt;String&gt; beanNames = new ArrayList&lt;&gt;(this.beanDefinitionNames);
+    //遍历开始实例化Spring Bean
+    // Trigger initialization of all non-lazy singleton beans...
+    for (String beanName : beanNames) {
+        RootBeanDefinition bd = getMergedLocalBeanDefinition(beanName);
+        if (!bd.isAbstract() &amp;&amp; bd.isSingleton() &amp;&amp; !bd.isLazyInit()) {
+            if (isFactoryBean(beanName)) {
+                Object bean = getBean(FACTORY_BEAN_PREFIX + beanName);
+                if (bean instanceof FactoryBean) {
+                    final FactoryBean&lt;?&gt; factory = (FactoryBean&lt;?&gt;) bean;
+                    boolean isEagerInit;
+                    if (System.getSecurityManager() != null &amp;&amp; factory instanceof SmartFactoryBean) {
+                        isEagerInit = AccessController.doPrivileged((PrivilegedAction&lt;Boolean&gt;)
+                                        ((SmartFactoryBean&lt;?&gt;) factory)::isEagerInit,
+                                getAccessControlContext());
+                    }
+                    else {
+                        isEagerInit = (factory instanceof SmartFactoryBean &amp;&amp;
+                                ((SmartFactoryBean&lt;?&gt;) factory).isEagerInit());
+                    }
+                    if (isEagerInit) {
+                        getBean(beanName);
+                    }
+                }
+            }
+            else {
+                getBean(beanName);
+            }
+        }
+    }</code></pre><p>从<code>getBean(beanName)</code>进入，直接找实例化部分的代码</p>
 <p>在实例化<code>Spring Bean</code>之前，遍历了一次<code>BeanPostProcessor</code>，在<code>Spring Bean</code>生命周期中需要多次遍历这组<code>BeanPostProcessor</code>，它们是</p>
 <p><img src="https://raw.githubusercontent.com/sinaill/pic/master/BeanPostProcessor.jpg" alt="BeanPostProcessor.jpg"></p>
 <p>除了<code>MyBeanPostProcessor</code>是我们自定义的<code>BeanPostProcessor</code>，其它都是由<code>Spring</code>注入</p>
 <p>在实例化之前，进行了以下操作</p>
-<pre><code class="highlight plain">@Nullable
-protected Object resolveBeforeInstantiation(String beanName, RootBeanDefinition mbd) &#123;
-	Object bean &#x3D; null;
-	if (!Boolean.FALSE.equals(mbd.beforeInstantiationResolved)) &#123;
-		&#x2F;&#x2F; Make sure bean class is actually resolved at this point.
-		if (!mbd.isSynthetic() &amp;&amp; hasInstantiationAwareBeanPostProcessors()) &#123;
-			Class&lt;?&gt; targetType &#x3D; determineTargetType(beanName, mbd);
-			if (targetType !&#x3D; null) &#123;
-				bean &#x3D; applyBeanPostProcessorsBeforeInstantiation(targetType, beanName);
-				if (bean !&#x3D; null) &#123;
-					bean &#x3D; applyBeanPostProcessorsAfterInitialization(bean, beanName);
-				&#125;
-			&#125;
-		&#125;
-		mbd.beforeInstantiationResolved &#x3D; (bean !&#x3D; null);
-	&#125;
-	return bean;
-&#125;</code></pre>
-
-<p>如果这里返回的<code>bean</code>不为<code>null</code>，则后面会跳过<code>Spring</code>实例化过程，将这里的<code>bean</code>作为实例化好的对象</p>
-<pre><code class="highlight plain">@Nullable
-protected Object applyBeanPostProcessorsBeforeInstantiation(Class&lt;?&gt; beanClass, String beanName) &#123;
-	for (BeanPostProcessor bp : getBeanPostProcessors()) &#123;
-		if (bp instanceof InstantiationAwareBeanPostProcessor) &#123;
-			InstantiationAwareBeanPostProcessor ibp &#x3D; (InstantiationAwareBeanPostProcessor) bp;
-			Object result &#x3D; ibp.postProcessBeforeInstantiation(beanClass, beanName);
-			if (result !&#x3D; null) &#123;
-				return result;
-			&#125;
-		&#125;
-	&#125;
-	return null;
-&#125;</code></pre>
-
-<p>这个方法属于<code>DefaultListableBeanFactory</code>，调用实现了<code>InstantiationAwareBeanPostProcessor</code>接口的<code>BeanPostProcessor</code>的<code>postProcessBeforeInstantiation</code>方法，传入的参数为要实例化的类的<code>Class</code>对象和类名</p>
+<pre><code>@Nullable
+protected Object resolveBeforeInstantiation(String beanName, RootBeanDefinition mbd) {
+    Object bean = null;
+    if (!Boolean.FALSE.equals(mbd.beforeInstantiationResolved)) {
+        // Make sure bean class is actually resolved at this point.
+        if (!mbd.isSynthetic() &amp;&amp; hasInstantiationAwareBeanPostProcessors()) {
+            Class&lt;?&gt; targetType = determineTargetType(beanName, mbd);
+            if (targetType != null) {
+                bean = applyBeanPostProcessorsBeforeInstantiation(targetType, beanName);
+                if (bean != null) {
+                    bean = applyBeanPostProcessorsAfterInitialization(bean, beanName);
+                }
+            }
+        }
+        mbd.beforeInstantiationResolved = (bean != null);
+    }
+    return bean;
+}</code></pre><p>如果这里返回的<code>bean</code>不为<code>null</code>，则后面会跳过<code>Spring</code>实例化过程，将这里的<code>bean</code>作为实例化好的对象</p>
+<pre><code>@Nullable
+protected Object applyBeanPostProcessorsBeforeInstantiation(Class&lt;?&gt; beanClass, String beanName) {
+    for (BeanPostProcessor bp : getBeanPostProcessors()) {
+        if (bp instanceof InstantiationAwareBeanPostProcessor) {
+            InstantiationAwareBeanPostProcessor ibp = (InstantiationAwareBeanPostProcessor) bp;
+            Object result = ibp.postProcessBeforeInstantiation(beanClass, beanName);
+            if (result != null) {
+                return result;
+            }
+        }
+    }
+    return null;
+}</code></pre><p>这个方法属于<code>DefaultListableBeanFactory</code>，调用实现了<code>InstantiationAwareBeanPostProcessor</code>接口的<code>BeanPostProcessor</code>的<code>postProcessBeforeInstantiation</code>方法，传入的参数为要实例化的类的<code>Class</code>对象和类名</p>
 <p>其中实现了这个接口的有<code>ImportAwareBeanPostProcessor</code>，<code>CommonAnnotationBeanPostProcessor</code>和<code>AutowiredAnnotationBeanPostProcessor</code>，这三个<code>BeanPostProcessor</code>均返回<code>null</code></p>
 <p>这里可以定义一个<code>BeanPostProcessor</code>实现<code>InstantiationAwareBeanPostProcessor</code>接口，可以根据传入的<code>Class</code>类型或者类名字决定要不要由我们自己来实例化这个类</p>
 <p>如果返回的不是<code>null</code>而是我们自己实例化好的类，从代码看还要再遍历一次<code>BeanPostProcessor</code></p>
-<pre><code class="highlight plain">@Override
+<pre><code>@Override
 public Object applyBeanPostProcessorsAfterInitialization(Object existingBean, String beanName)
-		throws BeansException &#123;
+        throws BeansException {
 
-	Object result &#x3D; existingBean;
-	for (BeanPostProcessor processor : getBeanPostProcessors()) &#123;
-		Object current &#x3D; processor.postProcessAfterInitialization(result, beanName);
-		&#x2F;&#x2F;如果BeanPostProcessor返回一个null，则返回上一个BeanPostProcessor
-		&#x2F;&#x2F;返回的对象
-		if (current &#x3D;&#x3D; null) &#123;
-			return result;
-		&#125;
-		result &#x3D; current;
-	&#125;
-	return result;
-&#125;</code></pre>
-
-<p>将由我们自己实例的对象传入，其他<code>Spring</code>注入的<code>BeanPostProcessor</code>基本直接返回对象本身，到我们自定义的那个替代<code>Spring</code>实例化的<code>BeanPostProcessor</code>时，也可以直接返回该对象，有点类似一条初始化链，中间一个<code>BeanPostProcessor</code>返回<code>null</code>时，链子断开然后返回上一个<code>BeanPostProcessor</code>处理后的对象</p>
+    Object result = existingBean;
+    for (BeanPostProcessor processor : getBeanPostProcessors()) {
+        Object current = processor.postProcessAfterInitialization(result, beanName);
+        //如果BeanPostProcessor返回一个null，则返回上一个BeanPostProcessor
+        //返回的对象
+        if (current == null) {
+            return result;
+        }
+        result = current;
+    }
+    return result;
+}</code></pre><p>将由我们自己实例的对象传入，其他<code>Spring</code>注入的<code>BeanPostProcessor</code>基本直接返回对象本身，到我们自定义的那个替代<code>Spring</code>实例化的<code>BeanPostProcessor</code>时，也可以直接返回该对象，有点类似一条初始化链，中间一个<code>BeanPostProcessor</code>返回<code>null</code>时，链子断开然后返回上一个<code>BeanPostProcessor</code>处理后的对象</p>
 <p>接着是实例化的代码</p>
-<pre><code class="highlight plain">protected BeanWrapper createBeanInstance(String beanName, RootBeanDefinition mbd, @Nullable Object[] args) &#123;
-	&#x2F;&#x2F; Make sure bean class is actually resolved at this point.
-	Class&lt;?&gt; beanClass &#x3D; resolveBeanClass(mbd, beanName);
+<pre><code>protected BeanWrapper createBeanInstance(String beanName, RootBeanDefinition mbd, @Nullable Object[] args) {
+    // Make sure bean class is actually resolved at this point.
+    Class&lt;?&gt; beanClass = resolveBeanClass(mbd, beanName);
 
-	if (beanClass !&#x3D; null &amp;&amp; !Modifier.isPublic(beanClass.getModifiers()) &amp;&amp; !mbd.isNonPublicAccessAllowed()) &#123;
-		throw new BeanCreationException(mbd.getResourceDescription(), beanName,
-				&quot;Bean class isn&#39;t public, and non-public access not allowed: &quot; + beanClass.getName());
-	&#125;
+    if (beanClass != null &amp;&amp; !Modifier.isPublic(beanClass.getModifiers()) &amp;&amp; !mbd.isNonPublicAccessAllowed()) {
+        throw new BeanCreationException(mbd.getResourceDescription(), beanName,
+                &quot;Bean class isn&#39;t public, and non-public access not allowed: &quot; + beanClass.getName());
+    }
 
-	Supplier&lt;?&gt; instanceSupplier &#x3D; mbd.getInstanceSupplier();
-	if (instanceSupplier !&#x3D; null) &#123;
-		return obtainFromSupplier(instanceSupplier, beanName);
-	&#125;
-	&#x2F;&#x2F;工厂方法
-	if (mbd.getFactoryMethodName() !&#x3D; null) &#123;
-		return instantiateUsingFactoryMethod(beanName, mbd, args);
-	&#125;
+    Supplier&lt;?&gt; instanceSupplier = mbd.getInstanceSupplier();
+    if (instanceSupplier != null) {
+        return obtainFromSupplier(instanceSupplier, beanName);
+    }
+    //工厂方法
+    if (mbd.getFactoryMethodName() != null) {
+        return instantiateUsingFactoryMethod(beanName, mbd, args);
+    }
 
-	&#x2F;&#x2F; Shortcut when re-creating the same bean...
-	boolean resolved &#x3D; false;
-	boolean autowireNecessary &#x3D; false;
-	if (args &#x3D;&#x3D; null) &#123;
-		synchronized (mbd.constructorArgumentLock) &#123;
-			if (mbd.resolvedConstructorOrFactoryMethod !&#x3D; null) &#123;
-				resolved &#x3D; true;
-				autowireNecessary &#x3D; mbd.constructorArgumentsResolved;
-			&#125;
-		&#125;
-	&#125;
-	if (resolved) &#123;
-		if (autowireNecessary) &#123;
-			return autowireConstructor(beanName, mbd, null, null);
-		&#125;
-		else &#123;
-			return instantiateBean(beanName, mbd);
-		&#125;
-	&#125;
+    // Shortcut when re-creating the same bean...
+    boolean resolved = false;
+    boolean autowireNecessary = false;
+    if (args == null) {
+        synchronized (mbd.constructorArgumentLock) {
+            if (mbd.resolvedConstructorOrFactoryMethod != null) {
+                resolved = true;
+                autowireNecessary = mbd.constructorArgumentsResolved;
+            }
+        }
+    }
+    if (resolved) {
+        if (autowireNecessary) {
+            return autowireConstructor(beanName, mbd, null, null);
+        }
+        else {
+            return instantiateBean(beanName, mbd);
+        }
+    }
 
-	&#x2F;&#x2F; Candidate constructors for autowiring?
-	Constructor&lt;?&gt;[] ctors &#x3D; determineConstructorsFromBeanPostProcessors(beanClass, beanName);
-	if (ctors !&#x3D; null || mbd.getResolvedAutowireMode() &#x3D;&#x3D; AUTOWIRE_CONSTRUCTOR ||
-			mbd.hasConstructorArgumentValues() || !ObjectUtils.isEmpty(args)) &#123;
-		return autowireConstructor(beanName, mbd, ctors, args);
-	&#125;
+    // Candidate constructors for autowiring?
+    Constructor&lt;?&gt;[] ctors = determineConstructorsFromBeanPostProcessors(beanClass, beanName);
+    if (ctors != null || mbd.getResolvedAutowireMode() == AUTOWIRE_CONSTRUCTOR ||
+            mbd.hasConstructorArgumentValues() || !ObjectUtils.isEmpty(args)) {
+        return autowireConstructor(beanName, mbd, ctors, args);
+    }
 
-	&#x2F;&#x2F; Preferred constructors for default construction?
-	ctors &#x3D; mbd.getPreferredConstructors();
-	if (ctors !&#x3D; null) &#123;
-		return autowireConstructor(beanName, mbd, ctors, null);
-	&#125;
+    // Preferred constructors for default construction?
+    ctors = mbd.getPreferredConstructors();
+    if (ctors != null) {
+        return autowireConstructor(beanName, mbd, ctors, null);
+    }
 
-	&#x2F;&#x2F; No special handling: simply use no-arg constructor.
-	return instantiateBean(beanName, mbd);
-&#125;</code></pre>
-
-
-
-<p>由于我们在配置类<code>springConfig</code>中使用的工厂方法来实例化类，所以这里走的</p>
-<pre><code class="highlight plain">if (mbd.getFactoryMethodName() !&#x3D; null) &#123;
-	return instantiateUsingFactoryMethod(beanName, mbd, args);
-&#125;</code></pre>
-
-<p>找到我们在配置类中用<code>@Bean</code>注解的对应的方法进行实例化</p>
+    // No special handling: simply use no-arg constructor.
+    return instantiateBean(beanName, mbd);
+}</code></pre><p>由于我们在配置类<code>springConfig</code>中使用的工厂方法来实例化类，所以这里走的</p>
+<pre><code>if (mbd.getFactoryMethodName() != null) {
+    return instantiateUsingFactoryMethod(beanName, mbd, args);
+}</code></pre><p>找到我们在配置类中用<code>@Bean</code>注解的对应的方法进行实例化</p>
 <p>这里如果我们不是用得工厂方法，而是正常的<code>@Repository</code>，则下面还要经过<code>determineConstructorsFromBeanPostProcessors</code></p>
-<pre><code class="highlight plain">@Nullable
+<pre><code>@Nullable
 protected Constructor&lt;?&gt;[] determineConstructorsFromBeanPostProcessors(@Nullable Class&lt;?&gt; beanClass, String beanName)
-		throws BeansException &#123;
+        throws BeansException {
 
-	if (beanClass !&#x3D; null &amp;&amp; hasInstantiationAwareBeanPostProcessors()) &#123;
-		for (BeanPostProcessor bp : getBeanPostProcessors()) &#123;
-			if (bp instanceof SmartInstantiationAwareBeanPostProcessor) &#123;
-				SmartInstantiationAwareBeanPostProcessor ibp &#x3D; (SmartInstantiationAwareBeanPostProcessor) bp;
-				Constructor&lt;?&gt;[] ctors &#x3D; ibp.determineCandidateConstructors(beanClass, beanName);
-				if (ctors !&#x3D; null) &#123;
-					return ctors;
-				&#125;
-			&#125;
-		&#125;
-	&#125;
-	return null;
-&#125;</code></pre>
-
-<p>主要是用来完成构造器注入的</p>
+    if (beanClass != null &amp;&amp; hasInstantiationAwareBeanPostProcessors()) {
+        for (BeanPostProcessor bp : getBeanPostProcessors()) {
+            if (bp instanceof SmartInstantiationAwareBeanPostProcessor) {
+                SmartInstantiationAwareBeanPostProcessor ibp = (SmartInstantiationAwareBeanPostProcessor) bp;
+                Constructor&lt;?&gt;[] ctors = ibp.determineCandidateConstructors(beanClass, beanName);
+                if (ctors != null) {
+                    return ctors;
+                }
+            }
+        }
+    }
+    return null;
+}</code></pre><p>主要是用来完成构造器注入的</p>
 <p>实例化完之后，接着马上第二次遍历<code>BeanPostProcessor</code></p>
-<pre><code class="highlight plain">protected void applyMergedBeanDefinitionPostProcessors(RootBeanDefinition mbd, Class&lt;?&gt; beanType, String beanName) &#123;
-	for (BeanPostProcessor bp : getBeanPostProcessors()) &#123;
-		if (bp instanceof MergedBeanDefinitionPostProcessor) &#123;
-			MergedBeanDefinitionPostProcessor bdp &#x3D; (MergedBeanDefinitionPostProcessor) bp;
-			bdp.postProcessMergedBeanDefinition(mbd, beanType, beanName);
-		&#125;
-	&#125;
-&#125;</code></pre>
-
-<p>先放着，大致是完成了对注入元素注解的预解析</p>
+<pre><code>protected void applyMergedBeanDefinitionPostProcessors(RootBeanDefinition mbd, Class&lt;?&gt; beanType, String beanName) {
+    for (BeanPostProcessor bp : getBeanPostProcessors()) {
+        if (bp instanceof MergedBeanDefinitionPostProcessor) {
+            MergedBeanDefinitionPostProcessor bdp = (MergedBeanDefinitionPostProcessor) bp;
+            bdp.postProcessMergedBeanDefinition(mbd, beanType, beanName);
+        }
+    }
+}</code></pre><p>先放着，大致是完成了对注入元素注解的预解析</p>
 <p>不过实现了这个接口的有<code>CommonAnnotationBeanPostProcessor</code>，<code>AutowiredAnnotationBeanPostProcessor</code>和<code>ApplicationListenerDetector</code>，最后这个类的实现的方法为将<code>beanName</code>添加到它类变量<code>singleonNames</code>中</p>
 <p><code>CommonAnnotationBeanPostProcessor</code>先调用父类<code>InitDestroyAnnotationBeanPostProcessor</code>解析<code>Bean</code>中有关生命周期的注解<code>@PostConstruct</code>和<code>@PreDestroy</code>，然后解析需要<code>@AutoWire</code>和<code>@Resource</code>注入的配置</p>
 <p>然后是填充类属性</p>
-<pre><code class="highlight plain">populateBean(beanName, mbd, instanceWrapper)</code></pre>
-
-<p>内部又遍历一次<code>BeanPostProcessor</code></p>
-<pre><code class="highlight plain">if (!mbd.isSynthetic() &amp;&amp; hasInstantiationAwareBeanPostProcessors()) &#123;
-	for (BeanPostProcessor bp : getBeanPostProcessors()) &#123;
-		if (bp instanceof InstantiationAwareBeanPostProcessor) &#123;
-			InstantiationAwareBeanPostProcessor ibp &#x3D; (InstantiationAwareBeanPostProcessor) bp;
-			if (!ibp.postProcessAfterInstantiation(bw.getWrappedInstance(), beanName)) &#123;
-				continueWithPropertyPopulation &#x3D; false;
-				break;
-			&#125;
-		&#125;
-	&#125;
-&#125;</code></pre>
-
-<p>这次与第一次遍历<code>BeanPostProcessor</code>向对应，第一次调用的<code>postProcessBeforeInstantiation</code>方法，这里则调用的<code>postProcessAfterInstantiation</code></p>
+<pre><code>populateBean(beanName, mbd, instanceWrapper)</code></pre><p>内部又遍历一次<code>BeanPostProcessor</code></p>
+<pre><code>if (!mbd.isSynthetic() &amp;&amp; hasInstantiationAwareBeanPostProcessors()) {
+    for (BeanPostProcessor bp : getBeanPostProcessors()) {
+        if (bp instanceof InstantiationAwareBeanPostProcessor) {
+            InstantiationAwareBeanPostProcessor ibp = (InstantiationAwareBeanPostProcessor) bp;
+            if (!ibp.postProcessAfterInstantiation(bw.getWrappedInstance(), beanName)) {
+                continueWithPropertyPopulation = false;
+                break;
+            }
+        }
+    }
+}</code></pre><p>这次与第一次遍历<code>BeanPostProcessor</code>向对应，第一次调用的<code>postProcessBeforeInstantiation</code>方法，这里则调用的<code>postProcessAfterInstantiation</code></p>
 <p>这里传入的参数为实例化好的对象和类名</p>
 <p>其中实现了这个接口的有<code>ImportAwareBeanPostProcessor</code>，<code>CommonAnnotationBeanPostProcessor</code>和<code>AutowiredAnnotationBeanPostProcessor</code>，这三个<code>BeanPostProcessor</code>均返回<code>true</code></p>
 <p>如果有我们自定义的<code>BeanPostProcessor</code>并且实现了接口<code>InstantiationAwareBeanPostProcessor</code>，在这里返回<code>false</code>时，会停止后面的填充属性流程</p>
 <p>然后又遍历一次<code>BeanPostProcessor</code></p>
-<pre><code class="highlight plain">for (BeanPostProcessor bp : getBeanPostProcessors()) &#123;
-	if (bp instanceof InstantiationAwareBeanPostProcessor) &#123;
-		InstantiationAwareBeanPostProcessor ibp &#x3D; (InstantiationAwareBeanPostProcessor) bp;
-		PropertyValues pvsToUse &#x3D; ibp.postProcessProperties(pvs, bw.getWrappedInstance(), beanName);
-		if (pvsToUse &#x3D;&#x3D; null) &#123;
-			if (filteredPds &#x3D;&#x3D; null) &#123;
-				filteredPds &#x3D; filterPropertyDescriptorsForDependencyCheck(bw, mbd.allowCaching);
-			&#125;
-			pvsToUse &#x3D; ibp.postProcessPropertyValues(pvs, filteredPds, bw.getWrappedInstance(), beanName);
-			if (pvsToUse &#x3D;&#x3D; null) &#123;
-				return;
-			&#125;
-		&#125;
-		pvs &#x3D; pvsToUse;
-	&#125;
-&#125;</code></pre>
-
-<p>主要是注入<code>@Resource</code>和<code>Autowire</code>，先放着</p>
+<pre><code>for (BeanPostProcessor bp : getBeanPostProcessors()) {
+    if (bp instanceof InstantiationAwareBeanPostProcessor) {
+        InstantiationAwareBeanPostProcessor ibp = (InstantiationAwareBeanPostProcessor) bp;
+        PropertyValues pvsToUse = ibp.postProcessProperties(pvs, bw.getWrappedInstance(), beanName);
+        if (pvsToUse == null) {
+            if (filteredPds == null) {
+                filteredPds = filterPropertyDescriptorsForDependencyCheck(bw, mbd.allowCaching);
+            }
+            pvsToUse = ibp.postProcessPropertyValues(pvs, filteredPds, bw.getWrappedInstance(), beanName);
+            if (pvsToUse == null) {
+                return;
+            }
+        }
+        pvs = pvsToUse;
+    }
+}</code></pre><p>主要是注入<code>@Resource</code>和<code>Autowire</code>，先放着</p>
 <p><code>populateBean</code>流程完成</p>
-<pre><code class="highlight plain">exposedObject &#x3D; initializeBean(beanName, exposedObject, mbd);</code></pre>
+<pre><code>exposedObject = initializeBean(beanName, exposedObject, mbd);</code></pre><p>初始化流程</p>
+<pre><code>protected Object initializeBean(final String beanName, final Object bean, @Nullable RootBeanDefinition mbd) {
+    if (System.getSecurityManager() != null) {
+        AccessController.doPrivileged((PrivilegedAction&lt;Object&gt;) () -&gt; {
+            invokeAwareMethods(beanName, bean);
+            return null;
+        }, getAccessControlContext());
+    }
+    else {
+        invokeAwareMethods(beanName, bean);
+    }
 
-<p>初始化流程</p>
-<pre><code class="highlight plain">protected Object initializeBean(final String beanName, final Object bean, @Nullable RootBeanDefinition mbd) &#123;
-	if (System.getSecurityManager() !&#x3D; null) &#123;
-		AccessController.doPrivileged((PrivilegedAction&lt;Object&gt;) () -&gt; &#123;
-			invokeAwareMethods(beanName, bean);
-			return null;
-		&#125;, getAccessControlContext());
-	&#125;
-	else &#123;
-		invokeAwareMethods(beanName, bean);
-	&#125;
+    Object wrappedBean = bean;
+    if (mbd == null || !mbd.isSynthetic()) {
+        //这里处理@PostConstruct
+        wrappedBean = applyBeanPostProcessorsBeforeInitialization(wrappedBean, beanName);
+    }
 
-	Object wrappedBean &#x3D; bean;
-	if (mbd &#x3D;&#x3D; null || !mbd.isSynthetic()) &#123;
-		&#x2F;&#x2F;这里处理@PostConstruct
-		wrappedBean &#x3D; applyBeanPostProcessorsBeforeInitialization(wrappedBean, beanName);
-	&#125;
+    try {
+        //这里处理了实现接口InitializingBean的afterPropertiesSet方法(void无参)
+        //然后再调用init方法(Bean中init-method属性)
+        invokeInitMethods(beanName, wrappedBean, mbd);
+    }
+    catch (Throwable ex) {
+        throw new BeanCreationException(
+                (mbd != null ? mbd.getResourceDescription() : null),
+                beanName, &quot;Invocation of init method failed&quot;, ex);
+    }
+    if (mbd == null || !mbd.isSynthetic()) {
+        wrappedBean = applyBeanPostProcessorsAfterInitialization(wrappedBean, beanName);
+    }
 
-	try &#123;
-		&#x2F;&#x2F;这里处理了实现接口InitializingBean的afterPropertiesSet方法(void无参)
-		&#x2F;&#x2F;然后再调用init方法(Bean中init-method属性)
-		invokeInitMethods(beanName, wrappedBean, mbd);
-	&#125;
-	catch (Throwable ex) &#123;
-		throw new BeanCreationException(
-				(mbd !&#x3D; null ? mbd.getResourceDescription() : null),
-				beanName, &quot;Invocation of init method failed&quot;, ex);
-	&#125;
-	if (mbd &#x3D;&#x3D; null || !mbd.isSynthetic()) &#123;
-		wrappedBean &#x3D; applyBeanPostProcessorsAfterInitialization(wrappedBean, beanName);
-	&#125;
-
-	return wrappedBean;
-&#125;</code></pre>
-
-<p>先看<code>invokeAwareMethods(beanName, bean)</code></p>
-<pre><code class="highlight plain">private void invokeAwareMethods(final String beanName, final Object bean) &#123;
-	if (bean instanceof Aware) &#123;
-		if (bean instanceof BeanNameAware) &#123;
-			((BeanNameAware) bean).setBeanName(beanName);
-		&#125;
-		if (bean instanceof BeanClassLoaderAware) &#123;
-			ClassLoader bcl &#x3D; getBeanClassLoader();
-			if (bcl !&#x3D; null) &#123;
-				((BeanClassLoaderAware) bean).setBeanClassLoader(bcl);
-			&#125;
-		&#125;
-		if (bean instanceof BeanFactoryAware) &#123;
-			((BeanFactoryAware) bean).setBeanFactory(AbstractAutowireCapableBeanFactory.this);
-		&#125;
-	&#125;
-&#125;</code></pre>
-
-<p>看<code>Bean</code>是否实现这几个接口，然后执行对应操作</p>
+    return wrappedBean;
+}</code></pre><p>先看<code>invokeAwareMethods(beanName, bean)</code></p>
+<pre><code>private void invokeAwareMethods(final String beanName, final Object bean) {
+    if (bean instanceof Aware) {
+        if (bean instanceof BeanNameAware) {
+            ((BeanNameAware) bean).setBeanName(beanName);
+        }
+        if (bean instanceof BeanClassLoaderAware) {
+            ClassLoader bcl = getBeanClassLoader();
+            if (bcl != null) {
+                ((BeanClassLoaderAware) bean).setBeanClassLoader(bcl);
+            }
+        }
+        if (bean instanceof BeanFactoryAware) {
+            ((BeanFactoryAware) bean).setBeanFactory(AbstractAutowireCapableBeanFactory.this);
+        }
+    }
+}</code></pre><p>看<code>Bean</code>是否实现这几个接口，然后执行对应操作</p>
 <p>然后到<code>wrappedBean = applyBeanPostProcessorsBeforeInitialization(wrappedBean, beanName);</code></p>
-<pre><code class="highlight plain">@Override
+<pre><code>@Override
 public Object applyBeanPostProcessorsBeforeInitialization(Object existingBean, String beanName)
-		throws BeansException &#123;
+        throws BeansException {
 
-	Object result &#x3D; existingBean;
-	for (BeanPostProcessor processor : getBeanPostProcessors()) &#123;
-		Object current &#x3D; processor.postProcessBeforeInitialization(result, beanName);
-		if (current &#x3D;&#x3D; null) &#123;
-			return result;
-		&#125;
-		result &#x3D; current;
-	&#125;
-	return result;
-&#125;</code></pre>
-
-<p>又遍历一次<code>BeanPostProcessor</code>，调用的<code>postProcessBeforeInitialization</code>方法</p>
+    Object result = existingBean;
+    for (BeanPostProcessor processor : getBeanPostProcessors()) {
+        Object current = processor.postProcessBeforeInitialization(result, beanName);
+        if (current == null) {
+            return result;
+        }
+        result = current;
+    }
+    return result;
+}</code></pre><p>又遍历一次<code>BeanPostProcessor</code>，调用的<code>postProcessBeforeInitialization</code>方法</p>
 <p>这里涉及到生命周期中的<code>@PostConstruct</code>方法，由<code>CommonAnnotationBeanPostProcessor</code>提供实现，<code>@PostConstruct</code>注解的方法就是在这被调用的</p>
 <p>然后到<code>invokeInitMethods(beanName, wrappedBean, mbd);</code></p>
 <p>在这里面，如果<code>Bean</code>实现了<code>InitializingBean</code>接口，则调用<code>afterPropertiesSet</code>方法，在这之后接着调用<code>init</code>方法，这个<code>init</code>方法指的<code>Spring</code>配置中的<code>init-method</code>属性</p>
 <p>接着<code>wrappedBean = applyBeanPostProcessorsAfterInitialization(wrappedBean, beanName)</code>，又遍历<code>BeanPostProcessor</code></p>
-<pre><code class="highlight plain">public Object applyBeanPostProcessorsAfterInitialization(Object existingBean, String beanName)
-		throws BeansException &#123;
+<pre><code>public Object applyBeanPostProcessorsAfterInitialization(Object existingBean, String beanName)
+        throws BeansException {
 
-	Object result &#x3D; existingBean;
-	for (BeanPostProcessor processor : getBeanPostProcessors()) &#123;
-		Object current &#x3D; processor.postProcessAfterInitialization(result, beanName);
-		if (current &#x3D;&#x3D; null) &#123;
-			return result;
-		&#125;
-		result &#x3D; current;
-	&#125;
-	return result;
-&#125;</code></pre>
-
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>总共经过7次后置处理器</p>
+    Object result = existingBean;
+    for (BeanPostProcessor processor : getBeanPostProcessors()) {
+        Object current = processor.postProcessAfterInitialization(result, beanName);
+        if (current == null) {
+            return result;
+        }
+        result = current;
+    }
+    return result;
+}</code></pre><h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>总共经过7次后置处理器</p>
 <ol>
 <li>第一次在创建实例之前，如果这里有后置处理器直接返回对应的类的实例，则跳过后面创建过程</li>
 </ol>
-<pre><code class="highlight plain">protected Object applyBeanPostProcessorsBeforeInstantiation(Class&lt;?&gt; beanClass, String beanName) &#123;
-	for (BeanPostProcessor bp : getBeanPostProcessors()) &#123;
-		if (bp instanceof InstantiationAwareBeanPostProcessor) &#123;
-			InstantiationAwareBeanPostProcessor ibp &#x3D; (InstantiationAwareBeanPostProcessor) bp;
-			Object result &#x3D; ibp.postProcessBeforeInstantiation(beanClass, beanName);
-			if (result !&#x3D; null) &#123;
-				return result;
-			&#125;
-		&#125;
-	&#125;
-	return null;
-&#125;</code></pre>
-
-<ol start="2">
+<pre><code>protected Object applyBeanPostProcessorsBeforeInstantiation(Class&lt;?&gt; beanClass, String beanName) {
+    for (BeanPostProcessor bp : getBeanPostProcessors()) {
+        if (bp instanceof InstantiationAwareBeanPostProcessor) {
+            InstantiationAwareBeanPostProcessor ibp = (InstantiationAwareBeanPostProcessor) bp;
+            Object result = ibp.postProcessBeforeInstantiation(beanClass, beanName);
+            if (result != null) {
+                return result;
+            }
+        }
+    }
+    return null;
+}</code></pre><ol start="2">
 <li>之后是第二次调用后置处理器，同样也是在创建实例之前，找寻合适的构造器方法，主要是找到构造器注入方法，否则接下来使用默认无参构造方法来创建实例，如果这里找到构造器注入，则调用这个构造器实例化这个类，同时注入需要的属性</li>
 </ol>
-<pre><code class="highlight plain">protected Constructor&lt;?&gt;[] determineConstructorsFromBeanPostProcessors(@Nullable Class&lt;?&gt; beanClass, String beanName)
-		throws BeansException &#123;
+<pre><code>protected Constructor&lt;?&gt;[] determineConstructorsFromBeanPostProcessors(@Nullable Class&lt;?&gt; beanClass, String beanName)
+        throws BeansException {
 
-	if (beanClass !&#x3D; null &amp;&amp; hasInstantiationAwareBeanPostProcessors()) &#123;
-		for (BeanPostProcessor bp : getBeanPostProcessors()) &#123;
-			if (bp instanceof SmartInstantiationAwareBeanPostProcessor) &#123;
-				SmartInstantiationAwareBeanPostProcessor ibp &#x3D; (SmartInstantiationAwareBeanPostProcessor) bp;
-				Constructor&lt;?&gt;[] ctors &#x3D; ibp.determineCandidateConstructors(beanClass, beanName);
-				if (ctors !&#x3D; null) &#123;
-					return ctors;
-				&#125;
-			&#125;
-		&#125;
-	&#125;
-	return null;
-&#125;</code></pre>
-
-<ol start="3">
+    if (beanClass != null &amp;&amp; hasInstantiationAwareBeanPostProcessors()) {
+        for (BeanPostProcessor bp : getBeanPostProcessors()) {
+            if (bp instanceof SmartInstantiationAwareBeanPostProcessor) {
+                SmartInstantiationAwareBeanPostProcessor ibp = (SmartInstantiationAwareBeanPostProcessor) bp;
+                Constructor&lt;?&gt;[] ctors = ibp.determineCandidateConstructors(beanClass, beanName);
+                if (ctors != null) {
+                    return ctors;
+                }
+            }
+        }
+    }
+    return null;
+}</code></pre><ol start="3">
 <li>第三次调用后置处理器，主要解析<code>Bean</code>中有关生命周期的注解<code>@PostConstruct</code>和<code>@PreDestroy</code>，然后解析需要<code>@AutoWired</code>和<code>@Resource</code>注入的配置</li>
 </ol>
-<pre><code class="highlight plain">protected void applyMergedBeanDefinitionPostProcessors(RootBeanDefinition mbd, Class&lt;?&gt; beanType, String beanName) &#123;
-	for (BeanPostProcessor bp : getBeanPostProcessors()) &#123;
-		if (bp instanceof MergedBeanDefinitionPostProcessor) &#123;
-			MergedBeanDefinitionPostProcessor bdp &#x3D; (MergedBeanDefinitionPostProcessor) bp;
-			bdp.postProcessMergedBeanDefinition(mbd, beanType, beanName);
-		&#125;
-	&#125;
-&#125;</code></pre>
-
-<ol start="4">
+<pre><code>protected void applyMergedBeanDefinitionPostProcessors(RootBeanDefinition mbd, Class&lt;?&gt; beanType, String beanName) {
+    for (BeanPostProcessor bp : getBeanPostProcessors()) {
+        if (bp instanceof MergedBeanDefinitionPostProcessor) {
+            MergedBeanDefinitionPostProcessor bdp = (MergedBeanDefinitionPostProcessor) bp;
+            bdp.postProcessMergedBeanDefinition(mbd, beanType, beanName);
+        }
+    }
+}</code></pre><ol start="4">
 <li>第四次调用后置处理器，还是在初始化之前，当有一个返回<code>false</code>，跳过实例内部属性注入过程</li>
 </ol>
-<pre><code class="highlight plain">if (!mbd.isSynthetic() &amp;&amp; hasInstantiationAwareBeanPostProcessors()) &#123;
-	for (BeanPostProcessor bp : getBeanPostProcessors()) &#123;
-		if (bp instanceof InstantiationAwareBeanPostProcessor) &#123;
-			InstantiationAwareBeanPostProcessor ibp &#x3D; (InstantiationAwareBeanPostProcessor) bp;
-			if (!ibp.postProcessAfterInstantiation(bw.getWrappedInstance(), beanName)) &#123;
-				continueWithPropertyPopulation &#x3D; false;
-				break;
-			&#125;
-		&#125;
-	&#125;
-&#125;</code></pre>
-
-<ol start="5">
+<pre><code>if (!mbd.isSynthetic() &amp;&amp; hasInstantiationAwareBeanPostProcessors()) {
+    for (BeanPostProcessor bp : getBeanPostProcessors()) {
+        if (bp instanceof InstantiationAwareBeanPostProcessor) {
+            InstantiationAwareBeanPostProcessor ibp = (InstantiationAwareBeanPostProcessor) bp;
+            if (!ibp.postProcessAfterInstantiation(bw.getWrappedInstance(), beanName)) {
+                continueWithPropertyPopulation = false;
+                break;
+            }
+        }
+    }
+}</code></pre><ol start="5">
 <li>第五次调用后置处理器，进行内部属性注入，<code>@Autowired</code> <code>@Resource</code></li>
 </ol>
-<pre><code class="highlight plain">for (BeanPostProcessor bp : getBeanPostProcessors()) &#123;
-	if (bp instanceof InstantiationAwareBeanPostProcessor) &#123;
-		InstantiationAwareBeanPostProcessor ibp &#x3D; (InstantiationAwareBeanPostProcessor) bp;
-		PropertyValues pvsToUse &#x3D; ibp.postProcessProperties(pvs, bw.getWrappedInstance(), beanName);
-		if (pvsToUse &#x3D;&#x3D; null) &#123;
-			if (filteredPds &#x3D;&#x3D; null) &#123;
-				filteredPds &#x3D; filterPropertyDescriptorsForDependencyCheck(bw, mbd.allowCaching);
-			&#125;
-			pvsToUse &#x3D; ibp.postProcessPropertyValues(pvs, filteredPds, bw.getWrappedInstance(), beanName);
-			if (pvsToUse &#x3D;&#x3D; null) &#123;
-				return;
-			&#125;
-		&#125;
-		pvs &#x3D; pvsToUse;
-	&#125;
-&#125;</code></pre>
-
-<ol start="6">
+<pre><code>for (BeanPostProcessor bp : getBeanPostProcessors()) {
+    if (bp instanceof InstantiationAwareBeanPostProcessor) {
+        InstantiationAwareBeanPostProcessor ibp = (InstantiationAwareBeanPostProcessor) bp;
+        PropertyValues pvsToUse = ibp.postProcessProperties(pvs, bw.getWrappedInstance(), beanName);
+        if (pvsToUse == null) {
+            if (filteredPds == null) {
+                filteredPds = filterPropertyDescriptorsForDependencyCheck(bw, mbd.allowCaching);
+            }
+            pvsToUse = ibp.postProcessPropertyValues(pvs, filteredPds, bw.getWrappedInstance(), beanName);
+            if (pvsToUse == null) {
+                return;
+            }
+        }
+        pvs = pvsToUse;
+    }
+}</code></pre><ol start="6">
 <li>第六次调用后置处理器，开始初始化，处理<code>@PostConstruct</code>注解方法</li>
 </ol>
-<pre><code class="highlight plain">public Object applyBeanPostProcessorsBeforeInitialization(Object existingBean, String beanName)
-		throws BeansException &#123;
+<pre><code>public Object applyBeanPostProcessorsBeforeInitialization(Object existingBean, String beanName)
+        throws BeansException {
 
-	Object result &#x3D; existingBean;
-	for (BeanPostProcessor processor : getBeanPostProcessors()) &#123;
-		Object current &#x3D; processor.postProcessBeforeInitialization(result, beanName);
-		if (current &#x3D;&#x3D; null) &#123;
-			return result;
-		&#125;
-		result &#x3D; current;
-	&#125;
-	return result;
-&#125;</code></pre>
-
-<ol start="7">
+    Object result = existingBean;
+    for (BeanPostProcessor processor : getBeanPostProcessors()) {
+        Object current = processor.postProcessBeforeInitialization(result, beanName);
+        if (current == null) {
+            return result;
+        }
+        result = current;
+    }
+    return result;
+}</code></pre><ol start="7">
 <li>第七次调用后置处理器</li>
 </ol>
-<pre><code class="highlight plain">@Override
+<pre><code>@Override
 public Object applyBeanPostProcessorsAfterInitialization(Object existingBean, String beanName)
-		throws BeansException &#123;
+        throws BeansException {
 
-	Object result &#x3D; existingBean;
-	for (BeanPostProcessor processor : getBeanPostProcessors()) &#123;
-		Object current &#x3D; processor.postProcessAfterInitialization(result, beanName);
-		if (current &#x3D;&#x3D; null) &#123;
-			return result;
-		&#125;
-		result &#x3D; current;
-	&#125;
-	return result;
-&#125;</code></pre>
-
-<h3 id="附加"><a href="#附加" class="headerlink" title="附加"></a>附加</h3><p>这几个后置处理器在<code>AnnotationConfigUtils</code>中的<code>registerBeanDefinition</code>方法中注册到<code>DefaultListableBeanFactory</code>的<code>beanDefinitionNames</code>和<code>beanDefinitionMap</code>中</p>
+    Object result = existingBean;
+    for (BeanPostProcessor processor : getBeanPostProcessors()) {
+        Object current = processor.postProcessAfterInitialization(result, beanName);
+        if (current == null) {
+            return result;
+        }
+        result = current;
+    }
+    return result;
+}</code></pre><h3 id="附加"><a href="#附加" class="headerlink" title="附加"></a>附加</h3><p>这几个后置处理器在<code>AnnotationConfigUtils</code>中的<code>registerBeanDefinition</code>方法中注册到<code>DefaultListableBeanFactory</code>的<code>beanDefinitionNames</code>和<code>beanDefinitionMap</code>中</p>
 <p>使用注解式配置ssm时，这个过程发生在容器refresh的时候    ，在创建工厂对象后调用<code>loadBeanDefinitions</code>方法开始注册</p>
 
       

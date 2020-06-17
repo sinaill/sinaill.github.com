@@ -79,12 +79,12 @@
 
 
 
-<meta name="description" content="流程在DispatchServlet中 mv &#x3D; ha.handle(processedRequest, response, mappedHandler.getHandler());  执行完Controller的目标方法后，然后一个带有Model和view的ModelAndView对象 接下来就是对视图的处理 applyDefaultViewName(request, mv);   p">
+<meta name="description" content="流程在DispatchServlet中 mv &#x3D; ha.handle(processedRequest, response, mappedHandler.getHandler());执行完Controller的目标方法后，然后一个带有Model和view的ModelAndView对象 接下来就是对视图的处理 applyDefaultViewName(request, mv);   private">
 <meta property="og:type" content="article">
 <meta property="og:title" content="SpringMVC对Controller目标方法返回mav的处理">
 <meta property="og:url" content="http://yoursite.com/2020/06/17/SpringMvc%E5%AF%B9Controller%E7%9B%AE%E6%A0%87%E6%96%B9%E6%B3%95%E8%BF%94%E5%9B%9Emav%E7%9A%84%E5%A4%84%E7%90%86/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="流程在DispatchServlet中 mv &#x3D; ha.handle(processedRequest, response, mappedHandler.getHandler());  执行完Controller的目标方法后，然后一个带有Model和view的ModelAndView对象 接下来就是对视图的处理 applyDefaultViewName(request, mv);   p">
+<meta property="og:description" content="流程在DispatchServlet中 mv &#x3D; ha.handle(processedRequest, response, mappedHandler.getHandler());执行完Controller的目标方法后，然后一个带有Model和view的ModelAndView对象 接下来就是对视图的处理 applyDefaultViewName(request, mv);   private">
 <meta property="article:published_time" content="2020-06-16T17:43:37.228Z">
 <meta property="article:modified_time" content="2020-06-16T17:43:37.228Z">
 <meta property="article:author" content="sinaill">
@@ -342,440 +342,402 @@
 
       
         <h3 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h3><p>在<code>DispatchServlet</code>中</p>
-<pre><code class="highlight plain">mv &#x3D; ha.handle(processedRequest, response, mappedHandler.getHandler());</code></pre>
-
-<p>执行完<code>Controller</code>的目标方法后，然后一个带有<code>Model</code>和<code>view</code>的<code>ModelAndView</code>对象</p>
+<pre><code>mv = ha.handle(processedRequest, response, mappedHandler.getHandler());</code></pre><p>执行完<code>Controller</code>的目标方法后，然后一个带有<code>Model</code>和<code>view</code>的<code>ModelAndView</code>对象</p>
 <p>接下来就是对视图的处理</p>
-<pre><code class="highlight plain">applyDefaultViewName(request, mv);
+<pre><code>applyDefaultViewName(request, mv);
 
 
-private void applyDefaultViewName(HttpServletRequest request, ModelAndView mv) throws Exception &#123;
-	if (mv !&#x3D; null &amp;&amp; !mv.hasView()) &#123;
-		mv.setViewName(getDefaultViewName(request));
-	&#125;
-&#125;</code></pre>
-
-<p>判断当<code>ModelAndView</code>对象中的<code>view</code>为空时，设置默认视图名</p>
-<pre><code class="highlight plain">@Override
-public String getViewName(HttpServletRequest request) &#123;
-	String lookupPath &#x3D; this.urlPathHelper.getLookupPathForRequest(request);
-	return (this.prefix + transformPath(lookupPath) + this.suffix);
-&#125;</code></pre>
-
-<p>这是设置默认视图名的代码段，这里获取的<code>lookupPath</code>为<code>getServletPath()</code>的返回结果，也就是除了项目名名以外的后面部分，<code>transformPath</code>方法的作用是将<code>lookupPath</code>的前后的<code>/</code>去掉，然后将最后一个<code>.</code>和后面的字符去掉，取剩余的部分</p>
+private void applyDefaultViewName(HttpServletRequest request, ModelAndView mv) throws Exception {
+    if (mv != null &amp;&amp; !mv.hasView()) {
+        mv.setViewName(getDefaultViewName(request));
+    }
+}</code></pre><p>判断当<code>ModelAndView</code>对象中的<code>view</code>为空时，设置默认视图名</p>
+<pre><code>@Override
+public String getViewName(HttpServletRequest request) {
+    String lookupPath = this.urlPathHelper.getLookupPathForRequest(request);
+    return (this.prefix + transformPath(lookupPath) + this.suffix);
+}</code></pre><p>这是设置默认视图名的代码段，这里获取的<code>lookupPath</code>为<code>getServletPath()</code>的返回结果，也就是除了项目名名以外的后面部分，<code>transformPath</code>方法的作用是将<code>lookupPath</code>的前后的<code>/</code>去掉，然后将最后一个<code>.</code>和后面的字符去掉，取剩余的部分</p>
 <p>然后开始处理视图结果</p>
-<pre><code class="highlight plain">processDispatchResult(processedRequest, response, mappedHandler, mv, dispatchException);
+<pre><code>processDispatchResult(processedRequest, response, mappedHandler, mv, dispatchException);
 
 
 
 
 private void processDispatchResult(HttpServletRequest request, HttpServletResponse response,
-		HandlerExecutionChain mappedHandler, ModelAndView mv, Exception exception) throws Exception &#123;
+        HandlerExecutionChain mappedHandler, ModelAndView mv, Exception exception) throws Exception {
 
-	boolean errorView &#x3D; false;
+    boolean errorView = false;
 
-	if (exception !&#x3D; null) &#123;
-		if (exception instanceof ModelAndViewDefiningException) &#123;
-			logger.debug(&quot;ModelAndViewDefiningException encountered&quot;, exception);
-			mv &#x3D; ((ModelAndViewDefiningException) exception).getModelAndView();
-		&#125;
-		else &#123;
-			Object handler &#x3D; (mappedHandler !&#x3D; null ? mappedHandler.getHandler() : null);
-			mv &#x3D; processHandlerException(request, response, handler, exception);
-			errorView &#x3D; (mv !&#x3D; null);
-		&#125;
-	&#125;
+    if (exception != null) {
+        if (exception instanceof ModelAndViewDefiningException) {
+            logger.debug(&quot;ModelAndViewDefiningException encountered&quot;, exception);
+            mv = ((ModelAndViewDefiningException) exception).getModelAndView();
+        }
+        else {
+            Object handler = (mappedHandler != null ? mappedHandler.getHandler() : null);
+            mv = processHandlerException(request, response, handler, exception);
+            errorView = (mv != null);
+        }
+    }
 
-	&#x2F;&#x2F; Did the handler return a view to render?
-	if (mv !&#x3D; null &amp;&amp; !mv.wasCleared()) &#123;
-		render(mv, request, response);
-		if (errorView) &#123;
-			WebUtils.clearErrorRequestAttributes(request);
-		&#125;
-	&#125;
-	else &#123;
-		if (logger.isDebugEnabled()) &#123;
-			logger.debug(&quot;Null ModelAndView returned to DispatcherServlet with name &#39;&quot; + getServletName() +
-					&quot;&#39;: assuming HandlerAdapter completed request handling&quot;);
-		&#125;
-	&#125;
+    // Did the handler return a view to render?
+    if (mv != null &amp;&amp; !mv.wasCleared()) {
+        render(mv, request, response);
+        if (errorView) {
+            WebUtils.clearErrorRequestAttributes(request);
+        }
+    }
+    else {
+        if (logger.isDebugEnabled()) {
+            logger.debug(&quot;Null ModelAndView returned to DispatcherServlet with name &#39;&quot; + getServletName() +
+                    &quot;&#39;: assuming HandlerAdapter completed request handling&quot;);
+        }
+    }
 
-	if (WebAsyncUtils.getAsyncManager(request).isConcurrentHandlingStarted()) &#123;
-		&#x2F;&#x2F; Concurrent handling started during a forward
-		return;
-	&#125;
+    if (WebAsyncUtils.getAsyncManager(request).isConcurrentHandlingStarted()) {
+        // Concurrent handling started during a forward
+        return;
+    }
 
-	if (mappedHandler !&#x3D; null) &#123;
-		mappedHandler.triggerAfterCompletion(request, response, null);
-	&#125;
-&#125;</code></pre>
-
-<p>传进来的<code>excetpion</code>为<code>null</code></p>
+    if (mappedHandler != null) {
+        mappedHandler.triggerAfterCompletion(request, response, null);
+    }
+}</code></pre><p>传进来的<code>excetpion</code>为<code>null</code></p>
 <p>判断<code>ModelAndView</code>引用不为空，并且<code>ModelAndView</code>内部的<code>Model</code>和<code>View</code>也不为空时，开始渲染视图</p>
-<pre><code class="highlight plain">protected void render(ModelAndView mv, HttpServletRequest request, HttpServletResponse response) throws Exception &#123;
-	&#x2F;&#x2F; Determine locale for request and apply it to the response.
-	&#x2F;&#x2F;locale表示使用者当地语言
-	Locale locale &#x3D; this.localeResolver.resolveLocale(request);
-	response.setLocale(locale);
+<pre><code>protected void render(ModelAndView mv, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    // Determine locale for request and apply it to the response.
+    //locale表示使用者当地语言
+    Locale locale = this.localeResolver.resolveLocale(request);
+    response.setLocale(locale);
 
-	View view;
-	if (mv.isReference()) &#123;
-		&#x2F;&#x2F; We need to resolve the view name.
-		view &#x3D; resolveViewName(mv.getViewName(), mv.getModelInternal(), locale, request);
-		if (view &#x3D;&#x3D; null) &#123;
-			throw new ServletException(&quot;Could not resolve view with name &#39;&quot; + mv.getViewName() +
-					&quot;&#39; in servlet with name &#39;&quot; + getServletName() + &quot;&#39;&quot;);
-		&#125;
-	&#125;
-	else &#123;
-		&#x2F;&#x2F; No need to lookup: the ModelAndView object contains the actual View object.
-		view &#x3D; mv.getView();
-		if (view &#x3D;&#x3D; null) &#123;
-			throw new ServletException(&quot;ModelAndView [&quot; + mv + &quot;] neither contains a view name nor a &quot; +
-					&quot;View object in servlet with name &#39;&quot; + getServletName() + &quot;&#39;&quot;);
-		&#125;
-	&#125;
+    View view;
+    if (mv.isReference()) {
+        // We need to resolve the view name.
+        view = resolveViewName(mv.getViewName(), mv.getModelInternal(), locale, request);
+        if (view == null) {
+            throw new ServletException(&quot;Could not resolve view with name &#39;&quot; + mv.getViewName() +
+                    &quot;&#39; in servlet with name &#39;&quot; + getServletName() + &quot;&#39;&quot;);
+        }
+    }
+    else {
+        // No need to lookup: the ModelAndView object contains the actual View object.
+        view = mv.getView();
+        if (view == null) {
+            throw new ServletException(&quot;ModelAndView [&quot; + mv + &quot;] neither contains a view name nor a &quot; +
+                    &quot;View object in servlet with name &#39;&quot; + getServletName() + &quot;&#39;&quot;);
+        }
+    }
 
-	&#x2F;&#x2F; Delegate to the View object for rendering.
-	if (logger.isDebugEnabled()) &#123;
-		logger.debug(&quot;Rendering view [&quot; + view + &quot;] in DispatcherServlet with name &#39;&quot; + getServletName() + &quot;&#39;&quot;);
-	&#125;
-	try &#123;
-		view.render(mv.getModelInternal(), request, response);
-	&#125;
-	catch (Exception ex) &#123;
-		if (logger.isDebugEnabled()) &#123;
-			logger.debug(&quot;Error rendering view [&quot; + view + &quot;] in DispatcherServlet with name &#39;&quot; +
-					getServletName() + &quot;&#39;&quot;, ex);
-		&#125;
-		throw ex;
-	&#125;
-&#125;</code></pre>
+    // Delegate to the View object for rendering.
+    if (logger.isDebugEnabled()) {
+        logger.debug(&quot;Rendering view [&quot; + view + &quot;] in DispatcherServlet with name &#39;&quot; + getServletName() + &quot;&#39;&quot;);
+    }
+    try {
+        view.render(mv.getModelInternal(), request, response);
+    }
+    catch (Exception ex) {
+        if (logger.isDebugEnabled()) {
+            logger.debug(&quot;Error rendering view [&quot; + view + &quot;] in DispatcherServlet with name &#39;&quot; +
+                    getServletName() + &quot;&#39;&quot;, ex);
+        }
+        throw ex;
+    }
+}</code></pre><p><code>mv.isReference()</code>判断<code>ModelAndView</code>中的<code>view</code>属于<code>String</code>类型的时候，对视图进行处理</p>
+<pre><code>protected View resolveViewName(String viewName, Map&lt;String, Object&gt; model, Locale locale,
+        HttpServletRequest request) throws Exception {
 
-<p><code>mv.isReference()</code>判断<code>ModelAndView</code>中的<code>view</code>属于<code>String</code>类型的时候，对视图进行处理</p>
-<pre><code class="highlight plain">protected View resolveViewName(String viewName, Map&lt;String, Object&gt; model, Locale locale,
-		HttpServletRequest request) throws Exception &#123;
-
-	for (ViewResolver viewResolver : this.viewResolvers) &#123;
-		View view &#x3D; viewResolver.resolveViewName(viewName, locale);
-		if (view !&#x3D; null) &#123;
-			return view;
-		&#125;
-	&#125;
-	return null;
-&#125;</code></pre>
-
-<p>这里的视图解析器<code>viewResolver</code>来自于我们在配置文件中注入</p>
-<pre><code class="highlight plain">&lt;!-- 3.配置jsp 显示ViewResolver --&gt;
-&lt;bean class&#x3D;&quot;org.springframework.web.servlet.view.InternalResourceViewResolver&quot;&gt;
-	&lt;property name&#x3D;&quot;viewClass&quot; value&#x3D;&quot;org.springframework.web.servlet.view.JstlView&quot; &#x2F;&gt;
-	&lt;property name&#x3D;&quot;prefix&quot; value&#x3D;&quot;&#x2F;&quot; &#x2F;&gt;
-	&lt;property name&#x3D;&quot;suffix&quot; value&#x3D;&quot;.jsp&quot; &#x2F;&gt;
-&lt;&#x2F;bean&gt;</code></pre>
-
-<p>这里调用的<code>InternalResourceViewResolver</code>对视图名进行解析处理</p>
-<pre><code class="highlight plain">@Override
-public View resolveViewName(String viewName, Locale locale) throws Exception &#123;
-	if (!isCache()) &#123;
-		return createView(viewName, locale);
-	&#125;
-	else &#123;
-		Object cacheKey &#x3D; getCacheKey(viewName, locale);
-		View view &#x3D; this.viewAccessCache.get(cacheKey);
-		if (view &#x3D;&#x3D; null) &#123;
-			synchronized (this.viewCreationCache) &#123;
-				view &#x3D; this.viewCreationCache.get(cacheKey);
-				if (view &#x3D;&#x3D; null) &#123;
-					&#x2F;&#x2F; Ask the subclass to create the View object.
-					view &#x3D; createView(viewName, locale);
-					if (view &#x3D;&#x3D; null &amp;&amp; this.cacheUnresolved) &#123;
-						view &#x3D; UNRESOLVED_VIEW;
-					&#125;
-					if (view !&#x3D; null) &#123;
-						this.viewAccessCache.put(cacheKey, view);
-						this.viewCreationCache.put(cacheKey, view);
-						if (logger.isTraceEnabled()) &#123;
-							logger.trace(&quot;Cached view [&quot; + cacheKey + &quot;]&quot;);
-						&#125;
-					&#125;
-				&#125;
-			&#125;
-		&#125;
-		return (view !&#x3D; UNRESOLVED_VIEW ? view : null);
-	&#125;
-&#125;</code></pre>
-
-<p>前面是对于缓存的处理，然后是<code>createView(viewName, locale)</code>创建视图对象<code>View</code></p>
-<pre><code class="highlight plain">@Override
-protected View createView(String viewName, Locale locale) throws Exception &#123;
-	&#x2F;&#x2F; If this resolver is not supposed to handle the given view,
-	&#x2F;&#x2F; return null to pass on to the next resolver in the chain.
-	if (!canHandle(viewName, locale)) &#123;
-		return null;
-	&#125;
-	&#x2F;&#x2F; Check for special &quot;redirect:&quot; prefix.
-	if (viewName.startsWith(REDIRECT_URL_PREFIX)) &#123;
-		String redirectUrl &#x3D; viewName.substring(REDIRECT_URL_PREFIX.length());
-		RedirectView view &#x3D; new RedirectView(redirectUrl, isRedirectContextRelative(), isRedirectHttp10Compatible());
-		return applyLifecycleMethods(viewName, view);
-	&#125;
-	&#x2F;&#x2F; Check for special &quot;forward:&quot; prefix.
-	if (viewName.startsWith(FORWARD_URL_PREFIX)) &#123;
-		String forwardUrl &#x3D; viewName.substring(FORWARD_URL_PREFIX.length());
-		return new InternalResourceView(forwardUrl);
-	&#125;
-	&#x2F;&#x2F; Else fall back to superclass implementation: calling loadView.
-	return super.createView(viewName, locale);
-&#125;</code></pre>
-
-<p>先看<code>canHandle(viewName, locale)</code></p>
-<pre><code class="highlight plain">protected boolean canHandle(String viewName, Locale locale) &#123;
-	String[] viewNames &#x3D; getViewNames();
-	return (viewNames &#x3D;&#x3D; null || PatternMatchUtils.simpleMatch(viewNames, viewName));
-&#125;</code></pre>
-
-<p>字符串数组<code>viewNames</code>也是在配置<code>InternalResourceViewResolver</code>的时候配置好的，根据这个决定是否处理这个视图</p>
+    for (ViewResolver viewResolver : this.viewResolvers) {
+        View view = viewResolver.resolveViewName(viewName, locale);
+        if (view != null) {
+            return view;
+        }
+    }
+    return null;
+}</code></pre><p>这里的视图解析器<code>viewResolver</code>来自于我们在配置文件中注入</p>
+<pre><code> &lt;!-- 3.配置jsp 显示ViewResolver --&gt;
+ &lt;bean class=&quot;org.springframework.web.servlet.view.InternalResourceViewResolver&quot;&gt;
+     &lt;property name=&quot;viewClass&quot; value=&quot;org.springframework.web.servlet.view.JstlView&quot; /&gt;
+     &lt;property name=&quot;prefix&quot; value=&quot;/&quot; /&gt;
+     &lt;property name=&quot;suffix&quot; value=&quot;.jsp&quot; /&gt;
+ &lt;/bean&gt;</code></pre><p>这里调用的<code>InternalResourceViewResolver</code>对视图名进行解析处理</p>
+<pre><code>@Override
+public View resolveViewName(String viewName, Locale locale) throws Exception {
+    if (!isCache()) {
+        return createView(viewName, locale);
+    }
+    else {
+        Object cacheKey = getCacheKey(viewName, locale);
+        View view = this.viewAccessCache.get(cacheKey);
+        if (view == null) {
+            synchronized (this.viewCreationCache) {
+                view = this.viewCreationCache.get(cacheKey);
+                if (view == null) {
+                    // Ask the subclass to create the View object.
+                    view = createView(viewName, locale);
+                    if (view == null &amp;&amp; this.cacheUnresolved) {
+                        view = UNRESOLVED_VIEW;
+                    }
+                    if (view != null) {
+                        this.viewAccessCache.put(cacheKey, view);
+                        this.viewCreationCache.put(cacheKey, view);
+                        if (logger.isTraceEnabled()) {
+                            logger.trace(&quot;Cached view [&quot; + cacheKey + &quot;]&quot;);
+                        }
+                    }
+                }
+            }
+        }
+        return (view != UNRESOLVED_VIEW ? view : null);
+    }
+}</code></pre><p>前面是对于缓存的处理，然后是<code>createView(viewName, locale)</code>创建视图对象<code>View</code></p>
+<pre><code>@Override
+protected View createView(String viewName, Locale locale) throws Exception {
+    // If this resolver is not supposed to handle the given view,
+    // return null to pass on to the next resolver in the chain.
+    if (!canHandle(viewName, locale)) {
+        return null;
+    }
+    // Check for special &quot;redirect:&quot; prefix.
+    if (viewName.startsWith(REDIRECT_URL_PREFIX)) {
+        String redirectUrl = viewName.substring(REDIRECT_URL_PREFIX.length());
+        RedirectView view = new RedirectView(redirectUrl, isRedirectContextRelative(), isRedirectHttp10Compatible());
+        return applyLifecycleMethods(viewName, view);
+    }
+    // Check for special &quot;forward:&quot; prefix.
+    if (viewName.startsWith(FORWARD_URL_PREFIX)) {
+        String forwardUrl = viewName.substring(FORWARD_URL_PREFIX.length());
+        return new InternalResourceView(forwardUrl);
+    }
+    // Else fall back to superclass implementation: calling loadView.
+    return super.createView(viewName, locale);
+}</code></pre><p>先看<code>canHandle(viewName, locale)</code></p>
+<pre><code>protected boolean canHandle(String viewName, Locale locale) {
+    String[] viewNames = getViewNames();
+    return (viewNames == null || PatternMatchUtils.simpleMatch(viewNames, viewName));
+}</code></pre><p>字符串数组<code>viewNames</code>也是在配置<code>InternalResourceViewResolver</code>的时候配置好的，根据这个决定是否处理这个视图</p>
 <p>然后可以看到这里根据视图前缀创建不同类型的视图对象<code>View</code>，分别是以<code>redirect:</code>开头的重定向<code>RedirectView</code>，以<code>forward:</code>开头的内部转发<code>InternalResourceView</code>，和第三种没有前缀的如下，调用了父类的<code>createView</code>方法</p>
-<pre><code class="highlight plain">protected View createView(String viewName, Locale locale) throws Exception &#123;
-	return loadView(viewName, locale);
-&#125;
+<pre><code>protected View createView(String viewName, Locale locale) throws Exception {
+    return loadView(viewName, locale);
+}
 
 
 @Override
-protected View loadView(String viewName, Locale locale) throws Exception &#123;
-	AbstractUrlBasedView view &#x3D; buildView(viewName);
-	View result &#x3D; applyLifecycleMethods(viewName, view);
-	return (view.checkResource(locale) ? result : null);
-&#125;
+protected View loadView(String viewName, Locale locale) throws Exception {
+    AbstractUrlBasedView view = buildView(viewName);
+    View result = applyLifecycleMethods(viewName, view);
+    return (view.checkResource(locale) ? result : null);
+}
 
 @Override
-protected AbstractUrlBasedView buildView(String viewName) throws Exception &#123;
-	InternalResourceView view &#x3D; (InternalResourceView) super.buildView(viewName);
-	if (this.alwaysInclude !&#x3D; null) &#123;
-		view.setAlwaysInclude(this.alwaysInclude);
-	&#125;
-	view.setPreventDispatchLoop(true);
-	return view;
-&#125;
+protected AbstractUrlBasedView buildView(String viewName) throws Exception {
+    InternalResourceView view = (InternalResourceView) super.buildView(viewName);
+    if (this.alwaysInclude != null) {
+        view.setAlwaysInclude(this.alwaysInclude);
+    }
+    view.setPreventDispatchLoop(true);
+    return view;
+}
 
-protected AbstractUrlBasedView buildView(String viewName) throws Exception &#123;
-	AbstractUrlBasedView view &#x3D; (AbstractUrlBasedView) BeanUtils.instantiateClass(getViewClass());
-	view.setUrl(getPrefix() + viewName + getSuffix());
+protected AbstractUrlBasedView buildView(String viewName) throws Exception {
+    AbstractUrlBasedView view = (AbstractUrlBasedView) BeanUtils.instantiateClass(getViewClass());
+    view.setUrl(getPrefix() + viewName + getSuffix());
 
-	String contentType &#x3D; getContentType();
-	if (contentType !&#x3D; null) &#123;
-		view.setContentType(contentType);
-	&#125;
+    String contentType = getContentType();
+    if (contentType != null) {
+        view.setContentType(contentType);
+    }
 
-	view.setRequestContextAttribute(getRequestContextAttribute());
-	view.setAttributesMap(getAttributesMap());
-	&#x2F;&#x2F;决定是否将PathVariable合并到Model中
-	Boolean exposePathVariables &#x3D; getExposePathVariables();
-	if (exposePathVariables !&#x3D; null) &#123;
-		view.setExposePathVariables(exposePathVariables);
-	&#125;
-	Boolean exposeContextBeansAsAttributes &#x3D; getExposeContextBeansAsAttributes();
-	if (exposeContextBeansAsAttributes !&#x3D; null) &#123;
-		view.setExposeContextBeansAsAttributes(exposeContextBeansAsAttributes);
-	&#125;
-	String[] exposedContextBeanNames &#x3D; getExposedContextBeanNames();
-	if (exposedContextBeanNames !&#x3D; null) &#123;
-		view.setExposedContextBeanNames(exposedContextBeanNames);
-	&#125;
+    view.setRequestContextAttribute(getRequestContextAttribute());
+    view.setAttributesMap(getAttributesMap());
+    //决定是否将PathVariable合并到Model中
+    Boolean exposePathVariables = getExposePathVariables();
+    if (exposePathVariables != null) {
+        view.setExposePathVariables(exposePathVariables);
+    }
+    Boolean exposeContextBeansAsAttributes = getExposeContextBeansAsAttributes();
+    if (exposeContextBeansAsAttributes != null) {
+        view.setExposeContextBeansAsAttributes(exposeContextBeansAsAttributes);
+    }
+    String[] exposedContextBeanNames = getExposedContextBeanNames();
+    if (exposedContextBeanNames != null) {
+        view.setExposedContextBeanNames(exposedContextBeanNames);
+    }
 
-	return view;
-&#125;</code></pre>
-
-<p><code>getViewClass()</code>获取配置文件中<code>InternalResourceViewResolver</code>中的<code>viewClass</code>，这里我们配置的是<code>JstlView</code>，这里用反射的方式实例化，<code>getPrefix()</code>和<code>getSuffix()</code>对应我们配置的前后缀，来拼凑成有效的<code>url</code>，后面的都是读取<code>InternalResourceViewResolver</code>中配置的属性来初始化<code>JstlView</code></p>
+    return view;
+}</code></pre><p><code>getViewClass()</code>获取配置文件中<code>InternalResourceViewResolver</code>中的<code>viewClass</code>，这里我们配置的是<code>JstlView</code>，这里用反射的方式实例化，<code>getPrefix()</code>和<code>getSuffix()</code>对应我们配置的前后缀，来拼凑成有效的<code>url</code>，后面的都是读取<code>InternalResourceViewResolver</code>中配置的属性来初始化<code>JstlView</code></p>
 <p>此外我们看到创建好视图后，还对视图进行了一些处理<code>applyLifecycleMethods(viewName, view)</code></p>
-<pre><code class="highlight plain">private View applyLifecycleMethods(String viewName, AbstractView view) &#123;
-	return (View) getApplicationContext().getAutowireCapableBeanFactory().initializeBean(view, viewName);
-&#125;</code></pre>
-
-<p>因为<code>JstlView</code>实现了<code>BeanNameAware</code>接口，所以这里将<code>viewName</code>设置到<code>view</code>的<code>BeanName</code>属性中，然后还将<code>applicationContext</code>注入到<code>View</code>中，还没看<code>Spring</code>，这里跳过</p>
+<pre><code>private View applyLifecycleMethods(String viewName, AbstractView view) {
+    return (View) getApplicationContext().getAutowireCapableBeanFactory().initializeBean(view, viewName);
+}</code></pre><p>因为<code>JstlView</code>实现了<code>BeanNameAware</code>接口，所以这里将<code>viewName</code>设置到<code>view</code>的<code>BeanName</code>属性中，然后还将<code>applicationContext</code>注入到<code>View</code>中，还没看<code>Spring</code>，这里跳过</p>
 <p>回到<code>DispatchServlet</code>的<code>render</code>方法中，创建好视图对象之后，调用视图对象的<code>render</code>方法渲染视图</p>
-<pre><code class="highlight plain">@Override
-public void render(Map&lt;String, ?&gt; model, HttpServletRequest request, HttpServletResponse response) throws Exception &#123;
-	if (logger.isTraceEnabled()) &#123;
-		logger.trace(&quot;Rendering view with name &#39;&quot; + this.beanName + &quot;&#39; with model &quot; + model +
-			&quot; and static attributes &quot; + this.staticAttributes);
-	&#125;
+<pre><code>@Override
+public void render(Map&lt;String, ?&gt; model, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    if (logger.isTraceEnabled()) {
+        logger.trace(&quot;Rendering view with name &#39;&quot; + this.beanName + &quot;&#39; with model &quot; + model +
+            &quot; and static attributes &quot; + this.staticAttributes);
+    }
 
-	Map&lt;String, Object&gt; mergedModel &#x3D; createMergedOutputModel(model, request, response);
-	prepareResponse(request, response);
-	renderMergedOutputModel(mergedModel, getRequestToExpose(request), response);
-&#125;</code></pre>
+    Map&lt;String, Object&gt; mergedModel = createMergedOutputModel(model, request, response);
+    prepareResponse(request, response);
+    renderMergedOutputModel(mergedModel, getRequestToExpose(request), response);
+}</code></pre><p>这里创建了一个<code>Map</code>类型的对象</p>
+<pre><code>protected Map&lt;String, Object&gt; createMergedOutputModel(Map&lt;String, ?&gt; model, HttpServletRequest request,
+        HttpServletResponse response) {
 
-<p>这里创建了一个<code>Map</code>类型的对象</p>
-<pre><code class="highlight plain">protected Map&lt;String, Object&gt; createMergedOutputModel(Map&lt;String, ?&gt; model, HttpServletRequest request,
-		HttpServletResponse response) &#123;
+    @SuppressWarnings(&quot;unchecked&quot;)
+    Map&lt;String, Object&gt; pathVars = (this.exposePathVariables ?
+            (Map&lt;String, Object&gt;) request.getAttribute(View.PATH_VARIABLES) : null);
 
-	@SuppressWarnings(&quot;unchecked&quot;)
-	Map&lt;String, Object&gt; pathVars &#x3D; (this.exposePathVariables ?
-			(Map&lt;String, Object&gt;) request.getAttribute(View.PATH_VARIABLES) : null);
+    // Consolidate static and dynamic model attributes.
+    int size = this.staticAttributes.size();
+    size += (model != null ? model.size() : 0);
+    size += (pathVars != null ? pathVars.size() : 0);
 
-	&#x2F;&#x2F; Consolidate static and dynamic model attributes.
-	int size &#x3D; this.staticAttributes.size();
-	size +&#x3D; (model !&#x3D; null ? model.size() : 0);
-	size +&#x3D; (pathVars !&#x3D; null ? pathVars.size() : 0);
+    Map&lt;String, Object&gt; mergedModel = new LinkedHashMap&lt;String, Object&gt;(size);
+    mergedModel.putAll(this.staticAttributes);
+    if (pathVars != null) {
+        mergedModel.putAll(pathVars);
+    }
+    if (model != null) {
+        mergedModel.putAll(model);
+    }
 
-	Map&lt;String, Object&gt; mergedModel &#x3D; new LinkedHashMap&lt;String, Object&gt;(size);
-	mergedModel.putAll(this.staticAttributes);
-	if (pathVars !&#x3D; null) &#123;
-		mergedModel.putAll(pathVars);
-	&#125;
-	if (model !&#x3D; null) &#123;
-		mergedModel.putAll(model);
-	&#125;
+    // Expose RequestContext?
+    if (this.requestContextAttribute != null) {
+        mergedModel.put(this.requestContextAttribute, createRequestContext(request, response, mergedModel));
+    }
 
-	&#x2F;&#x2F; Expose RequestContext?
-	if (this.requestContextAttribute !&#x3D; null) &#123;
-		mergedModel.put(this.requestContextAttribute, createRequestContext(request, response, mergedModel));
-	&#125;
-
-	return mergedModel;
-&#125;</code></pre>
-
-<p><code>exposePathVariables</code>变量是我们在初始化<code>JstlView</code>的注入的，来源于<code>InternalResourceViewResolver</code>，默认为<code>true</code>，用来获取<code>url</code>中{}属性和值</p>
+    return mergedModel;
+}</code></pre><p><code>exposePathVariables</code>变量是我们在初始化<code>JstlView</code>的注入的，来源于<code>InternalResourceViewResolver</code>，默认为<code>true</code>，用来获取<code>url</code>中{}属性和值</p>
 <p>这里合并<code>ModelAndView</code>中的<code>ModelMap</code>和<code>pathVars</code>，然后返回</p>
 <p>然后使用合并之后的<code>ModelMap</code>继续渲染视图</p>
-<pre><code class="highlight plain">@Override
+<pre><code>@Override
 protected void renderMergedOutputModel(
-		Map&lt;String, Object&gt; model, HttpServletRequest request, HttpServletResponse response) throws Exception &#123;
+        Map&lt;String, Object&gt; model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-	&#x2F;&#x2F; Expose the model object as request attributes.
-	exposeModelAsRequestAttributes(model, request);
+    // Expose the model object as request attributes.
+    exposeModelAsRequestAttributes(model, request);
 
-	&#x2F;&#x2F; Expose helpers as request attributes, if any.
-	exposeHelpers(request);
+    // Expose helpers as request attributes, if any.
+    exposeHelpers(request);
 
-	&#x2F;&#x2F; Determine the path for the request dispatcher.
-	String dispatcherPath &#x3D; prepareForRendering(request, response);
+    // Determine the path for the request dispatcher.
+    String dispatcherPath = prepareForRendering(request, response);
 
-	&#x2F;&#x2F; Obtain a RequestDispatcher for the target resource (typically a JSP).
-	RequestDispatcher rd &#x3D; getRequestDispatcher(request, dispatcherPath);
-	if (rd &#x3D;&#x3D; null) &#123;
-		throw new ServletException(&quot;Could not get RequestDispatcher for [&quot; + getUrl() +
-				&quot;]: Check that the corresponding file exists within your web application archive!&quot;);
-	&#125;
+    // Obtain a RequestDispatcher for the target resource (typically a JSP).
+    RequestDispatcher rd = getRequestDispatcher(request, dispatcherPath);
+    if (rd == null) {
+        throw new ServletException(&quot;Could not get RequestDispatcher for [&quot; + getUrl() +
+                &quot;]: Check that the corresponding file exists within your web application archive!&quot;);
+    }
 
-	&#x2F;&#x2F; If already included or response already committed, perform include, else forward.
-	if (useInclude(request, response)) &#123;
-		response.setContentType(getContentType());
-		if (logger.isDebugEnabled()) &#123;
-			logger.debug(&quot;Including resource [&quot; + getUrl() + &quot;] in InternalResourceView &#39;&quot; + getBeanName() + &quot;&#39;&quot;);
-		&#125;
-		rd.include(request, response);
-	&#125;
+    // If already included or response already committed, perform include, else forward.
+    if (useInclude(request, response)) {
+        response.setContentType(getContentType());
+        if (logger.isDebugEnabled()) {
+            logger.debug(&quot;Including resource [&quot; + getUrl() + &quot;] in InternalResourceView &#39;&quot; + getBeanName() + &quot;&#39;&quot;);
+        }
+        rd.include(request, response);
+    }
 
-	else &#123;
-		&#x2F;&#x2F; Note: The forwarded resource is supposed to determine the content type itself.
-		if (logger.isDebugEnabled()) &#123;
-			logger.debug(&quot;Forwarding to resource [&quot; + getUrl() + &quot;] in InternalResourceView &#39;&quot; + getBeanName() + &quot;&#39;&quot;);
-		&#125;
-		rd.forward(request, response);
-	&#125;
-&#125;</code></pre>
-
-<p>先看<code>exposeModelAsRequestAttributes(model, request);</code></p>
-<pre><code class="highlight plain">protected void exposeModelAsRequestAttributes(Map&lt;String, Object&gt; model, HttpServletRequest request) throws Exception &#123;
-	for (Map.Entry&lt;String, Object&gt; entry : model.entrySet()) &#123;
-		String modelName &#x3D; entry.getKey();
-		Object modelValue &#x3D; entry.getValue();
-		if (modelValue !&#x3D; null) &#123;
-			request.setAttribute(modelName, modelValue);
-			if (logger.isDebugEnabled()) &#123;
-				logger.debug(&quot;Added model object &#39;&quot; + modelName + &quot;&#39; of type [&quot; + modelValue.getClass().getName() +
-						&quot;] to request in view with name &#39;&quot; + getBeanName() + &quot;&#39;&quot;);
-			&#125;
-		&#125;
-		else &#123;
-			request.removeAttribute(modelName);
-			if (logger.isDebugEnabled()) &#123;
-				logger.debug(&quot;Removed model object &#39;&quot; + modelName +
-						&quot;&#39; from request in view with name &#39;&quot; + getBeanName() + &quot;&#39;&quot;);
-			&#125;
-		&#125;
-	&#125;
-&#125;</code></pre>
-
-<p>这里将合并之后的<code>ModelMap</code>中不为空的属性全部放入<code>request</code>中，所以我们能在<code>jsp</code>中获取到我们在<code>Controller</code>给<code>Map</code>入参中添加的属性</p>
+    else {
+        // Note: The forwarded resource is supposed to determine the content type itself.
+        if (logger.isDebugEnabled()) {
+            logger.debug(&quot;Forwarding to resource [&quot; + getUrl() + &quot;] in InternalResourceView &#39;&quot; + getBeanName() + &quot;&#39;&quot;);
+        }
+        rd.forward(request, response);
+    }
+}</code></pre><p>先看<code>exposeModelAsRequestAttributes(model, request);</code></p>
+<pre><code>protected void exposeModelAsRequestAttributes(Map&lt;String, Object&gt; model, HttpServletRequest request) throws Exception {
+    for (Map.Entry&lt;String, Object&gt; entry : model.entrySet()) {
+        String modelName = entry.getKey();
+        Object modelValue = entry.getValue();
+        if (modelValue != null) {
+            request.setAttribute(modelName, modelValue);
+            if (logger.isDebugEnabled()) {
+                logger.debug(&quot;Added model object &#39;&quot; + modelName + &quot;&#39; of type [&quot; + modelValue.getClass().getName() +
+                        &quot;] to request in view with name &#39;&quot; + getBeanName() + &quot;&#39;&quot;);
+            }
+        }
+        else {
+            request.removeAttribute(modelName);
+            if (logger.isDebugEnabled()) {
+                logger.debug(&quot;Removed model object &#39;&quot; + modelName +
+                        &quot;&#39; from request in view with name &#39;&quot; + getBeanName() + &quot;&#39;&quot;);
+            }
+        }
+    }
+}</code></pre><p>这里将合并之后的<code>ModelMap</code>中不为空的属性全部放入<code>request</code>中，所以我们能在<code>jsp</code>中获取到我们在<code>Controller</code>给<code>Map</code>入参中添加的属性</p>
 <p><code>preventDispatchLoop</code>属性在创建<code>JstlView</code>的时候设置为了<code>true</code></p>
 <p>然后看<code>prepareForRendering(request, response)</code></p>
-<pre><code class="highlight plain">protected String prepareForRendering(HttpServletRequest request, HttpServletResponse response)
-		throws Exception &#123;
+<pre><code>protected String prepareForRendering(HttpServletRequest request, HttpServletResponse response)
+        throws Exception {
 
-	String path &#x3D; getUrl();
-	if (this.preventDispatchLoop) &#123;
-		String uri &#x3D; request.getRequestURI();
-		if (path.startsWith(&quot;&#x2F;&quot;) ? uri.equals(path) : uri.equals(StringUtils.applyRelativePath(uri, path))) &#123;
-			throw new ServletException(&quot;Circular view path [&quot; + path + &quot;]: would dispatch back &quot; +
-					&quot;to the current handler URL [&quot; + uri + &quot;] again. Check your ViewResolver setup! &quot; +
-					&quot;(Hint: This may be the result of an unspecified view, due to default view name generation.)&quot;);
-		&#125;
-	&#125;
-	return path;
-&#125;</code></pre>
-
-<p><code>getUrl</code>返回我们创建视图传入的目的资源的<code>url</code></p>
+    String path = getUrl();
+    if (this.preventDispatchLoop) {
+        String uri = request.getRequestURI();
+        if (path.startsWith(&quot;/&quot;) ? uri.equals(path) : uri.equals(StringUtils.applyRelativePath(uri, path))) {
+            throw new ServletException(&quot;Circular view path [&quot; + path + &quot;]: would dispatch back &quot; +
+                    &quot;to the current handler URL [&quot; + uri + &quot;] again. Check your ViewResolver setup! &quot; +
+                    &quot;(Hint: This may be the result of an unspecified view, due to default view name generation.)&quot;);
+        }
+    }
+    return path;
+}</code></pre><p><code>getUrl</code>返回我们创建视图传入的目的资源的<code>url</code></p>
 <p><code>request.getRequestURI</code>返回的结果是<code>/</code>+项目名称+剩余<code>uri</code></p>
 <p>这里要防止当前<code>url</code>和跳转后的<code>url</code>相同变成死循环，检测到相同时抛出异常</p>
 <p>注意到<code>StringUtils.applyRelativePath(uri, path))</code>，应该是和拼接最终<code>url</code>相关</p>
-<pre><code class="highlight plain">public static String applyRelativePath(String path, String relativePath) &#123;
-	int separatorIndex &#x3D; path.lastIndexOf(FOLDER_SEPARATOR);
-	if (separatorIndex !&#x3D; -1) &#123;
-		String newPath &#x3D; path.substring(0, separatorIndex);
-		if (!relativePath.startsWith(FOLDER_SEPARATOR)) &#123;
-			newPath +&#x3D; FOLDER_SEPARATOR;
-		&#125;
-		return newPath + relativePath;
-	&#125;
-	else &#123;
-		return relativePath;
-	&#125;
-&#125;</code></pre>
-
-<p>拼接路径的方式为原本请求路径中去掉最后一个<code>/</code>和后面的字符，当第二个值不存在<code>/</code>，也就是<code>url</code>中项目名和后面的字符全为空，这里则直接返回创建好的视图的<code>url</code>，否则去掉最后一个<code>/</code>和后面的字符，然后拼接上我们视图的<code>url</code></p>
+<pre><code>public static String applyRelativePath(String path, String relativePath) {
+    int separatorIndex = path.lastIndexOf(FOLDER_SEPARATOR);
+    if (separatorIndex != -1) {
+        String newPath = path.substring(0, separatorIndex);
+        if (!relativePath.startsWith(FOLDER_SEPARATOR)) {
+            newPath += FOLDER_SEPARATOR;
+        }
+        return newPath + relativePath;
+    }
+    else {
+        return relativePath;
+    }
+}</code></pre><p>拼接路径的方式为原本请求路径中去掉最后一个<code>/</code>和后面的字符，当第二个值不存在<code>/</code>，也就是<code>url</code>中项目名和后面的字符全为空，这里则直接返回创建好的视图的<code>url</code>，否则去掉最后一个<code>/</code>和后面的字符，然后拼接上我们视图的<code>url</code></p>
 <p>回到</p>
-<pre><code class="highlight plain">@Override
+<pre><code>@Override
 protected void renderMergedOutputModel(
-		Map&lt;String, Object&gt; model, HttpServletRequest request, HttpServletResponse response) throws Exception &#123;
+        Map&lt;String, Object&gt; model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-	&#x2F;&#x2F; Expose the model object as request attributes.
-	exposeModelAsRequestAttributes(model, request);
+    // Expose the model object as request attributes.
+    exposeModelAsRequestAttributes(model, request);
 
-	&#x2F;&#x2F; Expose helpers as request attributes, if any.
-	exposeHelpers(request);
+    // Expose helpers as request attributes, if any.
+    exposeHelpers(request);
 
-	&#x2F;&#x2F; Determine the path for the request dispatcher.
-	String dispatcherPath &#x3D; prepareForRendering(request, response);
+    // Determine the path for the request dispatcher.
+    String dispatcherPath = prepareForRendering(request, response);
 
-	&#x2F;&#x2F; Obtain a RequestDispatcher for the target resource (typically a JSP).
-	RequestDispatcher rd &#x3D; getRequestDispatcher(request, dispatcherPath);
-	if (rd &#x3D;&#x3D; null) &#123;
-		throw new ServletException(&quot;Could not get RequestDispatcher for [&quot; + getUrl() +
-				&quot;]: Check that the corresponding file exists within your web application archive!&quot;);
-	&#125;
+    // Obtain a RequestDispatcher for the target resource (typically a JSP).
+    RequestDispatcher rd = getRequestDispatcher(request, dispatcherPath);
+    if (rd == null) {
+        throw new ServletException(&quot;Could not get RequestDispatcher for [&quot; + getUrl() +
+                &quot;]: Check that the corresponding file exists within your web application archive!&quot;);
+    }
 
-	&#x2F;&#x2F; If already included or response already committed, perform include, else forward.
-	if (useInclude(request, response)) &#123;
-		response.setContentType(getContentType());
-		if (logger.isDebugEnabled()) &#123;
-			logger.debug(&quot;Including resource [&quot; + getUrl() + &quot;] in InternalResourceView &#39;&quot; + getBeanName() + &quot;&#39;&quot;);
-		&#125;
-		rd.include(request, response);
-	&#125;
+    // If already included or response already committed, perform include, else forward.
+    if (useInclude(request, response)) {
+        response.setContentType(getContentType());
+        if (logger.isDebugEnabled()) {
+            logger.debug(&quot;Including resource [&quot; + getUrl() + &quot;] in InternalResourceView &#39;&quot; + getBeanName() + &quot;&#39;&quot;);
+        }
+        rd.include(request, response);
+    }
 
-	else &#123;
-		&#x2F;&#x2F; Note: The forwarded resource is supposed to determine the content type itself.
-		if (logger.isDebugEnabled()) &#123;
-			logger.debug(&quot;Forwarding to resource [&quot; + getUrl() + &quot;] in InternalResourceView &#39;&quot; + getBeanName() + &quot;&#39;&quot;);
-		&#125;
-		rd.forward(request, response);
-	&#125;
-&#125;</code></pre>
-
-<p>剩下最后一个判断<code>useInclude(request, response)</code>，查了下，<code>include</code>的作用应该是属于内嵌的一种，就是将另一个servlet/jsp处理过后的内容拿过来与本身的servlet的内容一同输出</p>
+    else {
+        // Note: The forwarded resource is supposed to determine the content type itself.
+        if (logger.isDebugEnabled()) {
+            logger.debug(&quot;Forwarding to resource [&quot; + getUrl() + &quot;] in InternalResourceView &#39;&quot; + getBeanName() + &quot;&#39;&quot;);
+        }
+        rd.forward(request, response);
+    }
+}</code></pre><p>剩下最后一个判断<code>useInclude(request, response)</code>，查了下，<code>include</code>的作用应该是属于内嵌的一种，就是将另一个servlet/jsp处理过后的内容拿过来与本身的servlet的内容一同输出</p>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ol>
 <li><p>当<code>ModelAndView</code>的<code>View</code>为<code>null</code>时，取默认视图名，该视图名与当前<code>url</code>有关</p>
 </li>

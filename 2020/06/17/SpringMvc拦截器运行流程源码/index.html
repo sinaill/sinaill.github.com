@@ -79,12 +79,12 @@
 
 
 
-<meta name="description" content="HandlerInterceptorAdapterHandlerInterceptorAdapter是SpringMvc给我们用来实现拦截器的抽象类 public abstract class HandlerInterceptorAdapter implements AsyncHandlerInterceptor &amp;#123;  	&#x2F;** 	 * This implementation">
+<meta name="description" content="HandlerInterceptorAdapterHandlerInterceptorAdapter是SpringMvc给我们用来实现拦截器的抽象类 public abstract class HandlerInterceptorAdapter implements AsyncHandlerInterceptor {      &#x2F;**      * This implementation alwa">
 <meta property="og:type" content="article">
 <meta property="og:title" content="SpringMVC拦截器运行流程源码">
 <meta property="og:url" content="http://yoursite.com/2020/06/17/SpringMvc%E6%8B%A6%E6%88%AA%E5%99%A8%E8%BF%90%E8%A1%8C%E6%B5%81%E7%A8%8B%E6%BA%90%E7%A0%81/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="HandlerInterceptorAdapterHandlerInterceptorAdapter是SpringMvc给我们用来实现拦截器的抽象类 public abstract class HandlerInterceptorAdapter implements AsyncHandlerInterceptor &amp;#123;  	&#x2F;** 	 * This implementation">
+<meta property="og:description" content="HandlerInterceptorAdapterHandlerInterceptorAdapter是SpringMvc给我们用来实现拦截器的抽象类 public abstract class HandlerInterceptorAdapter implements AsyncHandlerInterceptor {      &#x2F;**      * This implementation alwa">
 <meta property="article:published_time" content="2020-06-16T17:43:37.229Z">
 <meta property="article:modified_time" content="2020-06-16T17:43:37.230Z">
 <meta property="article:author" content="sinaill">
@@ -342,125 +342,111 @@
 
       
         <h3 id="HandlerInterceptorAdapter"><a href="#HandlerInterceptorAdapter" class="headerlink" title="HandlerInterceptorAdapter"></a>HandlerInterceptorAdapter</h3><p><code>HandlerInterceptorAdapter</code>是SpringMvc给我们用来实现拦截器的抽象类</p>
-<pre><code class="highlight plain">public abstract class HandlerInterceptorAdapter implements AsyncHandlerInterceptor &#123;
+<pre><code>public abstract class HandlerInterceptorAdapter implements AsyncHandlerInterceptor {
 
-	&#x2F;**
-	 * This implementation always returns &#123;@code true&#125;.
-	 *&#x2F;
-	@Override
-	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
-		throws Exception &#123;
-		return true;
-	&#125;
+    /**
+     * This implementation always returns {@code true}.
+     */
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+        throws Exception {
+        return true;
+    }
 
-	&#x2F;**
-	 * This implementation is empty.
-	 *&#x2F;
-	@Override
-	public void postHandle(
-			HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView)
-			throws Exception &#123;
-	&#125;
+    /**
+     * This implementation is empty.
+     */
+    @Override
+    public void postHandle(
+            HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView)
+            throws Exception {
+    }
 
-	&#x2F;**
-	 * This implementation is empty.
-	 *&#x2F;
-	@Override
-	public void afterCompletion(
-			HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
-			throws Exception &#123;
-	&#125;
+    /**
+     * This implementation is empty.
+     */
+    @Override
+    public void afterCompletion(
+            HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
+            throws Exception {
+    }
 
-	&#x2F;**
-	 * This implementation is empty.
-	 *&#x2F;
-	@Override
-	public void afterConcurrentHandlingStarted(
-			HttpServletRequest request, HttpServletResponse response, Object handler)
-			throws Exception &#123;
-	&#125;
+    /**
+     * This implementation is empty.
+     */
+    @Override
+    public void afterConcurrentHandlingStarted(
+            HttpServletRequest request, HttpServletResponse response, Object handler)
+            throws Exception {
+    }
 
-&#125;</code></pre>
-
-<h3 id="preHandle"><a href="#preHandle" class="headerlink" title="preHandle"></a>preHandle</h3><p>SpringMvc执行拦截器<code>preHandle</code>方法</p>
+}</code></pre><h3 id="preHandle"><a href="#preHandle" class="headerlink" title="preHandle"></a>preHandle</h3><p>SpringMvc执行拦截器<code>preHandle</code>方法</p>
 <p>在<code>DispatcherServlet</code>中执行拦截器的<code>preHandle</code>方法，刚好在<code>Handler</code>方法被执行前执行</p>
-<pre><code class="highlight plain">if (!mappedHandler.applyPreHandle(processedRequest, response)) &#123;
-	return;
-&#125;</code></pre>
-
-<p>跟入<code>HandlerExecutionChain</code>的<code>applyPreHandle</code>方法</p>
-<pre><code class="highlight plain">boolean applyPreHandle(HttpServletRequest request, HttpServletResponse response) throws Exception &#123;
-	HandlerInterceptor[] interceptors &#x3D; getInterceptors();
-	if (!ObjectUtils.isEmpty(interceptors)) &#123;
-		for (int i &#x3D; 0; i &lt; interceptors.length; i++) &#123;
-			HandlerInterceptor interceptor &#x3D; interceptors[i];
-			if (!interceptor.preHandle(request, response, this.handler)) &#123;
-				triggerAfterCompletion(request, response, null);
-				return false;
-			&#125;
-			this.interceptorIndex &#x3D; i;
-		&#125;
-	&#125;
-	return true;
-&#125;</code></pre>
-
-<p><code>getInterceptors</code>方法获取<code>HandlerExecutionChain</code>中的拦截器数组<code>interceptors</code>，按照配置顺序从前到后执行拦截器的<code>preHandle</code>方法，如果有拦截器返回的结果为<code>false</code>，则进入<code>triggerAfterCompletion</code>方法</p>
-<pre><code class="highlight plain">&#x2F;**
+<pre><code>if (!mappedHandler.applyPreHandle(processedRequest, response)) {
+    return;
+}</code></pre><p>跟入<code>HandlerExecutionChain</code>的<code>applyPreHandle</code>方法</p>
+<pre><code>boolean applyPreHandle(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    HandlerInterceptor[] interceptors = getInterceptors();
+    if (!ObjectUtils.isEmpty(interceptors)) {
+        for (int i = 0; i &lt; interceptors.length; i++) {
+            HandlerInterceptor interceptor = interceptors[i];
+            if (!interceptor.preHandle(request, response, this.handler)) {
+                triggerAfterCompletion(request, response, null);
+                return false;
+            }
+            this.interceptorIndex = i;
+        }
+    }
+    return true;
+}</code></pre><p><code>getInterceptors</code>方法获取<code>HandlerExecutionChain</code>中的拦截器数组<code>interceptors</code>，按照配置顺序从前到后执行拦截器的<code>preHandle</code>方法，如果有拦截器返回的结果为<code>false</code>，则进入<code>triggerAfterCompletion</code>方法</p>
+<pre><code>/**
  * Trigger afterCompletion callbacks on the mapped HandlerInterceptors.
  * Will just invoke afterCompletion for all interceptors whose preHandle invocation
  * has successfully completed and returned true.
- *&#x2F;
+ */
 void triggerAfterCompletion(HttpServletRequest request, HttpServletResponse response, Exception ex)
-		throws Exception &#123;
+        throws Exception {
 
-	HandlerInterceptor[] interceptors &#x3D; getInterceptors();
-	if (!ObjectUtils.isEmpty(interceptors)) &#123;
-		for (int i &#x3D; this.interceptorIndex; i &gt;&#x3D; 0; i--) &#123;
-			HandlerInterceptor interceptor &#x3D; interceptors[i];
-			try &#123;
-				interceptor.afterCompletion(request, response, this.handler, ex);
-			&#125;
-			catch (Throwable ex2) &#123;
-				logger.error(&quot;HandlerInterceptor.afterCompletion threw exception&quot;, ex2);
-			&#125;
-		&#125;
-	&#125;
-&#125;</code></pre>
-
-<p>从英文注释中看出这个方法会在所有拦截器被成功执行并且返回<code>true</code>时触发，从<code>applyPreHandle</code>方法可以看到，当有拦截器返回了<code>false</code>时，这个方法也会被触发，然后执行所有拦截器的<code>afterCompletion</code>方法</p>
-<h3 id="applyPostHandle"><a href="#applyPostHandle" class="headerlink" title="applyPostHandle"></a>applyPostHandle</h3><pre><code class="highlight plain">mappedHandler.applyPostHandle(processedRequest, response, mv);</code></pre>
-
-<p><code>applyPostHandle</code>方法在执行完<code>Handler</code>的目标方法后被执行，所以形参中有类型为<code>ModelAndView</code>变量<code>mv</code></p>
-<pre><code class="highlight plain">void applyPostHandle(HttpServletRequest request, HttpServletResponse response, ModelAndView mv) throws Exception &#123;
-	HandlerInterceptor[] interceptors &#x3D; getInterceptors();
-	if (!ObjectUtils.isEmpty(interceptors)) &#123;
-		for (int i &#x3D; interceptors.length - 1; i &gt;&#x3D; 0; i--) &#123;
-			HandlerInterceptor interceptor &#x3D; interceptors[i];
-			interceptor.postHandle(request, response, this.handler, mv);
-		&#125;
-	&#125;
-&#125;</code></pre>
-
-<p>注意到获取到拦截器数组<code>interceptors</code>后，是从高位往地位顺序执行拦截器的<code>postHandle</code>方法，在其中，我们可以对<code>Handler</code>返回的视图<code>ModelAndView</code>进行修改</p>
+    HandlerInterceptor[] interceptors = getInterceptors();
+    if (!ObjectUtils.isEmpty(interceptors)) {
+        for (int i = this.interceptorIndex; i &gt;= 0; i--) {
+            HandlerInterceptor interceptor = interceptors[i];
+            try {
+                interceptor.afterCompletion(request, response, this.handler, ex);
+            }
+            catch (Throwable ex2) {
+                logger.error(&quot;HandlerInterceptor.afterCompletion threw exception&quot;, ex2);
+            }
+        }
+    }
+}</code></pre><p>从英文注释中看出这个方法会在所有拦截器被成功执行并且返回<code>true</code>时触发，从<code>applyPreHandle</code>方法可以看到，当有拦截器返回了<code>false</code>时，这个方法也会被触发，然后执行所有拦截器的<code>afterCompletion</code>方法</p>
+<h3 id="applyPostHandle"><a href="#applyPostHandle" class="headerlink" title="applyPostHandle"></a>applyPostHandle</h3><pre><code>mappedHandler.applyPostHandle(processedRequest, response, mv);</code></pre><p><code>applyPostHandle</code>方法在执行完<code>Handler</code>的目标方法后被执行，所以形参中有类型为<code>ModelAndView</code>变量<code>mv</code></p>
+<pre><code>void applyPostHandle(HttpServletRequest request, HttpServletResponse response, ModelAndView mv) throws Exception {
+    HandlerInterceptor[] interceptors = getInterceptors();
+    if (!ObjectUtils.isEmpty(interceptors)) {
+        for (int i = interceptors.length - 1; i &gt;= 0; i--) {
+            HandlerInterceptor interceptor = interceptors[i];
+            interceptor.postHandle(request, response, this.handler, mv);
+        }
+    }
+}</code></pre><p>注意到获取到拦截器数组<code>interceptors</code>后，是从高位往地位顺序执行拦截器的<code>postHandle</code>方法，在其中，我们可以对<code>Handler</code>返回的视图<code>ModelAndView</code>进行修改</p>
 <h3 id="triggerAfterCompletion"><a href="#triggerAfterCompletion" class="headerlink" title="triggerAfterCompletion"></a>triggerAfterCompletion</h3><p><code>triggerAfterCompletion</code>的调用是在<code>processDispatchResult</code>方法里，在渲染完视图之后</p>
-<pre><code class="highlight plain">void triggerAfterCompletion(HttpServletRequest request, HttpServletResponse response, Exception ex)
-		throws Exception &#123;
+<pre><code>void triggerAfterCompletion(HttpServletRequest request, HttpServletResponse response, Exception ex)
+        throws Exception {
 
-	HandlerInterceptor[] interceptors &#x3D; getInterceptors();
-	if (!ObjectUtils.isEmpty(interceptors)) &#123;
-		for (int i &#x3D; this.interceptorIndex; i &gt;&#x3D; 0; i--) &#123;
-			HandlerInterceptor interceptor &#x3D; interceptors[i];
-			try &#123;
-				interceptor.afterCompletion(request, response, this.handler, ex);
-			&#125;
-			catch (Throwable ex2) &#123;
-				logger.error(&quot;HandlerInterceptor.afterCompletion threw exception&quot;, ex2);
-			&#125;
-		&#125;
-	&#125;
-&#125;</code></pre>
-
-<p>执行完拦截器的<code>applyHandle</code>，处理器<code>Controller Handler</code>的方法，然后执行<code>postHandle</code>方法，再渲染视图，最后调用这个方法。</p>
+    HandlerInterceptor[] interceptors = getInterceptors();
+    if (!ObjectUtils.isEmpty(interceptors)) {
+        for (int i = this.interceptorIndex; i &gt;= 0; i--) {
+            HandlerInterceptor interceptor = interceptors[i];
+            try {
+                interceptor.afterCompletion(request, response, this.handler, ex);
+            }
+            catch (Throwable ex2) {
+                logger.error(&quot;HandlerInterceptor.afterCompletion threw exception&quot;, ex2);
+            }
+        }
+    }
+}</code></pre><p>执行完拦截器的<code>applyHandle</code>，处理器<code>Controller Handler</code>的方法，然后执行<code>postHandle</code>方法，再渲染视图，最后调用这个方法。</p>
 
       
     </div>

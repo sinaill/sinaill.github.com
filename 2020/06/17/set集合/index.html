@@ -346,20 +346,16 @@
 <h3 id="HashSet"><a href="#HashSet" class="headerlink" title="HashSet"></a>HashSet</h3><p><code>HashSet</code>实际上是基于<code>HashMap</code>实现的，HashSet中有一成员变量</p>
 <p><code>private transient HashMap&lt;E,Object&gt; map</code></p>
 <p><code>HashSet</code>使用了<code>HashMap</code>的<code>key</code>来存储集合元素，也就是说<code>HashSet</code>可以存储一个<code>null</code>元素，并且不能有重复元素</p>
-<pre><code class="highlight plain">private static final Object PRESENT &#x3D; new Object()
+<pre><code>private static final Object PRESENT = new Object()
 
-   public boolean add(E e) &#123;
-       return map.put(e, PRESENT)&#x3D;&#x3D;null;
-   &#125;</code></pre>
-
-<p>由于<code>HashMap</code>的无序性，所以<code>HashSet</code>也是无序性的</p>
+   public boolean add(E e) {
+       return map.put(e, PRESENT)==null;
+   }</code></pre><p>由于<code>HashMap</code>的无序性，所以<code>HashSet</code>也是无序性的</p>
 <h3 id="LinkedHashSet"><a href="#LinkedHashSet" class="headerlink" title="LinkedHashSet"></a>LinkedHashSet</h3><p><code>LinkedHashSet</code>是<code>HashSet</code>的一个子类，<code>LinkedHashSet</code>也根据<code>HashCode</code>的值来决定元素的存储位置，但同时它还用一个链表来维护元素的插入顺序，插入的时候既要计算<code>hashCode</code>还要维护链表，而遍历的时候只需要按照链表来访问元素。</p>
 <p><code>LinkedHashSet</code>只有四个构造方法，构造方法调用了<code>HashSet</code>一个构造方法</p>
-<pre><code class="highlight plain">HashSet(int initialCapacity, float loadFactor, boolean dummy) &#123;
-    map &#x3D; new LinkedHashMap&lt;&gt;(initialCapacity, loadFactor);
-&#125;</code></pre>
-
-<p>可以看出，是基于<code>LinkedHashMap</code>实现，<code>HashSet</code>存储元素用的<code>HashMap</code>，而LinkedHashSet存储元素用的<code>LinkedHashMap</code>。</p>
+<pre><code>HashSet(int initialCapacity, float loadFactor, boolean dummy) {
+    map = new LinkedHashMap&lt;&gt;(initialCapacity, loadFactor);
+}</code></pre><p>可以看出，是基于<code>LinkedHashMap</code>实现，<code>HashSet</code>存储元素用的<code>HashMap</code>，而LinkedHashSet存储元素用的<code>LinkedHashMap</code>。</p>
 <h3 id="TreeSet"><a href="#TreeSet" class="headerlink" title="TreeSet"></a>TreeSet</h3><p><code>TreeSet</code>是一个有序集合，本质上属于二叉树，实现了<code>SortedSet</code>接口所以具有了对元素排序的功能，要实现对元素的排序，需要在构造方法中传入一个<code>comparator</code>或者元素实现了<code>comparable</code>接口。</p>
 
       

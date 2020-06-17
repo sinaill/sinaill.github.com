@@ -79,12 +79,12 @@
 
 
 
-<meta name="description" content="comparable集合中元素实现comparable，可以调用sort方法排序 class user implements Comparable&lt;user&gt;&amp;#123; 	private int id; 	private String name; 	 	public user() &amp;#123; 		super(); 	&amp;#125; 	public user(int id, Strin">
+<meta name="description" content="comparable集合中元素实现comparable，可以调用sort方法排序 class user implements Comparable&lt;user&gt;{     private int id;     private String name;      public user() {         super();     }     public user(int id,">
 <meta property="og:type" content="article">
 <meta property="og:title" content="comparable和comparator">
 <meta property="og:url" content="http://yoursite.com/2020/06/17/comparable%20and%20comparator/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="comparable集合中元素实现comparable，可以调用sort方法排序 class user implements Comparable&lt;user&gt;&amp;#123; 	private int id; 	private String name; 	 	public user() &amp;#123; 		super(); 	&amp;#125; 	public user(int id, Strin">
+<meta property="og:description" content="comparable集合中元素实现comparable，可以调用sort方法排序 class user implements Comparable&lt;user&gt;{     private int id;     private String name;      public user() {         super();     }     public user(int id,">
 <meta property="article:published_time" content="2020-06-16T17:43:37.237Z">
 <meta property="article:modified_time" content="2020-06-16T17:43:37.237Z">
 <meta property="article:author" content="sinaill">
@@ -341,75 +341,70 @@
 
       
         <h3 id="comparable"><a href="#comparable" class="headerlink" title="comparable"></a>comparable</h3><p>集合中元素实现comparable，可以调用sort方法排序</p>
-<pre><code class="highlight plain">class user implements Comparable&lt;user&gt;&#123;
-	private int id;
-	private String name;
-	
-	public user() &#123;
-		super();
-	&#125;
-	public user(int id, String name) &#123;
-		this.id &#x3D; id;
-		this.name &#x3D; name;
-	&#125;
-	&#x2F;**
-	 * @return the id
-	 *&#x2F;
-	
-	
-	public int getId() &#123;
-		return id;
-	&#125;
-	&#x2F;* (non-Javadoc)
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
-	 *&#x2F;
-	@Override
-	public int compareTo(user o) &#123;
-		&#x2F;&#x2F; TODO Auto-generated method stub
-		return this.id-o.id;
-	&#125;
-	&#x2F;**
-	 * @param id the id to set
-	 *&#x2F;
-	public void setId(int id) &#123;
-		this.id &#x3D; id;
-	&#125;
-	&#x2F;**
-	 * @return the name
-	 *&#x2F;
-	public String getName() &#123;
-		return name;
-	&#125;
-	&#x2F;**
-	 * @param name the name to set
-	 *&#x2F;
-	public void setName(String name) &#123;
-		this.name &#x3D; name;
-	&#125;
-	
-&#125;</code></pre>
+<pre><code>class user implements Comparable&lt;user&gt;{
+    private int id;
+    private String name;
 
-<p>调用Collections.sort(List<T> list)</p>
-<pre><code class="highlight plain">List&lt;user&gt; users &#x3D; new ArrayList&lt;user&gt;();
-users.add(new user(1, &quot;sdg&quot;));
-users.add(new user(5, &quot;dsf&quot;));
-users.add(new user(2, &quot;xzcv&quot;));
-users.add(new user(4, &quot;derg&quot;));
-users.add(new user(3, &quot;dfg&quot;));
-Collections.sort(users);
-users.forEach(u-&gt;System.out.println(u.getId()));</code></pre>
+    public user() {
+        super();
+    }
+    public user(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+    /**
+     * @return the id
+     */
 
-<p>输出<br><code>1,2,3,4,5</code></p>
+
+    public int getId() {
+        return id;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(user o) {
+        // TODO Auto-generated method stub
+        return this.id-o.id;
+    }
+    /**
+     * @param id the id to set
+     */
+    public void setId(int id) {
+        this.id = id;
+    }
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
+    /**
+     * @param name the name to set
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+}</code></pre><p>调用Collections.sort(List<T> list)</p>
+<pre><code>        List&lt;user&gt; users = new ArrayList&lt;user&gt;();
+        users.add(new user(1, &quot;sdg&quot;));
+        users.add(new user(5, &quot;dsf&quot;));
+        users.add(new user(2, &quot;xzcv&quot;));
+        users.add(new user(4, &quot;derg&quot;));
+        users.add(new user(3, &quot;dfg&quot;));
+        Collections.sort(users);
+        users.forEach(u-&gt;System.out.println(u.getId()));</code></pre><p>输出<br><code>1,2,3,4,5</code></p>
 <h3 id="comparator"><a href="#comparator" class="headerlink" title="comparator"></a>comparator</h3><p>当集合中元素没有实现comparable接口时，可以使用Collections.sort(List<T> list, Comparator&lt;? super T&gt; c)进行排序</p>
-<pre><code class="highlight plain">List&lt;user&gt; users &#x3D; new ArrayList&lt;user&gt;();
-users.add(new user(1, &quot;sdg&quot;));
-users.add(new user(5, &quot;dsf&quot;));
-users.add(new user(2, &quot;xzcv&quot;));
-users.add(new user(4, &quot;derg&quot;));
-users.add(new user(3, &quot;dfg&quot;));
-Collections.sort(users,Comparator.comparing(user::getId));
-users.forEach(u-&gt;System.out.println(u.getId()));</code></pre>
-<p>输出<br><code>1,2,3,4,5</code></p>
+<pre><code>        List&lt;user&gt; users = new ArrayList&lt;user&gt;();
+        users.add(new user(1, &quot;sdg&quot;));
+        users.add(new user(5, &quot;dsf&quot;));
+        users.add(new user(2, &quot;xzcv&quot;));
+        users.add(new user(4, &quot;derg&quot;));
+        users.add(new user(3, &quot;dfg&quot;));
+        Collections.sort(users,Comparator.comparing(user::getId));
+        users.forEach(u-&gt;System.out.println(u.getId()));</code></pre><p>输出<br><code>1,2,3,4,5</code></p>
 
       
     </div>
@@ -434,8 +429,8 @@ users.forEach(u-&gt;System.out.println(u.getId()));</code></pre>
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/06/17/bit%20arithmetic/" rel="next" title="java中的位运算">
-                <i class="fa fa-chevron-left"></i> java中的位运算
+              <a href="/2020/06/17/consumer/" rel="next" title="consumer接口">
+                <i class="fa fa-chevron-left"></i> consumer接口
               </a>
             
           </div>
@@ -444,8 +439,8 @@ users.forEach(u-&gt;System.out.println(u.getId()));</code></pre>
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2020/06/17/consumer/" rel="prev" title="consumer接口">
-                consumer接口 <i class="fa fa-chevron-right"></i>
+              <a href="/2020/06/17/final/" rel="prev" title="final关键字">
+                final关键字 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>

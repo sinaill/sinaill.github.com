@@ -79,12 +79,12 @@
 
 
 
-<meta name="description" content="构造器注入构造器注入作用在第二次后置处理器调用，找到合适构造器后，用它实例化类的同时，注入依赖属性 public class userServiceImpl implements userService&amp;#123;  	private userDao userdao; 	@Autowired 	public userServiceImpl(userDao userdao)&amp;#123; 		this">
+<meta name="description" content="构造器注入构造器注入作用在第二次后置处理器调用，找到合适构造器后，用它实例化类的同时，注入依赖属性 public class userServiceImpl implements userService{      private userDao userdao;     @Autowired     public userServiceImpl(userDao userdao){">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Spring中依赖的注入方式">
 <meta property="og:url" content="http://yoursite.com/2020/06/17/Spring%E4%B8%AD%E4%BE%9D%E8%B5%96%E7%9A%84%E6%B3%A8%E5%85%A5%E6%96%B9%E5%BC%8F/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="构造器注入构造器注入作用在第二次后置处理器调用，找到合适构造器后，用它实例化类的同时，注入依赖属性 public class userServiceImpl implements userService&amp;#123;  	private userDao userdao; 	@Autowired 	public userServiceImpl(userDao userdao)&amp;#123; 		this">
+<meta property="og:description" content="构造器注入构造器注入作用在第二次后置处理器调用，找到合适构造器后，用它实例化类的同时，注入依赖属性 public class userServiceImpl implements userService{      private userDao userdao;     @Autowired     public userServiceImpl(userDao userdao){">
 <meta property="article:published_time" content="2020-06-16T17:43:37.234Z">
 <meta property="article:modified_time" content="2020-06-16T17:43:37.235Z">
 <meta property="article:author" content="sinaill">
@@ -342,65 +342,59 @@
 
       
         <h3 id="构造器注入"><a href="#构造器注入" class="headerlink" title="构造器注入"></a>构造器注入</h3><p>构造器注入作用在第二次后置处理器调用，找到合适构造器后，用它实例化类的同时，注入依赖属性</p>
-<pre><code class="highlight plain">public class userServiceImpl implements userService&#123;
+<pre><code>public class userServiceImpl implements userService{
 
-	private userDao userdao;
-	@Autowired
-	public userServiceImpl(userDao userdao)&#123;
-		this.userdao &#x3D; userdao;
-	&#125;
+    private userDao userdao;
+    @Autowired
+    public userServiceImpl(userDao userdao){
+        this.userdao = userdao;
+    }
 
-	@Override
-	public void query() &#123;
-		userdao.query();
-	&#125;
-&#125;</code></pre>
+    @Override
+    public void query() {
+        userdao.query();
+    }
+}</code></pre><p><code>Autowired</code>注解可省略，当不需要无参构造函数时</p>
+<h3 id="set方法注入"><a href="#set方法注入" class="headerlink" title="set方法注入"></a>set方法注入</h3><pre><code>public class userServiceImpl implements userService{
 
-<p><code>Autowired</code>注解可省略，当不需要无参构造函数时</p>
-<h3 id="set方法注入"><a href="#set方法注入" class="headerlink" title="set方法注入"></a>set方法注入</h3><pre><code class="highlight plain">public class userServiceImpl implements userService&#123;
-
-	private userDao userdao;
-	@Override
-	public void query() &#123;
-		userdao.query();
-	&#125;
-	@Autowired
-	public void setuserDao(userDao userdao)&#123;
-		this.userdao &#x3D; userdao;
-	&#125;
+    private userDao userdao;
+    @Override
+    public void query() {
+        userdao.query();
+    }
+    @Autowired
+    public void setuserDao(userDao userdao){
+        this.userdao = userdao;
+    }
 
 
-&#125;</code></pre>
-
-<h3 id="普通属性注入"><a href="#普通属性注入" class="headerlink" title="普通属性注入"></a>普通属性注入</h3><p>使用<code>@Value</code>注解</p>
+}</code></pre><h3 id="普通属性注入"><a href="#普通属性注入" class="headerlink" title="普通属性注入"></a>普通属性注入</h3><p>使用<code>@Value</code>注解</p>
 <h3 id="Method-Injection方法注入"><a href="#Method-Injection方法注入" class="headerlink" title="Method Injection方法注入"></a>Method Injection方法注入</h3><p>Spring文档</p>
 <p>In most application scenarios, most beans in the container are singletons. When a singleton bean needs to collaborate with another singleton bean or a non-singleton bean needs to collaborate with another non-singleton bean, you typically handle the dependency by defining one bean as a property of the other. A problem arises when the bean lifecycles are different. Suppose singleton bean A needs to use non-singleton (prototype) bean B, perhaps on each method invocation on A. The container creates the singleton bean A only once, and thus only gets one opportunity to set the properties. The container cannot provide bean A with a new instance of bean B every time one is needed.</p>
 <p>当一个singleton的Bean A，内部依赖为prototype的Bean B，因为A只初始化一次，所以它的内部依赖B始终为同一个实例，如果要使每次用到B时都是新实例，就需要用到Method Injection</p>
 <p>文档要我们实现<code>ApplicationContextAware</code>接口，从而获得容器对象</p>
-<pre><code class="highlight plain">public class CommandManager implements ApplicationContextAware &#123;
+<pre><code>public class CommandManager implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;
 
-    public Object process(Map commandState) &#123;
-        &#x2F;&#x2F; grab a new instance of the appropriate Command
-        Command command &#x3D; createCommand();
-        &#x2F;&#x2F; set the state on the (hopefully brand new) Command instance
+    public Object process(Map commandState) {
+        // grab a new instance of the appropriate Command
+        Command command = createCommand();
+        // set the state on the (hopefully brand new) Command instance
         command.setState(commandState);
         return command.execute();
-    &#125;
+    }
 
-    protected Command createCommand() &#123;
-        &#x2F;&#x2F; notice the Spring API dependency!
+    protected Command createCommand() {
+        // notice the Spring API dependency!
         return this.applicationContext.getBean(&quot;command&quot;, Command.class);
-    &#125;
+    }
 
     public void setApplicationContext(
-            ApplicationContext applicationContext) throws BeansException &#123;
-        this.applicationContext &#x3D; applicationContext;
-    &#125;
-&#125;</code></pre>
-
-<p>官方例子中，实现接口，获取容器对象，每次使用这个类时都手动从容器获取这个对象的实例，从而每次都是新的实例B</p>
+            ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
+}</code></pre><p>官方例子中，实现接口，获取容器对象，每次使用这个类时都手动从容器获取这个对象的实例，从而每次都是新的实例B</p>
 <h3 id="depends-on"><a href="#depends-on" class="headerlink" title="depends-on"></a>depends-on</h3><p>文档中</p>
 <p>The depends-on attribute can explicitly force one or more beans to be initialized before the bean using this element is initialized</p>
 <p>depends-on属性可以强制在初始化使用这个元素的类之前初始化一个指定的类</p>

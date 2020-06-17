@@ -342,14 +342,12 @@
 
       
         <h3 id="特性"><a href="#特性" class="headerlink" title="特性"></a>特性</h3><p>java接口中的default方法是在java 8之后引入的，即在不破坏java现有实现架构的情况下能往接口里增加新方法，这个特征又叫做虚拟扩展方法（Virtual extension methods），通常也称之为 defender 方法，它目前可以添加到接口中，为声明的方法提供默认的实现，子类可以直接调用或者复写该方法。作用为优化接口的同时，避免跟现有实现架构的兼容问题。</p>
-<h3 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h3><pre><code class="highlight plain">List&lt;Integer&gt; list &#x3D; new ArrayList&lt;Integer&gt;();
+<h3 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h3><pre><code>List&lt;Integer&gt; list = new ArrayList&lt;Integer&gt;();
 list.add(1);
 list.add(2);
-list.forEach(System.out::println);</code></pre>
-
-<p>java8之后list多了一个forEach方法来方便我们遍历集合，向上查找父类和实现的接口发现Iterable接口中多了一个default方法</p>
-<pre><code class="highlight plain">&#x2F;**
- * Performs the given action for each element of the &#123;@code Iterable&#125;
+list.forEach(System.out::println);</code></pre><p>java8之后list多了一个forEach方法来方便我们遍历集合，向上查找父类和实现的接口发现Iterable接口中多了一个default方法</p>
+<pre><code>/**
+ * Performs the given action for each element of the {@code Iterable}
  * until all elements have been processed or the action throws an
  * exception.  Unless otherwise specified by the implementing class,
  * actions are performed in the order of iteration (if an iteration order
@@ -358,41 +356,39 @@ list.forEach(System.out::println);</code></pre>
  *
  * @implSpec
  * &lt;p&gt;The default implementation behaves as if:
- * &lt;pre&gt;&#123;@code
+ * &lt;pre&gt;{@code
  *     for (T t : this)
  *         action.accept(t);
- * &#125;&lt;&#x2F;pre&gt;
+ * }&lt;/pre&gt;
  *
  * @param action The action to be performed for each element
  * @throws NullPointerException if the specified action is null
  * @since 1.8
- *&#x2F;
-default void forEach(Consumer&lt;? super T&gt; action) &#123;
+ */
+default void forEach(Consumer&lt;? super T&gt; action) {
     Objects.requireNonNull(action);
-    for (T t : this) &#123;
+    for (T t : this) {
         action.accept(t);
-    &#125;
-&#125;</code></pre>
-
-<p>与此相同的还有Collection接口新增的stream方法，用来帮助我们更方便地处理集合元素</p>
-<pre><code class="highlight plain">&#x2F;**
- * Returns a sequential &#123;@code Stream&#125; with this collection as its source.
+    }
+}</code></pre><p>与此相同的还有Collection接口新增的stream方法，用来帮助我们更方便地处理集合元素</p>
+<pre><code>/**
+ * Returns a sequential {@code Stream} with this collection as its source.
  *
- * &lt;p&gt;This method should be overridden when the &#123;@link #spliterator()&#125;
- * method cannot return a spliterator that is &#123;@code IMMUTABLE&#125;,
- * &#123;@code CONCURRENT&#125;, or &lt;em&gt;late-binding&lt;&#x2F;em&gt;. (See &#123;@link #spliterator()&#125;
+ * &lt;p&gt;This method should be overridden when the {@link #spliterator()}
+ * method cannot return a spliterator that is {@code IMMUTABLE},
+ * {@code CONCURRENT}, or &lt;em&gt;late-binding&lt;/em&gt;. (See {@link #spliterator()}
  * for details.)
  *
  * @implSpec
- * The default implementation creates a sequential &#123;@code Stream&#125; from the
- * collection&#39;s &#123;@code Spliterator&#125;.
+ * The default implementation creates a sequential {@code Stream} from the
+ * collection&#39;s {@code Spliterator}.
  *
- * @return a sequential &#123;@code Stream&#125; over the elements in this collection
+ * @return a sequential {@code Stream} over the elements in this collection
  * @since 1.8
- *&#x2F;
-default Stream&lt;E&gt; stream() &#123;
+ */
+default Stream&lt;E&gt; stream() {
     return StreamSupport.stream(spliterator(), false);
-&#125;</code></pre>
+}</code></pre>
       
     </div>
     

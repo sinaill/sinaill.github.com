@@ -79,12 +79,12 @@
 
 
 
-<meta name="description" content="获取链接ConnectionString driver &#x3D; &quot;com.mysql.jdbc.Driver&quot;; String url &#x3D; &quot;jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;test?useSSL&#x3D;false&amp;useUnicode&#x3D;true&amp;characterEn">
+<meta name="description" content="获取链接ConnectionString driver &#x3D; &quot;com.mysql.jdbc.Driver&quot;; String url &#x3D; &quot;jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;test?useSSL&#x3D;false&amp;useUnicode&#x3D;true&amp;characterEncoding&#x3D;UTF-8&quot;;&#x2F;&#x2F;防止中文乱码 String">
 <meta property="og:type" content="article">
 <meta property="og:title" content="JDBC">
 <meta property="og:url" content="http://yoursite.com/2020/06/17/JDBC/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="获取链接ConnectionString driver &#x3D; &quot;com.mysql.jdbc.Driver&quot;; String url &#x3D; &quot;jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;test?useSSL&#x3D;false&amp;useUnicode&#x3D;true&amp;characterEn">
+<meta property="og:description" content="获取链接ConnectionString driver &#x3D; &quot;com.mysql.jdbc.Driver&quot;; String url &#x3D; &quot;jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;test?useSSL&#x3D;false&amp;useUnicode&#x3D;true&amp;characterEncoding&#x3D;UTF-8&quot;;&#x2F;&#x2F;防止中文乱码 String">
 <meta property="article:published_time" content="2020-06-16T17:43:37.223Z">
 <meta property="article:modified_time" content="2020-06-16T17:43:37.223Z">
 <meta property="article:author" content="sinaill">
@@ -340,120 +340,107 @@
       
 
       
-        <h3 id="获取链接Connection"><a href="#获取链接Connection" class="headerlink" title="获取链接Connection"></a>获取链接Connection</h3><pre><code class="highlight plain">String driver &#x3D; &quot;com.mysql.jdbc.Driver&quot;;
-String url &#x3D; &quot;jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;test?useSSL&#x3D;false&amp;useUnicode&#x3D;true&amp;characterEncoding&#x3D;UTF-8&quot;;&#x2F;&#x2F;防止中文乱码
-String userName &#x3D; &quot;root&quot;;
-String passWord &#x3D; &quot;password&quot;;
-Connection con &#x3D; null;
-Class.forName(driver);&#x2F;&#x2F;加载驱动
-con &#x3D; (Connection) DriverManager.getConnection(url, userName, passWord);&#x2F;&#x2F;获取链接</code></pre>
-
-<h3 id="preparestatement和statement"><a href="#preparestatement和statement" class="headerlink" title="preparestatement和statement"></a>preparestatement和statement</h3><p>使用preparestatement的优点：</p>
+        <h3 id="获取链接Connection"><a href="#获取链接Connection" class="headerlink" title="获取链接Connection"></a>获取链接Connection</h3><pre><code>String driver = &quot;com.mysql.jdbc.Driver&quot;;
+String url = &quot;jdbc:mysql://localhost:3306/test?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8&quot;;//防止中文乱码
+String userName = &quot;root&quot;;
+String passWord = &quot;password&quot;;
+Connection con = null;
+Class.forName(driver);//加载驱动
+con = (Connection) DriverManager.getConnection(url, userName, passWord);//获取链接</code></pre><h3 id="preparestatement和statement"><a href="#preparestatement和statement" class="headerlink" title="preparestatement和statement"></a>preparestatement和statement</h3><p>使用preparestatement的优点：</p>
 <ol>
 <li>每一种数据库都会尽最大努力对预编译语句提供最大的性能优化.因为预编译语句有可能被重复调用.所以语句在被DB的编译器编译后的执行代码被缓存下来,那么下次调用时只要是相同的预编译语句就不需要编译,只要将参数直接传入编译过的语句执行代码中(相当于一个涵数)就会得到执行.这并不是说只有一个Connection中多次执行的预编译语句被缓存,而是对于整个DB中,只要预编译的语句语法和缓存中匹配.那么在任何时候就可以不需要再次编译而可以直接执行</li>
 <li>代码的可读性和可维护性</li>
 <li>防止恶意sql语法传入非法参数</li>
 </ol>
 <h3 id="增删改查"><a href="#增删改查" class="headerlink" title="增删改查"></a>增删改查</h3><p>创建数据库如下：</p>
-<pre><code class="highlight plain">create table person(
-	id int auto_increment primary key,
-	name varchar(255),
-	age int)default charset&#x3D;utf8;</code></pre>
-<p>新增数据：</p>
-<pre><code class="highlight plain">Connection con &#x3D; getCon();
-PreparedStatement psmt &#x3D; null;
+<pre><code>create table person(
+    id int auto_increment primary key,
+    name varchar(255),
+    age int)default charset=utf8;</code></pre><p>新增数据：</p>
+<pre><code>Connection con = getCon();
+PreparedStatement psmt = null;
 
-String sql &#x3D; &quot;insert into person(name,age) values(?,?)&quot;;
+String sql = &quot;insert into person(name,age) values(?,?)&quot;;
 
-try &#123;
-	psmt &#x3D; con.prepareStatement(sql);
-	psmt.setString(1, &quot;小张&quot;);
-	psmt.setInt(2, 10);
-	psmt.executeUpdate();
-	psmt.close();
-	con.close();
-&#125; catch (SQLException e) &#123;
-	&#x2F;&#x2F; TODO Auto-generated catch block
-	e.printStackTrace();
-&#125;
-System.out.println(&quot;插入成功&quot;);</code></pre>
-
-<p>删除数据：</p>
-<pre><code class="highlight plain">String sql &#x3D; &quot;delete from person where id &#x3D; ?&quot;;
-try &#123;
-	psmt &#x3D; con.prepareStatement(sql);
-	psmt.setInt(1, 1);
-	psmt.executeUpdate();
-	psmt.close();
-	con.close();
-&#125; catch (SQLException e) &#123;
-	&#x2F;&#x2F; TODO Auto-generated catch block
-	e.printStackTrace();
-&#125;
-System.out.println(&quot;删除成功&quot;);</code></pre>
-
-<p>修改数据：</p>
-<pre><code class="highlight plain">String sql &#x3D; &quot;update person set age&#x3D;? where id&#x3D;2&quot;;
-try &#123;
-	psmt &#x3D; con.prepareStatement(sql);
-	psmt.setInt(1, 20);
-	psmt.executeUpdate();
-	psmt.close();
-	con.close();
-&#125; catch (SQLException e) &#123;
-	&#x2F;&#x2F; TODO Auto-generated catch block
-	e.printStackTrace();
-&#125;
-System.out.println(&quot;修改成功&quot;);</code></pre>
-
-<p>查找数据：</p>
-<pre><code class="highlight plain">String sql &#x3D; &quot;select * from person where id &#x3D; 2&quot;;
-try &#123;
-	psmt &#x3D; con.prepareStatement(sql);
-	ResultSet rs &#x3D; psmt.executeQuery();
-	while (rs.next()) &#123;
-		int id &#x3D; rs.getInt(&quot;id&quot;);
-		String name &#x3D; rs.getString(&quot;name&quot;);
-		int age &#x3D; rs.getInt(&quot;age&quot;);
-		System.out.println(&quot;id:&quot;+id+&quot; name:&quot;+name+&quot; age:&quot;+age);
-	&#125;
-&#125; catch (SQLException e) &#123;
-	&#x2F;&#x2F; TODO Auto-generated catch block
-	e.printStackTrace();
-&#125;</code></pre>
-
-<h3 id="批量处理"><a href="#批量处理" class="headerlink" title="批量处理"></a>批量处理</h3><h4 id="preparestatement"><a href="#preparestatement" class="headerlink" title="preparestatement"></a>preparestatement</h4><p>只能批量进行相同操作，批量插入：</p>
-<pre><code class="highlight plain">String sql &#x3D; &quot;insert into person(name,age) values(?,?)&quot;;
-try &#123;
-	psmt &#x3D; con.prepareStatement(sql);
-	for (int i &#x3D; 0; i &lt; 100; i++) &#123;
-		psmt.setString(1, &quot;李&quot;+i);
-		psmt.setInt(2, i);
-		psmt.addBatch();
-	&#125;
-	psmt.executeBatch();
-	psmt.close();
-	con.close();
-&#125; catch (SQLException e) &#123;
-	&#x2F;&#x2F; TODO Auto-generated catch block
-	e.printStackTrace();
-&#125;</code></pre>
-
-<h4 id="statement"><a href="#statement" class="headerlink" title="statement"></a>statement</h4><p>可以批量执行不同类型操作，批量操作：</p>
-<pre><code class="highlight plain">Statement st &#x3D; null;
-try &#123;
-	st &#x3D; con.createStatement();
-	String sql1 &#x3D; &quot;delete from person where id&gt;2 and id&lt;103&quot;;
-	String sql2 &#x3D; &quot;insert into person(name,age) values(&#39;小李	&#39;,&#39;50&#39;)&quot;;
-	st.addBatch(sql1);
-	st.addBatch(sql2);
-	st.executeBatch();
-	st.close();
-	con.close();
-&#125; catch (SQLException e) &#123;
-	&#x2F;&#x2F; TODO Auto-generated catch block
-	e.printStackTrace();
-&#125;</code></pre>
+try {
+    psmt = con.prepareStatement(sql);
+    psmt.setString(1, &quot;小张&quot;);
+    psmt.setInt(2, 10);
+    psmt.executeUpdate();
+    psmt.close();
+    con.close();
+} catch (SQLException e) {
+    // TODO Auto-generated catch block
+    e.printStackTrace();
+}
+System.out.println(&quot;插入成功&quot;);</code></pre><p>删除数据：</p>
+<pre><code>String sql = &quot;delete from person where id = ?&quot;;
+try {
+    psmt = con.prepareStatement(sql);
+    psmt.setInt(1, 1);
+    psmt.executeUpdate();
+    psmt.close();
+    con.close();
+} catch (SQLException e) {
+    // TODO Auto-generated catch block
+    e.printStackTrace();
+}
+System.out.println(&quot;删除成功&quot;);</code></pre><p>修改数据：</p>
+<pre><code>String sql = &quot;update person set age=? where id=2&quot;;
+try {
+    psmt = con.prepareStatement(sql);
+    psmt.setInt(1, 20);
+    psmt.executeUpdate();
+    psmt.close();
+    con.close();
+} catch (SQLException e) {
+    // TODO Auto-generated catch block
+    e.printStackTrace();
+}
+System.out.println(&quot;修改成功&quot;);</code></pre><p>查找数据：</p>
+<pre><code>String sql = &quot;select * from person where id = 2&quot;;
+try {
+    psmt = con.prepareStatement(sql);
+    ResultSet rs = psmt.executeQuery();
+    while (rs.next()) {
+        int id = rs.getInt(&quot;id&quot;);
+        String name = rs.getString(&quot;name&quot;);
+        int age = rs.getInt(&quot;age&quot;);
+        System.out.println(&quot;id:&quot;+id+&quot; name:&quot;+name+&quot; age:&quot;+age);
+    }
+} catch (SQLException e) {
+    // TODO Auto-generated catch block
+    e.printStackTrace();
+}</code></pre><h3 id="批量处理"><a href="#批量处理" class="headerlink" title="批量处理"></a>批量处理</h3><h4 id="preparestatement"><a href="#preparestatement" class="headerlink" title="preparestatement"></a>preparestatement</h4><p>只能批量进行相同操作，批量插入：</p>
+<pre><code>String sql = &quot;insert into person(name,age) values(?,?)&quot;;
+try {
+    psmt = con.prepareStatement(sql);
+    for (int i = 0; i &lt; 100; i++) {
+        psmt.setString(1, &quot;李&quot;+i);
+        psmt.setInt(2, i);
+        psmt.addBatch();
+    }
+    psmt.executeBatch();
+    psmt.close();
+    con.close();
+} catch (SQLException e) {
+    // TODO Auto-generated catch block
+    e.printStackTrace();
+}</code></pre><h4 id="statement"><a href="#statement" class="headerlink" title="statement"></a>statement</h4><p>可以批量执行不同类型操作，批量操作：</p>
+<pre><code>Statement st = null;
+try {
+    st = con.createStatement();
+    String sql1 = &quot;delete from person where id&gt;2 and id&lt;103&quot;;
+    String sql2 = &quot;insert into person(name,age) values(&#39;小李    &#39;,&#39;50&#39;)&quot;;
+    st.addBatch(sql1);
+    st.addBatch(sql2);
+    st.executeBatch();
+    st.close();
+    con.close();
+} catch (SQLException e) {
+    // TODO Auto-generated catch block
+    e.printStackTrace();
+}</code></pre>
       
     </div>
     
@@ -477,8 +464,8 @@ try &#123;
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/06/17/ModelAttribute%E6%B3%A8%E8%A7%A3%E7%AC%94%E8%AE%B0/" rel="next" title="ModelAttribute注解笔记">
-                <i class="fa fa-chevron-left"></i> ModelAttribute注解笔记
+              <a href="/2020/06/17/LinkedHashMap/" rel="next" title="LinkedHashMap与LRU算法">
+                <i class="fa fa-chevron-left"></i> LinkedHashMap与LRU算法
               </a>
             
           </div>

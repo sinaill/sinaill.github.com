@@ -347,40 +347,38 @@
 <h3 id="Sychronized"><a href="#Sychronized" class="headerlink" title="Sychronized"></a>Sychronized</h3><p><code>Synchronized</code>使用方式：</p>
 <p><img src="http://wx1.sinaimg.cn/large/96b7c0f4gy1fzfjb5cgrmj20rl0gajrn.jpg" alt=""></p>
 <h4 id="方法锁"><a href="#方法锁" class="headerlink" title="方法锁"></a>方法锁</h4><p>由于java的每个对象都有一个内置锁，当用此关键字修饰方法时，内置锁会保护整个方法。在进入该方法前，需要获得当前对象的内置锁，否则就处于阻塞状态。<code>synchronized</code>关键字也可以修饰静态方法，此时如果调用该静态方法，将会锁住整个类。</p>
-<pre><code class="highlight plain">public class Mythread &#123;
-	public static void main(String[] args) &#123;
-		testThread MyThread &#x3D; new testThread();
-		new Thread(MyThread,&quot;线程1&quot;).start();
-		new Thread(MyThread,&quot;线程2&quot;).start();
-		new Thread(MyThread,&quot;线程3&quot;).start();
-		new Thread(MyThread,&quot;线程4&quot;).start();
-		new Thread(MyThread,&quot;线程5&quot;).start();
-		new Thread(MyThread,&quot;线程6&quot;).start();
-		new Thread(MyThread,&quot;线程7&quot;).start();
-		new Thread(MyThread,&quot;线程8&quot;).start();
-		new Thread(MyThread,&quot;线程9&quot;).start();
-		new Thread(MyThread,&quot;线程10&quot;).start();
-	&#125;
-&#125;
+<pre><code>public class Mythread {
+    public static void main(String[] args) {
+        testThread MyThread = new testThread();
+        new Thread(MyThread,&quot;线程1&quot;).start();
+        new Thread(MyThread,&quot;线程2&quot;).start();
+        new Thread(MyThread,&quot;线程3&quot;).start();
+        new Thread(MyThread,&quot;线程4&quot;).start();
+        new Thread(MyThread,&quot;线程5&quot;).start();
+        new Thread(MyThread,&quot;线程6&quot;).start();
+        new Thread(MyThread,&quot;线程7&quot;).start();
+        new Thread(MyThread,&quot;线程8&quot;).start();
+        new Thread(MyThread,&quot;线程9&quot;).start();
+        new Thread(MyThread,&quot;线程10&quot;).start();
+    }
+}
 
 
-class testThread implements Runnable&#123;
-	public int i &#x3D; 10;
-	@Override
-	public void run() &#123;
-		&#x2F;&#x2F; TODO Auto-generated method stub
-				try &#123;
-					Thread.sleep(1000);
-				&#125; catch (InterruptedException e) &#123;
-					&#x2F;&#x2F; TODO Auto-generated catch block
-					e.printStackTrace();
-				&#125;
-				System.out.println(Thread.currentThread().getName()+&quot;:&quot;+i--);
-		&#125;
-	&#125;</code></pre>
-
-<p>输出结果为</p>
-<pre><code class="highlight plain">线程8:8
+class testThread implements Runnable{
+    public int i = 10;
+    @Override
+    public void run() {
+        // TODO Auto-generated method stub
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                System.out.println(Thread.currentThread().getName()+&quot;:&quot;+i--);
+        }
+    }</code></pre><p>输出结果为</p>
+<pre><code>线程8:8
 线程2:3
 线程9:4
 线程1:2
@@ -389,10 +387,8 @@ class testThread implements Runnable&#123;
 线程10:6
 线程7:5
 线程3:7
-线程4:9</code></pre>
-
-<p>由于多个线程同时进入<code>run</code>方法，导致输出的结果出现异常，接下来在<code>run</code>方法加入关键字<code>synchronized</code>，<code>public synchronized void run()</code>，输出结果如下</p>
-<pre><code class="highlight plain">线程2:10
+线程4:9</code></pre><p>由于多个线程同时进入<code>run</code>方法，导致输出的结果出现异常，接下来在<code>run</code>方法加入关键字<code>synchronized</code>，<code>public synchronized void run()</code>，输出结果如下</p>
+<pre><code>线程2:10
 线程10:9
 线程8:8
 线程9:7
@@ -401,76 +397,69 @@ class testThread implements Runnable&#123;
 线程5:4
 线程4:3
 线程3:2
-线程1:1</code></pre>
-
-<p>可以看到变量i按顺序依次减1输出，run方法被加锁后每次只有一个获取了锁的线程能运行，其它线程则处于阻塞状态。</p>
+线程1:1</code></pre><p>可以看到变量i按顺序依次减1输出，run方法被加锁后每次只有一个获取了锁的线程能运行，其它线程则处于阻塞状态。</p>
 <h4 id="对象锁-synchronized代码块"><a href="#对象锁-synchronized代码块" class="headerlink" title="对象锁(synchronized代码块)"></a>对象锁(synchronized代码块)</h4><p>上面代码除了将<code>run</code>方法加入关键字<code>Synchronized</code>，还可以使用对象锁，方法锁实际也是对象锁，锁的是调用同步方法的实例，代码如下</p>
-<pre><code class="highlight plain">class testThread implements Runnable&#123;
-	public int i &#x3D; 10;
-	@Override
-	public void run() &#123;
-		&#x2F;&#x2F; TODO Auto-generated method stub
-			synchronized(this) &#123;
-				try &#123;
-					Thread.sleep(1000);
-				&#125; catch (InterruptedException e) &#123;
-					&#x2F;&#x2F; TODO Auto-generated catch block
-					e.printStackTrace();
-				&#125;
-				System.out.println(Thread.currentThread().getName()+&quot;:&quot;+i--);
-			&#125;
-				
-		&#125;
-	&#125;</code></pre>
+<pre><code>class testThread implements Runnable{
+    public int i = 10;
+    @Override
+    public void run() {
+        // TODO Auto-generated method stub
+            synchronized(this) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                System.out.println(Thread.currentThread().getName()+&quot;:&quot;+i--);
+            }
 
-<h4 id="类锁"><a href="#类锁" class="headerlink" title="类锁"></a>类锁</h4><p>对象锁是用来控制实例方法之间的同步，而类锁是用来控制静态方法（或者静态变量互斥体）之间的同步的。</p>
+        }
+    }</code></pre><h4 id="类锁"><a href="#类锁" class="headerlink" title="类锁"></a>类锁</h4><p>对象锁是用来控制实例方法之间的同步，而类锁是用来控制静态方法（或者静态变量互斥体）之间的同步的。</p>
 <p>类锁只是一个概念上的东西，并不是真实存在的，他只是用来帮助我们理解锁定实例方法和静态方法的区别的。<br>java类可能会有很多对象，但是只有一个Class(字节码)对象，也就是说类的不同实例之间共享该类的<code>Class</code>对象。<code>Class</code>对象其实也仅仅是1个java对象，只不过有点特殊而已。<br>由于每个java对象都有1个互斥锁，而类的静态方法是需要<code>Class</code>对象。所以所谓的类锁，只不过是<code>Class</code>对象的锁而已。<br>获取类的<code>Class</code>对象的方法有好几种，最简单的是[类名.class]的方式</p>
-<pre><code class="highlight plain">public class Mythread &#123;
-	public static void main(String[] args) &#123;
-		
-		new testThread(&quot;线程1&quot;).start();
-		new testThread(&quot;线程2&quot;).start();
-		new testThread(&quot;线程3&quot;).start();
+<pre><code>public class Mythread {
+    public static void main(String[] args) {
 
-	&#125;
-&#125;
+        new testThread(&quot;线程1&quot;).start();
+        new testThread(&quot;线程2&quot;).start();
+        new testThread(&quot;线程3&quot;).start();
+
+    }
+}
 
 
-class testThread extends Thread&#123;
-	
-	@Override
-	public void run() &#123;
-		&#x2F;&#x2F; TODO Auto-generated method stub
-		super.run();
-		testThread.out();
-	&#125;
-	
-	public testThread(String name) &#123;
-		super(name);
-		&#x2F;&#x2F; TODO Auto-generated constructor stub
-	&#125;
+class testThread extends Thread{
 
-	public static void out()&#123;
-		int i &#x3D; 5;
-		while(i&gt;0)&#123;
-			System.out.println(Thread.currentThread().getName()+&quot;:&quot;+--i);
-		&#125;
-	&#125;
-	
+    @Override
+    public void run() {
+        // TODO Auto-generated method stub
+        super.run();
+        testThread.out();
+    }
 
-&#125;</code></pre>
-<p>创建多个线程<code>testThread</code>，<code>run</code>方法中调用静态方法<code>out()</code>，结果为</p>
-<pre><code class="highlight plain">线程3:1
+    public testThread(String name) {
+        super(name);
+        // TODO Auto-generated constructor stub
+    }
+
+    public static void out(){
+        int i = 5;
+        while(i&gt;0){
+            System.out.println(Thread.currentThread().getName()+&quot;:&quot;+--i);
+        }
+    }
+
+
+}</code></pre><p>创建多个线程<code>testThread</code>，<code>run</code>方法中调用静态方法<code>out()</code>，结果为</p>
+<pre><code>线程3:1
 线程2:2
 线程3:0
 线程1:2
 线程2:1
 线程1:1
 线程2:0
-线程1:0</code></pre>
-
-<p>给静态方法加上锁<code>public synchronized static void out()</code></p>
-<pre><code class="highlight plain">线程1:4
+线程1:0</code></pre><p>给静态方法加上锁<code>public synchronized static void out()</code></p>
+<pre><code>线程1:4
 线程1:3
 线程1:2
 线程1:1
@@ -484,60 +473,52 @@ class testThread extends Thread&#123;
 线程2:3
 线程2:2
 线程2:1
-线程2:0</code></pre>
-
-<p>另一种使用代码块实现类锁的方法为</p>
-<pre><code class="highlight plain">public static void out()&#123;
-	synchronized(testThread.class)&#123;
-		int i &#x3D; 5;
-		while(i&gt;0)&#123;
-			System.out.println(Thread.currentThread().getName()+&quot;:&quot;+--i);
-		&#125;
-	&#125;
-&#125;</code></pre>
-
-<h4 id="线程间通信"><a href="#线程间通信" class="headerlink" title="线程间通信"></a>线程间通信</h4><p>必须在同步代码块中,且获得对应的锁才能使用</p>
+线程2:0</code></pre><p>另一种使用代码块实现类锁的方法为</p>
+<pre><code>public static void out(){
+    synchronized(testThread.class){
+        int i = 5;
+        while(i&gt;0){
+            System.out.println(Thread.currentThread().getName()+&quot;:&quot;+--i);
+        }
+    }
+}</code></pre><h4 id="线程间通信"><a href="#线程间通信" class="headerlink" title="线程间通信"></a>线程间通信</h4><p>必须在同步代码块中,且获得对应的锁才能使用</p>
 <p><code>wait()</code>:使一个线程处于等待状态，并且释放所持有的对象的lock。<br><code>notify()</code>:唤醒一个处于等待状态的线程，注意的是在调用此方法的时候，并不能确切的唤醒某一个等待状态的线程，而是由JVM确定唤醒哪个线程，而且不是按优先级。<br><code>notifyAll()</code>:唤醒所有处入等待状态的线程，注意并不是给所有唤醒线程一个对象的锁，而是让它们竞争。<br>线程间通信使用例子 生产者消费者模型。</p>
-<h3 id="ReentrantLock"><a href="#ReentrantLock" class="headerlink" title="ReentrantLock"></a>ReentrantLock</h3><h4 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h4><pre><code class="highlight plain">public class Rlock &#123;
-	public static void main(String[] args) &#123;
-		ReentrantLock lock &#x3D; new ReentrantLock();
-		new Thread(new Mythread5(lock)).start();
-		new Thread(new Mythread5(lock)).start();
-		new Thread(new Mythread5(lock)).start();
-	&#125;
-&#125;
+<h3 id="ReentrantLock"><a href="#ReentrantLock" class="headerlink" title="ReentrantLock"></a>ReentrantLock</h3><h4 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h4><pre><code>public class Rlock {
+    public static void main(String[] args) {
+        ReentrantLock lock = new ReentrantLock();
+        new Thread(new Mythread5(lock)).start();
+        new Thread(new Mythread5(lock)).start();
+        new Thread(new Mythread5(lock)).start();
+    }
+}
 
-class Mythread5 implements Runnable&#123;
-	private ReentrantLock lock;
-	int num &#x3D; 10;
-	public Mythread5(ReentrantLock lock) &#123;
-		this.lock &#x3D; lock;
-	&#125;
+class Mythread5 implements Runnable{
+    private ReentrantLock lock;
+    int num = 10;
+    public Mythread5(ReentrantLock lock) {
+        this.lock = lock;
+    }
 
-	@Override
-	public void run() &#123;
-		&#x2F;&#x2F; TODO Auto-generated method stub
-		lock.lock();
-		for (int i &#x3D; 0; i &lt; 10; i++) &#123;
-			System.out.println(--num);
-		&#125;
-		lock.unlock();
-	&#125;
-	
-&#125;</code></pre>
+    @Override
+    public void run() {
+        // TODO Auto-generated method stub
+        lock.lock();
+        for (int i = 0; i &lt; 10; i++) {
+            System.out.println(--num);
+        }
+        lock.unlock();
+    }
 
-<p>同样使用加锁和解锁的操作实现多线程排队执行目标代码</p>
-<h4 id="公平锁与非公平锁"><a href="#公平锁与非公平锁" class="headerlink" title="公平锁与非公平锁"></a>公平锁与非公平锁</h4><pre><code class="highlight plain">&#x2F;**
- * Creates an instance of &#123;@code ReentrantLock&#125; with the
+}</code></pre><p>同样使用加锁和解锁的操作实现多线程排队执行目标代码</p>
+<h4 id="公平锁与非公平锁"><a href="#公平锁与非公平锁" class="headerlink" title="公平锁与非公平锁"></a>公平锁与非公平锁</h4><pre><code>/**
+ * Creates an instance of {@code ReentrantLock} with the
  * given fairness policy.
  *
- * @param fair &#123;@code true&#125; if this lock should use a fair ordering policy
- *&#x2F;
-public ReentrantLock(boolean fair) &#123;
-    sync &#x3D; fair ? new FairSync() : new NonfairSync();
-&#125;</code></pre>
-
-<p>创建锁时可以指定锁为公平锁还是非公平锁，当设为<code>true</code>时，锁倾向于等待时间最长的线程。否则锁不保证特定的访问顺序。</p>
+ * @param fair {@code true} if this lock should use a fair ordering policy
+ */
+public ReentrantLock(boolean fair) {
+    sync = fair ? new FairSync() : new NonfairSync();
+}</code></pre><p>创建锁时可以指定锁为公平锁还是非公平锁，当设为<code>true</code>时，锁倾向于等待时间最长的线程。否则锁不保证特定的访问顺序。</p>
 <h4 id="trylock"><a href="#trylock" class="headerlink" title="trylock"></a>trylock</h4><p><code>tryLock()</code>方法只有在成功获取了锁的情况下才会返回<code>true</code>，如果别的线程当前正持有锁，则会立即返回<code>false</code>。如果为这个方法加上<code>timeout</code>参数，则会在等待<code>timeout</code>的时间才会返回<code>false</code>或者在获取到锁的时候返回<code>true</code>。</p>
 <h4 id="lockInterruptibly"><a href="#lockInterruptibly" class="headerlink" title="lockInterruptibly"></a>lockInterruptibly</h4><p><code>ReentrantLock.lockInterruptibly</code>允许在等待时由其它线程调用等待线程的<code>Thread.interrupt</code>方法来中断等待线程的等待而直接返回，这时不用获取锁，而会抛出一个<code>InterruptedException</code>。 <code>ReentrantLock.lock</code>方法不允许<code>Thread.interrupt</code>中断,即使检测到<code>Thread.isInterrupted</code>,一样会继续尝试获取锁，失败则继续休眠。只是在最后获取锁成功后再把当前线程置为<code>interrupted</code>状态,然后再中断线程。</p>
 <h4 id="线程间通信Condition"><a href="#线程间通信Condition" class="headerlink" title="线程间通信Condition"></a>线程间通信Condition</h4><p>没有获得锁也可以使用以下方法</p>

@@ -351,33 +351,33 @@
 </ul>
 <h3 id="ajax中的contentType"><a href="#ajax中的contentType" class="headerlink" title="ajax中的contentType"></a>ajax中的contentType</h3><p>ajax中，没有指定<code>contentType</code>的话，Jquery默认使用<code>application/x-www-form-urlencoded</code>类型，data使用json对象格式,<code>springmvc</code>可以<code>@RequestParam</code>接收数据(变量同名不需要)</p>
 <p>指定<code>contentType</code>为<code>application/json</code>时，data必须为json字符串格式，springmvc接收数据要用<code>@RequestBody</code>注解</p>
-<pre><code class="highlight plain">$.ajax(&#123;
+<pre><code>$.ajax({
     type: &quot;post&quot;,
-    url:  &quot;mobile&#x2F;notice&#x2F;addMessageInfo.jspx&quot;,
-    contentType: &quot;application&#x2F;json&quot;,
-    data:&quot;&#123;&#39;name&#39;:&#39;zhangsan&#39;,&#39;age&#39;:&#39;15&#39;&#125;&quot;,
+    url:  &quot;mobile/notice/addMessageInfo.jspx&quot;,
+    contentType: &quot;application/json&quot;,
+    data:&quot;{&#39;name&#39;:&#39;zhangsan&#39;,&#39;age&#39;:&#39;15&#39;}&quot;,
     dataType: &quot;json&quot;,
-    success: function(data) &#123;
+    success: function(data) {
         console.log(data);
-    &#125;,
-    error: function(msg) &#123;
+    },
+    error: function(msg) {
         console.log(msg)
-    &#125;
-&#125;)
+    }
+})
 
 
-$.ajax(&#123;
+$.ajax({
     type: &quot;post&quot;,
-    url:  &quot;mobile&#x2F;notice&#x2F;addMessageInfo.jspx&quot;,
-    data:&#123;name:&#39;zhangsan&#39;,age:&#39;15&#39;&#125;,
+    url:  &quot;mobile/notice/addMessageInfo.jspx&quot;,
+    data:{name:&#39;zhangsan&#39;,age:&#39;15&#39;},
     dataType: &quot;json&quot;,
-    success: function(data) &#123;
+    success: function(data) {
         console.log(data);
-    &#125;,
-    error: function(msg) &#123;
+    },
+    error: function(msg) {
         console.log(msg)
-    &#125;
-&#125;)</code></pre>
+    }
+})</code></pre>
       
     </div>
     
@@ -409,8 +409,8 @@ $.ajax(&#123;
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/06/17/ThreadLocal/" rel="next" title="ThreadLocal">
-                <i class="fa fa-chevron-left"></i> ThreadLocal
+              <a href="/2020/06/17/await%E3%80%81signal%E5%92%8CsignalAll%E6%BA%90%E7%A0%81/" rel="next" title="await、signal和signalAll源码">
+                <i class="fa fa-chevron-left"></i> await、signal和signalAll源码
               </a>
             
           </div>
@@ -419,8 +419,8 @@ $.ajax(&#123;
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2020/06/17/await%E3%80%81signal%E5%92%8CsignalAll%E6%BA%90%E7%A0%81/" rel="prev" title="await、signal和signalAll源码">
-                await、signal和signalAll源码 <i class="fa fa-chevron-right"></i>
+              <a href="/2020/06/17/consumer/" rel="prev" title="consumer接口">
+                consumer接口 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>

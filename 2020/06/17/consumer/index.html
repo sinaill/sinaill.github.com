@@ -79,12 +79,12 @@
 
 
 
-<meta name="description" content="consumer@FunctionalInterface public interface Consumer&lt;T&gt; &amp;#123;      &#x2F;**      * Performs this operation on the given argument.      *      * @param t the input argument      *&#x2F;     vo">
+<meta name="description" content="consumer@FunctionalInterface public interface Consumer&lt;T&gt; {      &#x2F;**      * Performs this operation on the given argument.      *      * @param t the input argument      *&#x2F;     void accept(T t);">
 <meta property="og:type" content="article">
 <meta property="og:title" content="consumer接口">
 <meta property="og:url" content="http://yoursite.com/2020/06/17/consumer/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="consumer@FunctionalInterface public interface Consumer&lt;T&gt; &amp;#123;      &#x2F;**      * Performs this operation on the given argument.      *      * @param t the input argument      *&#x2F;     vo">
+<meta property="og:description" content="consumer@FunctionalInterface public interface Consumer&lt;T&gt; {      &#x2F;**      * Performs this operation on the given argument.      *      * @param t the input argument      *&#x2F;     void accept(T t);">
 <meta property="article:published_time" content="2020-06-16T17:43:37.237Z">
 <meta property="article:modified_time" content="2020-06-16T17:43:37.237Z">
 <meta property="article:author" content="sinaill">
@@ -341,52 +341,46 @@
       
 
       
-        <h3 id="consumer"><a href="#consumer" class="headerlink" title="consumer"></a>consumer</h3><pre><code class="highlight plain">@FunctionalInterface
-public interface Consumer&lt;T&gt; &#123;
+        <h3 id="consumer"><a href="#consumer" class="headerlink" title="consumer"></a>consumer</h3><pre><code>@FunctionalInterface
+public interface Consumer&lt;T&gt; {
 
-    &#x2F;**
+    /**
      * Performs this operation on the given argument.
      *
      * @param t the input argument
-     *&#x2F;
+     */
     void accept(T t);
 
-    &#x2F;**
-     * Returns a composed &#123;@code Consumer&#125; that performs, in sequence, this
-     * operation followed by the &#123;@code after&#125; operation. If performing either
+    /**
+     * Returns a composed {@code Consumer} that performs, in sequence, this
+     * operation followed by the {@code after} operation. If performing either
      * operation throws an exception, it is relayed to the caller of the
      * composed operation.  If performing this operation throws an exception,
-     * the &#123;@code after&#125; operation will not be performed.
+     * the {@code after} operation will not be performed.
      *
      * @param after the operation to perform after this operation
-     * @return a composed &#123;@code Consumer&#125; that performs in sequence this
-     * operation followed by the &#123;@code after&#125; operation
-     * @throws NullPointerException if &#123;@code after&#125; is null
-     *&#x2F;
-    default Consumer&lt;T&gt; andThen(Consumer&lt;? super T&gt; after) &#123;
+     * @return a composed {@code Consumer} that performs in sequence this
+     * operation followed by the {@code after} operation
+     * @throws NullPointerException if {@code after} is null
+     */
+    default Consumer&lt;T&gt; andThen(Consumer&lt;? super T&gt; after) {
         Objects.requireNonNull(after);
-        return (T t) -&gt; &#123; accept(t); after.accept(t); &#125;;
-    &#125;
-&#125;</code></pre>
-
-<p>consumer是一个函数式接口，可配合实现了Iterable的类和Iterator使用。</p>
-<pre><code class="highlight plain">List&lt;student&gt; a &#x3D; new ArrayList&lt;student&gt;();
-a.add(new student(1, &quot;aa&quot;));
-a.add(new student(2, &quot;bb&quot;));
-a.add(new student(3, &quot;cc&quot;));
-a.forEach(stu-&gt;stu.id&#x3D;4);
-a.forEach(stu-&gt;System.out::println)</code></pre>
-
-<p><code>4 4 4</code></p>
+        return (T t) -&gt; { accept(t); after.accept(t); };
+    }
+}</code></pre><p>consumer是一个函数式接口，可配合实现了Iterable的类和Iterator使用。</p>
+<pre><code>        List&lt;student&gt; a = new ArrayList&lt;student&gt;();
+        a.add(new student(1, &quot;aa&quot;));
+        a.add(new student(2, &quot;bb&quot;));
+        a.add(new student(3, &quot;cc&quot;));
+        a.forEach(stu-&gt;stu.id=4);
+        a.forEach(stu-&gt;System.out::println)</code></pre><p><code>4 4 4</code></p>
 <p>List继承自Collection，而Collection又实现了Iterable接口，接口的foreach方法如下：</p>
-<pre><code class="highlight plain">default void forEach(Consumer&lt;? super T&gt; action) &#123;
-    Objects.requireNonNull(action);
-    for (T t : this) &#123;
-        action.accept(t);
-    &#125;
-&#125;</code></pre>
-
-<p><strong>所以，此接口是用来处理集合中所有元素，Performs this operation on the given argument.</strong></p>
+<pre><code>    default void forEach(Consumer&lt;? super T&gt; action) {
+        Objects.requireNonNull(action);
+        for (T t : this) {
+            action.accept(t);
+        }
+    }</code></pre><p><strong>所以，此接口是用来处理集合中所有元素，Performs this operation on the given argument.</strong></p>
 
       
     </div>
@@ -417,8 +411,8 @@ a.forEach(stu-&gt;System.out::println)</code></pre>
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/06/17/comparable%20and%20comparator/" rel="next" title="comparable和comparator">
-                <i class="fa fa-chevron-left"></i> comparable和comparator
+              <a href="/2020/06/17/ajax%E4%B8%ADjson%E5%92%8Cspringmvc/" rel="next" title="ajax中json和SpringMVC">
+                <i class="fa fa-chevron-left"></i> ajax中json和SpringMVC
               </a>
             
           </div>
@@ -427,8 +421,8 @@ a.forEach(stu-&gt;System.out::println)</code></pre>
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2020/06/17/fail-fast%20fail-safe/" rel="prev" title="fail-fast与fail-safe">
-                fail-fast与fail-safe <i class="fa fa-chevron-right"></i>
+              <a href="/2020/06/17/comparable%20and%20comparator/" rel="prev" title="comparable和comparator">
+                comparable和comparator <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>

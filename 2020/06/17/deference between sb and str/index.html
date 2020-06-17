@@ -79,12 +79,12 @@
 
 
 
-<meta name="description" content="查阅翻阅String和StringBuffer和源码可知String中用来存储字符串的char[]为 private final char value[] StringBuffer中用来存储字符串的char[]为 char[] value; 构造方法的差别StringString的构造方法较为简单 public String(String original) &amp;#123;        this.">
+<meta name="description" content="查阅翻阅String和StringBuffer和源码可知String中用来存储字符串的char[]为 private final char value[] StringBuffer中用来存储字符串的char[]为 char[] value; 构造方法的差别StringString的构造方法较为简单  public String(String original) {         this.val">
 <meta property="og:type" content="article">
 <meta property="og:title" content="StringBuffer与String的区别">
 <meta property="og:url" content="http://yoursite.com/2020/06/17/deference%20between%20sb%20and%20str/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="查阅翻阅String和StringBuffer和源码可知String中用来存储字符串的char[]为 private final char value[] StringBuffer中用来存储字符串的char[]为 char[] value; 构造方法的差别StringString的构造方法较为简单 public String(String original) &amp;#123;        this.">
+<meta property="og:description" content="查阅翻阅String和StringBuffer和源码可知String中用来存储字符串的char[]为 private final char value[] StringBuffer中用来存储字符串的char[]为 char[] value; 构造方法的差别StringString的构造方法较为简单  public String(String original) {         this.val">
 <meta property="article:published_time" content="2020-06-16T17:43:37.238Z">
 <meta property="article:modified_time" content="2020-06-16T17:43:37.238Z">
 <meta property="article:author" content="sinaill">
@@ -345,48 +345,40 @@
 <p>StringBuffer中用来存储字符串的char[]为</p>
 <p><code>char[] value;</code></p>
 <h3 id="构造方法的差别"><a href="#构造方法的差别" class="headerlink" title="构造方法的差别"></a>构造方法的差别</h3><h4 id="String"><a href="#String" class="headerlink" title="String"></a>String</h4><p>String的构造方法较为简单</p>
-<pre><code class="highlight plain">public String(String original) &#123;
-       this.value &#x3D; original.value;
-       this.hash &#x3D; original.hash;
-   &#125;</code></pre>
-
-<p>通过反射获取两个String对象中的value[]，结果为true;</p>
-<pre><code class="highlight plain">String a &#x3D; new String(&quot;abc&quot;);
-String b &#x3D; new String(&quot;abc&quot;);
-&#x2F;&#x2F;&quot;abc&quot;返回同一个String对象(常量池)，调用参数为String的构造方法
-Field af &#x3D; a.getClass().getDeclaredField(&quot;value&quot;);
-Field bf &#x3D; b.getClass().getDeclaredField(&quot;value&quot;);
-af.setAccessible(true);
-bf.setAccessible(true);
-System.out.println(af.get(a) &#x3D;&#x3D; bf.get(b));</code></pre>
-
-<p><strong>由此我们可以看出，由于String常量池的存在，当我们用同一字符串来构造String对象时，他们中的value[]都指向了常量池中的该字符串对象的value[]</strong></p>
+<pre><code> public String(String original) {
+        this.value = original.value;
+        this.hash = original.hash;
+    }</code></pre><p>通过反射获取两个String对象中的value[]，结果为true;</p>
+<pre><code>        String a = new String(&quot;abc&quot;);
+        String b = new String(&quot;abc&quot;);
+        //&quot;abc&quot;返回同一个String对象(常量池)，调用参数为String的构造方法
+        Field af = a.getClass().getDeclaredField(&quot;value&quot;);
+        Field bf = b.getClass().getDeclaredField(&quot;value&quot;);
+        af.setAccessible(true);
+        bf.setAccessible(true);
+        System.out.println(af.get(a) == bf.get(b));</code></pre><p><strong>由此我们可以看出，由于String常量池的存在，当我们用同一字符串来构造String对象时，他们中的value[]都指向了常量池中的该字符串对象的value[]</strong></p>
 <h4 id="StringBuffer"><a href="#StringBuffer" class="headerlink" title="StringBuffer"></a>StringBuffer</h4><p>StringBuffer中参数为StringBuffer和String的构造函数，跟源码得</p>
-<pre><code class="highlight plain">public StringBuffer(String str) &#123;
-    super(str.length() + 16);
-    append(str);
-&#125;
-	
-public AbstractStringBuilder append(String str) &#123;
-    if (str &#x3D;&#x3D; null)
-        return appendNull();
-    int len &#x3D; str.length();
-    ensureCapacityInternal(count + len);
-    str.getChars(0, len, value, count);
-    count +&#x3D; len;
-    return this;
-&#125;</code></pre>
+<pre><code>    public StringBuffer(String str) {
+        super(str.length() + 16);
+        append(str);
+    }
 
-<p>与String不同，它时将传进来的string复制到变量value中，所以用相同字符串初始化StringBuffer，利用反射获取value[]，比较它们的引用，结果为false</p>
-<pre><code class="highlight plain">StringBuffer a &#x3D; new StringBuffer(&quot;abc&quot;);
-StringBuffer b &#x3D; new StringBuffer(&quot;abc&quot;);
-Field af &#x3D; a.getClass().getSuperclass().getDeclaredField(&quot;value&quot;);
-Field bf &#x3D; a.getClass().getSuperclass().getDeclaredField(&quot;value&quot;);
-af.setAccessible(true);
-bf.setAccessible(true);
-System.out.println(af.get(a) &#x3D;&#x3D; bf.get(b));</code></pre>
-
-<p><strong>可以看出StringBuffer中的value[]指向不同地址</strong></p>
+    public AbstractStringBuilder append(String str) {
+        if (str == null)
+            return appendNull();
+        int len = str.length();
+        ensureCapacityInternal(count + len);
+        str.getChars(0, len, value, count);
+        count += len;
+        return this;
+    }</code></pre><p>与String不同，它时将传进来的string复制到变量value中，所以用相同字符串初始化StringBuffer，利用反射获取value[]，比较它们的引用，结果为false</p>
+<pre><code>        StringBuffer a = new StringBuffer(&quot;abc&quot;);
+        StringBuffer b = new StringBuffer(&quot;abc&quot;);
+        Field af = a.getClass().getSuperclass().getDeclaredField(&quot;value&quot;);
+        Field bf = a.getClass().getSuperclass().getDeclaredField(&quot;value&quot;);
+        af.setAccessible(true);
+        bf.setAccessible(true);
+        System.out.println(af.get(a) == bf.get(b));</code></pre><p><strong>可以看出StringBuffer中的value[]指向不同地址</strong></p>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p><strong>1.对于equals为true的String对象，它们内部value[]指向相同地址，且为final类型，初始化后无法改变其引用，虽然可以通过反射获取引用，来改变value中的值，但是会改变所有String对象中的value</strong></p>
 <p><strong>2.StringBuffer中的value为default,所以上面我们不能直接用a.value或者b.vlaue获取value[],并且StringBuffer中即使用相同String对象或者StringBuffer初始化时，它们之间的value[]也是指向不同地址</strong></p>
 <p><strong>3.String和StringBuffer类型为final</strong></p>
@@ -427,8 +419,8 @@ System.out.println(af.get(a) &#x3D;&#x3D; bf.get(b));</code></pre>
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2020/06/17/final/" rel="prev" title="final关键字">
-                final关键字 <i class="fa fa-chevron-right"></i>
+              <a href="/2020/06/17/io%E4%B8%AD%E7%9A%84%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F/" rel="prev" title="io中的装饰者模式">
+                io中的装饰者模式 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>

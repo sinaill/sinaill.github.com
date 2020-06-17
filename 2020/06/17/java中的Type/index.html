@@ -358,26 +358,26 @@
 <li>Type[] getActualTypeArguments();</li>
 </ul>
 <p>该方法返回参数化类型&lt;&gt;中的实际参数类型， 如 Map&lt;String,Person&gt; map 这个 ParameterizedType 返回的是 String 类,Person 类的全限定类名的 Type Array。注意: 该方法只返回最外层的&lt;&gt;中的类型，无论该&lt;&gt;内有多少个&lt;&gt;。</p>
-<pre><code class="highlight plain">class testType&#123;
-	HashMap&lt;String,Object&gt; map;
-	List&lt;Integer&gt; list;
-	String str;
-&#125;
+<pre><code>class testType{
+    HashMap&lt;String,Object&gt; map;
+    List&lt;Integer&gt; list;
+    String str;
+}
 
 @Test
-public void testType() &#123;
-	Field fields[] &#x3D; testType.class.getDeclaredFields();
-	for(Field field:fields) &#123;
-		System.out.println(&quot;Field : &quot;+field.getName() + &quot; is parameterizedType :&quot;+(field.getGenericType() instanceof ParameterizedType));
-		
-		if(field.getGenericType() instanceof ParameterizedType) &#123;
-			System.out.println(&quot;getRawType: &quot;+((ParameterizedType)field.getGenericType()).getRawType());
-			for(Type type:((ParameterizedType)field.getGenericType()).getActualTypeArguments())
-			&#x2F;&#x2F;getActualTypeArguments返回的类型为TypeVariable
-			System.out.println(&quot;getActualTypeArguments: &quot;+type.getTypeName());
-		&#125;
-	&#125;
-&#125;
+public void testType() {
+    Field fields[] = testType.class.getDeclaredFields();
+    for(Field field:fields) {
+        System.out.println(&quot;Field : &quot;+field.getName() + &quot; is parameterizedType :&quot;+(field.getGenericType() instanceof ParameterizedType));
+
+        if(field.getGenericType() instanceof ParameterizedType) {
+            System.out.println(&quot;getRawType: &quot;+((ParameterizedType)field.getGenericType()).getRawType());
+            for(Type type:((ParameterizedType)field.getGenericType()).getActualTypeArguments())
+            //getActualTypeArguments返回的类型为TypeVariable
+            System.out.println(&quot;getActualTypeArguments: &quot;+type.getTypeName());
+        }
+    }
+}
 
 
 Field : map is parameterizedType :true
@@ -387,9 +387,7 @@ getActualTypeArguments: java.lang.Object
 Field : list is parameterizedType :true
 getRawType: interface java.util.List
 getActualTypeArguments: java.lang.Integer
-Field : str is parameterizedType :false</code></pre>
-
-<h4 id="TypeVariable"><a href="#TypeVariable" class="headerlink" title="TypeVariable"></a>TypeVariable</h4><p>类型变量，即泛型中的变量；例如：T、K、V等变量，可以表示任何类；在这需要强调的是，TypeVariable代表着泛型中的变量，而ParameterizedType则代表整个泛型；</p>
+Field : str is parameterizedType :false</code></pre><h4 id="TypeVariable"><a href="#TypeVariable" class="headerlink" title="TypeVariable"></a>TypeVariable</h4><p>类型变量，即泛型中的变量；例如：T、K、V等变量，可以表示任何类；在这需要强调的是，TypeVariable代表着泛型中的变量，而ParameterizedType则代表整个泛型；</p>
 <ul>
 <li>Type[] getBounds();</li>
 </ul>
@@ -402,27 +400,27 @@ Field : str is parameterizedType :false</code></pre>
 <li>String getName();</li>
 </ul>
 <p>返回当前类型的类名</p>
-<pre><code class="highlight plain">class testType&lt;k extends Number,T&gt;&#123;
-	HashMap&lt;String,Object&gt; map;
-	List&lt;Integer&gt; list;
-	String str;
-&#125;
+<pre><code>class testType&lt;k extends Number,T&gt;{
+    HashMap&lt;String,Object&gt; map;
+    List&lt;Integer&gt; list;
+    String str;
+}
 
 @Test
-public void testTypeVariable()&#123;
-	 Type types[] &#x3D; testType.class.getTypeParameters();
-	 &#x2F;&#x2F;返回的数组包含泛型表示的类型变量K,T
-	 for(Type type:types) &#123;
-		 &#x2F;&#x2F;遍历K,T
-		 TypeVariable t &#x3D; (TypeVariable)type;
-		 int index &#x3D; t.getBounds().length-1;
-         &#x2F;&#x2F;返回的表示上边界的是一个数组
-		 System.out.println(&quot;getBounds: &quot;+t.getBounds()[index]);
-		 System.out.println(&quot;getName: &quot;+t.getName());
-         &#x2F;&#x2F;表示泛型变量所在的类
-		 System.out.println(&quot;getGenericDeclaration: &quot;+t.getGenericDeclaration());
-	 &#125;
-&#125;
+public void testTypeVariable(){
+     Type types[] = testType.class.getTypeParameters();
+     //返回的数组包含泛型表示的类型变量K,T
+     for(Type type:types) {
+         //遍历K,T
+         TypeVariable t = (TypeVariable)type;
+         int index = t.getBounds().length-1;
+         //返回的表示上边界的是一个数组
+         System.out.println(&quot;getBounds: &quot;+t.getBounds()[index]);
+         System.out.println(&quot;getName: &quot;+t.getName());
+         //表示泛型变量所在的类
+         System.out.println(&quot;getGenericDeclaration: &quot;+t.getGenericDeclaration());
+     }
+}
 
 
 getBounds: class java.lang.Number
@@ -430,27 +428,25 @@ getName: K
 getGenericDeclaration: class test.testType
 getBounds: class java.lang.Object
 getName: T
-getGenericDeclaration: class test.testType</code></pre>
-
-<h4 id="GenericArrayType"><a href="#GenericArrayType" class="headerlink" title="GenericArrayType"></a>GenericArrayType</h4><p>泛型数组类型，用来描述ParameterizedType、TypeVariable类型的数组；即List<T>[] 、T[]等</p>
-<pre><code class="highlight plain">class testType&lt;K,T&gt;&#123;
-	HashMap&lt;K,T&gt;[] map;
-	List&lt;K&gt;[] list;
-	T Array[];
-&#125;
+getGenericDeclaration: class test.testType</code></pre><h4 id="GenericArrayType"><a href="#GenericArrayType" class="headerlink" title="GenericArrayType"></a>GenericArrayType</h4><p>泛型数组类型，用来描述ParameterizedType、TypeVariable类型的数组；即List<T>[] 、T[]等</p>
+<pre><code>class testType&lt;K,T&gt;{
+    HashMap&lt;K,T&gt;[] map;
+    List&lt;K&gt;[] list;
+    T Array[];
+}
 
 @Test
-public void testGenericArrayType() &#123;
-	Field fields[] &#x3D; testType.class.getDeclaredFields();
-	for(Field field:fields) &#123;
-		System.out.println(field.getName()+&quot; instance of GenericArrayType: &quot;+(field.getGenericType() instanceof GenericArrayType));
-		System.out.println(field.getName()+&quot; instance of GenericArrayType: &quot;+(field.getGenericType() instanceof ParameterizedType));
-		&#x2F;&#x2F;对于getGenericComponentType
-        &#x2F;&#x2F;如果是参数化类型数组，则这里返回的是parameterizedType类型
-		&#x2F;&#x2F;普通泛型数组，返回的TypeVariable类型
-		System.out.println(field.getName()+&quot;:getGenericComponentType &quot;+((GenericArrayType)field.getGenericType()).getGenericComponentType());
-	&#125;
-&#125;
+public void testGenericArrayType() {
+    Field fields[] = testType.class.getDeclaredFields();
+    for(Field field:fields) {
+        System.out.println(field.getName()+&quot; instance of GenericArrayType: &quot;+(field.getGenericType() instanceof GenericArrayType));
+        System.out.println(field.getName()+&quot; instance of GenericArrayType: &quot;+(field.getGenericType() instanceof ParameterizedType));
+        //对于getGenericComponentType
+        //如果是参数化类型数组，则这里返回的是parameterizedType类型
+        //普通泛型数组，返回的TypeVariable类型
+        System.out.println(field.getName()+&quot;:getGenericComponentType &quot;+((GenericArrayType)field.getGenericType()).getGenericComponentType());
+    }
+}
 
 
 map instance of GenericArrayType: true
@@ -461,10 +457,7 @@ list instance of GenericArrayType: false
 list:getGenericComponentType java.util.List&lt;K&gt;
 Array instance of GenericArrayType: true
 Array instance of GenericArrayType: false
-Array:getGenericComponentType T</code></pre>
-
-
-<h4 id="WildcardType"><a href="#WildcardType" class="headerlink" title="WildcardType"></a>WildcardType</h4><p>表示通配符类型，比如 &lt;?&gt;, &lt;? Extends Number&gt;等</p>
+Array:getGenericComponentType T</code></pre><h4 id="WildcardType"><a href="#WildcardType" class="headerlink" title="WildcardType"></a>WildcardType</h4><p>表示通配符类型，比如 &lt;?&gt;, &lt;? Extends Number&gt;等</p>
 <ul>
 <li>Type[] getUpperBounds()</li>
 </ul>
@@ -474,31 +467,31 @@ Array:getGenericComponentType T</code></pre>
 </ul>
 <p>得到下边界的type数组</p>
 <p><strong>如果没有指定上边界，则默认为Object，如果没有指定下边界，则默认为String</strong></p>
-<pre><code class="highlight plain">class testWildcardType&#123;
-	List&lt;? extends Number&gt; listNum;
-	List&lt;? super String&gt; listStr;
-&#125;
+<pre><code>class testWildcardType{
+    List&lt;? extends Number&gt; listNum;
+    List&lt;? super String&gt; listStr;
+}
 
 @Test
-public void testWildcardType() &#123;
-	Field fields[] &#x3D; testWildcardType.class.getDeclaredFields();
-	for(Field field:fields) &#123;
-		
-		ParameterizedType t &#x3D; (ParameterizedType) field.getGenericType();
-		System.out.println(t.getTypeName());
-		Type[] Type &#x3D; t.getActualTypeArguments();
-		System.out.println(field.getName()+&quot;.getGenericType.getActualTypeArguments(): instance of WildcardType is &quot;+(Type[0] instanceof WildcardType));
-		WildcardType wildcardType &#x3D; (WildcardType) Type[0];
-		if(wildcardType.getUpperBounds().length&gt;0) &#123;
-			
-			System.out.println(&quot;getUpperBounds: &quot;+wildcardType.getUpperBounds()[0].getTypeName());
-		&#125;
-		if(wildcardType.getLowerBounds().length&gt;0) &#123;
-			
-			System.out.println(&quot;getLowerBouds: &quot;+wildcardType.getLowerBounds()[0].getTypeName());
-		&#125;
-	&#125;
-&#125;
+public void testWildcardType() {
+    Field fields[] = testWildcardType.class.getDeclaredFields();
+    for(Field field:fields) {
+
+        ParameterizedType t = (ParameterizedType) field.getGenericType();
+        System.out.println(t.getTypeName());
+        Type[] Type = t.getActualTypeArguments();
+        System.out.println(field.getName()+&quot;.getGenericType.getActualTypeArguments(): instance of WildcardType is &quot;+(Type[0] instanceof WildcardType));
+        WildcardType wildcardType = (WildcardType) Type[0];
+        if(wildcardType.getUpperBounds().length&gt;0) {
+
+            System.out.println(&quot;getUpperBounds: &quot;+wildcardType.getUpperBounds()[0].getTypeName());
+        }
+        if(wildcardType.getLowerBounds().length&gt;0) {
+
+            System.out.println(&quot;getLowerBouds: &quot;+wildcardType.getLowerBounds()[0].getTypeName());
+        }
+    }
+}
 
 java.util.List&lt;? extends java.lang.Number&gt;
 listNum.getGenericType.getActualTypeArguments(): instance of WildcardType is true
@@ -506,9 +499,7 @@ getUpperBounds: java.lang.Number
 java.util.List&lt;? super java.lang.String&gt;
 listStr.getGenericType.getActualTypeArguments(): instance of WildcardType is true
 getUpperBounds: java.lang.Object
-getLowerBouds: java.lang.String</code></pre>
-
-<p>相关链接</p>
+getLowerBouds: java.lang.String</code></pre><p>相关链接</p>
 <p><a href="https://juejin.im/post/5adefaba518825670e5cb44d" target="_blank" rel="noopener">参考一</a><br><a href="https://blog.csdn.net/ZytheMoon/article/details/79241988" target="_blank" rel="noopener">参考二</a></p>
 
       
@@ -534,8 +525,8 @@ getLowerBouds: java.lang.String</code></pre>
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/06/17/interface%20and%20adstract%20class/" rel="next" title="接口与抽象类">
-                <i class="fa fa-chevron-left"></i> 接口与抽象类
+              <a href="/2020/06/17/java8/" rel="next" title="jdk1.8新特性">
+                <i class="fa fa-chevron-left"></i> jdk1.8新特性
               </a>
             
           </div>

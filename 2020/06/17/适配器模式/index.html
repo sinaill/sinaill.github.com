@@ -79,12 +79,12 @@
 
 
 
-<meta name="description" content="什么是适配器模式适配器模式把一个类的接口变换成客户端所期待的另一种接口，从而使原本因接口不匹配而无法在一起工作的两个类能够在一起工作。 类适配器模式（采用继承实现） &#x2F;&#x2F;目标接口，或称为标准接口  public interface Target &amp;#123;     &#x2F;&#x2F;普通功能     public void request(); &amp;#125;   &amp;#x">
+<meta name="description" content="什么是适配器模式适配器模式把一个类的接口变换成客户端所期待的另一种接口，从而使原本因接口不匹配而无法在一起工作的两个类能够在一起工作。 类适配器模式（采用继承实现） &#x2F;&#x2F;目标接口，或称为标准接口  public interface Target {     &#x2F;&#x2F;普通功能     public void request(); }  &#x2F;&#x2F;已存在的、具有特殊功能、但不符合我们既有的标准接口的类   pu">
 <meta property="og:type" content="article">
 <meta property="og:title" content="适配器模式">
 <meta property="og:url" content="http://yoursite.com/2020/06/17/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="什么是适配器模式适配器模式把一个类的接口变换成客户端所期待的另一种接口，从而使原本因接口不匹配而无法在一起工作的两个类能够在一起工作。 类适配器模式（采用继承实现） &#x2F;&#x2F;目标接口，或称为标准接口  public interface Target &amp;#123;     &#x2F;&#x2F;普通功能     public void request(); &amp;#125;   &amp;#x">
+<meta property="og:description" content="什么是适配器模式适配器模式把一个类的接口变换成客户端所期待的另一种接口，从而使原本因接口不匹配而无法在一起工作的两个类能够在一起工作。 类适配器模式（采用继承实现） &#x2F;&#x2F;目标接口，或称为标准接口  public interface Target {     &#x2F;&#x2F;普通功能     public void request(); }  &#x2F;&#x2F;已存在的、具有特殊功能、但不符合我们既有的标准接口的类   pu">
 <meta property="og:image" content="http://wx1.sinaimg.cn/large/96b7c0f4gy1g0l72acl2gj20h8081dfu.jpg">
 <meta property="article:published_time" content="2020-06-16T17:43:37.268Z">
 <meta property="article:modified_time" content="2020-06-16T17:43:37.269Z">
@@ -345,80 +345,78 @@
       
         <h3 id="什么是适配器模式"><a href="#什么是适配器模式" class="headerlink" title="什么是适配器模式"></a>什么是适配器模式</h3><p>适配器模式把一个类的接口变换成客户端所期待的另一种接口，从而使原本因接口不匹配而无法在一起工作的两个类能够在一起工作。</p>
 <h3 id="类适配器模式（采用继承实现）"><a href="#类适配器模式（采用继承实现）" class="headerlink" title="类适配器模式（采用继承实现）"></a>类适配器模式（采用继承实现）</h3><p><img src="http://wx1.sinaimg.cn/large/96b7c0f4gy1g0l72acl2gj20h8081dfu.jpg" alt=""></p>
-<pre><code class="highlight plain">&#x2F;&#x2F;目标接口，或称为标准接口 
-public interface Target &#123;
-    &#x2F;&#x2F;普通功能
+<pre><code>//目标接口，或称为标准接口 
+public interface Target {
+    //普通功能
     public void request();
-&#125;
- 
-&#x2F;&#x2F;已存在的、具有特殊功能、但不符合我们既有的标准接口的类  
-public class Adaptee &#123;
-    public void specificRequest() &#123;
+}
+
+//已存在的、具有特殊功能、但不符合我们既有的标准接口的类  
+public class Adaptee {
+    public void specificRequest() {
         System.out.println(&quot;被适配类...我是两孔插座  具有特殊功能&quot;);
-    &#125;
-&#125;
- 
-&#x2F;&#x2F;适配器类，继承了被适配类，同时实现标准接口
-public class Adapter extends Adaptee implements Target  &#123;
+    }
+}
+
+//适配器类，继承了被适配类，同时实现标准接口
+public class Adapter extends Adaptee implements Target  {
     @Override
-    public void request() &#123;
+    public void request() {
         System.out.println(&quot;我是适配器类 我能适配任何两孔插座 让它正常工作&quot;);
         this.specificRequest();
-    &#125;
- &#125;
- 
- 
-public class Client &#123;
-    public static void main(String[] args) &#123;
-         Target adapter &#x3D; new Adapter(); 
-         &#x2F;&#x2F;通过适配器调用特殊功能
+    }
+ }
+
+
+public class Client {
+    public static void main(String[] args) {
+         Target adapter = new Adapter(); 
+         //通过适配器调用特殊功能
          adapter.request();  
-    &#125;
-&#125;
+    }
+}
 对象适配器（采用对象组合方式实现）
 对象适配器
 
 源代码：
-&#x2F;&#x2F;目标接口，或称为标准接口 
-public interface Target &#123;
-    &#x2F;&#x2F;普通功能
+//目标接口，或称为标准接口 
+public interface Target {
+    //普通功能
     public void request();
-&#125;
- 
-&#x2F;&#x2F;已存在的、具有特殊功能、但不符合我们既有的标准接口的类  
-public class Adaptee &#123;
-    public void specificRequest() &#123;
+}
+
+//已存在的、具有特殊功能、但不符合我们既有的标准接口的类  
+public class Adaptee {
+    public void specificRequest() {
         System.out.println(&quot;被适配类...我是两孔插座  具有特殊功能&quot;);
-    &#125;
-&#125; 
- 
-&#x2F;&#x2F;适配器类，直接关联被适配类，同时实现标准接口  
-class Adapter implements Target &#123;
-    &#x2F;&#x2F; 直接关联被适配类
+    }
+} 
+
+//适配器类，直接关联被适配类，同时实现标准接口  
+class Adapter implements Target {
+    // 直接关联被适配类
     private Adaptee adaptee;
- 
-    &#x2F;&#x2F; 可以通过构造函数传入具体需要适配的被适配类对象
-    public Adapter(Adaptee adaptee) &#123;
-        this.adaptee &#x3D; adaptee;
-    &#125;
- 
-    public void request() &#123;
-        &#x2F;&#x2F; 这里是使用委托的方式完成特殊功能
+
+    // 可以通过构造函数传入具体需要适配的被适配类对象
+    public Adapter(Adaptee adaptee) {
+        this.adaptee = adaptee;
+    }
+
+    public void request() {
+        // 这里是使用委托的方式完成特殊功能
         System.out.println(&quot;我是适配器类 我能适配任何两孔插座 让它正常工作&quot;);
         this.adaptee.specificRequest();
-    &#125;
-&#125;
- 
-public class Client &#123;
-    public static void main(String[] args) &#123;
-        &#x2F;&#x2F;使用特殊功能类，即适配类，  
-        &#x2F;&#x2F; 需要先创建一个被适配类的对象作为参数  
-        Target adapter &#x3D; new Adapter(new Adaptee());  
-        adapter.request();  
-    &#125;
-&#125;</code></pre>
+    }
+}
 
-<h3 id="两种方式使用权衡"><a href="#两种方式使用权衡" class="headerlink" title="两种方式使用权衡"></a>两种方式使用权衡</h3><ul>
+public class Client {
+    public static void main(String[] args) {
+        //使用特殊功能类，即适配类，  
+        // 需要先创建一个被适配类的对象作为参数  
+        Target adapter = new Adapter(new Adaptee());  
+        adapter.request();  
+    }
+}</code></pre><h3 id="两种方式使用权衡"><a href="#两种方式使用权衡" class="headerlink" title="两种方式使用权衡"></a>两种方式使用权衡</h3><ul>
 <li>类适配器使用对象继承的方式，是静态的定义方式；而对象适配器使用对象组合的方式，是动态组合的方式。</li>
 <li>对于对象适配器，一个适配器可以把多种不同的源适配到同一个目标。换言之，同一个适配器可以把源类和它的子类都适配到目标接口。因为对象适配器采用的是对象组合的关系，只要对象类型正确，是不是子类都无所谓。</li>
 <li>对于对象适配器，要重定义Adaptee的行为比较困难，这种情况下，需要定义Adaptee的子类来实现重定义，然后让适配器组合子类。虽然重定义 Adaptee的行为比较困难，但是想要增加一些新的行为则方便的很，而且新增加的行为可同时适用于所有的源。</li>

@@ -79,12 +79,12 @@
 
 
 
-<meta name="description" content="PredicatePredicate接口为函数式接口 &#x2F;**  * Evaluates this predicate on the given argument.  *  * @param t the input argument  * @return &amp;#123;@code true&amp;#125; if the input argument matches the predicate,">
+<meta name="description" content="PredicatePredicate接口为函数式接口     &#x2F;**      * Evaluates this predicate on the given argument.      *      * @param t the input argument      * @return {@code true} if the input argument matches the predic">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Predicate和Function">
 <meta property="og:url" content="http://yoursite.com/2020/06/17/Function%20and%20Predicate/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="PredicatePredicate接口为函数式接口 &#x2F;**  * Evaluates this predicate on the given argument.  *  * @param t the input argument  * @return &amp;#123;@code true&amp;#125; if the input argument matches the predicate,">
+<meta property="og:description" content="PredicatePredicate接口为函数式接口     &#x2F;**      * Evaluates this predicate on the given argument.      *      * @param t the input argument      * @return {@code true} if the input argument matches the predic">
 <meta property="article:published_time" content="2020-06-16T17:43:37.221Z">
 <meta property="article:modified_time" content="2020-06-16T17:43:37.221Z">
 <meta property="article:author" content="sinaill">
@@ -342,35 +342,30 @@
 
       
         <h3 id="Predicate"><a href="#Predicate" class="headerlink" title="Predicate"></a>Predicate</h3><p>Predicate接口为函数式接口</p>
-<pre><code class="highlight plain">&#x2F;**
- * Evaluates this predicate on the given argument.
- *
- * @param t the input argument
- * @return &#123;@code true&#125; if the input argument matches the predicate,
- * otherwise &#123;@code false&#125;
- *&#x2F;
-boolean test(T t);</code></pre>
-<h3 id="Function"><a href="#Function" class="headerlink" title="Function"></a>Function</h3><p>Function接口为函数式接口</p>
-<pre><code class="highlight plain">&#x2F;**
- * Applies this function to the given argument.
- *
- * @param t the function argument
- * @return the function result
- *&#x2F;
-R apply(T t);</code></pre>
-
-<p>与Consumer接口类似，但Function的抽象方法有返回值</p>
-<pre><code class="highlight plain">&#x2F;**
- * Returns a function that always returns its input argument.
- *
- * @param &lt;T&gt; the type of the input and output objects to the function
- * @return a function that always returns its input argument
- *&#x2F;
-static &lt;T&gt; Function&lt;T, T&gt; identity() &#123;
-    return t -&gt; t;
-&#125;</code></pre>
-
-<p>相当于用lambda实现apply抽象方法：u-&gt;u</p>
+<pre><code>    /**
+     * Evaluates this predicate on the given argument.
+     *
+     * @param t the input argument
+     * @return {@code true} if the input argument matches the predicate,
+     * otherwise {@code false}
+     */
+    boolean test(T t);</code></pre><h3 id="Function"><a href="#Function" class="headerlink" title="Function"></a>Function</h3><p>Function接口为函数式接口</p>
+<pre><code>    /**
+     * Applies this function to the given argument.
+     *
+     * @param t the function argument
+     * @return the function result
+     */
+    R apply(T t);</code></pre><p>与Consumer接口类似，但Function的抽象方法有返回值</p>
+<pre><code>    /**
+     * Returns a function that always returns its input argument.
+     *
+     * @param &lt;T&gt; the type of the input and output objects to the function
+     * @return a function that always returns its input argument
+     */
+    static &lt;T&gt; Function&lt;T, T&gt; identity() {
+        return t -&gt; t;
+    }</code></pre><p>相当于用lambda实现apply抽象方法：u-&gt;u</p>
 
       
     </div>
@@ -401,8 +396,8 @@ static &lt;T&gt; Function&lt;T, T&gt; identity() &#123;
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/06/17/HashMap%20and%20HashTable/" rel="next" title="HashMap与HashTable">
-                <i class="fa fa-chevron-left"></i> HashMap与HashTable
+              <a href="/2020/06/17/Cache%20of%20base%20date%20type/" rel="next" title="基本数据类型中的缓存">
+                <i class="fa fa-chevron-left"></i> 基本数据类型中的缓存
               </a>
             
           </div>
@@ -411,8 +406,8 @@ static &lt;T&gt; Function&lt;T, T&gt; identity() &#123;
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2020/06/17/Cache%20of%20base%20date%20type/" rel="prev" title="基本数据类型中的缓存">
-                基本数据类型中的缓存 <i class="fa fa-chevron-right"></i>
+              <a href="/2020/06/17/InnerClass/" rel="prev" title="内部类">
+                内部类 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>

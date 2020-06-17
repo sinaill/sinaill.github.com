@@ -342,28 +342,26 @@
 
       
         <h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><p>@ModelAttribute.这个注解可以用在方法参数上，或是方法声明上。这个注解的主要作用是绑定request或是form参数到模型对象。可以使用保存在request或session中的对象来组装模型对象。注意，被@ModelAttribute注解的方法会在controller方法（@RequestMapping注解的）之前执行。因为模型对象要先于controller方法之前创建。</p>
-<h3 id="笔记"><a href="#笔记" class="headerlink" title="笔记"></a>笔记</h3><pre><code class="highlight plain">	@ModelAttribute
-	public Person mda() &#123;
-		return new Person(&quot;zh&quot;, 14);
-	&#125;
+<h3 id="笔记"><a href="#笔记" class="headerlink" title="笔记"></a>笔记</h3><pre><code>    @ModelAttribute
+    public Person mda() {
+        return new Person(&quot;zh&quot;, 14);
+    }
 
-	@RequestMapping(&quot;&#x2F;test&quot;)
-	public ModelAndView test(@ModelAttribute Person person,Model model) &#123;
-		ModelAndView mov &#x3D; new ModelAndView(&quot;param&quot;);
-		System.out.println(model.containsAttribute(&quot;person&quot;));
-		mov.addObject(&quot;person&quot;, person);
-		return mov;
-	&#125;
+    @RequestMapping(&quot;/test&quot;)
+    public ModelAndView test(@ModelAttribute Person person,Model model) {
+        ModelAndView mov = new ModelAndView(&quot;param&quot;);
+        System.out.println(model.containsAttribute(&quot;person&quot;));
+        mov.addObject(&quot;person&quot;, person);
+        return mov;
+    }
 
-	&#x2F;&#x2F;或者
+    //或者
 
-	@ModelAttribute(&quot;attr&quot;)
-	public void mda(Map map) &#123;
-&#x2F;&#x2F;		Person person &#x3D; new Person(&quot;li&quot;, 12);
-		map.put(&quot;person&quot;, new Person(&quot;zh&quot;, 14));
-	&#125;</code></pre>
-
-<ol>
+    @ModelAttribute(&quot;attr&quot;)
+    public void mda(Map map) {
+//        Person person = new Person(&quot;li&quot;, 12);
+        map.put(&quot;person&quot;, new Person(&quot;zh&quot;, 14));
+    }</code></pre><ol>
 <li>注解可以指定名称，如果没有指定，则以类名首字母小写为名字，若注解指定了名字，则在形参前面的ModelAttribute也要带上已指定的名字</li>
 <li>在ModelAttribute中使用Map,Model保存的数据，可以在controller中的Map或Model获取</li>
 <li>主要用来填充表格，当jsp页面表单项不包含该类所有属性时，可以先在ModelAttribute中根据相应变量先从数据库取出数据，然后表单数据提交到controller中对应方法时，覆盖用ModelAttribute注解修饰的形参，达到自动填充形参所有数据</li>
@@ -399,8 +397,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/06/17/LinkedHashMap/" rel="next" title="LinkedHashMap与LRU算法">
-                <i class="fa fa-chevron-left"></i> LinkedHashMap与LRU算法
+              <a href="/2020/06/17/HashMap/" rel="next" title="HashMap">
+                <i class="fa fa-chevron-left"></i> HashMap
               </a>
             
           </div>
@@ -409,8 +407,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2020/06/17/JDBC/" rel="prev" title="JDBC">
-                JDBC <i class="fa fa-chevron-right"></i>
+              <a href="/2020/06/17/LinkedHashMap/" rel="prev" title="LinkedHashMap与LRU算法">
+                LinkedHashMap与LRU算法 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>

@@ -354,140 +354,132 @@
 <h3 id="java流类结构图"><a href="#java流类结构图" class="headerlink" title="java流类结构图"></a>java流类结构图</h3><p>通过一张关系图来了解一下Java中的IO流构成：</p>
 <p><img src="http://wx4.sinaimg.cn/large/96b7c0f4gy1fzorzopl97j20j30l70tu.jpg" alt=""></p>
 <h3 id="IO流的具体应用"><a href="#IO流的具体应用" class="headerlink" title="IO流的具体应用"></a>IO流的具体应用</h3><h4 id="FileinputStream-FileoutputStream"><a href="#FileinputStream-FileoutputStream" class="headerlink" title="FileinputStream/FileoutputStream"></a>FileinputStream/FileoutputStream</h4><p>从类名就看出是用来操作文件的字节流，将c盘中一张jpg格式的图片复制并更改文件名</p>
-<pre><code class="highlight plain">public class Copy &#123;
-	public static void main(String[] args)&#123;
-		InputStream in &#x3D; null;
-		OutputStream out &#x3D; null;
-		try &#123;
-			in &#x3D; new FileInputStream(&quot;c:&#x2F;1.jpg&quot;);
-			out &#x3D; new FileOutputStream(new File(&quot;c:&#x2F;2.jpg&quot;));
-			byte buffer[] &#x3D; new byte[20];
-			while(in.read(buffer) !&#x3D; -1)&#123;
-				out.write(buffer);
-			&#125;
-		&#125; catch (FileNotFoundException e) &#123;
-			&#x2F;&#x2F; TODO Auto-generated catch block
-			e.printStackTrace();
-		&#125;catch (IOException e) &#123;
-			&#x2F;&#x2F; TODO: handle exception
-			e.printStackTrace();
-		&#125;finally &#123;
-			try &#123;
-				in.close();
-				out.close();
-			&#125; catch (IOException e) &#123;
-				&#x2F;&#x2F; TODO Auto-generated catch block
-				e.printStackTrace();
-			&#125;
-			
-		&#125;
-	&#125;
-&#125;</code></pre>
+<pre><code>public class Copy {
+    public static void main(String[] args){
+        InputStream in = null;
+        OutputStream out = null;
+        try {
+            in = new FileInputStream(&quot;c:/1.jpg&quot;);
+            out = new FileOutputStream(new File(&quot;c:/2.jpg&quot;));
+            byte buffer[] = new byte[20];
+            while(in.read(buffer) != -1){
+                out.write(buffer);
+            }
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }catch (IOException e) {
+            // TODO: handle exception
+            e.printStackTrace();
+        }finally {
+            try {
+                in.close();
+                out.close();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
 
-<h4 id="FileReader-FileWriter"><a href="#FileReader-FileWriter" class="headerlink" title="FileReader/FileWriter"></a>FileReader/FileWriter</h4><p>从类名能看出是操作文件的字符流(实际上是简单装饰了父类<code>InputStreamReader/OutputStreamWriter</code>，这两个字符流仅仅只有构造函数没有覆写方法，可以当作可接收字符流的<code>InputStreamReader/OutputStreamWriter</code>)，将一个txt文件的内容复制到一个新建的名为test2的txt文件里。</p>
-<pre><code class="highlight plain">public class Copy2 &#123;
-	public static void main(String[] args) &#123;
-		Reader reader &#x3D; null;
-		Writer writer &#x3D; null;
-		try &#123;
-			reader &#x3D; new FileReader(&quot;c:&#x2F;test.txt&quot;);
-			writer &#x3D; new FileWriter(new File(&quot;c:&#x2F;test2.txt&quot;));
-			char buff[] &#x3D; new char[20];
-			while(reader.read(buff) !&#x3D; -1)&#123;
-				writer.write(buff);
-			&#125;
-		&#125; catch (Exception e) &#123;
-			&#x2F;&#x2F; TODO Auto-generated catch block
-			e.printStackTrace();
-		&#125;finally &#123;
-			try &#123;
-				reader.close();
-				writer.close();
-			&#125; catch (IOException e) &#123;
-				&#x2F;&#x2F; TODO Auto-generated catch block
-				e.printStackTrace();
-			&#125;
-		&#125;
-	&#125;
-&#125;</code></pre>
-
-<h4 id="BufferedReader-BufferedWriter"><a href="#BufferedReader-BufferedWriter" class="headerlink" title="BufferedReader/BufferedWriter"></a>BufferedReader/BufferedWriter</h4><p>这两个类为带缓冲的字符流，采用装饰者模式对普通字符流进行装饰，构造方法传入一个<code>Reader/Writer</code>，内部维护一个8192长度的字符数组作为缓冲，当使用<code>public int read(char cbuf[], int offset, int length)</code>一次读取字符数超过缓冲默认长度8192，将不使用缓冲，直接读取到我们自定义的字符数组中(另一个输出流同理)。关闭输出流时，<code>close</code>方法清空缓冲并将缓冲中剩余字符写入。</p>
-<pre><code class="highlight plain">public class BufferCopy &#123;
-	public static void main(String[] args) &#123;
-		Reader reader &#x3D; null;
-		Writer writer &#x3D; null;
-		try &#123;
-			reader &#x3D; new BufferedReader(new FileReader(&quot;c:&#x2F;test.txt&quot;));
-			writer &#x3D; new BufferedWriter(new FileWriter(&quot;c:&#x2F;test2.txt&quot;));
-			int ch;
-			while((ch &#x3D; reader.read()) !&#x3D; -1)&#123;
-				writer.write(ch);
-			&#125;
-		&#125; catch (Exception e) &#123;
-			&#x2F;&#x2F; TODO: handle exception
-		&#125;finally &#123;
-			try &#123;
-				reader.close();
-				writer.close();
-			&#125; catch (IOException e) &#123;
-				&#x2F;&#x2F; TODO Auto-generated catch block
-				e.printStackTrace();
-			&#125;
-		&#125;
-	&#125;
-&#125;</code></pre>
-
-<h4 id="BufferedInputStream-BufferedOutputStream"><a href="#BufferedInputStream-BufferedOutputStream" class="headerlink" title="BufferedInputStream/BufferedOutputStream"></a>BufferedInputStream/BufferedOutputStream</h4><p>带缓冲的字节流，采用装饰者模式对普通字节流进行装饰，构造方法传入一个<code>InputStream</code>，内部维护8192长度的字节数组作为缓冲，当使用<code>public synchronized int read(byte b[], int off, int len)</code>一次读取字节数超过8192个字节，将不使用缓冲，直接读取到我们自定义的字节数组中(另一个输出流同理)，关闭输出流时，<code>close</code>方法清空缓冲并将剩余字节写入。</p>
-<pre><code class="highlight plain">public class BufferCopy2 &#123;
-	public static void main(String[] args) &#123;
-		BufferedInputStream bis &#x3D; null;
-		BufferedOutputStream bos &#x3D; null;
-		try &#123;
-			bis &#x3D; new BufferedInputStream(new FileInputStream(&quot;c:&#x2F;test.txt&quot;));
-			bos &#x3D; new BufferedOutputStream(new FileOutputStream(&quot;c:&#x2F;test2.txt&quot;));
-			int b;
-			while((b&#x3D;bis.read()) !&#x3D; -1)&#123;
-				bos.write(b);
-			&#125;
-		&#125; catch (Exception e) &#123;
-			&#x2F;&#x2F; TODO: handle exception
-		&#125;finally &#123;
-			try &#123;
-				bis.close();
-				bos.close();
-			&#125; catch (IOException e) &#123;
-				&#x2F;&#x2F; TODO Auto-generated catch block
-				e.printStackTrace();
-			&#125;
-		&#125;
-	&#125;
-&#125;</code></pre>
-
-<h4 id="InputStreamReader-OutputStreamWriter"><a href="#InputStreamReader-OutputStreamWriter" class="headerlink" title="InputStreamReader/OutputStreamWriter"></a>InputStreamReader/OutputStreamWriter</h4><p>这两个类是转化流，就是将字节流转化为字符流，通过构造函数传入的字节流和编码，使用<code>StreamDecoder/StreamEncode</code>将传进来的字节输入流/字节输出流编码为字符流。<code>StreamDecoder</code>的<code>read/write</code>实现字符的读写。</p>
-<pre><code class="highlight plain">public class Transfer &#123;
-	public static void main(String[] args) &#123;
-		Reader isr &#x3D; null;
-		Writer osw &#x3D; null;
-		try &#123;
-			isr &#x3D; new InputStreamReader(new FileInputStream(&quot;c:&#x2F;test.txt&quot;));
-			osw &#x3D; new OutputStreamWriter(new FileOutputStream(&quot;c:&#x2F;test2.txt&quot;));
-			int ch;
-			while((ch &#x3D; isr.read()) !&#x3D; -1)&#123;
-				osw.write(ch);
-			&#125;
-		&#125; catch (Exception e) &#123;
-			&#x2F;&#x2F; TODO: handle exception
-		&#125;finally &#123;
-			try &#123;
-				isr.close();
-				osw.close();
-			&#125; catch (IOException e) &#123;
-				&#x2F;&#x2F; TODO Auto-generated catch block
-				e.printStackTrace();
-			&#125;
-		&#125;
-	&#125;
-&#125;</code></pre>
+        }
+    }
+}</code></pre><h4 id="FileReader-FileWriter"><a href="#FileReader-FileWriter" class="headerlink" title="FileReader/FileWriter"></a>FileReader/FileWriter</h4><p>从类名能看出是操作文件的字符流(实际上是简单装饰了父类<code>InputStreamReader/OutputStreamWriter</code>，这两个字符流仅仅只有构造函数没有覆写方法，可以当作可接收字符流的<code>InputStreamReader/OutputStreamWriter</code>)，将一个txt文件的内容复制到一个新建的名为test2的txt文件里。</p>
+<pre><code>public class Copy2 {
+    public static void main(String[] args) {
+        Reader reader = null;
+        Writer writer = null;
+        try {
+            reader = new FileReader(&quot;c:/test.txt&quot;);
+            writer = new FileWriter(new File(&quot;c:/test2.txt&quot;));
+            char buff[] = new char[20];
+            while(reader.read(buff) != -1){
+                writer.write(buff);
+            }
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }finally {
+            try {
+                reader.close();
+                writer.close();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
+}</code></pre><h4 id="BufferedReader-BufferedWriter"><a href="#BufferedReader-BufferedWriter" class="headerlink" title="BufferedReader/BufferedWriter"></a>BufferedReader/BufferedWriter</h4><p>这两个类为带缓冲的字符流，采用装饰者模式对普通字符流进行装饰，构造方法传入一个<code>Reader/Writer</code>，内部维护一个8192长度的字符数组作为缓冲，当使用<code>public int read(char cbuf[], int offset, int length)</code>一次读取字符数超过缓冲默认长度8192，将不使用缓冲，直接读取到我们自定义的字符数组中(另一个输出流同理)。关闭输出流时，<code>close</code>方法清空缓冲并将缓冲中剩余字符写入。</p>
+<pre><code>public class BufferCopy {
+    public static void main(String[] args) {
+        Reader reader = null;
+        Writer writer = null;
+        try {
+            reader = new BufferedReader(new FileReader(&quot;c:/test.txt&quot;));
+            writer = new BufferedWriter(new FileWriter(&quot;c:/test2.txt&quot;));
+            int ch;
+            while((ch = reader.read()) != -1){
+                writer.write(ch);
+            }
+        } catch (Exception e) {
+            // TODO: handle exception
+        }finally {
+            try {
+                reader.close();
+                writer.close();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
+}</code></pre><h4 id="BufferedInputStream-BufferedOutputStream"><a href="#BufferedInputStream-BufferedOutputStream" class="headerlink" title="BufferedInputStream/BufferedOutputStream"></a>BufferedInputStream/BufferedOutputStream</h4><p>带缓冲的字节流，采用装饰者模式对普通字节流进行装饰，构造方法传入一个<code>InputStream</code>，内部维护8192长度的字节数组作为缓冲，当使用<code>public synchronized int read(byte b[], int off, int len)</code>一次读取字节数超过8192个字节，将不使用缓冲，直接读取到我们自定义的字节数组中(另一个输出流同理)，关闭输出流时，<code>close</code>方法清空缓冲并将剩余字节写入。</p>
+<pre><code>public class BufferCopy2 {
+    public static void main(String[] args) {
+        BufferedInputStream bis = null;
+        BufferedOutputStream bos = null;
+        try {
+            bis = new BufferedInputStream(new FileInputStream(&quot;c:/test.txt&quot;));
+            bos = new BufferedOutputStream(new FileOutputStream(&quot;c:/test2.txt&quot;));
+            int b;
+            while((b=bis.read()) != -1){
+                bos.write(b);
+            }
+        } catch (Exception e) {
+            // TODO: handle exception
+        }finally {
+            try {
+                bis.close();
+                bos.close();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
+}</code></pre><h4 id="InputStreamReader-OutputStreamWriter"><a href="#InputStreamReader-OutputStreamWriter" class="headerlink" title="InputStreamReader/OutputStreamWriter"></a>InputStreamReader/OutputStreamWriter</h4><p>这两个类是转化流，就是将字节流转化为字符流，通过构造函数传入的字节流和编码，使用<code>StreamDecoder/StreamEncode</code>将传进来的字节输入流/字节输出流编码为字符流。<code>StreamDecoder</code>的<code>read/write</code>实现字符的读写。</p>
+<pre><code>public class Transfer {
+    public static void main(String[] args) {
+        Reader isr = null;
+        Writer osw = null;
+        try {
+            isr = new InputStreamReader(new FileInputStream(&quot;c:/test.txt&quot;));
+            osw = new OutputStreamWriter(new FileOutputStream(&quot;c:/test2.txt&quot;));
+            int ch;
+            while((ch = isr.read()) != -1){
+                osw.write(ch);
+            }
+        } catch (Exception e) {
+            // TODO: handle exception
+        }finally {
+            try {
+                isr.close();
+                osw.close();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
+}</code></pre>
       
     </div>
     
@@ -527,8 +519,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2020/06/17/java8/" rel="prev" title="jdk1.8新特性">
-                jdk1.8新特性 <i class="fa fa-chevron-right"></i>
+              <a href="/2020/06/17/mysql%20error%201045/" rel="prev" title="mysql error 1045">
+                mysql error 1045 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>

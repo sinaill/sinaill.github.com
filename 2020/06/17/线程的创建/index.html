@@ -343,71 +343,65 @@
       
         <h3 id="什么是线程"><a href="#什么是线程" class="headerlink" title="什么是线程"></a>什么是线程</h3><p>线程，有时被称为轻量进程(Lightweight Process，LWP），是程序执行流的最小单元。一个标准的线程由线程ID，当前指令指针(PC），寄存器集合和堆栈组成。另外，线程是进程中的一个实体，是被系统独立调度和分派的基本单位，线程自己不拥有系统资源，只拥有一点儿在运行中必不可少的资源，但它可与同属一个进程的其它线程共享进程所拥有的全部资源。一个线程可以创建和撤消另一个线程，同一进程中的多个线程之间可以并发执行。由于线程之间的相互制约，致使线程在运行中呈现出间断性。线程也有就绪、阻塞和运行三种基本状态。就绪状态是指线程具备运行的所有条件，逻辑上可以运行，在等待处理机；运行状态是指线程占有处理机正在运行；阻塞状态是指线程在等待一个事件（如某个信号量），逻辑上不可执行。每一个程序都至少有一个线程，若程序只有一个线程，那就是程序本身。</p>
 <h3 id="线程的创建"><a href="#线程的创建" class="headerlink" title="线程的创建"></a>线程的创建</h3><h4 id="Thread"><a href="#Thread" class="headerlink" title="Thread"></a>Thread</h4><p>直接继承<code>Thread</code>，覆写<code>run</code>方法</p>
-<pre><code class="highlight plain">public class Mythread &#123;
-	public static void main(String[] args) &#123;
-		Thread t &#x3D; new testThread();
-		t.start();
-	&#125;
-&#125;
+<pre><code>public class Mythread {
+    public static void main(String[] args) {
+        Thread t = new testThread();
+        t.start();
+    }
+}
 
 
-class testThread extends Thread&#123;
+class testThread extends Thread{
 
-	@Override
-	public void run() &#123;
-		&#x2F;&#x2F; TODO Auto-generated method stub
-		super.run();
-		System.out.println(1);
-	&#125;
-	
-&#125;</code></pre>
+    @Override
+    public void run() {
+        // TODO Auto-generated method stub
+        super.run();
+        System.out.println(1);
+    }
 
-<h4 id="Runnable"><a href="#Runnable" class="headerlink" title="Runnable"></a>Runnable</h4><p>实现<code>Runnable</code>接口，覆写<code>run</code>方法</p>
-<pre><code class="highlight plain">public class Mythread &#123;
-	public static void main(String[] args) &#123;
-		testThread MyThread &#x3D; new testThread();
-		new Thread(MyThread).start();
-	&#125;
-&#125;
+}</code></pre><h4 id="Runnable"><a href="#Runnable" class="headerlink" title="Runnable"></a>Runnable</h4><p>实现<code>Runnable</code>接口，覆写<code>run</code>方法</p>
+<pre><code>public class Mythread {
+    public static void main(String[] args) {
+        testThread MyThread = new testThread();
+        new Thread(MyThread).start();
+    }
+}
 
 
-class testThread implements Runnable&#123;
+class testThread implements Runnable{
 
-	@Override
-	public void run() &#123;
-		&#x2F;&#x2F; TODO Auto-generated method stub
-		System.out.println(1);
-	&#125;
-	
-&#125;</code></pre>
+    @Override
+    public void run() {
+        // TODO Auto-generated method stub
+        System.out.println(1);
+    }
 
-<h3 id="两种创建方法的区别"><a href="#两种创建方法的区别" class="headerlink" title="两种创建方法的区别"></a>两种创建方法的区别</h3><p>使用实现<code>Runnable</code>接口的方法可以很容易实现线程之间共享资源</p>
+}</code></pre><h3 id="两种创建方法的区别"><a href="#两种创建方法的区别" class="headerlink" title="两种创建方法的区别"></a>两种创建方法的区别</h3><p>使用实现<code>Runnable</code>接口的方法可以很容易实现线程之间共享资源</p>
 <p>采用实现接口的方法可以避免java中的单继承限制</p>
-<pre><code class="highlight plain">public class Mythread &#123;
-	public static void main(String[] args) &#123;
-		testThread MyThread &#x3D; new testThread();
-		new Thread(MyThread,&quot;线程1&quot;).start();
-		new Thread(MyThread,&quot;线程2&quot;).start();
-	&#125;
-&#125;
+<pre><code>public class Mythread {
+    public static void main(String[] args) {
+        testThread MyThread = new testThread();
+        new Thread(MyThread,&quot;线程1&quot;).start();
+        new Thread(MyThread,&quot;线程2&quot;).start();
+    }
+}
 
 
-class testThread implements Runnable&#123;
-	public int i &#x3D; 10;
-	@Override
-	public void run() &#123;
-		&#x2F;&#x2F; TODO Auto-generated method stub
-		for(int a &#x3D; 0;a &lt; 10;a++)&#123;
-			if(a&gt;0)&#123;
-				System.out.println(Thread.currentThread().getName()+&quot;:&quot;+i--);
-			&#125;
-		&#125;
-	&#125;
-	
-&#125;</code></pre>
+class testThread implements Runnable{
+    public int i = 10;
+    @Override
+    public void run() {
+        // TODO Auto-generated method stub
+        for(int a = 0;a &lt; 10;a++){
+            if(a&gt;0){
+                System.out.println(Thread.currentThread().getName()+&quot;:&quot;+i--);
+            }
+        }
+    }
 
-<p>输出为：</p>
-<pre><code class="highlight plain">线程2:10
+}</code></pre><p>输出为：</p>
+<pre><code>线程2:10
 线程1:9
 线程1:7
 线程1:6
@@ -424,9 +418,7 @@ class testThread implements Runnable&#123;
 线程2:-4
 线程2:-5
 线程2:-6
-线程2:-7</code></pre>
-
-<p>从以上结果可以看出，实现<code>runnable</code>的类中定义的变量是所有用它来创建的线程共享的，并且两个线程进入同一个<code>run</code>方法。</p>
+线程2:-7</code></pre><p>从以上结果可以看出，实现<code>runnable</code>的类中定义的变量是所有用它来创建的线程共享的，并且两个线程进入同一个<code>run</code>方法。</p>
 <h3 id="线程优先级"><a href="#线程优先级" class="headerlink" title="线程优先级"></a>线程优先级</h3><p>Java线程有优先级，优先级高的线程会获得较多的运行机会(调用start方法只是使线程处于就绪状态，需要等cpu调度)</p>
 <p>Java线程的优先级用整数表示，取值范围是1~10，Thread类有以下三个静态常量：<br><code>static int MAX_PRIORITY</code>：线程可以具有的最高优先级，取值为10。<br><code>static int MIN_PRIORITY</code>：线程可以具有的最低优先级，取值为1。<br><code>static int NORM_PRIORITY</code>：分配给线程的默认优先级，取值为5。</p>
 <p><code>Thread</code>类的<code>setPriority()</code>和<code>getPriority()</code>方法分别用来设置和获取线程的优先级。</p>

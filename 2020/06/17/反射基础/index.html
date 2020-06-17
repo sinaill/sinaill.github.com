@@ -417,135 +417,135 @@
 </ol>
 <p>获取包含了所有声明的构造函数的<code>Constructor</code>数组</p>
 <p>区别：<code>getConstructors</code>获取的是类中修饰符为public的构造函数，<code>getDeclaredConstructors</code>获取的是类中所有声明的构造函数</p>
-<h3 id="具体运用"><a href="#具体运用" class="headerlink" title="具体运用"></a>具体运用</h3><pre><code class="highlight plain">class reflect&#123;
-	public char asc &#x3D; &#39;a&#39;;
-	private int num;
-	private String string;
-	private int privateNum &#x3D; 1;
-	public reflect()&#123;
-		
-	&#125;
-	
-	public reflect(int num,String string)&#123;
-		this.num &#x3D; num;
-		this.string &#x3D; string;
-	&#125;
+<h3 id="具体运用"><a href="#具体运用" class="headerlink" title="具体运用"></a>具体运用</h3><pre><code>class reflect{
+    public char asc = &#39;a&#39;;
+    private int num;
+    private String string;
+    private int privateNum = 1;
+    public reflect(){
 
-	public int getNum() &#123;
-		return num;
-	&#125;
+    }
 
-	public void setNum(int num) &#123;
-		this.num &#x3D; num;
-	&#125;
+    public reflect(int num,String string){
+        this.num = num;
+        this.string = string;
+    }
 
-	public String getString() &#123;
-		return string;
-	&#125;
+    public int getNum() {
+        return num;
+    }
 
-	public void setString(String string) &#123;
-		this.string &#x3D; string;
-	&#125;
-	
-	public int getNum(int i)&#123;
-		return num+i;
-	&#125;
-	
-	public void out()&#123;
-		System.out.println(num+string);
-	&#125;
-&#125;
+    public void setNum(int num) {
+        this.num = num;
+    }
 
-class sonReflect extends reflect&#123;
-	
-	public boolean bool &#x3D; true;
-	private float fnum;
-	
-	public sonReflect() &#123;
-		
-	&#125;
+    public String getString() {
+        return string;
+    }
 
-	public sonReflect(float fnum) &#123;
-		this.fnum &#x3D; fnum;
-	&#125;
+    public void setString(String string) {
+        this.string = string;
+    }
 
-	public float getFnum() &#123;
-		return fnum;
-	&#125;
+    public int getNum(int i){
+        return num+i;
+    }
 
-	public void setFnum(float fnum) &#123;
-		this.fnum &#x3D; fnum;
-	&#125;
-	
-	public void out()&#123;
-		
-	&#125;
-	
-	private void privateOut()&#123;
-		
-	&#125;
-&#125;
+    public void out(){
+        System.out.println(num+string);
+    }
+}
+
+class sonReflect extends reflect{
+
+    public boolean bool = true;
+    private float fnum;
+
+    public sonReflect() {
+
+    }
+
+    public sonReflect(float fnum) {
+        this.fnum = fnum;
+    }
+
+    public float getFnum() {
+        return fnum;
+    }
+
+    public void setFnum(float fnum) {
+        this.fnum = fnum;
+    }
+
+    public void out(){
+
+    }
+
+    private void privateOut(){
+
+    }
+}
 
 
 
-		reflect r &#x3D; new reflect(1,&quot;1&quot;);
-		sonReflect sr &#x3D; new sonReflect(1.1f);
-		Class&lt;?&gt; rc &#x3D; r.getClass();
-		Class&lt;?&gt; src &#x3D; sr.getClass();
-		&#x2F;&#x2F;获取子类的Method
-		Method srcdeclaredMethod[] &#x3D; src.getDeclaredMethods();
-		Method srcMethod[] &#x3D; src.getMethods();
-		Arrays.asList(srcdeclaredMethod).forEach(m-&gt;System.out.print(m.getName()+&quot; &quot;));
-		System.out.println();
-		Arrays.asList(srcMethod).forEach(m-&gt;System.out.print(m.getName()+&quot; &quot;));
-		&#x2F;* 输出为:
-		 * out getFnum setFnum  和
-		 * out getFnum setFnum getString getNum getNum setNum setString
-		 * wait wait wait equals toString hashCode getClass notify notifyAll
-		 * getDeclaredMethods只能获取到当前类声明的所有类型方法，而getMethods能
-		 * 获取当前和从父类继承的public方法，例如privateOut方法它就无法获得
-		 * *&#x2F;
-		System.out.println();
-		Field srcdeclaredField[] &#x3D; src.getDeclaredFields();
-		Field srcField[] &#x3D; src.getFields();
-		Arrays.asList(srcdeclaredField).forEach(m-&gt;System.out.print(m.getName()+&quot; &quot;));
-		System.out.println();
-		Arrays.asList(srcField).forEach(m-&gt;System.out.print(m.getName()+&quot; &quot;));
-		&#x2F;* 输出为:
-		 * bool fnum 和 bool asc,从结果看出getDeclaredFields方法获取到了自身公有和私有
-		 * 属性,而getFields方法获取到了父类和子类的所有共有属性
-		 * 
-		 * *&#x2F;
-		
-		Method m &#x3D; rc.getMethod(&quot;getNum&quot;, new Class[]&#123;int.class&#125;);
-		Method m1 &#x3D; rc.getMethod(&quot;getNum&quot;);
-		System.out.println(m.invoke(r, 1));
-		System.out.println(m1.invoke(r));
-	  &#x2F;&#x2F;System.out.println(m1.invoke(r, 1));&#x2F;&#x2F;抛出异常
-		&#x2F;*输出为:2 1 和一个异常,通过形参数组确定具体
-		 * 方法,再用invoke函数调用对象方法
-		 *&#x2F;
-		
-		Field f &#x3D; rc.getDeclaredField(&quot;privateNum&quot;);
-&#x2F;&#x2F;		Field f1 &#x3D; rc.getField(&quot;privateNum&quot;); 
-&#x2F;&#x2F;		System.out.println(f.get(r)+&quot; &quot;+f1.get(r));
-		f.setAccessible(true);
-		System.out.println(f.get(r));
-		&#x2F;* 抛出两个异常,getField只能获取子类和父类的公有属性
-		 * f为私有属性且没有get方法,需要setAccessible设为true
-		 * 才能调用Field的get方法获取
-		 *&#x2F;
+        reflect r = new reflect(1,&quot;1&quot;);
+        sonReflect sr = new sonReflect(1.1f);
+        Class&lt;?&gt; rc = r.getClass();
+        Class&lt;?&gt; src = sr.getClass();
+        //获取子类的Method
+        Method srcdeclaredMethod[] = src.getDeclaredMethods();
+        Method srcMethod[] = src.getMethods();
+        Arrays.asList(srcdeclaredMethod).forEach(m-&gt;System.out.print(m.getName()+&quot; &quot;));
+        System.out.println();
+        Arrays.asList(srcMethod).forEach(m-&gt;System.out.print(m.getName()+&quot; &quot;));
+        /* 输出为:
+         * out getFnum setFnum  和
+         * out getFnum setFnum getString getNum getNum setNum setString
+         * wait wait wait equals toString hashCode getClass notify notifyAll
+         * getDeclaredMethods只能获取到当前类声明的所有类型方法，而getMethods能
+         * 获取当前和从父类继承的public方法，例如privateOut方法它就无法获得
+         * */
+        System.out.println();
+        Field srcdeclaredField[] = src.getDeclaredFields();
+        Field srcField[] = src.getFields();
+        Arrays.asList(srcdeclaredField).forEach(m-&gt;System.out.print(m.getName()+&quot; &quot;));
+        System.out.println();
+        Arrays.asList(srcField).forEach(m-&gt;System.out.print(m.getName()+&quot; &quot;));
+        /* 输出为:
+         * bool fnum 和 bool asc,从结果看出getDeclaredFields方法获取到了自身公有和私有
+         * 属性,而getFields方法获取到了父类和子类的所有共有属性
+         * 
+         * */
 
-		try &#123;
-			Class constructor &#x3D; Class.forName(&quot;reflect.reflect&quot;);
-			Constructor con &#x3D; constructor.getConstructor(new Class[]&#123;int.class,String.class&#125;);
-			reflect nr &#x3D; (reflect) con.newInstance(3,&quot;333&quot;);
-			nr.out();
-		&#125; catch (Exception e) &#123;
-			&#x2F;&#x2F; TODO Auto-generated catch block
-			e.printStackTrace();
-		&#125;
-		&#x2F;&#x2F;除了class.newInstance，构造器也能用来创建实例</code></pre>
+        Method m = rc.getMethod(&quot;getNum&quot;, new Class[]{int.class});
+        Method m1 = rc.getMethod(&quot;getNum&quot;);
+        System.out.println(m.invoke(r, 1));
+        System.out.println(m1.invoke(r));
+      //System.out.println(m1.invoke(r, 1));//抛出异常
+        /*输出为:2 1 和一个异常,通过形参数组确定具体
+         * 方法,再用invoke函数调用对象方法
+         */
+
+        Field f = rc.getDeclaredField(&quot;privateNum&quot;);
+//        Field f1 = rc.getField(&quot;privateNum&quot;); 
+//        System.out.println(f.get(r)+&quot; &quot;+f1.get(r));
+        f.setAccessible(true);
+        System.out.println(f.get(r));
+        /* 抛出两个异常,getField只能获取子类和父类的公有属性
+         * f为私有属性且没有get方法,需要setAccessible设为true
+         * 才能调用Field的get方法获取
+         */
+
+        try {
+            Class constructor = Class.forName(&quot;reflect.reflect&quot;);
+            Constructor con = constructor.getConstructor(new Class[]{int.class,String.class});
+            reflect nr = (reflect) con.newInstance(3,&quot;333&quot;);
+            nr.out();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        //除了class.newInstance，构造器也能用来创建实例</code></pre>
       
     </div>
     
@@ -575,8 +575,8 @@ class sonReflect extends reflect&#123;
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/06/17/%E5%8D%95%E9%93%BE%E8%A1%A8/" rel="next" title="单链表">
-                <i class="fa fa-chevron-left"></i> 单链表
+              <a href="/2020/06/17/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/" rel="next" title="单例模式">
+                <i class="fa fa-chevron-left"></i> 单例模式
               </a>
             
           </div>

@@ -79,12 +79,12 @@
 
 
 
-<meta name="description" content="role和permission授权类型分为role和permission，角色和权限permission粒度更小，通常可以为user:XXXX AuthorizingRealm需要用到授权时，我们的realm可以继承自这个类 public class ShiroRealm extends AuthorizingRealm&amp;#123;   	protected AuthorizationInfo d">
+<meta name="description" content="role和permission授权类型分为role和permission，角色和权限permission粒度更小，通常可以为user:XXXX AuthorizingRealm需要用到授权时，我们的realm可以继承自这个类 public class ShiroRealm extends AuthorizingRealm{       protected AuthorizationInfo doG">
 <meta property="og:type" content="article">
 <meta property="og:title" content="shiro授权">
 <meta property="og:url" content="http://yoursite.com/2020/06/17/shiro%E6%8E%88%E6%9D%83/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="role和permission授权类型分为role和permission，角色和权限permission粒度更小，通常可以为user:XXXX AuthorizingRealm需要用到授权时，我们的realm可以继承自这个类 public class ShiroRealm extends AuthorizingRealm&amp;#123;   	protected AuthorizationInfo d">
+<meta property="og:description" content="role和permission授权类型分为role和permission，角色和权限permission粒度更小，通常可以为user:XXXX AuthorizingRealm需要用到授权时，我们的realm可以继承自这个类 public class ShiroRealm extends AuthorizingRealm{       protected AuthorizationInfo doG">
 <meta property="article:published_time" content="2020-06-16T17:43:37.244Z">
 <meta property="article:modified_time" content="2020-06-16T17:43:37.245Z">
 <meta property="article:author" content="sinaill">
@@ -342,82 +342,78 @@
       
         <h3 id="role和permission"><a href="#role和permission" class="headerlink" title="role和permission"></a>role和permission</h3><p>授权类型分为role和permission，角色和权限permission粒度更小，通常可以为user:XXXX</p>
 <h3 id="AuthorizingRealm"><a href="#AuthorizingRealm" class="headerlink" title="AuthorizingRealm"></a>AuthorizingRealm</h3><p>需要用到授权时，我们的realm可以继承自这个类</p>
-<pre><code class="highlight plain">public class ShiroRealm extends AuthorizingRealm&#123;
+<pre><code>public class ShiroRealm extends AuthorizingRealm{
 
 
-	protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) &#123;
+    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
 
-	&#125;
+    }
 
-	@Override
-	protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException &#123;
+    @Override
+    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
 
-	&#125;
-	
-&#125;</code></pre>
+    }
 
-<p><code>doGetAuthenticationInfo</code>用来验证</p>
+}</code></pre><p><code>doGetAuthenticationInfo</code>用来验证</p>
 <p><code>doGetAuthorizationInfo</code>用来授权</p>
 <p>查看授权方法返回值AuthorizationInfo的实现类，其中</p>
-<pre><code class="highlight plain">   public void setRoles(Set&lt;String&gt; roles) &#123;
-       this.roles &#x3D; roles;
-   &#125;
+<pre><code>    public void setRoles(Set&lt;String&gt; roles) {
+        this.roles = roles;
+    }
 
-   public void addRole(String role) &#123;
-       if (this.roles &#x3D;&#x3D; null) &#123;
-           this.roles &#x3D; new HashSet&lt;String&gt;();
-       &#125;
-       this.roles.add(role);
-   &#125;
+    public void addRole(String role) {
+        if (this.roles == null) {
+            this.roles = new HashSet&lt;String&gt;();
+        }
+        this.roles.add(role);
+    }
 
-   public void addRoles(Collection&lt;String&gt; roles) &#123;
-       if (this.roles &#x3D;&#x3D; null) &#123;
-           this.roles &#x3D; new HashSet&lt;String&gt;();
-       &#125;
-       this.roles.addAll(roles);
-   &#125;
+    public void addRoles(Collection&lt;String&gt; roles) {
+        if (this.roles == null) {
+            this.roles = new HashSet&lt;String&gt;();
+        }
+        this.roles.addAll(roles);
+    }
 
-   public Set&lt;String&gt; getStringPermissions() &#123;
-       return stringPermissions;
-   &#125;
+    public Set&lt;String&gt; getStringPermissions() {
+        return stringPermissions;
+    }
 
-   public void addStringPermission(String permission) &#123;
-       if (this.stringPermissions &#x3D;&#x3D; null) &#123;
-           this.stringPermissions &#x3D; new HashSet&lt;String&gt;();
-       &#125;
-       this.stringPermissions.add(permission);
-   &#125;
+    public void addStringPermission(String permission) {
+        if (this.stringPermissions == null) {
+            this.stringPermissions = new HashSet&lt;String&gt;();
+        }
+        this.stringPermissions.add(permission);
+    }
 
-   public void addStringPermissions(Collection&lt;String&gt; permissions) &#123;
-       if (this.stringPermissions &#x3D;&#x3D; null) &#123;
-           this.stringPermissions &#x3D; new HashSet&lt;String&gt;();
-       &#125;
-       this.stringPermissions.addAll(permissions);
-   &#125;
-·
-·
-·</code></pre>
-
-<p>所以我们可以这样实现进行授权</p>
-<pre><code class="highlight plain">public class ShiroRealm extends AuthorizingRealm&#123;
+    public void addStringPermissions(Collection&lt;String&gt; permissions) {
+        if (this.stringPermissions == null) {
+            this.stringPermissions = new HashSet&lt;String&gt;();
+        }
+        this.stringPermissions.addAll(permissions);
+    }
+    ·
+    ·
+    ·</code></pre><p>所以我们可以这样实现进行授权</p>
+<pre><code>public class ShiroRealm extends AuthorizingRealm{
 
 
-	protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) &#123;
+    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
 
-	&#125;
+    }
 
-	@Override
-	protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException &#123;
-		
-		SimpleAuthorizationInfo info &#x3D; new SimpleAuthorizationInfo();
-		
-		info.addRole(&quot;admin&quot;);
+    @Override
+    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
 
-		info.addStringPermission(&quot;user:update&quot;)
-		
-	&#125;
-	return info;
-&#125;</code></pre>
+        SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
+
+        info.addRole(&quot;admin&quot;);
+
+        info.addStringPermission(&quot;user:update&quot;)
+
+    }
+    return info;
+}</code></pre>
       
     </div>
     

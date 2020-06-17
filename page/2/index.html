@@ -344,16 +344,12 @@
             <h3 id="什么是泛型，为什么要使用泛型"><a href="#什么是泛型，为什么要使用泛型" class="headerlink" title="什么是泛型，为什么要使用泛型"></a>什么是泛型，为什么要使用泛型</h3><p>泛型，即“参数化类型”。一提到参数，最熟悉的就是定义方法时有形参，然后调用此方法时传递实参。那么参数化类型怎么理解呢？顾名思义，就是将类型由原来的具体的类型参数化，类似于方法中的变量参数，此时类型也定义成参数形式（可以称之为类型形参），然后在使用/调用时传入具体的类型（类型实参）。</p>
 <p>泛型的本质是为了参数化类型（在不创建新的类型的情况下，通过泛型指定的不同类型来控制形参具体限制的类型）。也就是说在泛型使用过程中，操作的数据类型被指定为一个参数，这种参数类型可以用在类、接口和方法中，分别被称为泛型类、泛型接口、泛型方法。</p>
 <p>如果你定义了一个泛型（类、接口），那么Java规定，你不能在所有的静态方法、静态初块等所有静态内容中使用泛型的类型参数</p>
-<h3 id="泛型类"><a href="#泛型类" class="headerlink" title="泛型类"></a>泛型类</h3><pre><code class="highlight plain">class generic&lt;T&gt;&#123;
-	T element;
-&#125;</code></pre>
-
-<p>创建对象时指定T的参数类型例如<code>new generic&lt;Integer&gt;</code>，将成员变量的类型参数化</p>
-<h3 id="泛型接口"><a href="#泛型接口" class="headerlink" title="泛型接口"></a>泛型接口</h3><pre><code class="highlight plain">interface generic&lt;T&gt;&#123;
-	public T get();
-&#125;</code></pre>
-
-<p>若实现类中确定了参数类型，在实现接口时可以指定，<code>class a implements generic&lt;Integer&gt;</code>，若不确定参数类型，<code>class a&lt;T&gt; implements generic&lt;T&gt;</code>，用法一样</p>
+<h3 id="泛型类"><a href="#泛型类" class="headerlink" title="泛型类"></a>泛型类</h3><pre><code>class generic&lt;T&gt;{
+    T element;
+}</code></pre><p>创建对象时指定T的参数类型例如<code>new generic&lt;Integer&gt;</code>，将成员变量的类型参数化</p>
+<h3 id="泛型接口"><a href="#泛型接口" class="headerlink" title="泛型接口"></a>泛型接口</h3><pre><code>interface generic&lt;T&gt;{
+    public T get();
+}</code></pre><p>若实现类中确定了参数类型，在实现接口时可以指定，<code>class a implements generic&lt;Integer&gt;</code>，若不确定参数类型，<code>class a&lt;T&gt; implements generic&lt;T&gt;</code>，用法一样</p>
 <h3 id="泛型方法"><a href="#泛型方法" class="headerlink" title="泛型方法"></a>泛型方法</h3><p>在非泛型类中定义泛型方法，格式为：修饰符 返回值类型 方法名(形参列表)</p>
 <ul>
 <li>public 与 返回值中间<T>非常重要，可以理解为声明此方法为泛型方法</li>
@@ -361,61 +357,55 @@
 <li><T>表明该方法将使用泛型类型T，此时才可以在方法中使用泛型类型T</li>
 <li>与泛型类的定义一样，此处T可以随便写为任意标识，常见的如T、E、K、V等形式的参数常用于表示泛型</li>
 </ul>
-<pre><code class="highlight plain">class Method&#123;
-	public &lt;T&gt; void out(T a)&#123;
-		System.out.println(a.getClass().getName());
-	&#125;
-&#125;
+<pre><code>class Method{
+    public &lt;T&gt; void out(T a){
+        System.out.println(a.getClass().getName());
+    }
+}
 
-public class Generic&#123;
-	public static void main(String[] args) &#123;
-		Method m &#x3D; new Method();
-		m.out(&quot;sss&quot;);&#x2F;&#x2F;输出java.lang.String
-		m.out(1);&#x2F;&#x2F;输出java.lang.Integer
-	&#125;
-&#125;</code></pre>
-
-<h3 id="通配符"><a href="#通配符" class="headerlink" title="通配符"></a>通配符</h3><ul>
+public class Generic{
+    public static void main(String[] args) {
+        Method m = new Method();
+        m.out(&quot;sss&quot;);//输出java.lang.String
+        m.out(1);//输出java.lang.Integer
+    }
+}</code></pre><h3 id="通配符"><a href="#通配符" class="headerlink" title="通配符"></a>通配符</h3><ul>
 <li>？表示类型参数赋予不确定值，任意类型</li>
 <li><strong>只能用在声明类型、方法参数上，不能用在定义泛型类上</strong></li>
 </ul>
-<pre><code class="highlight plain">public static void main(String[] args) &#123;
-	List&lt;Integer&gt; l1 &#x3D; new ArrayList&lt;Integer&gt;();
-	List&lt;String&gt; l2 &#x3D; new ArrayList&lt;String&gt;();
-	l1.add(1);
-	l1.add(2);
-	l2.add(&quot;aaa&quot;);
-	l2.add(&quot;bbb&quot;);
-	out1(l1);
-	out1(l2);
-	out2(l1);
-	out2(l2);&#x2F;&#x2F;报错
-&#125;
+<pre><code>public static void main(String[] args) {
+    List&lt;Integer&gt; l1 = new ArrayList&lt;Integer&gt;();
+    List&lt;String&gt; l2 = new ArrayList&lt;String&gt;();
+    l1.add(1);
+    l1.add(2);
+    l2.add(&quot;aaa&quot;);
+    l2.add(&quot;bbb&quot;);
+    out1(l1);
+    out1(l2);
+    out2(l1);
+    out2(l2);//报错
+}
 
-public static void out1(List&lt;?&gt; list)&#123;
-	
-&#125;
-public static void out2(List&lt;Integer&gt; list)&#123;
-	
-&#125;</code></pre>
+public static void out1(List&lt;?&gt; list){
 
-<p>使用了通配符？定义的泛型变量和形参可以接受所有类型的同一泛型变量(不包括子类)，如下</p>
-<pre><code class="highlight plain">&#x2F;&#x2F; 用在形参上
-public static void test(List&lt;?&gt; list) &#123;
- 
- List&lt;?&gt; list2; &#x2F;&#x2F; 用在声明变量上
- list2 &#x3D; new ArrayList&lt;String&gt;();
- list2 &#x3D; new ArrayList&lt;Integer&gt;();
- list2 &#x3D; new ArrayList&lt;Object&gt;();
- 
-&#125;
- 
-public static void main(String[] args) &#123;
+}
+public static void out2(List&lt;Integer&gt; list){
+
+}</code></pre><p>使用了通配符？定义的泛型变量和形参可以接受所有类型的同一泛型变量(不包括子类)，如下</p>
+<pre><code>// 用在形参上
+public static void test(List&lt;?&gt; list) {
+
+ List&lt;?&gt; list2; // 用在声明变量上
+ list2 = new ArrayList&lt;String&gt;();
+ list2 = new ArrayList&lt;Integer&gt;();
+ list2 = new ArrayList&lt;Object&gt;();
+
+}
+
+public static void main(String[] args) {
  test(new ArrayList&lt;String&gt;());
  test(new ArrayList&lt;Integer&gt;());
-&#125;</code></pre>
-
-<h3 id="泛型上下边界"><a href="#泛型上下边界" class="headerlink" title="泛型上下边界"></a>泛型上下边界</h3><p>在使用泛型的时候，我们还可以为传入的泛型类型实参进行上下边界的限制，如：类型实参只准传入某种类型的父类或某种类型的子类</p>
+}</code></pre><h3 id="泛型上下边界"><a href="#泛型上下边界" class="headerlink" title="泛型上下边界"></a>泛型上下边界</h3><p>在使用泛型的时候，我们还可以为传入的泛型类型实参进行上下边界的限制，如：类型实参只准传入某种类型的父类或某种类型的子类</p>
 <p>&lt;? extends T&gt;和&lt;? super T&gt;是Java泛型中的”通配符(Wildcards)”和”边界(Bounds)”的概念</p>
 <ul>
 <li>&lt;? extends T&gt;：是指 “上界通配符(Upper Bounds Wildcards)”，&lt;=</li>
@@ -424,35 +414,29 @@ public static void main(String[] args) &#123;
 <ol>
 <li>定义泛型类时使用，限定参数范围</li>
 </ol>
-<pre><code class="highlight plain">public class Generic&lt;T extends Number&gt;&#123;
+<pre><code>public class Generic&lt;T extends Number&gt;{
     private T key;
 
-    public Generic(T key) &#123;
-        this.key &#x3D; key;
-    &#125;
+    public Generic(T key) {
+        this.key = key;
+    }
 
-    public T getKey()&#123;
+    public T getKey(){
         return key;
-    &#125;
-&#125;</code></pre>
-
-<ol start="2">
+    }
+}</code></pre><ol start="2">
 <li>作为变量时使用</li>
 </ol>
 <p><code>List</code>的<code>add</code>方法不能添加任何有意义的元素，但是可以接受现有的子类型<code>List</code>赋值</p>
-<pre><code class="highlight plain">List&lt;? extends Number&gt; list &#x3D; new ArrayList&lt;Integer&gt;();
-list.add(1);&#x2F;&#x2F;报错</code></pre>
-
-<ol start="3">
+<pre><code>List&lt;? extends Number&gt; list = new ArrayList&lt;Integer&gt;();
+list.add(1);//报错</code></pre><ol start="3">
 <li>作为形参时使用</li>
 </ol>
-<pre><code class="highlight plain">class Method&#123;
-	public void out(List&lt;? extends Number&gt; a)&#123;
-		
-	&#125;
-&#125;</code></pre>
+<pre><code>class Method{
+    public void out(List&lt;? extends Number&gt; a){
 
-<h3 id="泛型的继承"><a href="#泛型的继承" class="headerlink" title="泛型的继承"></a>泛型的继承</h3><pre><code class="highlight plain">&#x2F;**
+    }
+}</code></pre><h3 id="泛型的继承"><a href="#泛型的继承" class="headerlink" title="泛型的继承"></a>泛型的继承</h3><pre><code>/**
  * 泛型继承
  *
  * 保留父类泛型 ----》泛型子类 
@@ -464,52 +448,52 @@ list.add(1);&#x2F;&#x2F;报错</code></pre>
  *
  * @param &lt;T1&gt;
  * @param &lt;T2&gt;
- *&#x2F;
-public abstract class Father&lt;T1, T2&gt; &#123;
+ */
+public abstract class Father&lt;T1, T2&gt; {
   T1 age;
- 
+
   public abstract void test(T2 name);
-&#125;
- 
-&#x2F;&#x2F; 保留父类泛型 ----》泛型子类
-&#x2F;&#x2F; 1）全部保留
-class C1&lt;T1, T2&gt; extends Father&lt;T1, T2&gt; &#123;
- 
+}
+
+// 保留父类泛型 ----》泛型子类
+// 1）全部保留
+class C1&lt;T1, T2&gt; extends Father&lt;T1, T2&gt; {
+
   @Override
-  public void test(T2 name) &#123;
- 
-  &#125;
-&#125;
- 
-&#x2F;&#x2F; 2) 部分保留
-class C2&lt;T1&gt; extends Father&lt;T1, Integer&gt; &#123;
- 
+  public void test(T2 name) {
+
+  }
+}
+
+// 2) 部分保留
+class C2&lt;T1&gt; extends Father&lt;T1, Integer&gt; {
+
   @Override
-  public void test(Integer name) &#123;
- 
-  &#125;
-&#125;
- 
-&#x2F;&#x2F; 不保留父类泛型 -----》子类按需实现
-&#x2F;&#x2F; 1)具体类型
-class C3 extends Father&lt;String, Integer&gt; &#123;
- 
+  public void test(Integer name) {
+
+  }
+}
+
+// 不保留父类泛型 -----》子类按需实现
+// 1)具体类型
+class C3 extends Father&lt;String, Integer&gt; {
+
   @Override
-  public void test(Integer name) &#123;
- 
-  &#125;
-&#125;
- 
-&#x2F;&#x2F; 2)没有具体类型
-&#x2F;&#x2F; 泛型擦除：实现或继承父类的子类，没有指定类型，类似于Object
-class C4 extends Father &#123;
- 
+  public void test(Integer name) {
+
+  }
+}
+
+// 2)没有具体类型
+// 泛型擦除：实现或继承父类的子类，没有指定类型，类似于Object
+class C4 extends Father {
+
   @Override
-  public void test(Object name) &#123;
- 
-  &#125;
- 
-&#125;</code></pre>
+  public void test(Object name) {
+
+  }
+
+}</code></pre>
           
         
       
@@ -650,103 +634,101 @@ class C4 extends Father &#123;
       
         
           
-            <h3 id="synchornized"><a href="#synchornized" class="headerlink" title="synchornized"></a>synchornized</h3><pre><code class="highlight plain">public class Threadpc &#123;
-	public static void main(String[] args) &#123;
-		storage storage &#x3D; new storage();
-		new producer(&quot;生产者1&quot;,storage,50).start();
-		new producer(&quot;生产者2&quot;,storage,100).start();
-		new producer(&quot;生产者3&quot;,storage,60).start();
-		new consumer(&quot;消费者1&quot;, storage,20).start();
-		new consumer(&quot;消费者2&quot;, storage,40).start();
-		new consumer(&quot;消费者3&quot;, storage,60).start();
-		new consumer(&quot;消费者4&quot;, storage,30).start();
-		new consumer(&quot;消费者5&quot;, storage,50).start();
-		new consumer(&quot;消费者6&quot;, storage,10).start();
-	&#125;
-&#125;
+            <h3 id="synchornized"><a href="#synchornized" class="headerlink" title="synchornized"></a>synchornized</h3><pre><code>public class Threadpc {
+    public static void main(String[] args) {
+        storage storage = new storage();
+        new producer(&quot;生产者1&quot;,storage,50).start();
+        new producer(&quot;生产者2&quot;,storage,100).start();
+        new producer(&quot;生产者3&quot;,storage,60).start();
+        new consumer(&quot;消费者1&quot;, storage,20).start();
+        new consumer(&quot;消费者2&quot;, storage,40).start();
+        new consumer(&quot;消费者3&quot;, storage,60).start();
+        new consumer(&quot;消费者4&quot;, storage,30).start();
+        new consumer(&quot;消费者5&quot;, storage,50).start();
+        new consumer(&quot;消费者6&quot;, storage,10).start();
+    }
+}
 
-class storage&#123;
-	private final int MAX_SIZE &#x3D; 100;
-	private LinkedList&lt;Object&gt; list &#x3D; new LinkedList&lt;Object&gt;();
-	public void consume(int num,String threadName)&#123;
-		synchronized (list) &#123;
-			while(list.size()&lt;num)&#123;&#x2F;&#x2F;库存小于要消费的数量
-				try &#123;
-					System.out.println(threadName+&quot;暂时无法进行消费,库存不足&quot;);
-					list.wait();
-				&#125; catch (InterruptedException e) &#123;
-					&#x2F;&#x2F; TODO Auto-generated catch block
-					e.printStackTrace();
-				&#125;
-			&#125;
-			for (int i &#x3D; 0; i &lt; num; i++) &#123;
-				list.remove();
-			&#125;
-			System.out.println(threadName+&quot;消费产品&quot;+num+&quot;,剩余库存:&quot;+list.size());
-			list.notifyAll();
-		&#125;
+class storage{
+    private final int MAX_SIZE = 100;
+    private LinkedList&lt;Object&gt; list = new LinkedList&lt;Object&gt;();
+    public void consume(int num,String threadName){
+        synchronized (list) {
+            while(list.size()&lt;num){//库存小于要消费的数量
+                try {
+                    System.out.println(threadName+&quot;暂时无法进行消费,库存不足&quot;);
+                    list.wait();
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+            for (int i = 0; i &lt; num; i++) {
+                list.remove();
+            }
+            System.out.println(threadName+&quot;消费产品&quot;+num+&quot;,剩余库存:&quot;+list.size());
+            list.notifyAll();
+        }
 
-	&#125;
-	
-	
-	public void produce(int num,String threadName)&#123;
-		synchronized (list) &#123;
-			while(num &gt; MAX_SIZE-list.size())&#123;&#x2F;&#x2F;生产数量超过库存限制
-				try &#123;
-					System.out.println(threadName+&quot;暂时无法进行生产,库存过多&quot;);
-					list.wait();
-				&#125; catch (InterruptedException e) &#123;
-					&#x2F;&#x2F; TODO Auto-generated catch block
-					e.printStackTrace();
-				&#125;
-			&#125;
-			for (int i &#x3D; 0; i &lt; num; i++) &#123;
-				list.add(new Object());
-			&#125;
-			System.out.println(threadName+&quot;生产产品&quot;+num+&quot;,剩余库存:&quot;+list.size());
-			list.notifyAll();
-		&#125;
-	&#125;
-&#125;
+    }
 
-class consumer extends Thread&#123;
-	private int num;
-	private storage storage;
-	public consumer(String name,storage storage,int num) &#123;
-		super(name);
-		&#x2F;&#x2F; TODO Auto-generated constructor stub
-		this.storage &#x3D; storage;
-		this.num &#x3D; num;
-	&#125;
-	@Override
-	public void run() &#123;
-		&#x2F;&#x2F; TODO Auto-generated method stub
-		super.run();
-		storage.consume(num, Thread.currentThread().getName());
-	&#125;
-	
-&#125;
 
-class producer extends Thread&#123;
-	private int num;
-	private storage storage;
-	public producer(String name,storage storage,int num) &#123;
-		super(name);
-		&#x2F;&#x2F; TODO Auto-generated constructor stub
-		this.storage &#x3D; storage;
-		this.num &#x3D; num;
-	&#125;
-	@Override
-	public void run() &#123;
-		&#x2F;&#x2F; TODO Auto-generated method stub
-		super.run();
-		storage.produce(num, Thread.currentThread().getName());
-	&#125;
-	
-&#125;</code></pre>
+    public void produce(int num,String threadName){
+        synchronized (list) {
+            while(num &gt; MAX_SIZE-list.size()){//生产数量超过库存限制
+                try {
+                    System.out.println(threadName+&quot;暂时无法进行生产,库存过多&quot;);
+                    list.wait();
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+            for (int i = 0; i &lt; num; i++) {
+                list.add(new Object());
+            }
+            System.out.println(threadName+&quot;生产产品&quot;+num+&quot;,剩余库存:&quot;+list.size());
+            list.notifyAll();
+        }
+    }
+}
 
-<p>创建多个线程，<code>run</code>方法中调用共有的<code>storage</code>实例的<code>produce</code>和<code>consume</code>方法，在两个方法中使用<code>synchronized</code>代码块进行同步，使用<code>storage</code>中的共有的<code>list</code>的对象锁和<code>wait</code>和<code>notifyall</code>方法来调度生产者和消费者进程交替。输出如下：</p>
-<pre><code class="highlight plain">生产者2生产产品100,剩余库存:100
+class consumer extends Thread{
+    private int num;
+    private storage storage;
+    public consumer(String name,storage storage,int num) {
+        super(name);
+        // TODO Auto-generated constructor stub
+        this.storage = storage;
+        this.num = num;
+    }
+    @Override
+    public void run() {
+        // TODO Auto-generated method stub
+        super.run();
+        storage.consume(num, Thread.currentThread().getName());
+    }
+
+}
+
+class producer extends Thread{
+    private int num;
+    private storage storage;
+    public producer(String name,storage storage,int num) {
+        super(name);
+        // TODO Auto-generated constructor stub
+        this.storage = storage;
+        this.num = num;
+    }
+    @Override
+    public void run() {
+        // TODO Auto-generated method stub
+        super.run();
+        storage.produce(num, Thread.currentThread().getName());
+    }
+
+}</code></pre><p>创建多个线程，<code>run</code>方法中调用共有的<code>storage</code>实例的<code>produce</code>和<code>consume</code>方法，在两个方法中使用<code>synchronized</code>代码块进行同步，使用<code>storage</code>中的共有的<code>list</code>的对象锁和<code>wait</code>和<code>notifyall</code>方法来调度生产者和消费者进程交替。输出如下：</p>
+<pre><code>生产者2生产产品100,剩余库存:100
 生产者1暂时无法进行生产,库存过多
 生产者3暂时无法进行生产,库存过多
 消费者1消费产品20,剩余库存:80
@@ -758,129 +740,125 @@ class producer extends Thread&#123;
 消费者2暂时无法进行消费,库存不足
 生产者3生产产品60,剩余库存:90
 消费者5消费产品50,剩余库存:40
-消费者2消费产品40,剩余库存:0</code></pre>
+消费者2消费产品40,剩余库存:0</code></pre><h3 id="ReentrantLock"><a href="#ReentrantLock" class="headerlink" title="ReentrantLock"></a>ReentrantLock</h3><p><code>ReentrantLock</code>锁的粒度比<code>synchronized</code>小，在尝试使用<code>synchronized</code>进行同样的分组唤醒，即生产者唤醒消费者和消费者唤醒生产者，忽略了一个要点，无论是执行对象的<code>wait</code>、<code>notify</code>还是<code>notifyAll</code>方法，必须保证当前运行的线程取得了该对象的锁，否则会报<code>java.lang.IllegalMonitorStateException</code>异常，发生异常代码如下</p>
+<pre><code>public void consume(int num,String threadName){
+    synchronized (o1) {
+        System.out.println(threadName+&quot;获得锁&quot;);
+        while(list.size()&lt;num){//库存小于要消费的数量
+            try {
+                System.out.println(threadName+&quot;暂时无法进行消费,库存不足&quot;);
+                o1.wait();
+                //list.wait();
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        for (int i = 0; i &lt; num; i++) {
+            list.remove();
+        }
+        System.out.println(threadName+&quot;消费产品&quot;+num+&quot;,剩余库存:&quot;+list.size());
+        o2.notifyAll();//未取得o2对象锁，不能运行这个方法
+    }</code></pre><p>下面用<code>ReentrantLock</code>来进行分组唤醒</p>
+<pre><code>public class Threadpc {
+    public static void main(String[] args) {
+        storage storage = new storage2();
+        new producer(&quot;生产者1&quot;,storage,50).start();
+        new producer(&quot;生产者2&quot;,storage,100).start();
+        new producer(&quot;生产者3&quot;,storage,60).start();
+        new consumer(&quot;消费者1&quot;, storage,20).start();
+        new consumer(&quot;消费者2&quot;, storage,40).start();
+        new consumer(&quot;消费者3&quot;, storage,60).start();
+        new consumer(&quot;消费者4&quot;, storage,30).start();
+        new consumer(&quot;消费者5&quot;, storage,50).start();
+        new consumer(&quot;消费者6&quot;, storage,10).start();
+    }
 
-<h3 id="ReentrantLock"><a href="#ReentrantLock" class="headerlink" title="ReentrantLock"></a>ReentrantLock</h3><p><code>ReentrantLock</code>锁的粒度比<code>synchronized</code>小，在尝试使用<code>synchronized</code>进行同样的分组唤醒，即生产者唤醒消费者和消费者唤醒生产者，忽略了一个要点，无论是执行对象的<code>wait</code>、<code>notify</code>还是<code>notifyAll</code>方法，必须保证当前运行的线程取得了该对象的锁，否则会报<code>java.lang.IllegalMonitorStateException</code>异常，发生异常代码如下</p>
-<pre><code class="highlight plain">public void consume(int num,String threadName)&#123;
-	synchronized (o1) &#123;
-		System.out.println(threadName+&quot;获得锁&quot;);
-		while(list.size()&lt;num)&#123;&#x2F;&#x2F;库存小于要消费的数量
-			try &#123;
-				System.out.println(threadName+&quot;暂时无法进行消费,库存不足&quot;);
-				o1.wait();
-				&#x2F;&#x2F;list.wait();
-			&#125; catch (InterruptedException e) &#123;
-				&#x2F;&#x2F; TODO Auto-generated catch block
-				e.printStackTrace();
-			&#125;
-		&#125;
-		for (int i &#x3D; 0; i &lt; num; i++) &#123;
-			list.remove();
-		&#125;
-		System.out.println(threadName+&quot;消费产品&quot;+num+&quot;,剩余库存:&quot;+list.size());
-		o2.notifyAll();&#x2F;&#x2F;未取得o2对象锁，不能运行这个方法
-	&#125;</code></pre>
+}
 
-<p>下面用<code>ReentrantLock</code>来进行分组唤醒</p>
-<pre><code class="highlight plain">public class Threadpc &#123;
-	public static void main(String[] args) &#123;
-		storage storage &#x3D; new storage2();
-		new producer(&quot;生产者1&quot;,storage,50).start();
-		new producer(&quot;生产者2&quot;,storage,100).start();
-		new producer(&quot;生产者3&quot;,storage,60).start();
-		new consumer(&quot;消费者1&quot;, storage,20).start();
-		new consumer(&quot;消费者2&quot;, storage,40).start();
-		new consumer(&quot;消费者3&quot;, storage,60).start();
-		new consumer(&quot;消费者4&quot;, storage,30).start();
-		new consumer(&quot;消费者5&quot;, storage,50).start();
-		new consumer(&quot;消费者6&quot;, storage,10).start();
-	&#125;
+class storage2{
+    private int MAX_SIZE = 100;
+    private ReentrantLock lock = new ReentrantLock();
+    private Condition produce = lock.newCondition();
+    private Condition consumer = lock.newCondition();
+    private LinkedList&lt;Object&gt; list = new LinkedList&lt;Object&gt;();
 
-&#125;
+    public void consume(int num,String threadName){
+        lock.lock();
+        while(num &gt; list.size()){
+            try {
+                System.out.println(threadName+&quot;暂时无法消费,库存余量为:&quot;+list.size());
+                consumer.await();
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        for (int i = 0; i &lt; num; i++) {
+            list.remove();
+        }
+        System.out.println(threadName+&quot;消费库存&quot;+num+&quot;,库存余量为&quot;+list.size());
+        produce.signalAll();
+        lock.unlock();
+    }
 
-class storage2&#123;
-	private int MAX_SIZE &#x3D; 100;
-	private ReentrantLock lock &#x3D; new ReentrantLock();
-	private Condition produce &#x3D; lock.newCondition();
-	private Condition consumer &#x3D; lock.newCondition();
-	private LinkedList&lt;Object&gt; list &#x3D; new LinkedList&lt;Object&gt;();
-	
-	public void consume(int num,String threadName)&#123;
-		lock.lock();
-		while(num &gt; list.size())&#123;
-			try &#123;
-				System.out.println(threadName+&quot;暂时无法消费,库存余量为:&quot;+list.size());
-				consumer.await();
-			&#125; catch (InterruptedException e) &#123;
-				&#x2F;&#x2F; TODO Auto-generated catch block
-				e.printStackTrace();
-			&#125;
-		&#125;
-		for (int i &#x3D; 0; i &lt; num; i++) &#123;
-			list.remove();
-		&#125;
-		System.out.println(threadName+&quot;消费库存&quot;+num+&quot;,库存余量为&quot;+list.size());
-		produce.signalAll();
-		lock.unlock();
-	&#125;
-	
-	public void produce(int num,String threadName)&#123;
-		lock.lock();
-		while(num+list.size()&gt;MAX_SIZE)&#123;
-			try &#123;
-				System.out.println(threadName+&quot;暂时无法生产,库存余量为:&quot;+list.size());
-				produce.await();
-			&#125; catch (InterruptedException e) &#123;
-				&#x2F;&#x2F; TODO Auto-generated catch block
-				e.printStackTrace();
-			&#125;
-		&#125;
-		for (int i &#x3D; 0; i &lt; num; i++) &#123;
-			list.add(new Object());
-		&#125;
-		System.out.println(threadName+&quot;生产库存&quot;+num+&quot;,库存余量为&quot;+list.size());
-		consumer.signalAll();
-		lock.unlock();
-	&#125;
-	
-&#125;
+    public void produce(int num,String threadName){
+        lock.lock();
+        while(num+list.size()&gt;MAX_SIZE){
+            try {
+                System.out.println(threadName+&quot;暂时无法生产,库存余量为:&quot;+list.size());
+                produce.await();
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        for (int i = 0; i &lt; num; i++) {
+            list.add(new Object());
+        }
+        System.out.println(threadName+&quot;生产库存&quot;+num+&quot;,库存余量为&quot;+list.size());
+        consumer.signalAll();
+        lock.unlock();
+    }
 
-class producer2 extends Thread&#123;
-	
-	private storage storage;
-	private int num;
-	public producer(String name,storage storage,int num) &#123;
-		super(name);
-		&#x2F;&#x2F; TODO Auto-generated constructor stub
-		this.storage &#x3D; storage;
-		this.num &#x3D; num;
-	&#125;
+}
 
-	@Override
-	public void run() &#123;
-		&#x2F;&#x2F; TODO Auto-generated method stub
-		super.run();
-		storage.produce(num, Thread.currentThread().getName());
-	&#125;
-&#125;
+class producer2 extends Thread{
 
-class consumer2 extends Thread&#123;
-	private storage storage;
-	private int num;
-	public consumer2(String name,storage storage,int num) &#123;
-		super(name);
-		&#x2F;&#x2F; TODO Auto-generated constructor stub
-		this.num &#x3D; num;
-		this.storage &#x3D; storage;
-	&#125;
-	@Override
-	public void run() &#123;
-		&#x2F;&#x2F; TODO Auto-generated method stub
-		super.run();
-		storage.consume(num, Thread.currentThread().getName());
-	&#125;
-	
-&#125;</code></pre>
+    private storage storage;
+    private int num;
+    public producer(String name,storage storage,int num) {
+        super(name);
+        // TODO Auto-generated constructor stub
+        this.storage = storage;
+        this.num = num;
+    }
+
+    @Override
+    public void run() {
+        // TODO Auto-generated method stub
+        super.run();
+        storage.produce(num, Thread.currentThread().getName());
+    }
+}
+
+class consumer2 extends Thread{
+    private storage storage;
+    private int num;
+    public consumer2(String name,storage storage,int num) {
+        super(name);
+        // TODO Auto-generated constructor stub
+        this.num = num;
+        this.storage = storage;
+    }
+    @Override
+    public void run() {
+        // TODO Auto-generated method stub
+        super.run();
+        storage.consume(num, Thread.currentThread().getName());
+    }
+
+}</code></pre>
           
         
       
@@ -1022,14 +1000,12 @@ class consumer2 extends Thread&#123;
         
           
             <h3 id="特性"><a href="#特性" class="headerlink" title="特性"></a>特性</h3><p>java接口中的default方法是在java 8之后引入的，即在不破坏java现有实现架构的情况下能往接口里增加新方法，这个特征又叫做虚拟扩展方法（Virtual extension methods），通常也称之为 defender 方法，它目前可以添加到接口中，为声明的方法提供默认的实现，子类可以直接调用或者复写该方法。作用为优化接口的同时，避免跟现有实现架构的兼容问题。</p>
-<h3 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h3><pre><code class="highlight plain">List&lt;Integer&gt; list &#x3D; new ArrayList&lt;Integer&gt;();
+<h3 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h3><pre><code>List&lt;Integer&gt; list = new ArrayList&lt;Integer&gt;();
 list.add(1);
 list.add(2);
-list.forEach(System.out::println);</code></pre>
-
-<p>java8之后list多了一个forEach方法来方便我们遍历集合，向上查找父类和实现的接口发现Iterable接口中多了一个default方法</p>
-<pre><code class="highlight plain">&#x2F;**
- * Performs the given action for each element of the &#123;@code Iterable&#125;
+list.forEach(System.out::println);</code></pre><p>java8之后list多了一个forEach方法来方便我们遍历集合，向上查找父类和实现的接口发现Iterable接口中多了一个default方法</p>
+<pre><code>/**
+ * Performs the given action for each element of the {@code Iterable}
  * until all elements have been processed or the action throws an
  * exception.  Unless otherwise specified by the implementing class,
  * actions are performed in the order of iteration (if an iteration order
@@ -1038,41 +1014,39 @@ list.forEach(System.out::println);</code></pre>
  *
  * @implSpec
  * &lt;p&gt;The default implementation behaves as if:
- * &lt;pre&gt;&#123;@code
+ * &lt;pre&gt;{@code
  *     for (T t : this)
  *         action.accept(t);
- * &#125;&lt;&#x2F;pre&gt;
+ * }&lt;/pre&gt;
  *
  * @param action The action to be performed for each element
  * @throws NullPointerException if the specified action is null
  * @since 1.8
- *&#x2F;
-default void forEach(Consumer&lt;? super T&gt; action) &#123;
+ */
+default void forEach(Consumer&lt;? super T&gt; action) {
     Objects.requireNonNull(action);
-    for (T t : this) &#123;
+    for (T t : this) {
         action.accept(t);
-    &#125;
-&#125;</code></pre>
-
-<p>与此相同的还有Collection接口新增的stream方法，用来帮助我们更方便地处理集合元素</p>
-<pre><code class="highlight plain">&#x2F;**
- * Returns a sequential &#123;@code Stream&#125; with this collection as its source.
+    }
+}</code></pre><p>与此相同的还有Collection接口新增的stream方法，用来帮助我们更方便地处理集合元素</p>
+<pre><code>/**
+ * Returns a sequential {@code Stream} with this collection as its source.
  *
- * &lt;p&gt;This method should be overridden when the &#123;@link #spliterator()&#125;
- * method cannot return a spliterator that is &#123;@code IMMUTABLE&#125;,
- * &#123;@code CONCURRENT&#125;, or &lt;em&gt;late-binding&lt;&#x2F;em&gt;. (See &#123;@link #spliterator()&#125;
+ * &lt;p&gt;This method should be overridden when the {@link #spliterator()}
+ * method cannot return a spliterator that is {@code IMMUTABLE},
+ * {@code CONCURRENT}, or &lt;em&gt;late-binding&lt;/em&gt;. (See {@link #spliterator()}
  * for details.)
  *
  * @implSpec
- * The default implementation creates a sequential &#123;@code Stream&#125; from the
- * collection&#39;s &#123;@code Spliterator&#125;.
+ * The default implementation creates a sequential {@code Stream} from the
+ * collection&#39;s {@code Spliterator}.
  *
- * @return a sequential &#123;@code Stream&#125; over the elements in this collection
+ * @return a sequential {@code Stream} over the elements in this collection
  * @since 1.8
- *&#x2F;
-default Stream&lt;E&gt; stream() &#123;
+ */
+default Stream&lt;E&gt; stream() {
     return StreamSupport.stream(spliterator(), false);
-&#125;</code></pre>
+}</code></pre>
           
         
       
@@ -1216,69 +1190,272 @@ default Stream&lt;E&gt; stream() &#123;
             <h3 id="理解枚举类型"><a href="#理解枚举类型" class="headerlink" title="理解枚举类型"></a>理解枚举类型</h3><p>枚举类型是Java 5中新增特性的一部分，它是一种特殊的数据类型，之所以特殊是因为它既是一种类(class)类型却又比类类型多了些特殊的约束，但是这些约束的存在也造就了枚举类型的简洁性、安全性以及便捷性</p>
 <h3 id="枚举用来定义常量"><a href="#枚举用来定义常量" class="headerlink" title="枚举用来定义常量"></a>枚举用来定义常量</h3><p><strong>枚举常量、类常量与静态常量</strong></p>
 <p>平常我们定义普通常量的时候</p>
-<pre><code class="highlight plain">public class Demo&#123;
-	public static final int OPEN &#x3D;1;
-	public static final int CLOSE&#x3D;2;
-&#125;</code></pre>
-
-<p>上述的常量定义常量的方式称为int枚举模式，这样的定义方式并没有什么错，但它存在许多不足，如在类型安全和使用方便性上并没有多少好处，如果存在定义int值相同的变量，混淆的几率还是很大的，编译器也不会提出任何警告，因此这种方式在枚举出现后并不提倡，现在我们利用枚举类型来重新定义上述的常量，同时也感受一把枚举定义的方式</p>
-<pre><code class="highlight plain">enum Demo&#123;
-	OPEN,CLOSE
-&#125;</code></pre>
-
-<p>用普通常量的方式定义的话，值为<code>int</code>类型，用枚举来定义的话，取值<code>Demo.OPEN</code>输出为我们定义的枚举类型</p>
+<pre><code>    public class Demo{
+        public static final int OPEN =1;
+        public static final int CLOSE=2;
+    }</code></pre><p>上述的常量定义常量的方式称为int枚举模式，这样的定义方式并没有什么错，但它存在许多不足，如在类型安全和使用方便性上并没有多少好处，如果存在定义int值相同的变量，混淆的几率还是很大的，编译器也不会提出任何警告，因此这种方式在枚举出现后并不提倡，现在我们利用枚举类型来重新定义上述的常量，同时也感受一把枚举定义的方式</p>
+<pre><code>    enum Demo{
+        OPEN,CLOSE
+    }
+</code></pre><p>用普通常量的方式定义的话，值为<code>int</code>类型，用枚举来定义的话，取值<code>Demo.OPEN</code>输出为我们定义的枚举类型</p>
 <h3 id="枚举的构造函数"><a href="#枚举的构造函数" class="headerlink" title="枚举的构造函数"></a>枚举的构造函数</h3><p>测试Demo</p>
-<pre><code class="highlight plain">enum fruit&#123;
-	apple(&quot;苹果&quot;),melon(&quot;西瓜&quot;);
-	private String chinese;
-	private fruit(String chinese) &#123;
-		this.chinese &#x3D; chinese;
-	&#125;
-	public String getChinese() &#123;
-		return chinese;
-	&#125;
-	public void setChinese(String chinese) &#123;
-		this.chinese &#x3D; chinese;
-	&#125;
-	
-	
-&#125;
+<pre><code>enum fruit{
+    apple(&quot;苹果&quot;),melon(&quot;西瓜&quot;);
+    private String chinese;
+    private fruit(String chinese) {
+        this.chinese = chinese;
+    }
+    public String getChinese() {
+        return chinese;
+    }
+    public void setChinese(String chinese) {
+        this.chinese = chinese;
+    }
 
 
-	@Test
-	void test3() &#123;
-		System.out.println(fruit.apple);
-		&#x2F;&#x2F;输出为apple
-	&#125;
-
-	@Test
-	void test3() &#123;
-		System.out.println(fruit.apple.getClass());
-		&#x2F;&#x2F;输出为class 本包.fruit，为自定义的枚举类型
-	&#125;
-
-	&#x2F;&#x2F;调用函数
-	@Test
-	void test3() &#123;
-		System.out.println(fruit.apple.getChinese);
-		&#x2F;&#x2F;输出苹果
-	&#125;
-	
-	&#x2F;&#x2F;遍历枚举
-	@Test
-	void test3() &#123;
-		for(fruit f:fruit.values()) &#123;
-			System.out.println(f.getChinese());
-		&#125;
-	&#125;</code></pre>
+}
 
 
+    @Test
+    void test3() {
+        System.out.println(fruit.apple);
+        //输出为apple
+    }
 
+    @Test
+    void test3() {
+        System.out.println(fruit.apple.getClass());
+        //输出为class 本包.fruit，为自定义的枚举类型
+    }
 
+    //调用函数
+    @Test
+    void test3() {
+        System.out.println(fruit.apple.getChinese);
+        //输出苹果
+    }
 
-<h3 id="其他特性"><a href="#其他特性" class="headerlink" title="其他特性"></a>其他特性</h3><p>枚举可以定义静态方法和非静态方法</p>
+    //遍历枚举
+    @Test
+    void test3() {
+        for(fruit f:fruit.values()) {
+            System.out.println(f.getChinese());
+        }
+    }
+</code></pre><h3 id="其他特性"><a href="#其他特性" class="headerlink" title="其他特性"></a>其他特性</h3><p>枚举可以定义静态方法和非静态方法</p>
 <p>枚举不能有继承</p>
 <p>可以用在switch中</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" itemprop="url">排序算法</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="冒泡法"><a href="#冒泡法" class="headerlink" title="冒泡法"></a>冒泡法</h3><p>关键排序代码如下</p>
+<pre><code>public void bubble(int[] i){
+    int temp;
+    for(int j = 0;j &lt; i.length-1; j++){
+        for(int k = 0; k &lt; i.length - j -1; k++){
+            if(i[k] &gt; i[k+1]){
+                temp = i[k];
+                i[k] = i[k+1];
+                i[k+1] = temp;
+            }
+        }
+    }
+}</code></pre><p>用来对一万个10000内随机数进行排序，所消耗时间为 <strong>耗时：14329ms</strong></p>
+<h3 id="选择排序"><a href="#选择排序" class="headerlink" title="选择排序"></a>选择排序</h3><p>关键代码如下</p>
+<pre><code>public void selectionSort(int n[]) {
+    for (int i = 0; i &lt; n.length - 1; i++) {
+        int max = 0;
+        for (int j = 0; j &lt; n.length - i - 1; j++) {
+            if(n[max] &lt; n[j+1]){
+                max = j+1;
+            }
+        }
+        if (max != n.length-1-i) {
+            int temp;
+            temp = n[max];
+            n[max] = n[n.length-1-i];
+            n[n.length-1-i] = temp;
+        }
+    }
+}</code></pre><p>用来对一万个10000内随机数进行排序，所消耗时间为 <strong>耗时：2657ms</strong></p>
+<h3 id="插入排序"><a href="#插入排序" class="headerlink" title="插入排序"></a>插入排序</h3><p>关键代码如下</p>
+<pre><code>public void Insert(int n[]) {
+    for (int i = 1; i &lt; n.length; i++) {
+        int temp = i;
+        for (int j = i -1; j &gt;= 0 &amp;&amp; n[j] &gt; n[temp]; j--) {
+            exch(n, j, temp);
+            temp = j;
+        }
+    }
+}
+public void exch(int n[],int a,int b) {
+    int temp = n[a];
+    n[a] = n[b];
+    n[b] = temp;
+}</code></pre><p>用来对一万个10000内随机数进行排序，所消耗时间为 <strong>耗时：3107ms</strong></p>
+<h3 id="快速排序"><a href="#快速排序" class="headerlink" title="快速排序"></a>快速排序</h3><p>关键代码如下</p>
+<pre><code>    public void Quick(int n[],int left,int right) {
+        if(left &gt;= right){
+            return;
+        }
+        int key = PartSort(n, left, right);
+        Quick(n, left, key);
+        Quick(n, key+1, right);
+    }
+    public int PartSort(int n[],int left,int right) {
+        int key = n[left];
+        while(left &lt; right){
+            while (left &lt; right &amp;&amp; n[right] &gt;= key) {
+                right--;
+            }
+            n[left] = n[right];
+            while (left &lt; right &amp;&amp; n[left] &lt;= key) {
+                left++;
+            }
+            n[right] = n[left];
+        }
+        n[left] = key;
+        return left;
+    }
+}</code></pre><p>用来对一万个10000内随机数进行排序，所消耗时间为 <strong>耗时：16ms</strong></p>
 
           
         
@@ -1428,31 +1605,29 @@ default Stream&lt;E&gt; stream() &#123;
 <li>当前Subject必须拥有所有指定的角色时，才能访问被该注解标注的方法。如果当天Subject不同时拥有所有指定角色，则方法不会执行还会抛出AuthorizationException异常。<br>RequiresUser</li>
 <li>表示当前Subject已经进行身份验证或者通过“记住我”登录。</li>
 </ul>
-<h4 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h4><pre><code class="highlight plain">&#x2F;&#x2F;属于user角色
+<h4 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h4><pre><code>//属于user角色
 @RequiresRoles(&quot;user&quot;)
 
-&#x2F;&#x2F;必须同时属于user和admin角色
-@RequiresRoles(&#123;&quot;user&quot;,&quot;admin&quot;&#125;)
+//必须同时属于user和admin角色
+@RequiresRoles({&quot;user&quot;,&quot;admin&quot;})
 
-&#x2F;&#x2F;属于user或者admin之一;修改logical为OR 即可
-@RequiresRoles(value&#x3D;&#123;&quot;user&quot;,&quot;admin&quot;&#125;,logical&#x3D;Logical.OR)
+//属于user或者admin之一;修改logical为OR 即可
+@RequiresRoles(value={&quot;user&quot;,&quot;admin&quot;},logical=Logical.OR)
 
 
-&#x2F;&#x2F;符合index:hello权限要求
+//符合index:hello权限要求
 @RequiresPermissions(&quot;index:hello&quot;)
 
-&#x2F;&#x2F;必须同时复核index:hello和index:world权限要求
-@RequiresPermissions(&#123;&quot;index:hello&quot;,&quot;index:world&quot;&#125;)
+//必须同时复核index:hello和index:world权限要求
+@RequiresPermissions({&quot;index:hello&quot;,&quot;index:world&quot;})
 
-&#x2F;&#x2F;符合index:hello或index:world权限要求即可
-@RequiresPermissions(value&#x3D;&#123;&quot;index:hello&quot;,&quot;index:world&quot;&#125;,logical&#x3D;Logical.OR)
+//符合index:hello或index:world权限要求即可
+@RequiresPermissions(value={&quot;index:hello&quot;,&quot;index:world&quot;},logical=Logical.OR)
 
 
 @RequiresAuthentication
 @RequiresUser
-@RequiresGusst</code></pre>
-
-<h3 id="api"><a href="#api" class="headerlink" title="api"></a>api</h3><h4 id="Role-Based-Authorization-角色验证"><a href="#Role-Based-Authorization-角色验证" class="headerlink" title="Role-Based Authorization(角色验证)"></a>Role-Based Authorization(角色验证)</h4><table>
+@RequiresGusst</code></pre><h3 id="api"><a href="#api" class="headerlink" title="api"></a>api</h3><h4 id="Role-Based-Authorization-角色验证"><a href="#Role-Based-Authorization-角色验证" class="headerlink" title="Role-Based Authorization(角色验证)"></a>Role-Based Authorization(角色验证)</h4><table>
 <thead>
 <tr>
 <th align="left">方法</th>
@@ -1473,15 +1648,13 @@ default Stream&lt;E&gt; stream() &#123;
 </tr>
 </tbody></table>
 <p>例子</p>
-<pre><code class="highlight plain">Subject currentUser &#x3D; SecurityUtils.getSubject();
+<pre><code>Subject currentUser = SecurityUtils.getSubject();
 
-if (currentUser.hasRole(&quot;administrator&quot;)) &#123;
-    &#x2F;&#x2F;有权限处理业务逻辑
-&#125; else &#123;
-    &#x2F;&#x2F;没权限处理业务逻辑
-&#125;</code></pre>
-
-<h4 id="Role-Assertions-角色检查"><a href="#Role-Assertions-角色检查" class="headerlink" title="Role Assertions(角色检查)"></a>Role Assertions(角色检查)</h4><table>
+if (currentUser.hasRole(&quot;administrator&quot;)) {
+    //有权限处理业务逻辑
+} else {
+    //没权限处理业务逻辑
+}</code></pre><h4 id="Role-Assertions-角色检查"><a href="#Role-Assertions-角色检查" class="headerlink" title="Role Assertions(角色检查)"></a>Role Assertions(角色检查)</h4><table>
 <thead>
 <tr>
 <th align="left">方法</th>
@@ -1502,12 +1675,10 @@ if (currentUser.hasRole(&quot;administrator&quot;)) &#123;
 </tr>
 </tbody></table>
 <p>例子</p>
-<pre><code class="highlight plain">Subject currentUser &#x3D; SecurityUtils.getSubject();
+<pre><code>Subject currentUser = SecurityUtils.getSubject();
 
-&#x2F;&#x2F;检查是否有该bankTeller权限，若没有抛出异常，继续往下执行
-currentUser.checkRole(&quot;bankTeller&quot;);</code></pre>
-
-<h4 id="Permission-Based-Authorization-权限校验"><a href="#Permission-Based-Authorization-权限校验" class="headerlink" title="Permission-Based Authorization(权限校验)"></a>Permission-Based Authorization(权限校验)</h4><table>
+//检查是否有该bankTeller权限，若没有抛出异常，继续往下执行
+currentUser.checkRole(&quot;bankTeller&quot;);</code></pre><h4 id="Permission-Based-Authorization-权限校验"><a href="#Permission-Based-Authorization-权限校验" class="headerlink" title="Permission-Based Authorization(权限校验)"></a>Permission-Based Authorization(权限校验)</h4><table>
 <thead>
 <tr>
 <th align="left">项目</th>
@@ -1528,15 +1699,14 @@ currentUser.checkRole(&quot;bankTeller&quot;);</code></pre>
 </tr>
 </tbody></table>
 <p>例子</p>
-<pre><code class="highlight plain">Subject currentUser &#x3D; SecurityUtils.getSubject();
+<pre><code>Subject currentUser = SecurityUtils.getSubject();
 
-if (currentUser.isPermitted(&quot;printer:print:laserjet4400n&quot;)) &#123;
-    &#x2F;&#x2F;做有权限操作
-&#125; else &#123;
-    &#x2F;&#x2F;做无权限操作
-&#125;</code></pre>
-
-<h4 id="Permission-Assertions-权限检查"><a href="#Permission-Assertions-权限检查" class="headerlink" title="Permission Assertions(权限检查)"></a>Permission Assertions(权限检查)</h4><table>
+if (currentUser.isPermitted(&quot;printer:print:laserjet4400n&quot;)) {
+    //做有权限操作
+} else {
+    //做无权限操作
+}
+</code></pre><h4 id="Permission-Assertions-权限检查"><a href="#Permission-Assertions-权限检查" class="headerlink" title="Permission Assertions(权限检查)"></a>Permission Assertions(权限检查)</h4><table>
 <thead>
 <tr>
 <th align="left">项目</th>
@@ -1561,514 +1731,29 @@ if (currentUser.isPermitted(&quot;printer:print:laserjet4400n&quot;)) &#123;
 </tr>
 </tbody></table>
 <h3 id="jstl标签"><a href="#jstl标签" class="headerlink" title="jstl标签"></a>jstl标签</h3><p>导入标签库</p>
-<pre><code class="highlight plain">&lt;%@taglib prefix&#x3D;&quot;shiro&quot; uri&#x3D;&quot;http:&#x2F;&#x2F;shiro.apache.org&#x2F;tags&quot; %&gt;
+<pre><code>&lt;%@taglib prefix=&quot;shiro&quot; uri=&quot;http://shiro.apache.org/tags&quot; %&gt;
 
-&lt;shiro:guest&gt;&lt;&#x2F;shiro:guest&gt;   &#96;
+&lt;shiro:guest&gt;&lt;/shiro:guest&gt;   `
 
-&lt;shiro:user&gt;&lt;&#x2F;shiro:user&gt;
+&lt;shiro:user&gt;&lt;/shiro:user&gt;
 
-&lt;shiro:authenticated&gt;&lt;&#x2F;shiro:authenticated&gt;
+&lt;shiro:authenticated&gt;&lt;/shiro:authenticated&gt;
 
-&lt;shiro:notAuthenticated&gt;未身份验证（包括记住我）&lt;&#x2F;shiro:notAuthenticated&gt;
+&lt;shiro:notAuthenticated&gt;未身份验证（包括记住我）&lt;/shiro:notAuthenticated&gt;
 
-&lt;shiro: principal&#x2F;&gt;
+&lt;shiro: principal/&gt;
 
 显示用户身份信息，默认调用Subject.getPrincipal()获取，即Primary Principal，获取的值为对象时，可以使用property属性指定
 
-&lt;shiro:hasRole name&#x3D;&quot;role&quot;&gt;&lt;&#x2F;shiro:hasRole&gt;
+&lt;shiro:hasRole name=&quot;role&quot;&gt;&lt;/shiro:hasRole&gt;
 
-&lt;shiro:hasAnyRoles name&#x3D;&quot;admin,user&quot;&gt;&lt;&#x2F;shiro:hasAnyRoles&gt;
+&lt;shiro:hasAnyRoles name=&quot;admin,user&quot;&gt;&lt;/shiro:hasAnyRoles&gt;
 
-&lt;shiro:lacksRole name&#x3D;&quot;abc&quot;&gt;&lt;&#x2F;shiro:lacksRole&gt;
+&lt;shiro:lacksRole name=&quot;abc&quot;&gt;&lt;/shiro:lacksRole&gt;
 
-&lt;shiro:hasPermission name&#x3D;&quot;user:create&quot;&gt;&lt;&#x2F;shiro:hasPermission&gt;
+&lt;shiro:hasPermission name=&quot;user:create&quot;&gt;&lt;/shiro:hasPermission&gt;
 
-&lt;shiro:lacksPermission name&#x3D;&quot;org:create&quot;&gt;&lt;&#x2F;shiro:lacksPermission&gt;</code></pre>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" itemprop="url">排序算法</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="冒泡法"><a href="#冒泡法" class="headerlink" title="冒泡法"></a>冒泡法</h3><p>关键排序代码如下</p>
-<pre><code class="highlight plain">public void bubble(int[] i)&#123;
-	int temp;
-	for(int j &#x3D; 0;j &lt; i.length-1; j++)&#123;
-		for(int k &#x3D; 0; k &lt; i.length - j -1; k++)&#123;
-			if(i[k] &gt; i[k+1])&#123;
-				temp &#x3D; i[k];
-				i[k] &#x3D; i[k+1];
-				i[k+1] &#x3D; temp;
-			&#125;
-		&#125;
-	&#125;
-&#125;</code></pre>
-
-<p>用来对一万个10000内随机数进行排序，所消耗时间为 <strong>耗时：14329ms</strong></p>
-<h3 id="选择排序"><a href="#选择排序" class="headerlink" title="选择排序"></a>选择排序</h3><p>关键代码如下</p>
-<pre><code class="highlight plain">public void selectionSort(int n[]) &#123;
-	for (int i &#x3D; 0; i &lt; n.length - 1; i++) &#123;
-		int max &#x3D; 0;
-		for (int j &#x3D; 0; j &lt; n.length - i - 1; j++) &#123;
-			if(n[max] &lt; n[j+1])&#123;
-				max &#x3D; j+1;
-			&#125;
-		&#125;
-		if (max !&#x3D; n.length-1-i) &#123;
-			int temp;
-			temp &#x3D; n[max];
-			n[max] &#x3D; n[n.length-1-i];
-			n[n.length-1-i] &#x3D; temp;
-		&#125;
-	&#125;
-&#125;</code></pre>
-
-<p>用来对一万个10000内随机数进行排序，所消耗时间为 <strong>耗时：2657ms</strong></p>
-<h3 id="插入排序"><a href="#插入排序" class="headerlink" title="插入排序"></a>插入排序</h3><p>关键代码如下</p>
-<pre><code class="highlight plain">public void Insert(int n[]) &#123;
-	for (int i &#x3D; 1; i &lt; n.length; i++) &#123;
-		int temp &#x3D; i;
-		for (int j &#x3D; i -1; j &gt;&#x3D; 0 &amp;&amp; n[j] &gt; n[temp]; j--) &#123;
-			exch(n, j, temp);
-			temp &#x3D; j;
-		&#125;
-	&#125;
-&#125;
-public void exch(int n[],int a,int b) &#123;
-	int temp &#x3D; n[a];
-	n[a] &#x3D; n[b];
-	n[b] &#x3D; temp;
-&#125;</code></pre>
-
-<p>用来对一万个10000内随机数进行排序，所消耗时间为 <strong>耗时：3107ms</strong></p>
-<h3 id="快速排序"><a href="#快速排序" class="headerlink" title="快速排序"></a>快速排序</h3><p>关键代码如下</p>
-<pre><code class="highlight plain">	public void Quick(int n[],int left,int right) &#123;
-		if(left &gt;&#x3D; right)&#123;
-			return;
-		&#125;
-		int key &#x3D; PartSort(n, left, right);
-		Quick(n, left, key);
-		Quick(n, key+1, right);
-	&#125;
-	public int PartSort(int n[],int left,int right) &#123;
-		int key &#x3D; n[left];
-		while(left &lt; right)&#123;
-			while (left &lt; right &amp;&amp; n[right] &gt;&#x3D; key) &#123;
-				right--;
-			&#125;
-			n[left] &#x3D; n[right];
-			while (left &lt; right &amp;&amp; n[left] &lt;&#x3D; key) &#123;
-				left++;
-			&#125;
-			n[right] &#x3D; n[left];
-		&#125;
-		n[left] &#x3D; key;
-		return left;
-	&#125;
-&#125;</code></pre>
-<p>用来对一万个10000内随机数进行排序，所消耗时间为 <strong>耗时：16ms</strong></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E6%89%8B%E5%8A%A8%E5%AE%9E%E7%8E%B0%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/%E6%89%8B%E5%8A%A8%E5%AE%9E%E7%8E%B0%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8/" itemprop="url">手动实现线程安全</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="自旋锁"><a href="#自旋锁" class="headerlink" title="自旋锁"></a>自旋锁</h3><pre><code class="highlight plain">import java.util.concurrent.atomic.AtomicReference;
-public class SpinLock &#123;
-   private AtomicReference&lt;Thread&gt; owner &#x3D; new AtomicReference&lt;Thread&gt;();
-   public void lock() &#123;
-       Thread currentThread &#x3D; Thread.currentThread();
-        &#x2F;&#x2F; 如果锁未被占用，则设置当前线程为锁的拥有者
-       while (!owner.compareAndSet(null, currentThread)) &#123;&#125;
-   &#125;
-
-   public void unlock() &#123;
-       Thread currentThread &#x3D; Thread.currentThread();
-        &#x2F;&#x2F; 只有锁的拥有者才能释放锁
-       owner.compareAndSet(currentThread, null);
-   &#125;
-&#125;</code></pre>
-
-<p>利用CAS第一个线程<code>owner.compareAndSet(null, currentThread)</code>抢到执行权，后面的线程则进入循环，直到第一个线程释放锁<code>owner.compareAndSet(currentThread, null)</code>，接着下一个线程抢到执行权，依次运行下去</p>
-<h3 id="公平自旋锁"><a href="#公平自旋锁" class="headerlink" title="公平自旋锁"></a>公平自旋锁</h3><p>我们第一个自旋锁所有线程一起抢执行权，如果要执行FIFO原则，如以下</p>
-<pre><code class="highlight plain">import java.util.concurrent.atomic.AtomicInteger;
-
-public class FairSpinLock &#123;
-   private AtomicInteger serviceNum &#x3D; new AtomicInteger(); &#x2F;&#x2F; 服务号
-   private AtomicInteger ticketNum &#x3D; new AtomicInteger(); &#x2F;&#x2F; 排队号
-
-   public int lock() &#123;
-       &#x2F;&#x2F; 首先原子性地获得一个排队号
-       int myTicketNum &#x3D; ticketNum.getAndIncrement();
-       &#x2F;&#x2F; 只要当前服务号不是自己的就不断轮询
-       while (serviceNum.get() !&#x3D; myTicketNum) &#123;
-       &#125;
-       return myTicketNum;
-    &#125;
-
-    public void unlock(int myTicket) &#123;
-        &#x2F;&#x2F; 只有当前线程拥有者才能释放锁
-        int next &#x3D; myTicket + 1;
-        serviceNum.compareAndSet(myTicket, next);
-    &#125;
-&#125;</code></pre>
-
-<p>每个线程分配一个<code>myTicketNum</code>，每一次<code>unlock</code>将<code>serviceNum</code>自增，让下一个持<code>myTicketNum</code>与<code>serviceNum</code>相等的线程跳出循环，开始业务</p>
-<h3 id="MCS自旋锁"><a href="#MCS自旋锁" class="headerlink" title="MCS自旋锁"></a>MCS自旋锁</h3><pre><code class="highlight plain">import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
-public class MCSLock &#123;
-    public static class MCSNode &#123;
-        volatile MCSNode next;
-        volatile boolean isWaiting &#x3D; true; &#x2F;&#x2F; 默认是在等待锁
-    &#125;
-    volatile MCSNode queue;&#x2F;&#x2F; 指向最后一个申请锁的MCSNode
-    private static final AtomicReferenceFieldUpdater&lt;MCSLock, MCSNode&gt; UPDATER &#x3D; AtomicReferenceFieldUpdater
-            .newUpdater(MCSLock.class, MCSNode.class, &quot;queue&quot;);
-
-    public void lock(MCSNode currentThread) &#123;
-        MCSNode predecessor &#x3D; UPDATER.getAndSet(this, currentThread);&#x2F;&#x2F; step 1
-        if (predecessor !&#x3D; null) &#123;
-            predecessor.next &#x3D; currentThread;&#x2F;&#x2F; step 2
-            while (currentThread.isWaiting) &#123;&#x2F;&#x2F; step 3
-            &#125;
-        &#125; else &#123; &#x2F;&#x2F; 只有一个线程在使用锁，没有前驱来通知它，所以得自己标记自己已获得锁
-            currentThread.isWaiting &#x3D; false;
-        &#125;
-    &#125;
-
-    public void unlock(MCSNode currentThread) &#123;
-        if (currentThread.isWaiting) &#123;&#x2F;&#x2F; 锁拥有者进行释放锁才有意义
-            return;
-        &#125;
-
-        if (currentThread.next &#x3D;&#x3D; null) &#123;&#x2F;&#x2F; 检查是否有人排在自己后面
-            if (UPDATER.compareAndSet(this, currentThread, null)) &#123;&#x2F;&#x2F; step 4
-                &#x2F;&#x2F; compareAndSet返回true表示确实没有人排在自己后面
-                return;
-            &#125; else &#123;
-                &#x2F;&#x2F; 突然有人排在自己后面了，可能还不知道是谁，下面是等待后续者
-                &#x2F;&#x2F; 这里之所以要忙等是因为：step 1执行完后，step 2可能还没执行完
-                while (currentThread.next &#x3D;&#x3D; null) &#123; &#x2F;&#x2F; step 5
-                &#125;
-            &#125;
-        &#125;
-        currentThread.next.isWaiting &#x3D; false;
-        currentThread.next &#x3D; null;&#x2F;&#x2F; for GC
-    &#125;
-&#125;</code></pre>
-
-<p>利用CAS特性，<code>UPDATER.getAndSet(this, currentThread)</code>在多线程访问情况下将所有节点连成一个虚拟队列，然后将前后节点链成链表结构，每个申请锁的线程都是链表上的一个节点，这些线程会一直轮询自己的本地变量，来知道它自己是否获得了锁。已经获得了锁的线程在释放锁的时候，负责通知其它线程，这样 CPU 之间缓存的同步操作就减少了很多，仅在线程通知另外一个线程的时候发生，降低了系统总线和内存的开销。</p>
-<h3 id="CLH-自旋锁"><a href="#CLH-自旋锁" class="headerlink" title="CLH 自旋锁"></a>CLH 自旋锁</h3><p>CLH 锁与 MCS 锁的原理大致相同，都是各个线程轮询各自关注的变量，来避免多个线程对同一个变量的轮询，从而从 CPU 缓存一致性的角度上减少了系统的消耗。<br>CLH 锁的名字也与他们的发明人的名字相关：Craig，Landin and Hagersten。<br>CLH 锁与 MCS 锁最大的不同是，MCS 轮询的是当前队列节点的变量，而 CLH 轮询的是当前节点的前驱节点的变量，来判断前一个线程是否释放了锁。</p>
-<pre><code class="highlight plain">import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
-public class CLHLock &#123;
-    public static class CLHNode &#123;
-        private volatile boolean isWaiting &#x3D; true; &#x2F;&#x2F; 默认是在等待锁
-    &#125;
-    private volatile CLHNode tail ;
-    private static final AtomicReferenceFieldUpdater&lt;CLHLock, CLHNode&gt; UPDATER &#x3D; AtomicReferenceFieldUpdater
-            . newUpdater(CLHLock.class, CLHNode .class , &quot;tail&quot; );
-    public void lock(CLHNode currentThread) &#123;
-        CLHNode preNode &#x3D; UPDATER.getAndSet( this, currentThread);
-        if(preNode !&#x3D; null) &#123;&#x2F;&#x2F;已有线程占用了锁，进入自旋
-            while(preNode.isWaiting ) &#123;
-            &#125;
-        &#125;
-    &#125;
-
-    public void unlock(CLHNode currentThread) &#123;
-        &#x2F;&#x2F; 如果队列里只有当前线程，则释放对当前线程的引用（for GC）。
-        if (!UPDATER .compareAndSet(this, currentThread, null)) &#123;
-            &#x2F;&#x2F; 还有后续线程
-            currentThread.isWaiting &#x3D; false ;&#x2F;&#x2F; 改变状态，让后续线程结束自旋
-        &#125;
-    &#125;
-&#125;</code></pre>
-
-<p>CLH 锁与 MCS 锁的原理大致相同，都是各个线程轮询各自关注的变量，来避免多个线程对同一个变量的轮询，从而从 CPU 缓存一致性的角度上减少了系统的消耗。CLH 锁与 MCS 锁最大的不同是，MCS 轮询的是当前队列节点的变量，而 CLH 轮询的是当前节点的前驱节点的变量，来判断前一个线程是否释放了锁。</p>
-<h3 id="semaphore"><a href="#semaphore" class="headerlink" title="semaphore"></a>semaphore</h3><pre><code class="highlight plain">class Store&#123;
-    private static int storage &#x3D; 0;
-    Semaphore semaphore &#x3D; new Semaphore(1);
-    public void add(int n) throws InterruptedException &#123;
-        semaphore.acquire();
-        storage +&#x3D; n;
-        semaphore.release();
-    &#125;
-
-    public void out()&#123;
-        System.out.println(storage);
-    &#125;
-&#125;</code></pre>
-
-<p>设置信号量为1，这样可以保证多线程并发调用<code>add</code>方法时，只能单个线程运行，起到加锁效果</p>
-
+&lt;shiro:lacksPermission name=&quot;org:create&quot;&gt;&lt;/shiro:lacksPermission&gt;      </code></pre>
           
         
       
@@ -2222,101 +1907,97 @@ public class CLHLock &#123;
 <li>抽象产品(Product)角色 :简单工厂模式所创建的所有对象的父类，它负责描述所有实例所共有的公共接口。</li>
 <li>具体产品(Concrete Product)角色:简单工厂模式的创建目标，所有创建的对象都是充当这个角色的某个具体类的实例。</li>
 </ul>
-<h4 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h4><pre><code class="highlight plain">&#x2F;&#x2F;抽象产品
-public interface Product &#123;
-&#125;
+<h4 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h4><pre><code>//抽象产品
+public interface Product {
+}
 
-&#x2F;&#x2F;具体产品
-public class Tv implements Product &#123;
-    public Tv()&#123;
+//具体产品
+public class Tv implements Product {
+    public Tv(){
         System.out.println(&quot;电视被制造了&quot;);
-    &#125;
-&#125;
+    }
+}
 
-public class Car implements Product &#123;
-    public Car()&#123;
+public class Car implements Product {
+    public Car(){
         System.out.println(&quot;汽车被制造了&quot;);
-    &#125;
-&#125;
+    }
+}
 
-&#x2F;&#x2F;工厂
-public class ProductFactory &#123;
+//工厂
+public class ProductFactory {
 
-    public static Shape getProduct(String productType) &#123;
-        if (productType &#x3D;&#x3D; null) &#123;
+    public static Shape getProduct(String productType) {
+        if (productType == null) {
             return null;
-        &#125;
-        if (productType.equalsIgnoreCase(&quot;Tv&quot;)) &#123;
+        }
+        if (productType.equalsIgnoreCase(&quot;Tv&quot;)) {
             return new Tv();
-        &#125; else if (productType.equalsIgnoreCase(&quot;Car&quot;)) &#123;
+        } else if (productType.equalsIgnoreCase(&quot;Car&quot;)) {
             return new Rectangle();
-        &#125; 
+        } 
         return null;
-    &#125;
-&#125;
+    }
+}
 
-&#x2F;&#x2F;使用反射来为工厂创建类更好
-public class ProductFactory &#123;
-    public static Product produce(String className) throws Exception &#123;
-        try &#123;
-            Product product &#x3D; (Product) Class.forName(className).newInstance();
+//使用反射来为工厂创建类更好
+public class ProductFactory {
+    public static Product produce(String className) throws Exception {
+        try {
+            Product product = (Product) Class.forName(className).newInstance();
             return product;
-        &#125; catch (InstantiationException e) &#123;
+        } catch (InstantiationException e) {
             e.printStackTrace();
-        &#125; catch (IllegalAccessException e) &#123;
+        } catch (IllegalAccessException e) {
             e.printStackTrace();
-        &#125; catch (ClassNotFoundException e) &#123;
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
-        &#125;
+        }
         throw new Exception(&quot;没有该产品&quot;);
-    &#125;
-&#125;</code></pre>
-
-<h3 id="工厂方法模式"><a href="#工厂方法模式" class="headerlink" title="工厂方法模式"></a>工厂方法模式</h3><h4 id="工厂方法模式介绍"><a href="#工厂方法模式介绍" class="headerlink" title="工厂方法模式介绍"></a>工厂方法模式介绍</h4><p>工厂方法模式定义一个用于创建对象的接口，让子类决定实例化哪一个类。Factory Method是一个类的实例化延迟到其子类。<br>在工厂方法模式中，核心的工厂类不再负责所有的产品的创建，而是将具体创建的工作交给子类去做。这个核心类则摇身一变，成为了一个抽象工厂角色，仅负责给出具体工厂子类必须实现的接口，而不接触哪一个产品类应当被实例化这种细节。</p>
+    }
+}</code></pre><h3 id="工厂方法模式"><a href="#工厂方法模式" class="headerlink" title="工厂方法模式"></a>工厂方法模式</h3><h4 id="工厂方法模式介绍"><a href="#工厂方法模式介绍" class="headerlink" title="工厂方法模式介绍"></a>工厂方法模式介绍</h4><p>工厂方法模式定义一个用于创建对象的接口，让子类决定实例化哪一个类。Factory Method是一个类的实例化延迟到其子类。<br>在工厂方法模式中，核心的工厂类不再负责所有的产品的创建，而是将具体创建的工作交给子类去做。这个核心类则摇身一变，成为了一个抽象工厂角色，仅负责给出具体工厂子类必须实现的接口，而不接触哪一个产品类应当被实例化这种细节。</p>
 <h4 id="角色分配-1"><a href="#角色分配-1" class="headerlink" title="角色分配"></a>角色分配</h4><ul>
 <li>抽象工厂（Creator）角色：担任这个角色的是工厂方法模式的核心，它是与应用程序无关的。任何在模式中创建对象的工厂类必须实现这个接口。在上面的系统中这个角色由Java 接口Creator 扮演；在实际的系统中，这个角色也常常使用抽象Java 类实现。</li>
 <li>具体工厂（Concrete Creator）角色：担任这个角色的是实现了抽象工厂接口的具体Java 类。具体工厂角色含有与应用密切相关的逻辑，并且受到应用程序的调用以创建产品对象。在本系统中给出了两个这样的角色，也就是具体Java 类ConcreteCreator1 和ConcreteCreator2。</li>
 <li>抽象产品（Product）角色：工厂方法模式所创建的对象的超类型，也就是产品对象的共同父类或共同拥有的接口。在本系统中，这个角色由Java 接口Product 扮演；在实际的系统中，这个角色也常常使用抽象Java 类实现。</li>
 <li>具体产品（Concrete Product）角色：这个角色实现了抽象产品角色所声明的接口。工厂方法模式所创建的每一个对象都是某个具体产品角色的实例。</li>
 </ul>
-<h4 id="例子-1"><a href="#例子-1" class="headerlink" title="例子"></a>例子</h4><pre><code class="highlight plain">&#x2F;&#x2F;抽象工厂
-public interface Factory &#123;
+<h4 id="例子-1"><a href="#例子-1" class="headerlink" title="例子"></a>例子</h4><pre><code>//抽象工厂
+public interface Factory {
     public Product produce();
-&#125;
+}
 
-&#x2F;&#x2F;抽象产品
-public interface Product&#123;&#125; 
+//抽象产品
+public interface Product{} 
 
-&#x2F;&#x2F;具体产品
-public class Tv implements Product &#123;
-    public Tv() &#123;
+//具体产品
+public class Tv implements Product {
+    public Tv() {
         System.out.println(&quot;电视被制造了&quot;);
-    &#125;
-&#125;
+    }
+}
 
 
-public class Car implements Product &#123;
-    public Car()&#123;
+public class Car implements Product {
+    public Car(){
         System.out.println(&quot;汽车被制造了&quot;);
-    &#125;
-&#125;
+    }
+}
 
-&#x2F;&#x2F;具体工厂
-public class TvFactory implements Factory &#123;
+//具体工厂
+public class TvFactory implements Factory {
     @Override
-    public Product produce() &#123;
+    public Product produce() {
         return new Tv();
-    &#125;
-&#125;
+    }
+}
 
-public class CarFactory implements Factory &#123;
+public class CarFactory implements Factory {
     @Override
-    public Product produce() &#123;
+    public Product produce() {
         return new Car();
-    &#125;
-&#125;</code></pre>
-
-<h3 id="抽象工厂模式"><a href="#抽象工厂模式" class="headerlink" title="抽象工厂模式"></a>抽象工厂模式</h3><h4 id="抽象工厂模式介绍"><a href="#抽象工厂模式介绍" class="headerlink" title="抽象工厂模式介绍"></a>抽象工厂模式介绍</h4><p>抽象工厂模式提供一个创建一系列或相互依赖的对象的接口，而无需指定它们具体的类。</p>
+    }
+}</code></pre><h3 id="抽象工厂模式"><a href="#抽象工厂模式" class="headerlink" title="抽象工厂模式"></a>抽象工厂模式</h3><h4 id="抽象工厂模式介绍"><a href="#抽象工厂模式介绍" class="headerlink" title="抽象工厂模式介绍"></a>抽象工厂模式介绍</h4><p>抽象工厂模式提供一个创建一系列或相互依赖的对象的接口，而无需指定它们具体的类。</p>
 <h4 id="角色分配-2"><a href="#角色分配-2" class="headerlink" title="角色分配"></a>角色分配</h4><p>-抽象工厂（AbstractFactory）角色：是工厂方法模式的核心，与应用程序无关。任何在模式中创建的对象的工厂类必须实现这个接口。</p>
 <ul>
 <li>具体工厂类（Conrete Factory）角色：这是实现抽象工厂接口的具体工厂类，包含与应用程序密切相关的逻辑，并且受到应用程序调用以创建某一种产品对象。</li>
@@ -2325,89 +2006,346 @@ public class CarFactory implements Factory &#123;
 </ul>
 <h4 id="和工厂方法的区别"><a href="#和工厂方法的区别" class="headerlink" title="和工厂方法的区别"></a>和工厂方法的区别</h4><p>抽象工厂是生产一整套有产品的（至少要生产两个产品)，这些产品必须相互是有关系或有依赖的，而工厂方法中的工厂是生产单一产品的工厂。</p>
 <h4 id="例子-2"><a href="#例子-2" class="headerlink" title="例子"></a>例子</h4><p>以枪和子弹为例子</p>
-<pre><code class="highlight plain">&#x2F;&#x2F;抽象产品
-public interface Gun &#123;
+<pre><code>//抽象产品
+public interface Gun {
     public void shooting();
-&#125;
+}
 
-public interface Bullet &#123;
+public interface Bullet {
     public void load();
-&#125;
+}
 
-&#x2F;&#x2F;具体产品
-public class AK implements Gun&#123;
+//具体产品
+public class AK implements Gun{
 
     @Override
-    public void shooting() &#123;
+    public void shooting() {
         System.out.println(&quot;shooting with AK&quot;);
-        
-    &#125;
 
-&#125;
+    }
 
-public class M4A1 implements Gun &#123;
+}
+
+public class M4A1 implements Gun {
 
     @Override
-    public void shooting() &#123;
+    public void shooting() {
         System.out.println(&quot;shooting with M4A1&quot;);
 
-    &#125;
+    }
 
-&#125;
+}
 
-public class AK_Bullet implements Bullet &#123;
+public class AK_Bullet implements Bullet {
 
     @Override
-    public void load() &#123;
+    public void load() {
         System.out.println(&quot;Load bullets with AK&quot;);
-    &#125;
+    }
 
-&#125;
+}
 
 public class M4A1
-_Bullet implements Bullet &#123;
+_Bullet implements Bullet {
 
     @Override
-    public void load() &#123;
+    public void load() {
         System.out.println(&quot;Load bullets with M4A1&quot;);
-    &#125;
+    }
 
-&#125;
+}
 
-&#x2F;&#x2F;抽象工厂
-public interface Factory &#123;
+//抽象工厂
+public interface Factory {
     public Gun produceGun();
     public Bullet produceBullet();
-&#125;
+}
 
-&#x2F;&#x2F;具体工厂
-public class M4A1_Factory implements Factory&#123;
+//具体工厂
+public class M4A1_Factory implements Factory{
 
     @Override
-    public Gun produceGun() &#123;
+    public Gun produceGun() {
         return new M4A1();
-    &#125;
+    }
 
     @Override
-    public Bullet produceBullet() &#123;
+    public Bullet produceBullet() {
         return new M4A1_Bullet();
-    &#125;
+    }
 
-&#125;
+}
 
-public class AK_Factory implements Factory&#123;
+public class AK_Factory implements Factory{
 
     @Override
-    public Gun produceGun() &#123;
+    public Gun produceGun() {
         return new AK();
-    &#125;
+    }
 
     @Override
-    public Bullet produceBullet() &#123;
+    public Bullet produceBullet() {
         return new AK_Bullet();
-    &#125;
+    }
 
-&#125;</code></pre>
+}</code></pre>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E6%89%8B%E5%8A%A8%E5%AE%9E%E7%8E%B0%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/%E6%89%8B%E5%8A%A8%E5%AE%9E%E7%8E%B0%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8/" itemprop="url">手动实现线程安全</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="自旋锁"><a href="#自旋锁" class="headerlink" title="自旋锁"></a>自旋锁</h3><pre><code>import java.util.concurrent.atomic.AtomicReference;
+public class SpinLock {
+   private AtomicReference&lt;Thread&gt; owner = new AtomicReference&lt;Thread&gt;();
+   public void lock() {
+       Thread currentThread = Thread.currentThread();
+        // 如果锁未被占用，则设置当前线程为锁的拥有者
+       while (!owner.compareAndSet(null, currentThread)) {}
+   }
+
+   public void unlock() {
+       Thread currentThread = Thread.currentThread();
+        // 只有锁的拥有者才能释放锁
+       owner.compareAndSet(currentThread, null);
+   }
+}</code></pre><p>利用CAS第一个线程<code>owner.compareAndSet(null, currentThread)</code>抢到执行权，后面的线程则进入循环，直到第一个线程释放锁<code>owner.compareAndSet(currentThread, null)</code>，接着下一个线程抢到执行权，依次运行下去</p>
+<h3 id="公平自旋锁"><a href="#公平自旋锁" class="headerlink" title="公平自旋锁"></a>公平自旋锁</h3><p>我们第一个自旋锁所有线程一起抢执行权，如果要执行FIFO原则，如以下</p>
+<pre><code>import java.util.concurrent.atomic.AtomicInteger;
+
+public class FairSpinLock {
+   private AtomicInteger serviceNum = new AtomicInteger(); // 服务号
+   private AtomicInteger ticketNum = new AtomicInteger(); // 排队号
+
+   public int lock() {
+       // 首先原子性地获得一个排队号
+       int myTicketNum = ticketNum.getAndIncrement();
+       // 只要当前服务号不是自己的就不断轮询
+       while (serviceNum.get() != myTicketNum) {
+       }
+       return myTicketNum;
+    }
+
+    public void unlock(int myTicket) {
+        // 只有当前线程拥有者才能释放锁
+        int next = myTicket + 1;
+        serviceNum.compareAndSet(myTicket, next);
+    }
+}</code></pre><p>每个线程分配一个<code>myTicketNum</code>，每一次<code>unlock</code>将<code>serviceNum</code>自增，让下一个持<code>myTicketNum</code>与<code>serviceNum</code>相等的线程跳出循环，开始业务</p>
+<h3 id="MCS自旋锁"><a href="#MCS自旋锁" class="headerlink" title="MCS自旋锁"></a>MCS自旋锁</h3><pre><code>import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
+public class MCSLock {
+    public static class MCSNode {
+        volatile MCSNode next;
+        volatile boolean isWaiting = true; // 默认是在等待锁
+    }
+    volatile MCSNode queue;// 指向最后一个申请锁的MCSNode
+    private static final AtomicReferenceFieldUpdater&lt;MCSLock, MCSNode&gt; UPDATER = AtomicReferenceFieldUpdater
+            .newUpdater(MCSLock.class, MCSNode.class, &quot;queue&quot;);
+
+    public void lock(MCSNode currentThread) {
+        MCSNode predecessor = UPDATER.getAndSet(this, currentThread);// step 1
+        if (predecessor != null) {
+            predecessor.next = currentThread;// step 2
+            while (currentThread.isWaiting) {// step 3
+            }
+        } else { // 只有一个线程在使用锁，没有前驱来通知它，所以得自己标记自己已获得锁
+            currentThread.isWaiting = false;
+        }
+    }
+
+    public void unlock(MCSNode currentThread) {
+        if (currentThread.isWaiting) {// 锁拥有者进行释放锁才有意义
+            return;
+        }
+
+        if (currentThread.next == null) {// 检查是否有人排在自己后面
+            if (UPDATER.compareAndSet(this, currentThread, null)) {// step 4
+                // compareAndSet返回true表示确实没有人排在自己后面
+                return;
+            } else {
+                // 突然有人排在自己后面了，可能还不知道是谁，下面是等待后续者
+                // 这里之所以要忙等是因为：step 1执行完后，step 2可能还没执行完
+                while (currentThread.next == null) { // step 5
+                }
+            }
+        }
+        currentThread.next.isWaiting = false;
+        currentThread.next = null;// for GC
+    }
+}</code></pre><p>利用CAS特性，<code>UPDATER.getAndSet(this, currentThread)</code>在多线程访问情况下将所有节点连成一个虚拟队列，然后将前后节点链成链表结构，每个申请锁的线程都是链表上的一个节点，这些线程会一直轮询自己的本地变量，来知道它自己是否获得了锁。已经获得了锁的线程在释放锁的时候，负责通知其它线程，这样 CPU 之间缓存的同步操作就减少了很多，仅在线程通知另外一个线程的时候发生，降低了系统总线和内存的开销。</p>
+<h3 id="CLH-自旋锁"><a href="#CLH-自旋锁" class="headerlink" title="CLH 自旋锁"></a>CLH 自旋锁</h3><p>CLH 锁与 MCS 锁的原理大致相同，都是各个线程轮询各自关注的变量，来避免多个线程对同一个变量的轮询，从而从 CPU 缓存一致性的角度上减少了系统的消耗。<br>CLH 锁的名字也与他们的发明人的名字相关：Craig，Landin and Hagersten。<br>CLH 锁与 MCS 锁最大的不同是，MCS 轮询的是当前队列节点的变量，而 CLH 轮询的是当前节点的前驱节点的变量，来判断前一个线程是否释放了锁。</p>
+<pre><code>import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
+public class CLHLock {
+    public static class CLHNode {
+        private volatile boolean isWaiting = true; // 默认是在等待锁
+    }
+    private volatile CLHNode tail ;
+    private static final AtomicReferenceFieldUpdater&lt;CLHLock, CLHNode&gt; UPDATER = AtomicReferenceFieldUpdater
+            . newUpdater(CLHLock.class, CLHNode .class , &quot;tail&quot; );
+    public void lock(CLHNode currentThread) {
+        CLHNode preNode = UPDATER.getAndSet( this, currentThread);
+        if(preNode != null) {//已有线程占用了锁，进入自旋
+            while(preNode.isWaiting ) {
+            }
+        }
+    }
+
+    public void unlock(CLHNode currentThread) {
+        // 如果队列里只有当前线程，则释放对当前线程的引用（for GC）。
+        if (!UPDATER .compareAndSet(this, currentThread, null)) {
+            // 还有后续线程
+            currentThread.isWaiting = false ;// 改变状态，让后续线程结束自旋
+        }
+    }
+}</code></pre><p>CLH 锁与 MCS 锁的原理大致相同，都是各个线程轮询各自关注的变量，来避免多个线程对同一个变量的轮询，从而从 CPU 缓存一致性的角度上减少了系统的消耗。CLH 锁与 MCS 锁最大的不同是，MCS 轮询的是当前队列节点的变量，而 CLH 轮询的是当前节点的前驱节点的变量，来判断前一个线程是否释放了锁。</p>
+<h3 id="semaphore"><a href="#semaphore" class="headerlink" title="semaphore"></a>semaphore</h3><pre><code>class Store{
+    private static int storage = 0;
+    Semaphore semaphore = new Semaphore(1);
+    public void add(int n) throws InterruptedException {
+        semaphore.acquire();
+        storage += n;
+        semaphore.release();
+    }
+
+    public void out(){
+        System.out.println(storage);
+    }
+}</code></pre><p>设置信号量为1，这样可以保证多线程并发调用<code>add</code>方法时，只能单个线程运行，起到加锁效果</p>
+
           
         
       
@@ -2548,96 +2486,94 @@ public class AK_Factory implements Factory&#123;
       
         
           
-            <h3 id="synchronized"><a href="#synchronized" class="headerlink" title="synchronized"></a>synchronized</h3><pre><code class="highlight plain">public class Mythread2 &#123;
-	public static void main(String[] args) throws InterruptedException &#123;
-		Object A &#x3D; new Object();
-		Object B &#x3D; new Object();
-		Object C &#x3D; new Object();
-		new ThreadABC(C,A,&#39;A&#39;).start();
-		Thread.sleep(100);
-		new ThreadABC(A,B,&#39;B&#39;).start();
-		Thread.sleep(100);
-		new ThreadABC(B,C,&#39;C&#39;).start();
-	&#125;
-&#125;
+            <h3 id="synchronized"><a href="#synchronized" class="headerlink" title="synchronized"></a>synchronized</h3><pre><code>public class Mythread2 {
+    public static void main(String[] args) throws InterruptedException {
+        Object A = new Object();
+        Object B = new Object();
+        Object C = new Object();
+        new ThreadABC(C,A,&#39;A&#39;).start();
+        Thread.sleep(100);
+        new ThreadABC(A,B,&#39;B&#39;).start();
+        Thread.sleep(100);
+        new ThreadABC(B,C,&#39;C&#39;).start();
+    }
+}
 
-class ThreadABC extends Thread&#123;
-	private Object pre;
-	private Object self;
-	private char c;
-	public ThreadABC(Object pre, Object self, char c) &#123;
-		this.pre &#x3D; pre;
-		this.self &#x3D; self;
-		this.c &#x3D; c;
-	&#125;
-	@Override
-	public void run() &#123;
-		&#x2F;&#x2F; TODO Auto-generated method stub
-		super.run();
-		while(true)&#123;
-			synchronized (pre) &#123;
-				synchronized (self) &#123;
-					System.out.println(c);
-					self.notifyAll();&#x2F;&#x2F;执行完同步代码块才会释放锁
-				&#125;
-				try &#123;
-					pre.wait();
-				&#125; catch (InterruptedException e) &#123;
-					&#x2F;&#x2F; TODO Auto-generated catch block
-					e.printStackTrace();
-				&#125;
-			&#125;
-		&#125;
-	&#125;
-	
-&#125;</code></pre>
+class ThreadABC extends Thread{
+    private Object pre;
+    private Object self;
+    private char c;
+    public ThreadABC(Object pre, Object self, char c) {
+        this.pre = pre;
+        this.self = self;
+        this.c = c;
+    }
+    @Override
+    public void run() {
+        // TODO Auto-generated method stub
+        super.run();
+        while(true){
+            synchronized (pre) {
+                synchronized (self) {
+                    System.out.println(c);
+                    self.notifyAll();//执行完同步代码块才会释放锁
+                }
+                try {
+                    pre.wait();
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 
-<h3 id="ReentrantLock"><a href="#ReentrantLock" class="headerlink" title="ReentrantLock"></a>ReentrantLock</h3><pre><code class="highlight plain">public class Mythread3 &#123;
+}</code></pre><h3 id="ReentrantLock"><a href="#ReentrantLock" class="headerlink" title="ReentrantLock"></a>ReentrantLock</h3><pre><code>public class Mythread3 {
 
-	public static void main(String[] args) &#123;
-		ReentrantLock lock &#x3D; new ReentrantLock();
-		Condition A &#x3D; lock.newCondition();
-		Condition B &#x3D; lock.newCondition();
-		Condition C &#x3D; lock.newCondition();
-		new ThreadReen(C, A, &#39;A&#39;, lock).start();
-		new ThreadReen(A, B, &#39;B&#39;, lock).start();
-		new ThreadReen(B, C, &#39;C&#39;, lock).start();
-	&#125;
-	
-&#125;
+    public static void main(String[] args) {
+        ReentrantLock lock = new ReentrantLock();
+        Condition A = lock.newCondition();
+        Condition B = lock.newCondition();
+        Condition C = lock.newCondition();
+        new ThreadReen(C, A, &#39;A&#39;, lock).start();
+        new ThreadReen(A, B, &#39;B&#39;, lock).start();
+        new ThreadReen(B, C, &#39;C&#39;, lock).start();
+    }
 
-class ThreadReen extends Thread&#123;
-	private Condition pre;
-	private Condition self;
-	private char c;
-	private ReentrantLock lock;
-	
-	public ThreadReen(Condition pre, Condition self, char c, ReentrantLock lock) &#123;
-		this.pre &#x3D; pre;
-		this.self &#x3D; self;
-		this.c &#x3D; c;
-		this.lock &#x3D; lock;
-	&#125;
+}
 
-	@Override
-	public void run() &#123;
-		&#x2F;&#x2F; TODO Auto-generated method stub
-		super.run();
-		while(true)&#123;
-			lock.lock();
-			System.out.println(c);
-			self.signalAll();&#x2F;&#x2F;执行完同步代码块才会释放锁
-			try &#123;
-				pre.await();
-			&#125; catch (InterruptedException e) &#123;
-				&#x2F;&#x2F; TODO Auto-generated catch block
-				e.printStackTrace();
-			&#125;
-			lock.unlock();
-		&#125;
-	&#125;
-	
-&#125;</code></pre>
+class ThreadReen extends Thread{
+    private Condition pre;
+    private Condition self;
+    private char c;
+    private ReentrantLock lock;
+
+    public ThreadReen(Condition pre, Condition self, char c, ReentrantLock lock) {
+        this.pre = pre;
+        this.self = self;
+        this.c = c;
+        this.lock = lock;
+    }
+
+    @Override
+    public void run() {
+        // TODO Auto-generated method stub
+        super.run();
+        while(true){
+            lock.lock();
+            System.out.println(c);
+            self.signalAll();//执行完同步代码块才会释放锁
+            try {
+                pre.await();
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            lock.unlock();
+        }
+    }
+
+}</code></pre>
           
         
       
@@ -2779,199 +2715,173 @@ class ThreadReen extends Thread&#123;
         
           
             <h3 id="双向链表的结构"><a href="#双向链表的结构" class="headerlink" title="双向链表的结构"></a>双向链表的结构</h3><p><img src="http://wx4.sinaimg.cn/large/96b7c0f4ly1fymvpeor3pj20qq0a2js6.jpg" alt=""></p>
-<h3 id="节点"><a href="#节点" class="headerlink" title="节点"></a>节点</h3><pre><code class="highlight plain">class Node&lt;T&gt;&#123;
-	Node&lt;T&gt; pre;
-	Node&lt;T&gt; next;
-	T data;
-	
-	public Node() &#123;
-	&#125;
-	public Node(T data) &#123;
-		super();
-		this.data &#x3D; data;
-	&#125;
-	public Node&lt;T&gt; getPre() &#123;
-		return pre;
-	&#125;
-	public void setPre(Node&lt;T&gt; pre) &#123;
-		this.pre &#x3D; pre;
-	&#125;
-	public Node&lt;T&gt; getNext() &#123;
-		return next;
-	&#125;
-	public void setNext(Node&lt;T&gt; next) &#123;
-		this.next &#x3D; next;
-	&#125;
-	public T getData() &#123;
-		return data;
-	&#125;
-	public void setData(T data) &#123;
-		this.data &#x3D; data;
-	&#125;
-	
-&#125;</code></pre>
+<h3 id="节点"><a href="#节点" class="headerlink" title="节点"></a>节点</h3><pre><code>class Node&lt;T&gt;{
+    Node&lt;T&gt; pre;
+    Node&lt;T&gt; next;
+    T data;
 
-<h3 id="头节点"><a href="#头节点" class="headerlink" title="头节点"></a>头节点</h3><pre><code class="highlight plain">public class DoublyLinkedList&lt;T&gt; &#123;
+    public Node() {
+    }
+    public Node(T data) {
+        super();
+        this.data = data;
+    }
+    public Node&lt;T&gt; getPre() {
+        return pre;
+    }
+    public void setPre(Node&lt;T&gt; pre) {
+        this.pre = pre;
+    }
+    public Node&lt;T&gt; getNext() {
+        return next;
+    }
+    public void setNext(Node&lt;T&gt; next) {
+        this.next = next;
+    }
+    public T getData() {
+        return data;
+    }
+    public void setData(T data) {
+        this.data = data;
+    }
 
-	private Node&lt;T&gt; first;&#x2F;&#x2F;指向第一个节点
-	private Node&lt;T&gt; last;&#x2F;&#x2F;指向最后一个节点
-	
-	
-	public Node&lt;T&gt; getFirst() &#123;
-		return first;
-	&#125;
+}</code></pre><h3 id="头节点"><a href="#头节点" class="headerlink" title="头节点"></a>头节点</h3><pre><code>public class DoublyLinkedList&lt;T&gt; {
 
-	public void setFirst(Node&lt;T&gt; first) &#123;
-		this.first &#x3D; first;
-	&#125;
+    private Node&lt;T&gt; first;//指向第一个节点
+    private Node&lt;T&gt; last;//指向最后一个节点
 
-	public Node&lt;T&gt; getLast() &#123;
-		return last;
-	&#125;
 
-	public void setLast(Node&lt;T&gt; last) &#123;
-		this.last &#x3D; last;
-	&#125;
-	·
-	·
-	·	
-	基本操作
+    public Node&lt;T&gt; getFirst() {
+        return first;
+    }
 
-&#125;</code></pre>
+    public void setFirst(Node&lt;T&gt; first) {
+        this.first = first;
+    }
 
-<h3 id="基本操作"><a href="#基本操作" class="headerlink" title="基本操作"></a>基本操作</h3><h4 id="头插法"><a href="#头插法" class="headerlink" title="头插法"></a>头插法</h4><pre><code class="highlight plain">public void insertNodeHead(Node&lt;T&gt; node)&#123;
-	if(first &#x3D;&#x3D; null)&#123;
-		first &#x3D; node;
-		last &#x3D; node;
-		return;
-	&#125;
-	first.setPre(node);&#x2F;&#x2F;将第一个节点的pre设为新增进来的节点
-	node.setNext(first);&#x2F;&#x2F;将第一个节点设为新增节点的next
-	first &#x3D; node;&#x2F;&#x2F;将第一个节点置换为新增进来的节点
-&#125;</code></pre>
+    public Node&lt;T&gt; getLast() {
+        return last;
+    }
 
-<h4 id="尾插法"><a href="#尾插法" class="headerlink" title="尾插法"></a>尾插法</h4><pre><code class="highlight plain">public void insertNodeTail(Node&lt;T&gt; node)&#123;
-	
-	Node&lt;T&gt; temp &#x3D; first;
-	
-	if(first &#x3D;&#x3D;  null)&#123;
-		first &#x3D; node;
-		last &#x3D; node;
-		return;
-	&#125;
-	
-	while(temp.getNext() !&#x3D; null)&#123;
-		temp &#x3D; temp.getNext();
-	&#125;
-	temp.setNext(node);	
-	node.setPre(temp);
-	last &#x3D; node;
-&#125;</code></pre>
+    public void setLast(Node&lt;T&gt; last) {
+        this.last = last;
+    }
+    ·
+    ·
+    ·    
+    基本操作
 
-<h4 id="删除第一个节点"><a href="#删除第一个节点" class="headerlink" title="删除第一个节点"></a>删除第一个节点</h4><pre><code class="highlight plain">public void removeFirstNode()&#123;
-	if(isEmpty())&#123;
-		return;
-	&#125;
-	first.getNext().setPre(null);
-	first &#x3D; first.getNext();
-&#125;</code></pre>
+}</code></pre><h3 id="基本操作"><a href="#基本操作" class="headerlink" title="基本操作"></a>基本操作</h3><h4 id="头插法"><a href="#头插法" class="headerlink" title="头插法"></a>头插法</h4><pre><code>public void insertNodeHead(Node&lt;T&gt; node){
+    if(first == null){
+        first = node;
+        last = node;
+        return;
+    }
+    first.setPre(node);//将第一个节点的pre设为新增进来的节点
+    node.setNext(first);//将第一个节点设为新增节点的next
+    first = node;//将第一个节点置换为新增进来的节点
+}</code></pre><h4 id="尾插法"><a href="#尾插法" class="headerlink" title="尾插法"></a>尾插法</h4><pre><code>public void insertNodeTail(Node&lt;T&gt; node){
 
-<h4 id="删除最后一个节点"><a href="#删除最后一个节点" class="headerlink" title="删除最后一个节点"></a>删除最后一个节点</h4><pre><code class="highlight plain">public void removeFirstNode()&#123;
-	if(isEmpty())&#123;
-		return;
-	&#125;
-	first.getNext().setPre(null);
-	first &#x3D; first.getNext();
-&#125;</code></pre>
+    Node&lt;T&gt; temp = first;
 
-<h4 id="清空双链表"><a href="#清空双链表" class="headerlink" title="清空双链表"></a>清空双链表</h4><pre><code class="highlight plain">public void clear()&#123;
-	setFirst(null);
-	setLast(null);
-&#125;</code></pre>
+    if(first ==  null){
+        first = node;
+        last = node;
+        return;
+    }
 
-<h4 id="查看指定节点数据"><a href="#查看指定节点数据" class="headerlink" title="查看指定节点数据"></a>查看指定节点数据</h4><pre><code class="highlight plain">public T getData(int index)&#123;
-	if(isEmpty())&#123;
-		return null;
-	&#125;
-	Node&lt;T&gt; temp &#x3D; first;
-	while(temp !&#x3D; null &amp;&amp; --index &gt; 0)&#123;
-		temp &#x3D; temp.getNext();
-	&#125;
-	return temp.getData();
-&#125;</code></pre>
-
-<h4 id="删除指定节点"><a href="#删除指定节点" class="headerlink" title="删除指定节点"></a>删除指定节点</h4><pre><code class="highlight plain">public void removeNodeByPos(int index)&#123;
-	if(isEmpty())&#123;
-		return;
-	&#125;
-	if(getLength()&#x3D;&#x3D;index)&#123;
-		removeLastNode();
-		return;
-	&#125;
-	Node&lt;T&gt; temp &#x3D; first;
-	while(temp !&#x3D; null &amp;&amp; --index &gt; 0)&#123;
-		temp &#x3D; temp.getNext();
-	&#125;
-	temp.getNext().setPre(temp.getPre());
-	temp.getPre().setNext(temp.getNext());
-&#125;</code></pre>
-
-<h4 id="指定位置插入节点"><a href="#指定位置插入节点" class="headerlink" title="指定位置插入节点"></a>指定位置插入节点</h4><pre><code class="highlight plain">public void insertByPos(int index,Node&lt;T&gt; node)&#123;
-	Node&lt;T&gt; temp &#x3D; first;
-	if(isEmpty() || index &#x3D;&#x3D; 1)&#123;&#x2F;&#x2F;空链表或者插入第一个时用头插法
-		insertNodeHead(node);
-		return;
-	&#125;
-	if(getLength()+1 &#x3D;&#x3D; index)&#123;&#x2F;&#x2F;指定最后位置时用尾插法
-		insertNodeTail(node);
-		return;
-	&#125;
-	while(temp !&#x3D; null &amp;&amp; --index &gt; 0)&#123;
-		temp &#x3D; temp.getNext();
-	&#125;
-	node.setNext(temp);&#x2F;&#x2F;新节点的next指向当前节点
-	node.setPre(temp.getPre());&#x2F;&#x2F;新节点的pre指向上一个节点
-	temp.getPre().setNext(node);&#x2F;&#x2F;上一个节点的next指向新节点
-&#125;</code></pre>
-
-<h4 id="倒置空链表"><a href="#倒置空链表" class="headerlink" title="倒置空链表"></a>倒置空链表</h4><pre><code class="highlight plain">public void reverse()&#123;
-	if(isEmpty())&#123;
-		return;
-	&#125;
-	Node&lt;T&gt; newNode &#x3D; first;
-	Node&lt;T&gt; temp &#x3D; first;
-	setFirst(null);
-	setLast(null);
-	while(newNode !&#x3D; null)&#123;&#x2F;&#x2F;遍历双链表
-		temp &#x3D; newNode.getNext();
-		newNode.setPre(null);
-		newNode.setNext(null);&#x2F;&#x2F;置空前后节点作为新节点
-		insertNodeHead(newNode);&#x2F;&#x2F;头插法
-		newNode &#x3D; temp;
-	&#125;
-&#125;</code></pre>
-
-<h4 id="是否为空链表"><a href="#是否为空链表" class="headerlink" title="是否为空链表"></a>是否为空链表</h4><pre><code class="highlight plain">public boolean isEmpty()&#123;
-	return Objects.isNull(first);
-&#125;</code></pre>
-
-<h4 id="查看双链表长度"><a href="#查看双链表长度" class="headerlink" title="查看双链表长度"></a>查看双链表长度</h4><pre><code class="highlight plain">public int getLength()&#123;
-	Node&lt;T&gt; temp &#x3D; first;
-	int length &#x3D; 0;
-	while(temp !&#x3D; null)&#123;
-		length++;
-		temp &#x3D; temp.getNext();
-	&#125;
-	return length;
-&#125;</code></pre>
-
-<h4 id="显示所有节点"><a href="#显示所有节点" class="headerlink" title="显示所有节点"></a>显示所有节点</h4><pre><code class="highlight plain">public void display()&#123;
-	Node&lt;T&gt; temp &#x3D; first;
-	while(temp !&#x3D; null)&#123;
-		System.out.println(temp.getData());
-		temp &#x3D; temp.getNext();
-	&#125;
-&#125;</code></pre>
+    while(temp.getNext() != null){
+        temp = temp.getNext();
+    }
+    temp.setNext(node);    
+    node.setPre(temp);
+    last = node;
+}</code></pre><h4 id="删除第一个节点"><a href="#删除第一个节点" class="headerlink" title="删除第一个节点"></a>删除第一个节点</h4><pre><code>public void removeFirstNode(){
+    if(isEmpty()){
+        return;
+    }
+    first.getNext().setPre(null);
+    first = first.getNext();
+}</code></pre><h4 id="删除最后一个节点"><a href="#删除最后一个节点" class="headerlink" title="删除最后一个节点"></a>删除最后一个节点</h4><pre><code>public void removeFirstNode(){
+    if(isEmpty()){
+        return;
+    }
+    first.getNext().setPre(null);
+    first = first.getNext();
+}</code></pre><h4 id="清空双链表"><a href="#清空双链表" class="headerlink" title="清空双链表"></a>清空双链表</h4><pre><code>public void clear(){
+    setFirst(null);
+    setLast(null);
+}</code></pre><h4 id="查看指定节点数据"><a href="#查看指定节点数据" class="headerlink" title="查看指定节点数据"></a>查看指定节点数据</h4><pre><code>public T getData(int index){
+    if(isEmpty()){
+        return null;
+    }
+    Node&lt;T&gt; temp = first;
+    while(temp != null &amp;&amp; --index &gt; 0){
+        temp = temp.getNext();
+    }
+    return temp.getData();
+}</code></pre><h4 id="删除指定节点"><a href="#删除指定节点" class="headerlink" title="删除指定节点"></a>删除指定节点</h4><pre><code>public void removeNodeByPos(int index){
+    if(isEmpty()){
+        return;
+    }
+    if(getLength()==index){
+        removeLastNode();
+        return;
+    }
+    Node&lt;T&gt; temp = first;
+    while(temp != null &amp;&amp; --index &gt; 0){
+        temp = temp.getNext();
+    }
+    temp.getNext().setPre(temp.getPre());
+    temp.getPre().setNext(temp.getNext());
+}</code></pre><h4 id="指定位置插入节点"><a href="#指定位置插入节点" class="headerlink" title="指定位置插入节点"></a>指定位置插入节点</h4><pre><code>public void insertByPos(int index,Node&lt;T&gt; node){
+    Node&lt;T&gt; temp = first;
+    if(isEmpty() || index == 1){//空链表或者插入第一个时用头插法
+        insertNodeHead(node);
+        return;
+    }
+    if(getLength()+1 == index){//指定最后位置时用尾插法
+        insertNodeTail(node);
+        return;
+    }
+    while(temp != null &amp;&amp; --index &gt; 0){
+        temp = temp.getNext();
+    }
+    node.setNext(temp);//新节点的next指向当前节点
+    node.setPre(temp.getPre());//新节点的pre指向上一个节点
+    temp.getPre().setNext(node);//上一个节点的next指向新节点
+}</code></pre><h4 id="倒置空链表"><a href="#倒置空链表" class="headerlink" title="倒置空链表"></a>倒置空链表</h4><pre><code>public void reverse(){
+    if(isEmpty()){
+        return;
+    }
+    Node&lt;T&gt; newNode = first;
+    Node&lt;T&gt; temp = first;
+    setFirst(null);
+    setLast(null);
+    while(newNode != null){//遍历双链表
+        temp = newNode.getNext();
+        newNode.setPre(null);
+        newNode.setNext(null);//置空前后节点作为新节点
+        insertNodeHead(newNode);//头插法
+        newNode = temp;
+    }
+}</code></pre><h4 id="是否为空链表"><a href="#是否为空链表" class="headerlink" title="是否为空链表"></a>是否为空链表</h4><pre><code>public boolean isEmpty(){
+    return Objects.isNull(first);
+}</code></pre><h4 id="查看双链表长度"><a href="#查看双链表长度" class="headerlink" title="查看双链表长度"></a>查看双链表长度</h4><pre><code>public int getLength(){
+    Node&lt;T&gt; temp = first;
+    int length = 0;
+    while(temp != null){
+        length++;
+        temp = temp.getNext();
+    }
+    return length;
+}</code></pre><h4 id="显示所有节点"><a href="#显示所有节点" class="headerlink" title="显示所有节点"></a>显示所有节点</h4><pre><code>public void display(){
+    Node&lt;T&gt; temp = first;
+    while(temp != null){
+        System.out.println(temp.getData());
+        temp = temp.getNext();
+    }
+}</code></pre>
           
         
       

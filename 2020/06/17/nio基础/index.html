@@ -360,10 +360,8 @@
 </ol>
 <h4 id="Selector选择器"><a href="#Selector选择器" class="headerlink" title="Selector选择器"></a>Selector选择器</h4><p>Selector是Java NIO中的一个组件，用于检查一个或多个NIO Channel的状态是否处于可读、可写。如此可以实现单线程管理多个channels,也就是可以管理多个网络链接。</p>
 <h5 id="创建一个Selector"><a href="#创建一个Selector" class="headerlink" title="创建一个Selector"></a>创建一个Selector</h5><p><code>Selector selector = Selector.open();</code></p>
-<h5 id="注册Channel到Selector上"><a href="#注册Channel到Selector上" class="headerlink" title="注册Channel到Selector上"></a>注册Channel到Selector上</h5><pre><code class="highlight plain">channel.configureBlocking(false);&#x2F;&#x2F;必须设置非阻塞通道
-SelectionKey key &#x3D; channel.register(selector, SelectionKey.OP_READ);</code></pre>
-
-<p>register的第二个参数，这个参数是一个“关注集合”，代表我们关注的channel状态，有四种基础类型可供监听：</p>
+<h5 id="注册Channel到Selector上"><a href="#注册Channel到Selector上" class="headerlink" title="注册Channel到Selector上"></a>注册Channel到Selector上</h5><pre><code>channel.configureBlocking(false);//必须设置非阻塞通道
+SelectionKey key = channel.register(selector, SelectionKey.OP_READ);</code></pre><p>register的第二个参数，这个参数是一个“关注集合”，代表我们关注的channel状态，有四种基础类型可供监听：</p>
 <ul>
 <li>Connect</li>
 <li>Accept</li>
@@ -389,25 +387,19 @@ SelectionKey key &#x3D; channel.register(selector, SelectionKey.OP_READ);</code>
 <li>An attached object (optional)</li>
 </ul>
 <p>Interest Set实际上就是我们希望处理的事件的集合，它的值就是注册时传入的参数，我们可以用按为与运算把每个事件取出来：</p>
-<pre><code class="highlight plain">int interestSet &#x3D; selectionKey.interestOps();
+<pre><code>int interestSet = selectionKey.interestOps();
 
-boolean isInterestedInAccept  &#x3D; interestSet &amp; SelectionKey.OP_ACCEPT;
-boolean isInterestedInConnect &#x3D; interestSet &amp; SelectionKey.OP_CONNECT;
-boolean isInterestedInRead    &#x3D; interestSet &amp; SelectionKey.OP_READ;
-boolean isInterestedInWrite   &#x3D; interestSet &amp; SelectionKey.OP_WRITE;</code></pre>
-
-<p>Ready Set中的值是当前channel处于就绪的值，为触发该channel的就绪状态</p>
+boolean isInterestedInAccept  = interestSet &amp; SelectionKey.OP_ACCEPT;
+boolean isInterestedInConnect = interestSet &amp; SelectionKey.OP_CONNECT;
+boolean isInterestedInRead    = interestSet &amp; SelectionKey.OP_READ;
+boolean isInterestedInWrite   = interestSet &amp; SelectionKey.OP_WRITE; </code></pre><p>Ready Set中的值是当前channel处于就绪的值，为触发该channel的就绪状态</p>
 <p><code>int readySet = selectionKey.readyOps();</code></p>
 <p>Channel + Selector可以这样获得</p>
-<pre><code class="highlight plain">Channel  channel  &#x3D; selectionKey.channel();
-Selector selector &#x3D; selectionKey.selector();</code></pre>
+<pre><code>Channel  channel  = selectionKey.channel();
+Selector selector = selectionKey.selector(); </code></pre><p>Attaching Objects，我们可以给一个SelectionKey附加一个Object，这样做一方面可以方便我们识别某个特定的channel，同时也增加了channel相关的附加信息。例如，可以把用于channel的buffer附加到SelectionKey上：</p>
+<pre><code>selectionKey.attach(theObject);
 
-<p>Attaching Objects，我们可以给一个SelectionKey附加一个Object，这样做一方面可以方便我们识别某个特定的channel，同时也增加了channel相关的附加信息。例如，可以把用于channel的buffer附加到SelectionKey上：</p>
-<pre><code class="highlight plain">selectionKey.attach(theObject);
-
-Object attachedObj &#x3D; selectionKey.attachment();</code></pre>
-
-<p>附加对象的操作也可以在register的时候就执行：</p>
+Object attachedObj = selectionKey.attachment();</code></pre><p>附加对象的操作也可以在register的时候就执行：</p>
 <p><code>SelectionKey key = channel.register(selector, SelectionKey.OP_READ, theObject);</code></p>
 <h5 id="获取就绪channel"><a href="#获取就绪channel" class="headerlink" title="获取就绪channel"></a>获取就绪channel</h5><p>一旦我们向Selector注册了一个或多个channel后，就可以调用select来获取channel。select方法会返回所有处于就绪状态的channel。 select方法具体如下：</p>
 <ul>
@@ -422,31 +414,29 @@ Object attachedObj &#x3D; selectionKey.attachment();</code></pre>
 <p><code>Set&lt;SelectionKey&gt; selectedKeys = selector.selectedKeys();</code></p>
 <p>还记得在register时的操作吧，我们register后的返回值就是SelectionKey实例，也就是我们现在通过selectedKeys()方法所返回的SelectionKey。</p>
 <p>遍历这些SelectionKey可以通过如下方法：</p>
-<pre><code class="highlight plain">Set&lt;SelectionKey&gt; selectedKeys &#x3D; selector.selectedKeys();
+<pre><code>Set&lt;SelectionKey&gt; selectedKeys = selector.selectedKeys();
 
-Iterator&lt;SelectionKey&gt; keyIterator &#x3D; selectedKeys.iterator();
+Iterator&lt;SelectionKey&gt; keyIterator = selectedKeys.iterator();
 
-while(keyIterator.hasNext()) &#123;
+while(keyIterator.hasNext()) {
 
-    SelectionKey key &#x3D; keyIterator.next();
+    SelectionKey key = keyIterator.next();
 
-    if(key.isAcceptable()) &#123;
-        &#x2F;&#x2F; a connection was accepted by a ServerSocketChannel.
+    if(key.isAcceptable()) {
+        // a connection was accepted by a ServerSocketChannel.
 
-    &#125; else if (key.isConnectable()) &#123;
-        &#x2F;&#x2F; a connection was established with a remote server.
+    } else if (key.isConnectable()) {
+        // a connection was established with a remote server.
 
-    &#125; else if (key.isReadable()) &#123;
-        &#x2F;&#x2F; a channel is ready for reading
+    } else if (key.isReadable()) {
+        // a channel is ready for reading
 
-    &#125; else if (key.isWritable()) &#123;
-        &#x2F;&#x2F; a channel is ready for writing
-    &#125;
+    } else if (key.isWritable()) {
+        // a channel is ready for writing
+    }
 
     keyIterator.remove();
-&#125;</code></pre>
-
-<p>由于调用select而被阻塞的线程，可以通过调用Selector.wakeup()来唤醒即便此时已然没有channel处于就绪状态。具体操作是，在另外一个线程调用wakeup，被阻塞与select方法的线程就会立刻返回。</p>
+}</code></pre><p>由于调用select而被阻塞的线程，可以通过调用Selector.wakeup()来唤醒即便此时已然没有channel处于就绪状态。具体操作是，在另外一个线程调用wakeup，被阻塞与select方法的线程就会立刻返回。</p>
 <p>当操作Selector完毕后，需要调用close方法。close的调用会关闭Selector并使相关的SelectionKey都无效。channel本身不管被关闭。</p>
 
       
@@ -478,8 +468,8 @@ while(keyIterator.hasNext()) &#123;
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/06/17/mysql%20error%201045/" rel="next" title="mysql error 1045">
-                <i class="fa fa-chevron-left"></i> mysql error 1045
+              <a href="/2020/06/17/mysql%E4%B8%AD%E7%9A%84%E8%87%AA%E5%AE%9A%E4%B9%89%E5%87%BD%E6%95%B0%E5%92%8C%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B/" rel="next" title="mysql中的自定义函数和存储过程">
+                <i class="fa fa-chevron-left"></i> mysql中的自定义函数和存储过程
               </a>
             
           </div>

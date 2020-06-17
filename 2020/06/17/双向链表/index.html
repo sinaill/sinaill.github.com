@@ -79,12 +79,12 @@
 
 
 
-<meta name="description" content="双向链表的结构 节点class Node&lt;T&gt;&amp;#123; 	Node&lt;T&gt; pre; 	Node&lt;T&gt; next; 	T data; 	 	public Node() &amp;#123; 	&amp;#125; 	public Node(T data) &amp;#123; 		super(); 		this.data &#x3D; data; 	&amp;#125; 	public No">
+<meta name="description" content="双向链表的结构 节点class Node&lt;T&gt;{     Node&lt;T&gt; pre;     Node&lt;T&gt; next;     T data;      public Node() {     }     public Node(T data) {         super();         this.data &#x3D; data;     }     publ">
 <meta property="og:type" content="article">
 <meta property="og:title" content="双向链表">
 <meta property="og:url" content="http://yoursite.com/2020/06/17/%E5%8F%8C%E5%90%91%E9%93%BE%E8%A1%A8/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="双向链表的结构 节点class Node&lt;T&gt;&amp;#123; 	Node&lt;T&gt; pre; 	Node&lt;T&gt; next; 	T data; 	 	public Node() &amp;#123; 	&amp;#125; 	public Node(T data) &amp;#123; 		super(); 		this.data &#x3D; data; 	&amp;#125; 	public No">
+<meta property="og:description" content="双向链表的结构 节点class Node&lt;T&gt;{     Node&lt;T&gt; pre;     Node&lt;T&gt; next;     T data;      public Node() {     }     public Node(T data) {         super();         this.data &#x3D; data;     }     publ">
 <meta property="og:image" content="http://wx4.sinaimg.cn/large/96b7c0f4ly1fymvpeor3pj20qq0a2js6.jpg">
 <meta property="article:published_time" content="2020-06-16T17:43:37.255Z">
 <meta property="article:modified_time" content="2020-06-16T17:43:37.255Z">
@@ -344,199 +344,173 @@
 
       
         <h3 id="双向链表的结构"><a href="#双向链表的结构" class="headerlink" title="双向链表的结构"></a>双向链表的结构</h3><p><img src="http://wx4.sinaimg.cn/large/96b7c0f4ly1fymvpeor3pj20qq0a2js6.jpg" alt=""></p>
-<h3 id="节点"><a href="#节点" class="headerlink" title="节点"></a>节点</h3><pre><code class="highlight plain">class Node&lt;T&gt;&#123;
-	Node&lt;T&gt; pre;
-	Node&lt;T&gt; next;
-	T data;
-	
-	public Node() &#123;
-	&#125;
-	public Node(T data) &#123;
-		super();
-		this.data &#x3D; data;
-	&#125;
-	public Node&lt;T&gt; getPre() &#123;
-		return pre;
-	&#125;
-	public void setPre(Node&lt;T&gt; pre) &#123;
-		this.pre &#x3D; pre;
-	&#125;
-	public Node&lt;T&gt; getNext() &#123;
-		return next;
-	&#125;
-	public void setNext(Node&lt;T&gt; next) &#123;
-		this.next &#x3D; next;
-	&#125;
-	public T getData() &#123;
-		return data;
-	&#125;
-	public void setData(T data) &#123;
-		this.data &#x3D; data;
-	&#125;
-	
-&#125;</code></pre>
+<h3 id="节点"><a href="#节点" class="headerlink" title="节点"></a>节点</h3><pre><code>class Node&lt;T&gt;{
+    Node&lt;T&gt; pre;
+    Node&lt;T&gt; next;
+    T data;
 
-<h3 id="头节点"><a href="#头节点" class="headerlink" title="头节点"></a>头节点</h3><pre><code class="highlight plain">public class DoublyLinkedList&lt;T&gt; &#123;
+    public Node() {
+    }
+    public Node(T data) {
+        super();
+        this.data = data;
+    }
+    public Node&lt;T&gt; getPre() {
+        return pre;
+    }
+    public void setPre(Node&lt;T&gt; pre) {
+        this.pre = pre;
+    }
+    public Node&lt;T&gt; getNext() {
+        return next;
+    }
+    public void setNext(Node&lt;T&gt; next) {
+        this.next = next;
+    }
+    public T getData() {
+        return data;
+    }
+    public void setData(T data) {
+        this.data = data;
+    }
 
-	private Node&lt;T&gt; first;&#x2F;&#x2F;指向第一个节点
-	private Node&lt;T&gt; last;&#x2F;&#x2F;指向最后一个节点
-	
-	
-	public Node&lt;T&gt; getFirst() &#123;
-		return first;
-	&#125;
+}</code></pre><h3 id="头节点"><a href="#头节点" class="headerlink" title="头节点"></a>头节点</h3><pre><code>public class DoublyLinkedList&lt;T&gt; {
 
-	public void setFirst(Node&lt;T&gt; first) &#123;
-		this.first &#x3D; first;
-	&#125;
+    private Node&lt;T&gt; first;//指向第一个节点
+    private Node&lt;T&gt; last;//指向最后一个节点
 
-	public Node&lt;T&gt; getLast() &#123;
-		return last;
-	&#125;
 
-	public void setLast(Node&lt;T&gt; last) &#123;
-		this.last &#x3D; last;
-	&#125;
-	·
-	·
-	·	
-	基本操作
+    public Node&lt;T&gt; getFirst() {
+        return first;
+    }
 
-&#125;</code></pre>
+    public void setFirst(Node&lt;T&gt; first) {
+        this.first = first;
+    }
 
-<h3 id="基本操作"><a href="#基本操作" class="headerlink" title="基本操作"></a>基本操作</h3><h4 id="头插法"><a href="#头插法" class="headerlink" title="头插法"></a>头插法</h4><pre><code class="highlight plain">public void insertNodeHead(Node&lt;T&gt; node)&#123;
-	if(first &#x3D;&#x3D; null)&#123;
-		first &#x3D; node;
-		last &#x3D; node;
-		return;
-	&#125;
-	first.setPre(node);&#x2F;&#x2F;将第一个节点的pre设为新增进来的节点
-	node.setNext(first);&#x2F;&#x2F;将第一个节点设为新增节点的next
-	first &#x3D; node;&#x2F;&#x2F;将第一个节点置换为新增进来的节点
-&#125;</code></pre>
+    public Node&lt;T&gt; getLast() {
+        return last;
+    }
 
-<h4 id="尾插法"><a href="#尾插法" class="headerlink" title="尾插法"></a>尾插法</h4><pre><code class="highlight plain">public void insertNodeTail(Node&lt;T&gt; node)&#123;
-	
-	Node&lt;T&gt; temp &#x3D; first;
-	
-	if(first &#x3D;&#x3D;  null)&#123;
-		first &#x3D; node;
-		last &#x3D; node;
-		return;
-	&#125;
-	
-	while(temp.getNext() !&#x3D; null)&#123;
-		temp &#x3D; temp.getNext();
-	&#125;
-	temp.setNext(node);	
-	node.setPre(temp);
-	last &#x3D; node;
-&#125;</code></pre>
+    public void setLast(Node&lt;T&gt; last) {
+        this.last = last;
+    }
+    ·
+    ·
+    ·    
+    基本操作
 
-<h4 id="删除第一个节点"><a href="#删除第一个节点" class="headerlink" title="删除第一个节点"></a>删除第一个节点</h4><pre><code class="highlight plain">public void removeFirstNode()&#123;
-	if(isEmpty())&#123;
-		return;
-	&#125;
-	first.getNext().setPre(null);
-	first &#x3D; first.getNext();
-&#125;</code></pre>
+}</code></pre><h3 id="基本操作"><a href="#基本操作" class="headerlink" title="基本操作"></a>基本操作</h3><h4 id="头插法"><a href="#头插法" class="headerlink" title="头插法"></a>头插法</h4><pre><code>public void insertNodeHead(Node&lt;T&gt; node){
+    if(first == null){
+        first = node;
+        last = node;
+        return;
+    }
+    first.setPre(node);//将第一个节点的pre设为新增进来的节点
+    node.setNext(first);//将第一个节点设为新增节点的next
+    first = node;//将第一个节点置换为新增进来的节点
+}</code></pre><h4 id="尾插法"><a href="#尾插法" class="headerlink" title="尾插法"></a>尾插法</h4><pre><code>public void insertNodeTail(Node&lt;T&gt; node){
 
-<h4 id="删除最后一个节点"><a href="#删除最后一个节点" class="headerlink" title="删除最后一个节点"></a>删除最后一个节点</h4><pre><code class="highlight plain">public void removeFirstNode()&#123;
-	if(isEmpty())&#123;
-		return;
-	&#125;
-	first.getNext().setPre(null);
-	first &#x3D; first.getNext();
-&#125;</code></pre>
+    Node&lt;T&gt; temp = first;
 
-<h4 id="清空双链表"><a href="#清空双链表" class="headerlink" title="清空双链表"></a>清空双链表</h4><pre><code class="highlight plain">public void clear()&#123;
-	setFirst(null);
-	setLast(null);
-&#125;</code></pre>
+    if(first ==  null){
+        first = node;
+        last = node;
+        return;
+    }
 
-<h4 id="查看指定节点数据"><a href="#查看指定节点数据" class="headerlink" title="查看指定节点数据"></a>查看指定节点数据</h4><pre><code class="highlight plain">public T getData(int index)&#123;
-	if(isEmpty())&#123;
-		return null;
-	&#125;
-	Node&lt;T&gt; temp &#x3D; first;
-	while(temp !&#x3D; null &amp;&amp; --index &gt; 0)&#123;
-		temp &#x3D; temp.getNext();
-	&#125;
-	return temp.getData();
-&#125;</code></pre>
-
-<h4 id="删除指定节点"><a href="#删除指定节点" class="headerlink" title="删除指定节点"></a>删除指定节点</h4><pre><code class="highlight plain">public void removeNodeByPos(int index)&#123;
-	if(isEmpty())&#123;
-		return;
-	&#125;
-	if(getLength()&#x3D;&#x3D;index)&#123;
-		removeLastNode();
-		return;
-	&#125;
-	Node&lt;T&gt; temp &#x3D; first;
-	while(temp !&#x3D; null &amp;&amp; --index &gt; 0)&#123;
-		temp &#x3D; temp.getNext();
-	&#125;
-	temp.getNext().setPre(temp.getPre());
-	temp.getPre().setNext(temp.getNext());
-&#125;</code></pre>
-
-<h4 id="指定位置插入节点"><a href="#指定位置插入节点" class="headerlink" title="指定位置插入节点"></a>指定位置插入节点</h4><pre><code class="highlight plain">public void insertByPos(int index,Node&lt;T&gt; node)&#123;
-	Node&lt;T&gt; temp &#x3D; first;
-	if(isEmpty() || index &#x3D;&#x3D; 1)&#123;&#x2F;&#x2F;空链表或者插入第一个时用头插法
-		insertNodeHead(node);
-		return;
-	&#125;
-	if(getLength()+1 &#x3D;&#x3D; index)&#123;&#x2F;&#x2F;指定最后位置时用尾插法
-		insertNodeTail(node);
-		return;
-	&#125;
-	while(temp !&#x3D; null &amp;&amp; --index &gt; 0)&#123;
-		temp &#x3D; temp.getNext();
-	&#125;
-	node.setNext(temp);&#x2F;&#x2F;新节点的next指向当前节点
-	node.setPre(temp.getPre());&#x2F;&#x2F;新节点的pre指向上一个节点
-	temp.getPre().setNext(node);&#x2F;&#x2F;上一个节点的next指向新节点
-&#125;</code></pre>
-
-<h4 id="倒置空链表"><a href="#倒置空链表" class="headerlink" title="倒置空链表"></a>倒置空链表</h4><pre><code class="highlight plain">public void reverse()&#123;
-	if(isEmpty())&#123;
-		return;
-	&#125;
-	Node&lt;T&gt; newNode &#x3D; first;
-	Node&lt;T&gt; temp &#x3D; first;
-	setFirst(null);
-	setLast(null);
-	while(newNode !&#x3D; null)&#123;&#x2F;&#x2F;遍历双链表
-		temp &#x3D; newNode.getNext();
-		newNode.setPre(null);
-		newNode.setNext(null);&#x2F;&#x2F;置空前后节点作为新节点
-		insertNodeHead(newNode);&#x2F;&#x2F;头插法
-		newNode &#x3D; temp;
-	&#125;
-&#125;</code></pre>
-
-<h4 id="是否为空链表"><a href="#是否为空链表" class="headerlink" title="是否为空链表"></a>是否为空链表</h4><pre><code class="highlight plain">public boolean isEmpty()&#123;
-	return Objects.isNull(first);
-&#125;</code></pre>
-
-<h4 id="查看双链表长度"><a href="#查看双链表长度" class="headerlink" title="查看双链表长度"></a>查看双链表长度</h4><pre><code class="highlight plain">public int getLength()&#123;
-	Node&lt;T&gt; temp &#x3D; first;
-	int length &#x3D; 0;
-	while(temp !&#x3D; null)&#123;
-		length++;
-		temp &#x3D; temp.getNext();
-	&#125;
-	return length;
-&#125;</code></pre>
-
-<h4 id="显示所有节点"><a href="#显示所有节点" class="headerlink" title="显示所有节点"></a>显示所有节点</h4><pre><code class="highlight plain">public void display()&#123;
-	Node&lt;T&gt; temp &#x3D; first;
-	while(temp !&#x3D; null)&#123;
-		System.out.println(temp.getData());
-		temp &#x3D; temp.getNext();
-	&#125;
-&#125;</code></pre>
+    while(temp.getNext() != null){
+        temp = temp.getNext();
+    }
+    temp.setNext(node);    
+    node.setPre(temp);
+    last = node;
+}</code></pre><h4 id="删除第一个节点"><a href="#删除第一个节点" class="headerlink" title="删除第一个节点"></a>删除第一个节点</h4><pre><code>public void removeFirstNode(){
+    if(isEmpty()){
+        return;
+    }
+    first.getNext().setPre(null);
+    first = first.getNext();
+}</code></pre><h4 id="删除最后一个节点"><a href="#删除最后一个节点" class="headerlink" title="删除最后一个节点"></a>删除最后一个节点</h4><pre><code>public void removeFirstNode(){
+    if(isEmpty()){
+        return;
+    }
+    first.getNext().setPre(null);
+    first = first.getNext();
+}</code></pre><h4 id="清空双链表"><a href="#清空双链表" class="headerlink" title="清空双链表"></a>清空双链表</h4><pre><code>public void clear(){
+    setFirst(null);
+    setLast(null);
+}</code></pre><h4 id="查看指定节点数据"><a href="#查看指定节点数据" class="headerlink" title="查看指定节点数据"></a>查看指定节点数据</h4><pre><code>public T getData(int index){
+    if(isEmpty()){
+        return null;
+    }
+    Node&lt;T&gt; temp = first;
+    while(temp != null &amp;&amp; --index &gt; 0){
+        temp = temp.getNext();
+    }
+    return temp.getData();
+}</code></pre><h4 id="删除指定节点"><a href="#删除指定节点" class="headerlink" title="删除指定节点"></a>删除指定节点</h4><pre><code>public void removeNodeByPos(int index){
+    if(isEmpty()){
+        return;
+    }
+    if(getLength()==index){
+        removeLastNode();
+        return;
+    }
+    Node&lt;T&gt; temp = first;
+    while(temp != null &amp;&amp; --index &gt; 0){
+        temp = temp.getNext();
+    }
+    temp.getNext().setPre(temp.getPre());
+    temp.getPre().setNext(temp.getNext());
+}</code></pre><h4 id="指定位置插入节点"><a href="#指定位置插入节点" class="headerlink" title="指定位置插入节点"></a>指定位置插入节点</h4><pre><code>public void insertByPos(int index,Node&lt;T&gt; node){
+    Node&lt;T&gt; temp = first;
+    if(isEmpty() || index == 1){//空链表或者插入第一个时用头插法
+        insertNodeHead(node);
+        return;
+    }
+    if(getLength()+1 == index){//指定最后位置时用尾插法
+        insertNodeTail(node);
+        return;
+    }
+    while(temp != null &amp;&amp; --index &gt; 0){
+        temp = temp.getNext();
+    }
+    node.setNext(temp);//新节点的next指向当前节点
+    node.setPre(temp.getPre());//新节点的pre指向上一个节点
+    temp.getPre().setNext(node);//上一个节点的next指向新节点
+}</code></pre><h4 id="倒置空链表"><a href="#倒置空链表" class="headerlink" title="倒置空链表"></a>倒置空链表</h4><pre><code>public void reverse(){
+    if(isEmpty()){
+        return;
+    }
+    Node&lt;T&gt; newNode = first;
+    Node&lt;T&gt; temp = first;
+    setFirst(null);
+    setLast(null);
+    while(newNode != null){//遍历双链表
+        temp = newNode.getNext();
+        newNode.setPre(null);
+        newNode.setNext(null);//置空前后节点作为新节点
+        insertNodeHead(newNode);//头插法
+        newNode = temp;
+    }
+}</code></pre><h4 id="是否为空链表"><a href="#是否为空链表" class="headerlink" title="是否为空链表"></a>是否为空链表</h4><pre><code>public boolean isEmpty(){
+    return Objects.isNull(first);
+}</code></pre><h4 id="查看双链表长度"><a href="#查看双链表长度" class="headerlink" title="查看双链表长度"></a>查看双链表长度</h4><pre><code>public int getLength(){
+    Node&lt;T&gt; temp = first;
+    int length = 0;
+    while(temp != null){
+        length++;
+        temp = temp.getNext();
+    }
+    return length;
+}</code></pre><h4 id="显示所有节点"><a href="#显示所有节点" class="headerlink" title="显示所有节点"></a>显示所有节点</h4><pre><code>public void display(){
+    Node&lt;T&gt; temp = first;
+    while(temp != null){
+        System.out.println(temp.getData());
+        temp = temp.getNext();
+    }
+}</code></pre>
       
     </div>
     

@@ -358,257 +358,229 @@
 <p><img src="https://img-blog.csdnimg.cn/20190829203640524.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM1ODM1NjI0,size_16,color_FFFFFF,t_70" alt=""></p>
 <h3 id="公平锁和非公平锁"><a href="#公平锁和非公平锁" class="headerlink" title="公平锁和非公平锁"></a>公平锁和非公平锁</h3><p><img src="https://raw.githubusercontent.com/sinaill/pic/master/Sync.png" alt=""> </p>
 <p>ReentrantLock中有两种锁，公平锁<code>FairSync</code>和非公平锁<code>NonfairSync</code>，公平锁遵循FIFO原则</p>
-<pre><code class="highlight plain">&#x2F;**
- * Creates an instance of &#123;@code ReentrantLock&#125;.
- * This is equivalent to using &#123;@code ReentrantLock(false)&#125;.
- *&#x2F;
-public ReentrantLock() &#123;
-    sync &#x3D; new NonfairSync();
-&#125;
+<pre><code>/**
+ * Creates an instance of {@code ReentrantLock}.
+ * This is equivalent to using {@code ReentrantLock(false)}.
+ */
+public ReentrantLock() {
+    sync = new NonfairSync();
+}
 
-&#x2F;**
- * Creates an instance of &#123;@code ReentrantLock&#125; with the
+/**
+ * Creates an instance of {@code ReentrantLock} with the
  * given fairness policy.
  *
- * @param fair &#123;@code true&#125; if this lock should use a fair ordering policy
- *&#x2F;
-public ReentrantLock(boolean fair) &#123;
-    sync &#x3D; fair ? new FairSync() : new NonfairSync();
-&#125;</code></pre>
-
-<p>分别创建方法如上，默认创建非公平锁，如果想要创建公平锁，则需要构造函数传入<code>True</code></p>
-<h3 id="加锁"><a href="#加锁" class="headerlink" title="加锁"></a>加锁</h3><pre><code class="highlight plain">public void lock() &#123;
+ * @param fair {@code true} if this lock should use a fair ordering policy
+ */
+public ReentrantLock(boolean fair) {
+    sync = fair ? new FairSync() : new NonfairSync();
+}</code></pre><p>分别创建方法如上，默认创建非公平锁，如果想要创建公平锁，则需要构造函数传入<code>True</code></p>
+<h3 id="加锁"><a href="#加锁" class="headerlink" title="加锁"></a>加锁</h3><pre><code>public void lock() {
     sync.lock();
-&#125;</code></pre>
-
-<p>这里可以看两种锁的实现方式</p>
-<pre><code class="highlight plain">&#x2F;**
+}</code></pre><p>这里可以看两种锁的实现方式</p>
+<pre><code>/**
  * 非公平锁
- *&#x2F;
-final void lock() &#123;
+ */
+final void lock() {
     if (compareAndSetState(0, 1))
         setExclusiveOwnerThread(Thread.currentThread());
     else
         acquire(1);
-&#125;
+}
 
-&#x2F;**
+/**
  * 公平锁
- *&#x2F;
-final void lock() &#123;
+ */
+final void lock() {
     acquire(1);
-&#125;</code></pre>
-
-<p>可以看到非公平锁在线程获取锁时，是采用<code>compareAndSetState(0, 1)</code>马上尝试获取锁</p>
+}</code></pre><p>可以看到非公平锁在线程获取锁时，是采用<code>compareAndSetState(0, 1)</code>马上尝试获取锁</p>
 <p>接着来到<code>acquire(1)</code></p>
-<pre><code class="highlight plain">public final void acquire(int arg) &#123;
+<pre><code>public final void acquire(int arg) {
     if (!tryAcquire(arg) &amp;&amp;
         acquireQueued(addWaiter(Node.EXCLUSIVE), arg))
         selfInterrupt();
-&#125;</code></pre>
-
-<p><code>tryAcquire</code>方法两种锁还是分别有自己的实现逻辑</p>
-<pre><code class="highlight plain">&#x2F;**
+}</code></pre><p><code>tryAcquire</code>方法两种锁还是分别有自己的实现逻辑</p>
+<pre><code>/**
  * 公平锁的tryAcquire方法
- *&#x2F;
-protected final boolean tryAcquire(int acquires) &#123;
-    final Thread current &#x3D; Thread.currentThread();
-    int c &#x3D; getState();
-    if (c &#x3D;&#x3D; 0) &#123;
-		&#x2F;&#x2F;当前锁空闲时，查看是否有线程队列排队中
+ */
+protected final boolean tryAcquire(int acquires) {
+    final Thread current = Thread.currentThread();
+    int c = getState();
+    if (c == 0) {
+        //当前锁空闲时，查看是否有线程队列排队中
         if (!hasQueuedPredecessors() &amp;&amp;
-            compareAndSetState(0, acquires)) &#123;
+            compareAndSetState(0, acquires)) {
             setExclusiveOwnerThread(current);
             return true;
-        &#125;
-    &#125;
-	&#x2F;&#x2F;锁被占用时，如果是用一个线程重入，state继续加1
-    else if (current &#x3D;&#x3D; getExclusiveOwnerThread()) &#123;
-        int nextc &#x3D; c + acquires;
+        }
+    }
+    //锁被占用时，如果是用一个线程重入，state继续加1
+    else if (current == getExclusiveOwnerThread()) {
+        int nextc = c + acquires;
         if (nextc &lt; 0)
             throw new Error(&quot;Maximum lock count exceeded&quot;);
         setState(nextc);
         return true;
-    &#125;
+    }
     return false;
-&#125;</code></pre>
-
-<p>公平锁即使在锁空闲时，仍会<code>hasQueuedPredecessors()</code>查看时候后面还有线程在队列派对中</p>
-<pre><code class="highlight plain">public final boolean hasQueuedPredecessors() &#123;
-    &#x2F;&#x2F; The correctness of this depends on head being initialized
-    &#x2F;&#x2F; before tail and on head.next being accurate if the current
-    &#x2F;&#x2F; thread is first in queue.
-    Node t &#x3D; tail; &#x2F;&#x2F; Read fields in reverse initialization order
-    Node h &#x3D; head;
+}</code></pre><p>公平锁即使在锁空闲时，仍会<code>hasQueuedPredecessors()</code>查看时候后面还有线程在队列派对中</p>
+<pre><code>public final boolean hasQueuedPredecessors() {
+    // The correctness of this depends on head being initialized
+    // before tail and on head.next being accurate if the current
+    // thread is first in queue.
+    Node t = tail; // Read fields in reverse initialization order
+    Node h = head;
     Node s;
-    return h !&#x3D; t &amp;&amp;
-        ((s &#x3D; h.next) &#x3D;&#x3D; null || s.thread !&#x3D; Thread.currentThread());
-&#125;</code></pre>
-
-<p>非公平锁的<code>tryAcquire</code>继续调用<code>nonfairTryAcquire(int acquires)</code></p>
-<pre><code class="highlight plain">final boolean nonfairTryAcquire(int acquires) &#123;
-    final Thread current &#x3D; Thread.currentThread();
-    int c &#x3D; getState();
-    if (c &#x3D;&#x3D; 0) &#123;
-		&#x2F;&#x2F;锁空闲时，继续抢锁
-        if (compareAndSetState(0, acquires)) &#123;
+    return h != t &amp;&amp;
+        ((s = h.next) == null || s.thread != Thread.currentThread());
+}</code></pre><p>非公平锁的<code>tryAcquire</code>继续调用<code>nonfairTryAcquire(int acquires)</code></p>
+<pre><code>final boolean nonfairTryAcquire(int acquires) {
+    final Thread current = Thread.currentThread();
+    int c = getState();
+    if (c == 0) {
+        //锁空闲时，继续抢锁
+        if (compareAndSetState(0, acquires)) {
             setExclusiveOwnerThread(current);
             return true;
-        &#125;
-    &#125;
-    else if (current &#x3D;&#x3D; getExclusiveOwnerThread()) &#123;
-        int nextc &#x3D; c + acquires;
-        if (nextc &lt; 0) &#x2F;&#x2F; overflow
+        }
+    }
+    else if (current == getExclusiveOwnerThread()) {
+        int nextc = c + acquires;
+        if (nextc &lt; 0) // overflow
             throw new Error(&quot;Maximum lock count exceeded&quot;);
         setState(nextc);
         return true;
-    &#125;
+    }
     return false;
-&#125;</code></pre>
-<p>还是一样，<code>state==0</code>时继续抢锁</p>
+}</code></pre><p>还是一样，<code>state==0</code>时继续抢锁</p>
 <p>以上就是两种锁在抢锁时不同的地方，非公平锁相当于抢两次锁，没抢到就去排队，而公平锁会先看有没有线程在排队，没有时才抢锁</p>
 <p>然后我们回到<code>acquire(int arg)</code>方法，这里可以看到线程是怎么排队的</p>
-<pre><code class="highlight plain">public final void acquire(int arg) &#123;
+<pre><code>public final void acquire(int arg) {
     if (!tryAcquire(arg) &amp;&amp;
         acquireQueued(addWaiter(Node.EXCLUSIVE), arg))
         selfInterrupt();
-&#125;</code></pre>
-
-<p><code>addWaiter(Node.EXCLUSIVE)</code>方法创建新节点存放排队的线程</p>
-<pre><code class="highlight plain">private Node addWaiter(Node mode) &#123;
-    Node node &#x3D; new Node(Thread.currentThread(), mode);
-    Node pred &#x3D; tail;
-    if (pred !&#x3D; null) &#123;
-        node.prev &#x3D; pred;
-        if (compareAndSetTail(pred, node)) &#123;
-            pred.next &#x3D; node;
+}</code></pre><p><code>addWaiter(Node.EXCLUSIVE)</code>方法创建新节点存放排队的线程</p>
+<pre><code>private Node addWaiter(Node mode) {
+    Node node = new Node(Thread.currentThread(), mode);
+    Node pred = tail;
+    if (pred != null) {
+        node.prev = pred;
+        if (compareAndSetTail(pred, node)) {
+            pred.next = node;
             return node;
-        &#125;
-    &#125;
-    enq(node);&#x2F;&#x2F;将创建的节点入队
+        }
+    }
+    enq(node);//将创建的节点入队
     return node;
-&#125;</code></pre>
-
-<p>每个线程创建一个节点，此时节点中<code>waitStatus</code>为0，然后将这个节点设置为<code>tail</code>，并且和上一个<code>tail</code>串联起来(将节点中<code>prev</code>指向上一个<code>tail</code>)，就这样，线程呈链表的形式排成队，接着进入<code>acquireQueued</code>方法</p>
-<pre><code class="highlight plain">final boolean acquireQueued(final Node node, int arg) &#123;
-    boolean failed &#x3D; true;
-    try &#123;
-        boolean interrupted &#x3D; false;
-        for (;;) &#123;
-            final Node p &#x3D; node.predecessor();
-			&#x2F;&#x2F;查看上一个节点是不是头节点，是的话抢锁
-            if (p &#x3D;&#x3D; head &amp;&amp; tryAcquire(arg)) &#123;
-                setHead(node);&#x2F;&#x2F;抢到锁将自己变为头节点
-                p.next &#x3D; null; &#x2F;&#x2F; help GC
-                failed &#x3D; false;
+}</code></pre><p>每个线程创建一个节点，此时节点中<code>waitStatus</code>为0，然后将这个节点设置为<code>tail</code>，并且和上一个<code>tail</code>串联起来(将节点中<code>prev</code>指向上一个<code>tail</code>)，就这样，线程呈链表的形式排成队，接着进入<code>acquireQueued</code>方法</p>
+<pre><code>final boolean acquireQueued(final Node node, int arg) {
+    boolean failed = true;
+    try {
+        boolean interrupted = false;
+        for (;;) {
+            final Node p = node.predecessor();
+            //查看上一个节点是不是头节点，是的话抢锁
+            if (p == head &amp;&amp; tryAcquire(arg)) {
+                setHead(node);//抢到锁将自己变为头节点
+                p.next = null; // help GC
+                failed = false;
                 return interrupted;
-            &#125;
+            }
             if (shouldParkAfterFailedAcquire(p, node) &amp;&amp;
                 parkAndCheckInterrupt())
-                interrupted &#x3D; true;
-        &#125;
-    &#125; finally &#123;
+                interrupted = true;
+        }
+    } finally {
         if (failed)
             cancelAcquire(node);
-    &#125;
-&#125;</code></pre>
-
-<p>这里接受的<code>node</code>是线程创建好的节点，然后线程开始以这样的形式，Head-&gt;线程节点1-&gt;线程节点2···，在for无条件循环中，每一个节点的线程检测上一个节点是否为头节点，是的话，尝试抢锁，成功之后把自己节点设置为头节点，Head-&gt;线程节点2···</p>
+    }
+}</code></pre><p>这里接受的<code>node</code>是线程创建好的节点，然后线程开始以这样的形式，Head-&gt;线程节点1-&gt;线程节点2···，在for无条件循环中，每一个节点的线程检测上一个节点是否为头节点，是的话，尝试抢锁，成功之后把自己节点设置为头节点，Head-&gt;线程节点2···</p>
 <p>非头节点时，进入<code>shouldParkAfterFailedAcquire(p, node)</code></p>
-<pre><code class="highlight plain">private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) &#123;
-    int ws &#x3D; pred.waitStatus;
-    if (ws &#x3D;&#x3D; Node.SIGNAL)
-        &#x2F;*
+<pre><code>private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) {
+    int ws = pred.waitStatus;
+    if (ws == Node.SIGNAL)
+        /*
          * This node has already set status asking a release
          * to signal it, so it can safely park.
-         *&#x2F;
+         */
         return true;
-    if (ws &gt; 0) &#123;
-        &#x2F;*
+    if (ws &gt; 0) {
+        /*
          * Predecessor was cancelled. Skip over predecessors and
          * indicate retry.
-         *&#x2F;
-        do &#123;
-            node.prev &#x3D; pred &#x3D; pred.prev;
-        &#125; while (pred.waitStatus &gt; 0);
-        pred.next &#x3D; node;
-    &#125; else &#123;
-        &#x2F;*
+         */
+        do {
+            node.prev = pred = pred.prev;
+        } while (pred.waitStatus &gt; 0);
+        pred.next = node;
+    } else {
+        /*
          * waitStatus must be 0 or PROPAGATE.  Indicate that we
          * need a signal, but don&#39;t park yet.  Caller will need to
          * retry to make sure it cannot acquire before parking.
-         *&#x2F;
+         */
         compareAndSetWaitStatus(pred, ws, Node.SIGNAL);
-    &#125;
+    }
     return false;
-    &#125;</code></pre>
-<p>初始<code>waitStatus</code>为0，所以这里把前节点的<code>waitStatus</code>都设置为<code>Node.SIGNAL(-1)</code>，返回<code>false</code>，然后短路，第二次循环这里返回<code>true</code>，然后进入<code>parkAndCheckInterrupt()</code>，挂起线程</p>
-<pre><code class="highlight plain">private final boolean parkAndCheckInterrupt() &#123;
+    }</code></pre><p>初始<code>waitStatus</code>为0，所以这里把前节点的<code>waitStatus</code>都设置为<code>Node.SIGNAL(-1)</code>，返回<code>false</code>，然后短路，第二次循环这里返回<code>true</code>，然后进入<code>parkAndCheckInterrupt()</code>，挂起线程</p>
+<pre><code>private final boolean parkAndCheckInterrupt() {
     LockSupport.park(this);
     return Thread.interrupted();
-&#125;</code></pre>
-
-<p>这里把两次循环都没抢到锁的线程挂起</p>
-<h3 id="释放锁"><a href="#释放锁" class="headerlink" title="释放锁"></a>释放锁</h3><pre><code class="highlight plain">public void unlock() &#123;
+}</code></pre><p>这里把两次循环都没抢到锁的线程挂起</p>
+<h3 id="释放锁"><a href="#释放锁" class="headerlink" title="释放锁"></a>释放锁</h3><pre><code>public void unlock() {
     sync.release(1);
-&#125;
+}
 
 
-public final boolean release(int arg) &#123;
-    if (tryRelease(arg)) &#123;
-        Node h &#x3D; head;
-        if (h !&#x3D; null &amp;&amp; h.waitStatus !&#x3D; 0)
+public final boolean release(int arg) {
+    if (tryRelease(arg)) {
+        Node h = head;
+        if (h != null &amp;&amp; h.waitStatus != 0)
             unparkSuccessor(h);
         return true;
-    &#125;
+    }
     return false;
-&#125;</code></pre>
-
-<p><code>tryRelease(arg)</code>开始释放锁</p>
-<pre><code class="highlight plain">protected final boolean tryRelease(int releases) &#123;
-    int c &#x3D; getState() - releases;
-	&#x2F;&#x2F;被锁的线程才能释放锁，否则抛出异常
-    if (Thread.currentThread() !&#x3D; getExclusiveOwnerThread())
+}</code></pre><p><code>tryRelease(arg)</code>开始释放锁</p>
+<pre><code>protected final boolean tryRelease(int releases) {
+    int c = getState() - releases;
+    //被锁的线程才能释放锁，否则抛出异常
+    if (Thread.currentThread() != getExclusiveOwnerThread())
         throw new IllegalMonitorStateException();
-    boolean free &#x3D; false;
-    if (c &#x3D;&#x3D; 0) &#123;
-        free &#x3D; true;
+    boolean free = false;
+    if (c == 0) {
+        free = true;
         setExclusiveOwnerThread(null);
-    &#125;
+    }
     setState(c);
     return free;
-&#125;</code></pre>
-
-<p>这里将<code>state</code>减1，等于0的时候释放锁，将<code>state</code>置0，返回<code>true</code>，此时如果有线程在排队(挂起状态)，<code>unparkSuccessor(h)</code>将线程回到运行状态</p>
-<pre><code class="highlight plain">private void unparkSuccessor(Node node) &#123;
-    &#x2F;*
+}</code></pre><p>这里将<code>state</code>减1，等于0的时候释放锁，将<code>state</code>置0，返回<code>true</code>，此时如果有线程在排队(挂起状态)，<code>unparkSuccessor(h)</code>将线程回到运行状态</p>
+<pre><code>private void unparkSuccessor(Node node) {
+    /*
      * If status is negative (i.e., possibly needing signal) try
      * to clear in anticipation of signalling.  It is OK if this
      * fails or if status is changed by waiting thread.
-     *&#x2F;
-    int ws &#x3D; node.waitStatus;
+     */
+    int ws = node.waitStatus;
     if (ws &lt; 0)
         compareAndSetWaitStatus(node, ws, 0);
 
-    &#x2F;*
+    /*
      * Thread to unpark is held in successor, which is normally
      * just the next node.  But if cancelled or apparently null,
      * traverse backwards from tail to find the actual
      * non-cancelled successor.
-     *&#x2F;
-    Node s &#x3D; node.next;
-    if (s &#x3D;&#x3D; null || s.waitStatus &gt; 0) &#123;
-        s &#x3D; null;
-        for (Node t &#x3D; tail; t !&#x3D; null &amp;&amp; t !&#x3D; node; t &#x3D; t.prev)
-            if (t.waitStatus &lt;&#x3D; 0)
-                s &#x3D; t;
-    &#125;
-    if (s !&#x3D; null)
-		&#x2F;&#x2F;唤醒Head后一个节点中的线程
+     */
+    Node s = node.next;
+    if (s == null || s.waitStatus &gt; 0) {
+        s = null;
+        for (Node t = tail; t != null &amp;&amp; t != node; t = t.prev)
+            if (t.waitStatus &lt;= 0)
+                s = t;
+    }
+    if (s != null)
+        //唤醒Head后一个节点中的线程
         LockSupport.unpark(s.thread);
-&#125;</code></pre>
-
-<p>这里传入<code>Head</code>节点，从前面可以知道，<code>Head</code>节点后面有线程节点排队时，<code>head</code>节点的<code>waitStatus</code>被置为<code>Node.SIGNAL</code>，即-1，这里重新置0，然后获取<code>Head</code>节点的下一个节点，如果不为空，则将节点中存放的创建该节点的线程唤醒</p>
+}</code></pre><p>这里传入<code>Head</code>节点，从前面可以知道，<code>Head</code>节点后面有线程节点排队时，<code>head</code>节点的<code>waitStatus</code>被置为<code>Node.SIGNAL</code>，即-1，这里重新置0，然后获取<code>Head</code>节点的下一个节点，如果不为空，则将节点中存放的创建该节点的线程唤醒</p>
 
       
     </div>
@@ -639,8 +611,8 @@ public final boolean release(int arg) &#123;
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/06/17/Mysql%E8%AF%AD%E6%B3%95%E7%BB%83%E4%B9%A0/" rel="next" title="Mysql语法练习">
-                <i class="fa fa-chevron-left"></i> Mysql语法练习
+              <a href="/2020/06/17/MyBatis%E5%A4%A7%E8%87%B4%E8%BF%90%E8%A1%8C%E6%B5%81%E7%A8%8B/" rel="next" title="MyBatis大致运行流程">
+                <i class="fa fa-chevron-left"></i> MyBatis大致运行流程
               </a>
             
           </div>
@@ -649,8 +621,8 @@ public final boolean release(int arg) &#123;
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2020/06/17/SpringMVC%E4%B8%ADdataBinder%E5%85%A5%E5%8F%82%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2/" rel="prev" title="SpringMVC中DataBinder对入参类型转换">
-                SpringMVC中DataBinder对入参类型转换 <i class="fa fa-chevron-right"></i>
+              <a href="/2020/06/17/Mysql%E8%AF%AD%E6%B3%95%E7%BB%83%E4%B9%A0/" rel="prev" title="Mysql语法练习">
+                Mysql语法练习 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>

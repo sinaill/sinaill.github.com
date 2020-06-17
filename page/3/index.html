@@ -417,459 +417,135 @@
 </ol>
 <p>获取包含了所有声明的构造函数的<code>Constructor</code>数组</p>
 <p>区别：<code>getConstructors</code>获取的是类中修饰符为public的构造函数，<code>getDeclaredConstructors</code>获取的是类中所有声明的构造函数</p>
-<h3 id="具体运用"><a href="#具体运用" class="headerlink" title="具体运用"></a>具体运用</h3><pre><code class="highlight plain">class reflect&#123;
-	public char asc &#x3D; &#39;a&#39;;
-	private int num;
-	private String string;
-	private int privateNum &#x3D; 1;
-	public reflect()&#123;
-		
-	&#125;
-	
-	public reflect(int num,String string)&#123;
-		this.num &#x3D; num;
-		this.string &#x3D; string;
-	&#125;
+<h3 id="具体运用"><a href="#具体运用" class="headerlink" title="具体运用"></a>具体运用</h3><pre><code>class reflect{
+    public char asc = &#39;a&#39;;
+    private int num;
+    private String string;
+    private int privateNum = 1;
+    public reflect(){
 
-	public int getNum() &#123;
-		return num;
-	&#125;
+    }
 
-	public void setNum(int num) &#123;
-		this.num &#x3D; num;
-	&#125;
+    public reflect(int num,String string){
+        this.num = num;
+        this.string = string;
+    }
 
-	public String getString() &#123;
-		return string;
-	&#125;
+    public int getNum() {
+        return num;
+    }
 
-	public void setString(String string) &#123;
-		this.string &#x3D; string;
-	&#125;
-	
-	public int getNum(int i)&#123;
-		return num+i;
-	&#125;
-	
-	public void out()&#123;
-		System.out.println(num+string);
-	&#125;
-&#125;
+    public void setNum(int num) {
+        this.num = num;
+    }
 
-class sonReflect extends reflect&#123;
-	
-	public boolean bool &#x3D; true;
-	private float fnum;
-	
-	public sonReflect() &#123;
-		
-	&#125;
+    public String getString() {
+        return string;
+    }
 
-	public sonReflect(float fnum) &#123;
-		this.fnum &#x3D; fnum;
-	&#125;
+    public void setString(String string) {
+        this.string = string;
+    }
 
-	public float getFnum() &#123;
-		return fnum;
-	&#125;
+    public int getNum(int i){
+        return num+i;
+    }
 
-	public void setFnum(float fnum) &#123;
-		this.fnum &#x3D; fnum;
-	&#125;
-	
-	public void out()&#123;
-		
-	&#125;
-	
-	private void privateOut()&#123;
-		
-	&#125;
-&#125;
+    public void out(){
+        System.out.println(num+string);
+    }
+}
 
+class sonReflect extends reflect{
 
+    public boolean bool = true;
+    private float fnum;
 
-		reflect r &#x3D; new reflect(1,&quot;1&quot;);
-		sonReflect sr &#x3D; new sonReflect(1.1f);
-		Class&lt;?&gt; rc &#x3D; r.getClass();
-		Class&lt;?&gt; src &#x3D; sr.getClass();
-		&#x2F;&#x2F;获取子类的Method
-		Method srcdeclaredMethod[] &#x3D; src.getDeclaredMethods();
-		Method srcMethod[] &#x3D; src.getMethods();
-		Arrays.asList(srcdeclaredMethod).forEach(m-&gt;System.out.print(m.getName()+&quot; &quot;));
-		System.out.println();
-		Arrays.asList(srcMethod).forEach(m-&gt;System.out.print(m.getName()+&quot; &quot;));
-		&#x2F;* 输出为:
-		 * out getFnum setFnum  和
-		 * out getFnum setFnum getString getNum getNum setNum setString
-		 * wait wait wait equals toString hashCode getClass notify notifyAll
-		 * getDeclaredMethods只能获取到当前类声明的所有类型方法，而getMethods能
-		 * 获取当前和从父类继承的public方法，例如privateOut方法它就无法获得
-		 * *&#x2F;
-		System.out.println();
-		Field srcdeclaredField[] &#x3D; src.getDeclaredFields();
-		Field srcField[] &#x3D; src.getFields();
-		Arrays.asList(srcdeclaredField).forEach(m-&gt;System.out.print(m.getName()+&quot; &quot;));
-		System.out.println();
-		Arrays.asList(srcField).forEach(m-&gt;System.out.print(m.getName()+&quot; &quot;));
-		&#x2F;* 输出为:
-		 * bool fnum 和 bool asc,从结果看出getDeclaredFields方法获取到了自身公有和私有
-		 * 属性,而getFields方法获取到了父类和子类的所有共有属性
-		 * 
-		 * *&#x2F;
-		
-		Method m &#x3D; rc.getMethod(&quot;getNum&quot;, new Class[]&#123;int.class&#125;);
-		Method m1 &#x3D; rc.getMethod(&quot;getNum&quot;);
-		System.out.println(m.invoke(r, 1));
-		System.out.println(m1.invoke(r));
-	  &#x2F;&#x2F;System.out.println(m1.invoke(r, 1));&#x2F;&#x2F;抛出异常
-		&#x2F;*输出为:2 1 和一个异常,通过形参数组确定具体
-		 * 方法,再用invoke函数调用对象方法
-		 *&#x2F;
-		
-		Field f &#x3D; rc.getDeclaredField(&quot;privateNum&quot;);
-&#x2F;&#x2F;		Field f1 &#x3D; rc.getField(&quot;privateNum&quot;); 
-&#x2F;&#x2F;		System.out.println(f.get(r)+&quot; &quot;+f1.get(r));
-		f.setAccessible(true);
-		System.out.println(f.get(r));
-		&#x2F;* 抛出两个异常,getField只能获取子类和父类的公有属性
-		 * f为私有属性且没有get方法,需要setAccessible设为true
-		 * 才能调用Field的get方法获取
-		 *&#x2F;
+    public sonReflect() {
 
-		try &#123;
-			Class constructor &#x3D; Class.forName(&quot;reflect.reflect&quot;);
-			Constructor con &#x3D; constructor.getConstructor(new Class[]&#123;int.class,String.class&#125;);
-			reflect nr &#x3D; (reflect) con.newInstance(3,&quot;333&quot;);
-			nr.out();
-		&#125; catch (Exception e) &#123;
-			&#x2F;&#x2F; TODO Auto-generated catch block
-			e.printStackTrace();
-		&#125;
-		&#x2F;&#x2F;除了class.newInstance，构造器也能用来创建实例</code></pre>
-          
-        
-      
-    </div>
-    
-    
-    
+    }
 
-    
+    public sonReflect(float fnum) {
+        this.fnum = fnum;
+    }
 
-    
+    public float getFnum() {
+        return fnum;
+    }
 
-    
+    public void setFnum(float fnum) {
+        this.fnum = fnum;
+    }
 
-    <footer class="post-footer">
-      
+    public void out(){
 
-      
+    }
 
-      
+    private void privateOut(){
 
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
+    }
+}
 
 
-    
-      
 
-  
+        reflect r = new reflect(1,&quot;1&quot;);
+        sonReflect sr = new sonReflect(1.1f);
+        Class&lt;?&gt; rc = r.getClass();
+        Class&lt;?&gt; src = sr.getClass();
+        //获取子类的Method
+        Method srcdeclaredMethod[] = src.getDeclaredMethods();
+        Method srcMethod[] = src.getMethods();
+        Arrays.asList(srcdeclaredMethod).forEach(m-&gt;System.out.print(m.getName()+&quot; &quot;));
+        System.out.println();
+        Arrays.asList(srcMethod).forEach(m-&gt;System.out.print(m.getName()+&quot; &quot;));
+        /* 输出为:
+         * out getFnum setFnum  和
+         * out getFnum setFnum getString getNum getNum setNum setString
+         * wait wait wait equals toString hashCode getClass notify notifyAll
+         * getDeclaredMethods只能获取到当前类声明的所有类型方法，而getMethods能
+         * 获取当前和从父类继承的public方法，例如privateOut方法它就无法获得
+         * */
+        System.out.println();
+        Field srcdeclaredField[] = src.getDeclaredFields();
+        Field srcField[] = src.getFields();
+        Arrays.asList(srcdeclaredField).forEach(m-&gt;System.out.print(m.getName()+&quot; &quot;));
+        System.out.println();
+        Arrays.asList(srcField).forEach(m-&gt;System.out.print(m.getName()+&quot; &quot;));
+        /* 输出为:
+         * bool fnum 和 bool asc,从结果看出getDeclaredFields方法获取到了自身公有和私有
+         * 属性,而getFields方法获取到了父类和子类的所有共有属性
+         * 
+         * */
 
-  
-  
-  
+        Method m = rc.getMethod(&quot;getNum&quot;, new Class[]{int.class});
+        Method m1 = rc.getMethod(&quot;getNum&quot;);
+        System.out.println(m.invoke(r, 1));
+        System.out.println(m1.invoke(r));
+      //System.out.println(m1.invoke(r, 1));//抛出异常
+        /*输出为:2 1 和一个异常,通过形参数组确定具体
+         * 方法,再用invoke函数调用对象方法
+         */
 
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E5%8D%95%E9%93%BE%E8%A1%A8/">
+        Field f = rc.getDeclaredField(&quot;privateNum&quot;);
+//        Field f1 = rc.getField(&quot;privateNum&quot;); 
+//        System.out.println(f.get(r)+&quot; &quot;+f1.get(r));
+        f.setAccessible(true);
+        System.out.println(f.get(r));
+        /* 抛出两个异常,getField只能获取子类和父类的公有属性
+         * f为私有属性且没有get方法,需要setAccessible设为true
+         * 才能调用Field的get方法获取
+         */
 
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/%E5%8D%95%E9%93%BE%E8%A1%A8/" itemprop="url">单链表</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="单链表的概念"><a href="#单链表的概念" class="headerlink" title="单链表的概念"></a>单链表的概念</h3><p><img src="http://wx3.sinaimg.cn/large/96b7c0f4ly1fymvb9v22yj216q07qmx3.jpg" alt=""></p>
-<p>单链表每个节点node中存储了下一个节点的引用</p>
-<h3 id="结构"><a href="#结构" class="headerlink" title="结构"></a>结构</h3><h4 id="节点"><a href="#节点" class="headerlink" title="节点"></a>节点</h4><pre><code class="highlight plain">class Node&lt;T&gt;&#123;
-	private T data;
-	private Node&lt;T&gt; next;&#x2F;&#x2F;下一个节点的引用
-	
-	public Node() &#123;
-	&#125;
-	
-	public Node(T data) &#123;
-		super();
-		this.data &#x3D; data;
-	&#125;
-
-	public T getData() &#123;
-		return data;
-	&#125;
-	public void setData(T data) &#123;
-		this.data &#x3D; data;
-	&#125;
-	public Node&lt;T&gt; getNext() &#123;
-		return next;
-	&#125;
-	public void setNext(Node&lt;T&gt; next) &#123;
-		this.next &#x3D; next;
-	&#125;
-	
-	
-&#125;</code></pre>
-
-<h4 id="头节点"><a href="#头节点" class="headerlink" title="头节点"></a>头节点</h4><pre><code class="highlight plain">public class LinkedList&lt;T&gt; &#123;
-	private Node&lt;T&gt; header;
-	
-	public LinkedList() &#123;
-		super();
-	&#125;
-	
-	public LinkedList(Node&lt;T&gt; header) &#123;
-		super();
-		this.header &#x3D; header;
-	&#125;
-
-	public Node&lt;T&gt; getHeader() &#123;
-		return header;
-	&#125;
-
-	public void setHeader(Node&lt;T&gt; header) &#123;
-		this.header &#x3D; header;
-	&#125;
-
-	·
-	·
-	·
-
-	单链表基本操作</code></pre>
-
-<h3 id="单链表的基本操作"><a href="#单链表的基本操作" class="headerlink" title="单链表的基本操作"></a>单链表的基本操作</h3><h4 id="头插法插入节点"><a href="#头插法插入节点" class="headerlink" title="头插法插入节点"></a>头插法插入节点</h4><pre><code class="highlight plain">public void insertNodeHead(Node&lt;T&gt; node)&#123;
-	node.setNext(header);
-	header &#x3D; node;
-&#125;</code></pre>
-
-<h4 id="尾插法插入节点"><a href="#尾插法插入节点" class="headerlink" title="尾插法插入节点"></a>尾插法插入节点</h4><pre><code class="highlight plain">public void insertNodeTail(Node&lt;T&gt; node)&#123;
-	Node&lt;T&gt; temp &#x3D; header;
-	if (header &#x3D;&#x3D; null) &#123;
-		header &#x3D; node;
-		return;
-	&#125;
-	while(temp.getNext() !&#x3D; null)&#123;
-		temp &#x3D; temp.getNext();
-	&#125;
-	temp.setNext(node);
-&#125;</code></pre>
-<h4 id="移除第一个节点"><a href="#移除第一个节点" class="headerlink" title="移除第一个节点"></a>移除第一个节点</h4><pre><code class="highlight plain">public void removeFirstNode()&#123;
-	if(isEmpty())&#123;
-		return;
-	&#125;
-	header &#x3D; header.getNext();
-&#125;</code></pre>
-
-<h4 id="移除最后一个节点"><a href="#移除最后一个节点" class="headerlink" title="移除最后一个节点"></a>移除最后一个节点</h4><pre><code class="highlight plain">public void removeLastNode()&#123;
-	if(isEmpty())&#123;
-		return;
-	&#125;
-	Node&lt;T&gt; temp &#x3D; header;
-	while(temp.getNext().getNext() !&#x3D; null)&#123;
-		temp &#x3D; temp.getNext();
-	&#125;
-	temp.setNext(null);
-&#125;</code></pre>
-
-<h4 id="获取单链表长度"><a href="#获取单链表长度" class="headerlink" title="获取单链表长度"></a>获取单链表长度</h4><pre><code class="highlight plain">public int getLength()&#123;
-	int tempLength &#x3D; 0;
-	Node&lt;T&gt; tempNode &#x3D; header;
-	while(tempNode !&#x3D; null)&#123;
-		tempLength++;
-		tempNode &#x3D; tempNode.getNext();
-	&#125;
-	return tempLength;
-&#125;</code></pre>
-
-<h4 id="显示所有节点信息"><a href="#显示所有节点信息" class="headerlink" title="显示所有节点信息"></a>显示所有节点信息</h4><pre><code class="highlight plain">public void dislayAllNode()&#123;
-	if(isEmpty())&#123;
-		return;
-	&#125;
-	Node&lt;T&gt; temp &#x3D; header;
-	while(temp !&#x3D; null)&#123;
-		System.out.println(temp.getData());
-		temp &#x3D; temp.getNext();
-	&#125;
-&#125;</code></pre>
-
-<h4 id="指定位置插入节点"><a href="#指定位置插入节点" class="headerlink" title="指定位置插入节点"></a>指定位置插入节点</h4><pre><code class="highlight plain">public void insertNodeByPos(int pos,Node&lt;T&gt; node)&#123;
-	&#x2F;&#x2F;链表为空或者指定位置超过链表长度结束
-	if(isEmpty() || getLength()+1 &lt; pos)&#123;
-		return;
-	&#125;
-	if(pos &#x3D;&#x3D; 1)&#123;
-		insertNodeHead(node);
-	&#125;else if (pos &#x3D;&#x3D; getLength()+1) &#123;
-		insertNodeTail(node);
-	&#125;else &#123;
-		Node&lt;T&gt; temp &#x3D; header;
-		for (int i &#x3D; pos - 2; i &gt; 0 &amp;&amp; temp !&#x3D; null; i--) &#123;
-			temp &#x3D; temp.getNext();
-		&#125;
-		node.setNext(temp.getNext());
-		temp.setNext(node);
-	&#125;
-&#125;</code></pre>
-
-<h4 id="删除指定位置节点"><a href="#删除指定位置节点" class="headerlink" title="删除指定位置节点"></a>删除指定位置节点</h4><pre><code class="highlight plain">public void deleteNodeByPos(int pos)&#123;
-	if(isEmpty())&#123;
-		return;
-	&#125;
-	Node&lt;T&gt; temp &#x3D; header;
-	if (pos &#x3D;&#x3D; 1) &#123;
-		removeFirstNode();
-		return;
-	&#125;
-
-	for (int i &#x3D; pos - 2; i &gt; 0 &amp;&amp; temp !&#x3D; null; i--) &#123;
-		temp &#x3D; temp.getNext();
-	&#125;
-	temp.setNext(temp.getNext().getNext());
-&#125;</code></pre>
-
-<h4 id="查看元素在链表中位置"><a href="#查看元素在链表中位置" class="headerlink" title="查看元素在链表中位置"></a>查看元素在链表中位置</h4><pre><code class="highlight plain">public Integer elementPos(T data)&#123;
-	if(isEmpty())&#123;
-		return null;
-	&#125;
-	Node&lt;T&gt; temp &#x3D; header;
-	int pos &#x3D; 1;
-	while(temp !&#x3D; null)&#123;
-		if(temp.getData().equals(data))&#123;
-			return Integer.valueOf(pos);
-		&#125;
-		pos++;
-		temp &#x3D; temp.getNext();
-	&#125;
-	return null;
-&#125;</code></pre>
-
-<h4 id="倒置链表"><a href="#倒置链表" class="headerlink" title="倒置链表"></a>倒置链表</h4><pre><code class="highlight plain">public void reverse()&#123;
-	if(isEmpty() &amp;&amp; getLength()&#x3D;&#x3D;1)&#123;
-		return;
-	&#125;	
-	Node&lt;T&gt; next;&#x2F;&#x2F;保存下一个节点
-	Node&lt;T&gt; temp &#x3D; header;&#x2F;&#x2F;当前处理节点
-	header &#x3D; null;&#x2F;&#x2F;第一次做特殊处理，使尾节点中的next为空
-	while(temp !&#x3D; null)&#123;
-		next &#x3D; temp.getNext();
-		temp.setNext(header);
-		header &#x3D; temp;
-		temp &#x3D; next;
-	&#125;
-&#125;</code></pre>
-
-<h4 id="查看链表是否为空"><a href="#查看链表是否为空" class="headerlink" title="查看链表是否为空"></a>查看链表是否为空</h4><pre><code class="highlight plain">public boolean isEmpty()&#123;
-	return Objects.isNull(header);
-&#125;</code></pre>
-
-<h4 id="清空链表"><a href="#清空链表" class="headerlink" title="清空链表"></a>清空链表</h4><pre><code class="highlight plain">public void clear()&#123;
-	header &#x3D; null;
-&#125;</code></pre>
+        try {
+            Class constructor = Class.forName(&quot;reflect.reflect&quot;);
+            Constructor con = constructor.getConstructor(new Class[]{int.class,String.class});
+            reflect nr = (reflect) con.newInstance(3,&quot;333&quot;);
+            nr.out();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        //除了class.newInstance，构造器也能用来创建实例</code></pre>
           
         
       
@@ -1018,62 +694,562 @@ class sonReflect extends reflect&#123;
 <li>单例类必须给所有其他对象提供这一实例</li>
 </ul>
 <p>###单例模式的几种实现模式</p>
-<h4 id="懒汉式-线程不安全"><a href="#懒汉式-线程不安全" class="headerlink" title="懒汉式(线程不安全)"></a>懒汉式(线程不安全)</h4><pre><code class="highlight plain">public class Singleton &#123;
+<h4 id="懒汉式-线程不安全"><a href="#懒汉式-线程不安全" class="headerlink" title="懒汉式(线程不安全)"></a>懒汉式(线程不安全)</h4><pre><code>public class Singleton {
     private static Singleton instance;
-    private Singleton ()&#123;&#125;
-    public static Singleton getInstance() &#123;
-        if (instance &#x3D;&#x3D; null) &#123;
-            instance &#x3D; new Singleton();
-        &#125;
+    private Singleton (){}
+    public static Singleton getInstance() {
+        if (instance == null) {
+            instance = new Singleton();
+        }
         return instance;
-    &#125;
-&#125;</code></pre>
-
-<p>懒加载，但线程不安全</p>
-<h4 id="懒汉式-线程安全"><a href="#懒汉式-线程安全" class="headerlink" title="懒汉式(线程安全)"></a>懒汉式(线程安全)</h4><pre><code class="highlight plain">public class Singleton &#123;
+    }
+}</code></pre><p>懒加载，但线程不安全</p>
+<h4 id="懒汉式-线程安全"><a href="#懒汉式-线程安全" class="headerlink" title="懒汉式(线程安全)"></a>懒汉式(线程安全)</h4><pre><code>public class Singleton {
     private static Singleton instance;
-    private Singleton ()&#123;&#125;
-    public static synchronized Singleton getInstance() &#123;
-        if (instance &#x3D;&#x3D; null) &#123;
-            instance &#x3D; new Singleton();
-        &#125;
+    private Singleton (){}
+    public static synchronized Singleton getInstance() {
+        if (instance == null) {
+            instance = new Singleton();
+        }
         return instance;
-    &#125;
-&#125;</code></pre>
-<p>懒加载，线程安全，但效率低</p>
-<h4 id="懒汉式-线程安全-1"><a href="#懒汉式-线程安全-1" class="headerlink" title="懒汉式(线程安全)"></a>懒汉式(线程安全)</h4><pre><code class="highlight plain">public class Singleton &#123;
+    }
+}</code></pre><p>懒加载，线程安全，但效率低</p>
+<h4 id="懒汉式-线程安全-1"><a href="#懒汉式-线程安全-1" class="headerlink" title="懒汉式(线程安全)"></a>懒汉式(线程安全)</h4><pre><code>public class Singleton {
     private volatile static Singleton instance;
-    private Singleton ()&#123;&#125;
-    public static Singleton getInstance() &#123;
-        if (instance &#x3D;&#x3D; null) &#123;
-			synchronized(this.class)&#123;
-				if (instance &#x3D;&#x3D; null)&#123;
-					instance &#x3D; new Singleton();
-				&#125;
-        &#125;
+    private Singleton (){}
+    public static Singleton getInstance() {
+        if (instance == null) {
+            synchronized(this.class){
+                if (instance == null){
+                    instance = new Singleton();
+                }
+        }
         return instance;
-    &#125;
-&#125;</code></pre>
-<p>相比上一种，提高了效率，将同步代码块放到判断instance是否空后面，避免了创建实例instance后每个线程仍需要排队</p>
-<h4 id="饿汉式-线程安全"><a href="#饿汉式-线程安全" class="headerlink" title="饿汉式(线程安全)"></a>饿汉式(线程安全)</h4><pre><code class="highlight plain">public class Singleton &#123;  
-    private static Singleton instance &#x3D; new Singleton();  
-    private Singleton ()&#123;&#125;  
-    public static Singleton getInstance() &#123;  
+    }
+}</code></pre><p>相比上一种，提高了效率，将同步代码块放到判断instance是否空后面，避免了创建实例instance后每个线程仍需要排队</p>
+<h4 id="饿汉式-线程安全"><a href="#饿汉式-线程安全" class="headerlink" title="饿汉式(线程安全)"></a>饿汉式(线程安全)</h4><pre><code>public class Singleton {  
+    private static Singleton instance = new Singleton();  
+    private Singleton (){}  
+    public static Singleton getInstance() {  
         return instance;  
-    &#125;  
-&#125;</code></pre>
-<p>没有实现懒加载，线程安全，缺点是：类加载时就初始化，浪费内存</p>
-<h4 id="静态内部类"><a href="#静态内部类" class="headerlink" title="静态内部类"></a>静态内部类</h4><pre><code class="highlight plain">public class SingletonDemo5 &#123;
-    private static class SingletonHolder&#123;
-        private static final SingletonDemo5 instance &#x3D; new SingletonDemo5();
-    &#125;
-    private SingletonDemo5()&#123;&#125;
-    public static final SingletonDemo5 getInsatance()&#123;
+    }  
+}</code></pre><p>没有实现懒加载，线程安全，缺点是：类加载时就初始化，浪费内存</p>
+<h4 id="静态内部类"><a href="#静态内部类" class="headerlink" title="静态内部类"></a>静态内部类</h4><pre><code>public class SingletonDemo5 {
+    private static class SingletonHolder{
+        private static final SingletonDemo5 instance = new SingletonDemo5();
+    }
+    private SingletonDemo5(){}
+    public static final SingletonDemo5 getInsatance(){
         return SingletonHolder.instance;
-    &#125;
-&#125;</code></pre>
+    }
+}</code></pre><p>这种方式同样利用了classloder的机制来保证初始化instance时只有一个线程，它跟第三种和第四种方式不同的是（很细微的差别）：第三种和第四种方式是只要Singleton类被装载了，那么instance就会被实例化（没有达到lazy loading效果），而这种方式是Singleton类被装载了，instance不一定被初始化。因为SingletonHolder类没有被主动使用，只有显示通过调用getInstance方法时，才会显示装载SingletonHolder类，从而实例化instance。</p>
 
-<p>这种方式同样利用了classloder的机制来保证初始化instance时只有一个线程，它跟第三种和第四种方式不同的是（很细微的差别）：第三种和第四种方式是只要Singleton类被装载了，那么instance就会被实例化（没有达到lazy loading效果），而这种方式是Singleton类被装载了，instance不一定被初始化。因为SingletonHolder类没有被主动使用，只有显示通过调用getInstance方法时，才会显示装载SingletonHolder类，从而实例化instance。</p>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E5%8D%95%E9%93%BE%E8%A1%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/%E5%8D%95%E9%93%BE%E8%A1%A8/" itemprop="url">单链表</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="单链表的概念"><a href="#单链表的概念" class="headerlink" title="单链表的概念"></a>单链表的概念</h3><p><img src="http://wx3.sinaimg.cn/large/96b7c0f4ly1fymvb9v22yj216q07qmx3.jpg" alt=""></p>
+<p>单链表每个节点node中存储了下一个节点的引用</p>
+<h3 id="结构"><a href="#结构" class="headerlink" title="结构"></a>结构</h3><h4 id="节点"><a href="#节点" class="headerlink" title="节点"></a>节点</h4><pre><code>class Node&lt;T&gt;{
+    private T data;
+    private Node&lt;T&gt; next;//下一个节点的引用
+
+    public Node() {
+    }
+
+    public Node(T data) {
+        super();
+        this.data = data;
+    }
+
+    public T getData() {
+        return data;
+    }
+    public void setData(T data) {
+        this.data = data;
+    }
+    public Node&lt;T&gt; getNext() {
+        return next;
+    }
+    public void setNext(Node&lt;T&gt; next) {
+        this.next = next;
+    }
+
+
+}</code></pre><h4 id="头节点"><a href="#头节点" class="headerlink" title="头节点"></a>头节点</h4><pre><code>public class LinkedList&lt;T&gt; {
+    private Node&lt;T&gt; header;
+
+    public LinkedList() {
+        super();
+    }
+
+    public LinkedList(Node&lt;T&gt; header) {
+        super();
+        this.header = header;
+    }
+
+    public Node&lt;T&gt; getHeader() {
+        return header;
+    }
+
+    public void setHeader(Node&lt;T&gt; header) {
+        this.header = header;
+    }
+
+    ·
+    ·
+    ·
+
+    单链表基本操作</code></pre><h3 id="单链表的基本操作"><a href="#单链表的基本操作" class="headerlink" title="单链表的基本操作"></a>单链表的基本操作</h3><h4 id="头插法插入节点"><a href="#头插法插入节点" class="headerlink" title="头插法插入节点"></a>头插法插入节点</h4><pre><code>public void insertNodeHead(Node&lt;T&gt; node){
+    node.setNext(header);
+    header = node;
+}</code></pre><h4 id="尾插法插入节点"><a href="#尾插法插入节点" class="headerlink" title="尾插法插入节点"></a>尾插法插入节点</h4><pre><code>public void insertNodeTail(Node&lt;T&gt; node){
+    Node&lt;T&gt; temp = header;
+    if (header == null) {
+        header = node;
+        return;
+    }
+    while(temp.getNext() != null){
+        temp = temp.getNext();
+    }
+    temp.setNext(node);
+}</code></pre><h4 id="移除第一个节点"><a href="#移除第一个节点" class="headerlink" title="移除第一个节点"></a>移除第一个节点</h4><pre><code>public void removeFirstNode(){
+    if(isEmpty()){
+        return;
+    }
+    header = header.getNext();
+}</code></pre><h4 id="移除最后一个节点"><a href="#移除最后一个节点" class="headerlink" title="移除最后一个节点"></a>移除最后一个节点</h4><pre><code>public void removeLastNode(){
+    if(isEmpty()){
+        return;
+    }
+    Node&lt;T&gt; temp = header;
+    while(temp.getNext().getNext() != null){
+        temp = temp.getNext();
+    }
+    temp.setNext(null);
+}</code></pre><h4 id="获取单链表长度"><a href="#获取单链表长度" class="headerlink" title="获取单链表长度"></a>获取单链表长度</h4><pre><code>public int getLength(){
+    int tempLength = 0;
+    Node&lt;T&gt; tempNode = header;
+    while(tempNode != null){
+        tempLength++;
+        tempNode = tempNode.getNext();
+    }
+    return tempLength;
+}</code></pre><h4 id="显示所有节点信息"><a href="#显示所有节点信息" class="headerlink" title="显示所有节点信息"></a>显示所有节点信息</h4><pre><code>public void dislayAllNode(){
+    if(isEmpty()){
+        return;
+    }
+    Node&lt;T&gt; temp = header;
+    while(temp != null){
+        System.out.println(temp.getData());
+        temp = temp.getNext();
+    }
+}</code></pre><h4 id="指定位置插入节点"><a href="#指定位置插入节点" class="headerlink" title="指定位置插入节点"></a>指定位置插入节点</h4><pre><code>public void insertNodeByPos(int pos,Node&lt;T&gt; node){
+    //链表为空或者指定位置超过链表长度结束
+    if(isEmpty() || getLength()+1 &lt; pos){
+        return;
+    }
+    if(pos == 1){
+        insertNodeHead(node);
+    }else if (pos == getLength()+1) {
+        insertNodeTail(node);
+    }else {
+        Node&lt;T&gt; temp = header;
+        for (int i = pos - 2; i &gt; 0 &amp;&amp; temp != null; i--) {
+            temp = temp.getNext();
+        }
+        node.setNext(temp.getNext());
+        temp.setNext(node);
+    }
+}</code></pre><h4 id="删除指定位置节点"><a href="#删除指定位置节点" class="headerlink" title="删除指定位置节点"></a>删除指定位置节点</h4><pre><code>public void deleteNodeByPos(int pos){
+    if(isEmpty()){
+        return;
+    }
+    Node&lt;T&gt; temp = header;
+    if (pos == 1) {
+        removeFirstNode();
+        return;
+    }
+
+    for (int i = pos - 2; i &gt; 0 &amp;&amp; temp != null; i--) {
+        temp = temp.getNext();
+    }
+    temp.setNext(temp.getNext().getNext());
+}</code></pre><h4 id="查看元素在链表中位置"><a href="#查看元素在链表中位置" class="headerlink" title="查看元素在链表中位置"></a>查看元素在链表中位置</h4><pre><code>public Integer elementPos(T data){
+    if(isEmpty()){
+        return null;
+    }
+    Node&lt;T&gt; temp = header;
+    int pos = 1;
+    while(temp != null){
+        if(temp.getData().equals(data)){
+            return Integer.valueOf(pos);
+        }
+        pos++;
+        temp = temp.getNext();
+    }
+    return null;
+}</code></pre><h4 id="倒置链表"><a href="#倒置链表" class="headerlink" title="倒置链表"></a>倒置链表</h4><pre><code>public void reverse(){
+    if(isEmpty() &amp;&amp; getLength()==1){
+        return;
+    }    
+    Node&lt;T&gt; next;//保存下一个节点
+    Node&lt;T&gt; temp = header;//当前处理节点
+    header = null;//第一次做特殊处理，使尾节点中的next为空
+    while(temp != null){
+        next = temp.getNext();
+        temp.setNext(header);
+        header = temp;
+        temp = next;
+    }
+}</code></pre><h4 id="查看链表是否为空"><a href="#查看链表是否为空" class="headerlink" title="查看链表是否为空"></a>查看链表是否为空</h4><pre><code>public boolean isEmpty(){
+    return Objects.isNull(header);
+}</code></pre><h4 id="清空链表"><a href="#清空链表" class="headerlink" title="清空链表"></a>清空链表</h4><pre><code>public void clear(){
+    header = null;
+}</code></pre>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E5%85%B3%E4%BA%8E%E5%8E%9F%E5%AD%90%E7%B1%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/%E5%85%B3%E4%BA%8E%E5%8E%9F%E5%AD%90%E7%B1%BB/" itemprop="url">关于原子类</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="atomic是什么"><a href="#atomic是什么" class="headerlink" title="atomic是什么"></a>atomic是什么</h3><p>在多线程的场景中，我们需要如何同步数据，通常会使用synchronized或者lock来处理，使用了synchronized意味着内核态的一次切换。这是一个很重的操作。有没有一种方式，可以比较便利的实现一些简单的数据同步，比如计数器等等。concurrent包下的atomic提供我们这么一种轻量级的数据同步的选择。</p>
+<p>下面拿AtomicInteger为例分析</p>
+<pre><code>public class Test {
+    static AtomicInteger atomic = new AtomicInteger(1);
+    public static void main(String[] args) {
+        ExecutorService executor = Executors.newCachedThreadPool();
+        for(int i = 0;i &lt; 20;i++){
+            executor.execute(new Runnable() {
+
+                @Override
+                public void run() {
+                    // TODO Auto-generated method stub
+                    for(int j = 0;j &lt; 100;j++){
+
+                        atomic.getAndIncrement();
+                    }
+                }
+            });
+        }
+        executor.shutdown();
+        try {
+            while(! executor.awaitTermination(2, TimeUnit.SECONDS));
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        System.out.println(atomic.get());
+    }
+}</code></pre><p>输出结果稳定为2001，可以看到并没有使用重量级锁synchronized和reentrantlock，原子类是怎么实现不需要锁也不会在多线程并发中出错的呢？</p>
+<h3 id="AtomicInteger"><a href="#AtomicInteger" class="headerlink" title="AtomicInteger"></a>AtomicInteger</h3><p>####简介</p>
+<p>属于原子类</p>
+<pre><code>private static final Unsafe unsafe = Unsafe.getUnsafe();
+private static final long valueOffset;
+
+static {
+    try {
+        valueOffset = unsafe.objectFieldOffset
+            (AtomicInteger.class.getDeclaredField(&quot;value&quot;));
+    } catch (Exception ex) { throw new Error(ex); }
+}
+
+private volatile int value;</code></pre><p>原子类中几个成员变量</p>
+<p><code>unsafe</code>：<code>Unsafe</code>位于<code>sun.misc</code>包内，看其命名就知道和注重安全性的<code>java jdk</code>无缘，连文档都没，直接就叫”不安全” 。Unsafe的特点是可以直接操作堆外内存，可以随意查看及修改<code>JVM</code>中运行时的数据结构，例如查看和修改对象的成员，<code>Unsafe</code>的操作粒度不是类，而是数据和地址。<br><code>valueOffset</code>：<code>value</code>字段内存地址的偏移量(通过原子类实例的引用指向的内存空间和这个偏移量可以从内存中读取<code>field</code>为<code>value</code>的值)</p>
+<p><code>value</code>：存放真正的值，且为<code>volatile</code>，保证了<code>value</code>对所有线程的可见性</p>
+<h3 id="成员变量unsafe"><a href="#成员变量unsafe" class="headerlink" title="成员变量unsafe"></a>成员变量unsafe</h3><p>是CAS的核心类，由于Java方法无法直接访问底层系统，需要通过本地（native）方法来访问，Unsafe相当于一个后门，基于该类可以直接操作特定内存的数据。</p>
+<p>CAS指的是unsafe中的一个方法，<strong>整个比较并替换的操作是一个原子操作</strong></p>
+<pre><code>/**
+ * Atomically update Java variable to &lt;tt&gt;x&lt;/tt&gt; if it is currently
+ * holding &lt;tt&gt;expected&lt;/tt&gt;.
+ * @return &lt;tt&gt;true&lt;/tt&gt; if successful
+ */
+public final native boolean compareAndSwapInt(Object o, long offset,
+                                              int expected,
+                                              int x);
+</code></pre><p>Object o：被修改值的所在的类的实例<br>long offset：存储值的类变量value在内存中的偏移量<br>int expected：修改前的值<br>int x：修改后的值</p>
+<p>方法的作用为：通过o和offset确定变量在内存中的值，expected存放了修改前的值，要将变量修改为x之前先比较内存中的值和expected中修改前的值，若不一致，说明变量被其它线程修改过，返回false。</p>
+<h4 id="原理分析"><a href="#原理分析" class="headerlink" title="原理分析"></a>原理分析</h4><p>以上面代码为例分析流程，先查看AtomicInteger的getAndIncrement()方法</p>
+<pre><code>public final int getAndAdd(int delta) {
+    return unsafe.getAndAddInt(this, valueOffset, delta);
+}</code></pre><p>调用了unsafe的getAndAddInt方法，将自身实例和偏移量和要运算的数的值传入</p>
+<pre><code>public final int getAndAddInt(Object o, long offset, int delta) {
+    int v;
+    do {
+        v = getIntVolatile(o, offset);
+    } while (!compareAndSwapInt(o, offset, v, v + delta));
+    return v;
+}</code></pre><p>最后在unsafe中的<code>compareAndSwapInt</code>方法中完成整个CAS操作，<code>v = getIntVolatile(o, offset)</code>获取了主内存中的值value，存放在线程变量v中作为副本，<code>compareAndSwapInt</code>方法在完成计算v+delta的值后，再次通过o和offset查看此时主内存中的值(value为volatile类型，可见性保证value为最新的值)，看是否与线程中副本变量v相同，如果相同，则将新值刷新到主内存中，否则返回循环do中，更新线程变量副本v为主内存中最新变量的值，再进入compareAndSwapInt，如此循环。</p>
 
           
         
@@ -1217,83 +1393,82 @@ class sonReflect extends reflect&#123;
           
             <h3 id="实现方法"><a href="#实现方法" class="headerlink" title="实现方法"></a>实现方法</h3><p>利用阻塞队列中的两个方法：</p>
 <p><code>put(anObject)</code>:把<code>anObject</code>加到<code>BlockingQueue</code>里,如果<code>BlockQueue</code>没有空间,则调用此方法的线程被阻断<br><code>take()</code>:取走<code>BlockingQueue</code>里排在首位的对象,若<code>BlockingQueue</code>为空,阻断进入等待状态直到<code>BlockingQueue</code>有新的数据被加入:</p>
-<pre><code class="highlight plain">public class PCtest &#123;
-	public static void main(String[] args) &#123;
-		BlockingQueue&lt;Object&gt; queue &#x3D; new LinkedBlockingQueue&lt;Object&gt;(100);
-		for(int i &#x3D; 0;i &lt; 10;i++)&#123;
-			new producer(&quot;生产者&quot;+i,queue).start();
-		&#125;
-		for(int i &#x3D; 0;i &lt; 10;i++)&#123;
-			new consumer(&quot;消费者&quot;+i,queue).start();
-		&#125;
-	&#125;
-&#125;
+<pre><code>public class PCtest {
+    public static void main(String[] args) {
+        BlockingQueue&lt;Object&gt; queue = new LinkedBlockingQueue&lt;Object&gt;(100);
+        for(int i = 0;i &lt; 10;i++){
+            new producer(&quot;生产者&quot;+i,queue).start();
+        }
+        for(int i = 0;i &lt; 10;i++){
+            new consumer(&quot;消费者&quot;+i,queue).start();
+        }
+    }
+}
 
 
-class producer extends Thread&#123;
-	BlockingQueue&lt;Object&gt; queue;
-	public producer() &#123;
-		super();
-		&#x2F;&#x2F; TODO Auto-generated constructor stub
-	&#125;
+class producer extends Thread{
+    BlockingQueue&lt;Object&gt; queue;
+    public producer() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
 
-	public producer(String name,BlockingQueue&lt;Object&gt; queue) &#123;
-		super(name);
-		&#x2F;&#x2F; TODO Auto-generated constructor stub
-		this.queue &#x3D; queue;
-	&#125;
+    public producer(String name,BlockingQueue&lt;Object&gt; queue) {
+        super(name);
+        // TODO Auto-generated constructor stub
+        this.queue = queue;
+    }
 
-	@Override
-	public void run() &#123;
-		&#x2F;&#x2F; TODO Auto-generated method stub
-		while(true)&#123;
-			
-			try &#123;
-				queue.put(new Object());
-				System.out.println(getName()+&quot;生产一件商品&quot;);
-				producer.sleep(1000);
-			&#125; catch (Exception e) &#123;
-				&#x2F;&#x2F; TODO Auto-generated catch block
-				e.printStackTrace();
-			&#125;
-		&#125;
-	&#125;
-	
-&#125;
+    @Override
+    public void run() {
+        // TODO Auto-generated method stub
+        while(true){
 
-class consumer extends Thread&#123;
-	BlockingQueue&lt;Object&gt; queue;
-	public consumer() &#123;
-		super();
-		&#x2F;&#x2F; TODO Auto-generated constructor stub
-	&#125;
+            try {
+                queue.put(new Object());
+                System.out.println(getName()+&quot;生产一件商品&quot;);
+                producer.sleep(1000);
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
 
-	public consumer(String name,BlockingQueue&lt;Object&gt; queue) &#123;
-		super(name);
-		&#x2F;&#x2F; TODO Auto-generated constructor stub
-		this.queue &#x3D; queue;
-	&#125;
+}
 
-	@Override
-	public void run() &#123;
-		&#x2F;&#x2F; TODO Auto-generated method stub
-		while(true)&#123;
-			
-			try &#123;
-				queue.take();
-				System.out.println(this.getName()+&quot;消费1件商品&quot;);
-				consumer.sleep(1000);
-			&#125; catch (InterruptedException e) &#123;
-				&#x2F;&#x2F; TODO Auto-generated catch block
-				e.printStackTrace();
-			&#125;
-		&#125;
-		
-	&#125;
-	
-&#125;</code></pre>
-<p>输出结果为</p>
-<pre><code class="highlight plain">生产者2生产一件商品
+class consumer extends Thread{
+    BlockingQueue&lt;Object&gt; queue;
+    public consumer() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+    public consumer(String name,BlockingQueue&lt;Object&gt; queue) {
+        super(name);
+        // TODO Auto-generated constructor stub
+        this.queue = queue;
+    }
+
+    @Override
+    public void run() {
+        // TODO Auto-generated method stub
+        while(true){
+
+            try {
+                queue.take();
+                System.out.println(this.getName()+&quot;消费1件商品&quot;);
+                consumer.sleep(1000);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+}</code></pre><p>输出结果为</p>
+<pre><code>生产者2生产一件商品
 生产者9生产一件商品
 生产者6生产一件商品
 生产者5生产一件商品
@@ -1333,10 +1508,9 @@ class consumer extends Thread&#123;
 消费者7消费1件商品
 消费者9消费1件商品
 消费者3消费1件商品
-	·
-	·
-	·</code></pre>
-<p>在实现生产者消费者模型时，与使用synchronized和reentrantlock相比，灵活度较低，一次只能从队列取一个，优点是不用我们亲自写多线程代码，控制线程运行。</p>
+    ·
+    ·
+    ·</code></pre><p>在实现生产者消费者模型时，与使用synchronized和reentrantlock相比，灵活度较低，一次只能从队列取一个，优点是不用我们亲自写多线程代码，控制线程运行。</p>
 
           
         
@@ -1385,7 +1559,7 @@ class consumer extends Thread&#123;
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/%E5%85%B3%E4%BA%8E%E5%8E%9F%E5%AD%90%E7%B1%BB/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/volatile/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="sinaill">
@@ -1404,7 +1578,7 @@ class consumer extends Thread&#123;
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/06/17/%E5%85%B3%E4%BA%8E%E5%8E%9F%E5%AD%90%E7%B1%BB/" itemprop="url">关于原子类</a></h1>
+                <a class="post-title-link" href="/2020/06/17/volatile/" itemprop="url">volatile</a></h1>
         
 
         <div class="post-meta">
@@ -1478,80 +1652,80 @@ class consumer extends Thread&#123;
       
         
           
-            <h3 id="atomic是什么"><a href="#atomic是什么" class="headerlink" title="atomic是什么"></a>atomic是什么</h3><p>在多线程的场景中，我们需要如何同步数据，通常会使用synchronized或者lock来处理，使用了synchronized意味着内核态的一次切换。这是一个很重的操作。有没有一种方式，可以比较便利的实现一些简单的数据同步，比如计数器等等。concurrent包下的atomic提供我们这么一种轻量级的数据同步的选择。</p>
-<p>下面拿AtomicInteger为例分析</p>
-<pre><code class="highlight plain">public class Test &#123;
-	static AtomicInteger atomic &#x3D; new AtomicInteger(1);
-	public static void main(String[] args) &#123;
-		ExecutorService executor &#x3D; Executors.newCachedThreadPool();
-		for(int i &#x3D; 0;i &lt; 20;i++)&#123;
-			executor.execute(new Runnable() &#123;
-				
-				@Override
-				public void run() &#123;
-					&#x2F;&#x2F; TODO Auto-generated method stub
-					for(int j &#x3D; 0;j &lt; 100;j++)&#123;
-						
-						atomic.getAndIncrement();
-					&#125;
-				&#125;
-			&#125;);
-		&#125;
-		executor.shutdown();
-		try &#123;
-			while(! executor.awaitTermination(2, TimeUnit.SECONDS));
-		&#125; catch (InterruptedException e) &#123;
-			&#x2F;&#x2F; TODO Auto-generated catch block
-			e.printStackTrace();
-		&#125;
-		System.out.println(atomic.get());
-	&#125;
-&#125;</code></pre>
-<p>输出结果稳定为2001，可以看到并没有使用重量级锁synchronized和reentrantlock，原子类是怎么实现不需要锁也不会在多线程并发中出错的呢？</p>
-<h3 id="AtomicInteger"><a href="#AtomicInteger" class="headerlink" title="AtomicInteger"></a>AtomicInteger</h3><p>####简介</p>
-<p>属于原子类</p>
-<pre><code class="highlight plain">private static final Unsafe unsafe &#x3D; Unsafe.getUnsafe();
-private static final long valueOffset;
+            <h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>Java编程语言允许线程访问共享变量，为了确保共享变量能被准确和一致地更新，线程应该确保通过排他锁单独获得这个变量。Java语言提供了volatile，在某些情况下比锁要更加方便。如果一个字段被声明成volatile，Java线程内存模型确保所有线程看到这个变量的值是一致的。</p>
+<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p><img src="http://wx3.sinaimg.cn/large/96b7c0f4gy1g0t2gabww2j20hj08edfq.jpg" alt=""></p>
+<p>在 Java 内存模型中，所有的变量都存储在主存中，同时每个线程都拥有自己的工作线程，用于提高访问速度。线程会从主存中拷贝变量值到自己的工作内存中，然后在自己的工作线程中操作变量，而不是直接操作主存中的变量，由于每个线程在自己的内存中都有一个变量的拷贝，就会造成变量值不一致的问题。</p>
+<p>如果对声明了volatile的变量进行写操作，JVM就会向处理器发送一条Lock前缀的指令，将这个变量所在缓存行的数据写回到系统内存，同时让其它工作内存中这个变量的缓存失效，再次使用该变量的时候重新从主存中读取数据。</p>
+<pre><code>public class VolatileTest extends  Thread{
+    private boolean isRunning = true;
+    public boolean isRunning(){
+        return isRunning;
+    }
+    public void setRunning(boolean isRunning){
+        this.isRunning= isRunning;
+    }
+    public void run(){
+        System.out.println(&quot;进入了run...............&quot;);
+        while (isRunning){}
+        System.out.println(&quot;isRunning的值被修改为为false,线程将被停止了&quot;);
+    }
+    public static void main(String[] args) throws InterruptedException {
+        VolatileTest volatileThread = new VolatileTest();
+        volatileThread.start();
+        Thread.sleep(1000);
+        volatileThread.setRunning(false);   //停止线程
+    }
+}</code></pre><p>以上结果为：线程进入死循环，将<code>isRunning</code>变量设为<code>volatile</code>变量后，线程成功停止。</p>
+<h3 id="volatile的特性"><a href="#volatile的特性" class="headerlink" title="volatile的特性"></a>volatile的特性</h3><ol>
+<li>可见性，当一个共享变量被<code>volatile</code>修饰时，它会保证修改的值立即被更新到主存，所以对其他线程是可见的。当其他线程需要读取该值时，其他线程会去主存中读取新值。相反普通的共享变量不能保证可见性，因为普通共享变量被修改后并不会立即被写入主存，何时被写入主存也不确定。当其他线程去读取该值时，此时主存可能还是原来的旧值，这样就无法保证可见性</li>
+<li>有序性，java内存模型中允许编译器和处理器对指令进行重排序，虽然重排序过程不会影响到单线程执行的正确性，但是会影响到多线程并发执行的正确性。这时可以通过<code>volatile</code>来保证有序性，除了<code>volatile</code>,也可以通过<code>synchronized</code>和<code>Lock</code>来保证有序性。<code>synchronized</code>和<code>Lock</code>保证每个时刻只有一个线程执行同步代码，这相当于让线程顺序执行同步代码，从而保证了有序性。如果不考虑原子性操作的话<code>volatile</code>比<code>synchronized</code>和<code>Lock</code>更轻量级，成本更低。</li>
+<li>不保障原子性<code>volatile</code>关键字只能保证共享变量的可见性和有序性</li>
+</ol>
+<h3 id="非原子性"><a href="#非原子性" class="headerlink" title="非原子性"></a>非原子性</h3><p><code>volatile</code><strong>仅仅用来保证该变量对所有线程的可见性，但不保证原子性</strong></p>
+<pre><code>public class Test{
 
-static &#123;
-    try &#123;
-        valueOffset &#x3D; unsafe.objectFieldOffset
-            (AtomicInteger.class.getDeclaredField(&quot;value&quot;));
-    &#125; catch (Exception ex) &#123; throw new Error(ex); &#125;
-&#125;
+    volatile static int n;
 
-private volatile int value;</code></pre>
-
-<p>原子类中几个成员变量</p>
-<p><code>unsafe</code>：<code>Unsafe</code>位于<code>sun.misc</code>包内，看其命名就知道和注重安全性的<code>java jdk</code>无缘，连文档都没，直接就叫”不安全” 。Unsafe的特点是可以直接操作堆外内存，可以随意查看及修改<code>JVM</code>中运行时的数据结构，例如查看和修改对象的成员，<code>Unsafe</code>的操作粒度不是类，而是数据和地址。<br><code>valueOffset</code>：<code>value</code>字段内存地址的偏移量(通过原子类实例的引用指向的内存空间和这个偏移量可以从内存中读取<code>field</code>为<code>value</code>的值)</p>
-<p><code>value</code>：存放真正的值，且为<code>volatile</code>，保证了<code>value</code>对所有线程的可见性</p>
-<h3 id="成员变量unsafe"><a href="#成员变量unsafe" class="headerlink" title="成员变量unsafe"></a>成员变量unsafe</h3><p>是CAS的核心类，由于Java方法无法直接访问底层系统，需要通过本地（native）方法来访问，Unsafe相当于一个后门，基于该类可以直接操作特定内存的数据。</p>
-<p>CAS指的是unsafe中的一个方法，<strong>整个比较并替换的操作是一个原子操作</strong></p>
-<pre><code class="highlight plain">&#x2F;**
- * Atomically update Java variable to &lt;tt&gt;x&lt;&#x2F;tt&gt; if it is currently
- * holding &lt;tt&gt;expected&lt;&#x2F;tt&gt;.
- * @return &lt;tt&gt;true&lt;&#x2F;tt&gt; if successful
- *&#x2F;
-public final native boolean compareAndSwapInt(Object o, long offset,
-                                              int expected,
-                                              int x);</code></pre>
-
-<p>Object o：被修改值的所在的类的实例<br>long offset：存储值的类变量value在内存中的偏移量<br>int expected：修改前的值<br>int x：修改后的值</p>
-<p>方法的作用为：通过o和offset确定变量在内存中的值，expected存放了修改前的值，要将变量修改为x之前先比较内存中的值和expected中修改前的值，若不一致，说明变量被其它线程修改过，返回false。</p>
-<h4 id="原理分析"><a href="#原理分析" class="headerlink" title="原理分析"></a>原理分析</h4><p>以上面代码为例分析流程，先查看AtomicInteger的getAndIncrement()方法</p>
-<pre><code class="highlight plain">public final int getAndAdd(int delta) &#123;
-    return unsafe.getAndAddInt(this, valueOffset, delta);
-&#125;</code></pre>
-
-<p>调用了unsafe的getAndAddInt方法，将自身实例和偏移量和要运算的数的值传入</p>
-<pre><code class="highlight plain">public final int getAndAddInt(Object o, long offset, int delta) &#123;
-    int v;
-    do &#123;
-        v &#x3D; getIntVolatile(o, offset);
-    &#125; while (!compareAndSwapInt(o, offset, v, v + delta));
-    return v;
-&#125;</code></pre>
-<p>最后在unsafe中的<code>compareAndSwapInt</code>方法中完成整个CAS操作，<code>v = getIntVolatile(o, offset)</code>获取了主内存中的值value，存放在线程变量v中作为副本，<code>compareAndSwapInt</code>方法在完成计算v+delta的值后，再次通过o和offset查看此时主内存中的值(value为volatile类型，可见性保证value为最新的值)，看是否与线程中副本变量v相同，如果相同，则将新值刷新到主内存中，否则返回循环do中，更新线程变量副本v为主内存中最新变量的值，再进入compareAndSwapInt，如此循环。</p>
+        public static void main(String[] args) throws InterruptedException {
+            Thread t1 = new Thread(()-&gt;{
+                for (int i = 0; i &lt; 100; i++) {
+                    n++;
+                }
+            });
+            Thread t2 = new Thread(()-&gt;{
+                for (int i = 0; i &lt; 100; i++) {
+                    n++;
+                }
+            });
+            t1.start();
+            t2.start();
+            t1.join();
+            t2.join();
+            System.out.println(n);
+        }
+}</code></pre><p>在多次运行中，以上程序输出结果不全是200</p>
+<p>不要将volatile用在getAndOperate场合（这种场合不原子，需要再加锁），仅仅set或者get的场景是适合volatile的。</p>
+<p>volatile在进行自增自减操作的时候，不能保证原子性，n++实际上是三个操作，不是原子操作，先从主内存读取值到线程工作内存，然后在工作内存中对数据进行处理，最后刷新到主内存中，让其它线程可见。<strong>一旦在这三步中线程被挂起，就会出现上面这种结果。</strong></p>
+<h3 id="禁止重排序"><a href="#禁止重排序" class="headerlink" title="禁止重排序"></a>禁止重排序</h3><p>下面是一个单例模式的代码</p>
+<pre><code>public class Singleton {
+    private volatile static Singleton instance;
+    private Singleton (){}
+    public static Singleton getInstance() {
+        if (instance == null) {
+            synchronized(this.class){
+                if (instance == null){
+                    instance = new Singleton();
+                }
+        }
+        return instance;
+    }
+}</code></pre><p>为什么要对<code>instance</code>使用<code>volatile</code>，<code>instance = new Singleton()</code>这句，这并非是一个原子操作，事实上在 JVM 中这句话大概做了下面 3 件事情，给<code>instance</code>分配内存，调用 Singleton 的构造函数来初始化成员变量，将instance对象指向分配的内存空间（执行完这步<code>instance</code>就为非 null 了）。但是在 JVM 的即时编译器中存在指令重排序的优化。也就是说上面的第二步和第三步的顺序是不能保证的，最终的执行顺序可能是 1-2-3 也可能是 1-3-2。如果是后者，则在 3 执行完毕、2 未执行之前，线程2进入第一个<code>instance==null</code>，这时<code>instance</code>已经是非null了（但却没有初始化），所以线程二会直接返回<code>instance</code>，然后使用，然后顺理成章地报错。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>修改<code>volatile</code>变量时会强制将修改后的值刷新的主内存中</p>
+<p>修改<code>volatile</code>变量后会导致其他线程工作内存中对应的变量值失效。因此，再读取该变量值的时候就需要重新从读取主内存中的值</p>
+<p>在访问<code>volatile</code>变量时不会执行加锁操作，因此也就不会使执行线程阻塞，因此<code>volatile</code>变量是一种比<code>sychronized</code>关键字更轻量级的同步机制。</p>
+<p>性能方面，<code>volatile</code>的读性能消耗与普通变量几乎相同，但是写操作稍慢，因为它需要在本地代码中插入许多内存屏障指令来保证处理器不发生乱序执行。</p>
+<p>不要将<code>volatile</code>用在<code>getAndOperate</code>场合，仅仅<code>set</code>或者<code>get</code>的场景是适合<code>volatile</code>的</p>
+<p><a href="http://www.importnew.com/24082.html" target="_blank" rel="noopener">对volatile更详细的参考</a><br><a href="https://juejin.im/post/5ae9b41b518825670b33e6c4" target="_blank" rel="noopener">彻底理解volatile</a></p>
 
           
         
@@ -1699,367 +1873,133 @@ public final native boolean compareAndSwapInt(Object o, long offset,
 <p><strong>抽象角色</strong>：声明真实对象和代理对象的共同接口；</p>
 <p><strong>代理角色</strong>：代理对象角色内部含有对真实对象的引用，从而可以操作真实对象，同时代理对象提供与真实对象相同的接口以便在任何时刻都能代替真实对象。同时，代理对象可以在执行真实对象操作时，附加其他的操作，相当于对真实对象进行封装。</p>
 <p><strong>真实角色</strong>：代理角色所代表的真实对象，是我们最终要引用的对象。</p>
-<h3 id="静态代理"><a href="#静态代理" class="headerlink" title="静态代理"></a>静态代理</h3><pre><code class="highlight plain">&#x2F;&#x2F;抽象角色
-interface Subject&#123;
-	void run();
-&#125;
+<h3 id="静态代理"><a href="#静态代理" class="headerlink" title="静态代理"></a>静态代理</h3><pre><code>//抽象角色
+interface Subject{
+    void run();
+}
 
-&#x2F;&#x2F;真实角色
-class target implements Subject&#123;
-	@Override
-	public void run() &#123;
-		&#x2F;&#x2F; TODO Auto-generated method stub
-		System.out.println(&quot;target&#39;s run method&quot;);
-	&#125;
-&#125;
+//真实角色
+class target implements Subject{
+    @Override
+    public void run() {
+        // TODO Auto-generated method stub
+        System.out.println(&quot;target&#39;s run method&quot;);
+    }
+}
 
 代理角色
-class proxy implements Subject&#123;
-	private target target;
-	public proxy() &#123;
-		&#x2F;&#x2F; TODO Auto-generated constructor stub
-	&#125;
-	public proxy(target target) &#123;
-		&#x2F;&#x2F; TODO Auto-generated constructor stub
-		this.target &#x3D; target;
-	&#125;
-	@Override
-	public void run() &#123;
-		&#x2F;&#x2F; TODO Auto-generated method stub
-		System.out.println(&quot;proxy&#39;s run method&quot;);
-		target.run();
-	&#125;
-&#125;
+class proxy implements Subject{
+    private target target;
+    public proxy() {
+        // TODO Auto-generated constructor stub
+    }
+    public proxy(target target) {
+        // TODO Auto-generated constructor stub
+        this.target = target;
+    }
+    @Override
+    public void run() {
+        // TODO Auto-generated method stub
+        System.out.println(&quot;proxy&#39;s run method&quot;);
+        target.run();
+    }
+}
 
-	&#x2F;&#x2F;使用
-	@Test
-	public void test()&#123;
-		target t &#x3D; new target();
-		proxy  p &#x3D; new proxy(t);
-		p.run();
-	&#125;</code></pre>
-
-<p>使用静态代理：</p>
+    //使用
+    @Test
+    public void test(){
+        target t = new target();
+        proxy  p = new proxy(t);
+        p.run();
+    }</code></pre><p>使用静态代理：</p>
 <ol>
 <li>可以做到在不修改目标对象的前提下，拓展目标对象的功能。</li>
 <li>缺点是：因为代理对象需要同目标对象实现同样的接口，所以会有很多的代理类，造成类过多；并且，一旦接口中增加方法，目标对象同代理对象都需要进行维护。</li>
 </ol>
 <h3 id="jdk动态代理"><a href="#jdk动态代理" class="headerlink" title="jdk动态代理"></a>jdk动态代理</h3><p><strong>原理</strong>：java反射用传进来的接口和类加载器实例化一个代理类，代理类中所有方法转向<code>InvocationHandler</code>的<code>Invoke</code>方法.</p>
 <p>使用jdk实现代理，需要用到<code>java.lang.reflect.Proxy</code>，该类即为动态代理类,<code>newProxyInstance</code>方法实例化一个动态代理类，其中构造函数传入一个<code>InvocationHandler</code>实例到<code>Proxy</code>中。</p>
-<pre><code class="highlight plain">public static Object newProxyInstance(ClassLoader loader,
+<pre><code>public static Object newProxyInstance(ClassLoader loader,
                                           Class&lt;?&gt;[] interfaces,
                                           InvocationHandler h)
         throws IllegalArgumentException
-&#123;
-    &#x2F;&#x2F;......
-&#125;</code></pre>
-
-<p><code>ClassLoader loader</code>：指定当前目标对象使用类加载器，获取加载器的方法是固定<br><code>Class&lt;?&gt;[] interfaces</code>：目标对象实现的接口类型，使用泛型方式确认类型。<br><code>InvocationHandler h</code>：事件处理。执行目标对象的方法时，会触发事件处理器的方法，会把当前执行目标对象的方法作为参数传入。</p>
+{
+    //......
+}</code></pre><p><code>ClassLoader loader</code>：指定当前目标对象使用类加载器，获取加载器的方法是固定<br><code>Class&lt;?&gt;[] interfaces</code>：目标对象实现的接口类型，使用泛型方式确认类型。<br><code>InvocationHandler h</code>：事件处理。执行目标对象的方法时，会触发事件处理器的方法，会把当前执行目标对象的方法作为参数传入。</p>
 <p>InvocationHandler接口的作用：每个代理类的实例都关联到了一个handler(通过代理类的构造函数)，当我们通过代理对象调用一个方法的时候，这个方法的调用就会被转发为由InvocationHandler这个接口的 invoke 方法来进行调用</p>
-<pre><code class="highlight plain">public Object invoke(Object proxy, Method method, Object[] args)
-    throws Throwable;</code></pre>
-
-<p>proxy参数为代理类实例<br>method参数为所要调用真实对象的某个方法的Method对象<br>args参数为调用真实对象某个方法时接受的参数</p>
+<pre><code>public Object invoke(Object proxy, Method method, Object[] args)
+    throws Throwable;</code></pre><p>proxy参数为代理类实例<br>method参数为所要调用真实对象的某个方法的Method对象<br>args参数为调用真实对象某个方法时接受的参数</p>
 <hr>
 <p><strong>JDK动态代理的使用</strong></p>
-<pre><code class="highlight plain">interface Subject&#123;
-	void run();
-&#125;
+<pre><code>interface Subject{
+    void run();
+}
 
-class target implements Subject&#123;
-	@Override
-	public void run() &#123;
-		&#x2F;&#x2F; TODO Auto-generated method stub
-		System.out.println(&quot;target&#39;s run method&quot;);
-	&#125;
-&#125;
+class target implements Subject{
+    @Override
+    public void run() {
+        // TODO Auto-generated method stub
+        System.out.println(&quot;target&#39;s run method&quot;);
+    }
+}
 
-class ProxyFactory&#123;
-	private Object target;
+class ProxyFactory{
+    private Object target;
 
-	public ProxyFactory(Object target) &#123;
-		this.target &#x3D; target;
-	&#125;
-	public ProxyFactory() &#123;
-		&#x2F;&#x2F; TODO Auto-generated constructor stub
-	&#125;
-	
-	public Object getProxyInstance()&#123;
-		return Proxy.newProxyInstance(target.getClass().getClassLoader(),target.getClass().getInterfaces(),new InvocationHandler() &#123;
-			
-			@Override
-			public Object invoke(Object proxy, Method method, Object[] args) throws Throwable &#123;
-				&#x2F;&#x2F; TODO Auto-generated method stub
-				System.out.println(&quot;before&quot;);
-				Object returnValue &#x3D; method.invoke(target, args);
-				System.out.println(&quot;after&quot;);
-				return returnValue;
-			&#125;
-		&#125;);
-	&#125;
-&#125;
+    public ProxyFactory(Object target) {
+        this.target = target;
+    }
+    public ProxyFactory() {
+        // TODO Auto-generated constructor stub
+    }
 
-	@Test
-	public void test2()&#123;
-		target t &#x3D; new target();
-		Subject sub &#x3D; (Subject) new ProxyFactory(t).getProxyInstance();
-		sub.run();
-	&#125;</code></pre>
+    public Object getProxyInstance(){
+        return Proxy.newProxyInstance(target.getClass().getClassLoader(),target.getClass().getInterfaces(),new InvocationHandler() {
 
-<p>最后由动态代理生成的动态代理实例，就是继承了Proxy类和实现了抽象角色(要代理的对象实现的接口)，再通过构造函数传入的InvocationHandler实例的invoke方法来实现最终代理。其中动态代理类实例实现抽象角色即接口的方式为调用InvocationHandler实例的invoke方法并传入相应参数。</p>
+            @Override
+            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                // TODO Auto-generated method stub
+                System.out.println(&quot;before&quot;);
+                Object returnValue = method.invoke(target, args);
+                System.out.println(&quot;after&quot;);
+                return returnValue;
+            }
+        });
+    }
+}
+
+    @Test
+    public void test2(){
+        target t = new target();
+        Subject sub = (Subject) new ProxyFactory(t).getProxyInstance();
+        sub.run();
+    }</code></pre><p>最后由动态代理生成的动态代理实例，就是继承了Proxy类和实现了抽象角色(要代理的对象实现的接口)，再通过构造函数传入的InvocationHandler实例的invoke方法来实现最终代理。其中动态代理类实例实现抽象角色即接口的方式为调用InvocationHandler实例的invoke方法并传入相应参数。</p>
 <p><a href="https://blog.csdn.net/mhmyqn/article/details/48474815" target="_blank" rel="noopener">参考</a></p>
 <h3 id="cglib动态代理"><a href="#cglib动态代理" class="headerlink" title="cglib动态代理"></a>cglib动态代理</h3><p>使用cglib的方法可以为没有实现接口的类实现代理，同样也是要先实现接口<code>MethodInterceptor</code></p>
-<pre><code class="highlight plain">class CGLibDynamicProxy implements MethodInterceptor&#123;
+<pre><code>class CGLibDynamicProxy implements MethodInterceptor{
     @Override
-    public Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy) throws Throwable &#123;
+    public Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy) throws Throwable {
         System.out.println(&quot;before&quot;);
-        Object object &#x3D; methodProxy.invokeSuper(o,objects);
+        Object object = methodProxy.invokeSuper(o,objects);
         System.out.println(&quot;after&quot;);
         System.out.println(method.getDeclaringClass().getName());
         return object;
-    &#125;
-&#125;</code></pre>
-
-<p>再定义一个要代理的类</p>
-<pre><code class="highlight plain">class Human&#123;
-    public void out()&#123;
+    }
+}</code></pre><p>再定义一个要代理的类</p>
+<pre><code>class Human{
+    public void out(){
         System.out.println(&quot;out&quot;);
-    &#125;
-&#125;</code></pre>
-
-<p>cglib用来实例化代理的类是<code>Enhancer</code></p>
-<pre><code class="highlight plain">@Test
-public void test()&#123;
-    Human humanProxy &#x3D; (Human) Enhancer.create(Human.class, new CGLibDynamicProxy());
+    }
+}</code></pre><p>cglib用来实例化代理的类是<code>Enhancer</code></p>
+<pre><code>@Test
+public void test(){
+    Human humanProxy = (Human) Enhancer.create(Human.class, new CGLibDynamicProxy());
     humanProxy.out();
-&#125;</code></pre>
-
-<p>只需要传入代理的类的<code>Class</code>对象和实现了<code>MethodInterceptor</code>接口的实例就能获得代理</p>
+}</code></pre><p>只需要传入代理的类的<code>Class</code>对象和实现了<code>MethodInterceptor</code>接口的实例就能获得代理</p>
 <p>输出结果为</p>
-<pre><code class="highlight plain">before
+<pre><code>before
 out
 after
 Test.Human</code></pre>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/volatile/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/volatile/" itemprop="url">volatile</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>Java编程语言允许线程访问共享变量，为了确保共享变量能被准确和一致地更新，线程应该确保通过排他锁单独获得这个变量。Java语言提供了volatile，在某些情况下比锁要更加方便。如果一个字段被声明成volatile，Java线程内存模型确保所有线程看到这个变量的值是一致的。</p>
-<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p><img src="http://wx3.sinaimg.cn/large/96b7c0f4gy1g0t2gabww2j20hj08edfq.jpg" alt=""></p>
-<p>在 Java 内存模型中，所有的变量都存储在主存中，同时每个线程都拥有自己的工作线程，用于提高访问速度。线程会从主存中拷贝变量值到自己的工作内存中，然后在自己的工作线程中操作变量，而不是直接操作主存中的变量，由于每个线程在自己的内存中都有一个变量的拷贝，就会造成变量值不一致的问题。</p>
-<p>如果对声明了volatile的变量进行写操作，JVM就会向处理器发送一条Lock前缀的指令，将这个变量所在缓存行的数据写回到系统内存，同时让其它工作内存中这个变量的缓存失效，再次使用该变量的时候重新从主存中读取数据。</p>
-<pre><code class="highlight plain">public class VolatileTest extends  Thread&#123;
-    private boolean isRunning &#x3D; true;
-    public boolean isRunning()&#123;
-        return isRunning;
-    &#125;
-    public void setRunning(boolean isRunning)&#123;
-        this.isRunning&#x3D; isRunning;
-    &#125;
-    public void run()&#123;
-        System.out.println(&quot;进入了run...............&quot;);
-        while (isRunning)&#123;&#125;
-        System.out.println(&quot;isRunning的值被修改为为false,线程将被停止了&quot;);
-    &#125;
-    public static void main(String[] args) throws InterruptedException &#123;
-        VolatileTest volatileThread &#x3D; new VolatileTest();
-        volatileThread.start();
-        Thread.sleep(1000);
-        volatileThread.setRunning(false);   &#x2F;&#x2F;停止线程
-    &#125;
-&#125;</code></pre>
-
-<p>以上结果为：线程进入死循环，将<code>isRunning</code>变量设为<code>volatile</code>变量后，线程成功停止。</p>
-<h3 id="volatile的特性"><a href="#volatile的特性" class="headerlink" title="volatile的特性"></a>volatile的特性</h3><ol>
-<li>可见性，当一个共享变量被<code>volatile</code>修饰时，它会保证修改的值立即被更新到主存，所以对其他线程是可见的。当其他线程需要读取该值时，其他线程会去主存中读取新值。相反普通的共享变量不能保证可见性，因为普通共享变量被修改后并不会立即被写入主存，何时被写入主存也不确定。当其他线程去读取该值时，此时主存可能还是原来的旧值，这样就无法保证可见性</li>
-<li>有序性，java内存模型中允许编译器和处理器对指令进行重排序，虽然重排序过程不会影响到单线程执行的正确性，但是会影响到多线程并发执行的正确性。这时可以通过<code>volatile</code>来保证有序性，除了<code>volatile</code>,也可以通过<code>synchronized</code>和<code>Lock</code>来保证有序性。<code>synchronized</code>和<code>Lock</code>保证每个时刻只有一个线程执行同步代码，这相当于让线程顺序执行同步代码，从而保证了有序性。如果不考虑原子性操作的话<code>volatile</code>比<code>synchronized</code>和<code>Lock</code>更轻量级，成本更低。</li>
-<li>不保障原子性<code>volatile</code>关键字只能保证共享变量的可见性和有序性</li>
-</ol>
-<h3 id="非原子性"><a href="#非原子性" class="headerlink" title="非原子性"></a>非原子性</h3><p><code>volatile</code><strong>仅仅用来保证该变量对所有线程的可见性，但不保证原子性</strong></p>
-<pre><code class="highlight plain">public class Test&#123;
-
-	volatile static int n;
-	
-	    public static void main(String[] args) throws InterruptedException &#123;
-	        Thread t1 &#x3D; new Thread(()-&gt;&#123;
-	        	for (int i &#x3D; 0; i &lt; 100; i++) &#123;
-					n++;
-				&#125;
-	        &#125;);
-	        Thread t2 &#x3D; new Thread(()-&gt;&#123;
-	        	for (int i &#x3D; 0; i &lt; 100; i++) &#123;
-					n++;
-				&#125;
-	        &#125;);
-	        t1.start();
-	        t2.start();
-	        t1.join();
-	        t2.join();
-	        System.out.println(n);
-	    &#125;
-&#125;</code></pre>
-<p>在多次运行中，以上程序输出结果不全是200</p>
-<p>不要将volatile用在getAndOperate场合（这种场合不原子，需要再加锁），仅仅set或者get的场景是适合volatile的。</p>
-<p>volatile在进行自增自减操作的时候，不能保证原子性，n++实际上是三个操作，不是原子操作，先从主内存读取值到线程工作内存，然后在工作内存中对数据进行处理，最后刷新到主内存中，让其它线程可见。<strong>一旦在这三步中线程被挂起，就会出现上面这种结果。</strong></p>
-<h3 id="禁止重排序"><a href="#禁止重排序" class="headerlink" title="禁止重排序"></a>禁止重排序</h3><p>下面是一个单例模式的代码</p>
-<pre><code class="highlight plain">public class Singleton &#123;
-    private volatile static Singleton instance;
-    private Singleton ()&#123;&#125;
-    public static Singleton getInstance() &#123;
-        if (instance &#x3D;&#x3D; null) &#123;
-			synchronized(this.class)&#123;
-				if (instance &#x3D;&#x3D; null)&#123;
-					instance &#x3D; new Singleton();
-				&#125;
-        &#125;
-        return instance;
-    &#125;
-&#125;</code></pre>
-
-<p>为什么要对<code>instance</code>使用<code>volatile</code>，<code>instance = new Singleton()</code>这句，这并非是一个原子操作，事实上在 JVM 中这句话大概做了下面 3 件事情，给<code>instance</code>分配内存，调用 Singleton 的构造函数来初始化成员变量，将instance对象指向分配的内存空间（执行完这步<code>instance</code>就为非 null 了）。但是在 JVM 的即时编译器中存在指令重排序的优化。也就是说上面的第二步和第三步的顺序是不能保证的，最终的执行顺序可能是 1-2-3 也可能是 1-3-2。如果是后者，则在 3 执行完毕、2 未执行之前，线程2进入第一个<code>instance==null</code>，这时<code>instance</code>已经是非null了（但却没有初始化），所以线程二会直接返回<code>instance</code>，然后使用，然后顺理成章地报错。</p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>修改<code>volatile</code>变量时会强制将修改后的值刷新的主内存中</p>
-<p>修改<code>volatile</code>变量后会导致其他线程工作内存中对应的变量值失效。因此，再读取该变量值的时候就需要重新从读取主内存中的值</p>
-<p>在访问<code>volatile</code>变量时不会执行加锁操作，因此也就不会使执行线程阻塞，因此<code>volatile</code>变量是一种比<code>sychronized</code>关键字更轻量级的同步机制。</p>
-<p>性能方面，<code>volatile</code>的读性能消耗与普通变量几乎相同，但是写操作稍慢，因为它需要在本地代码中插入许多内存屏障指令来保证处理器不发生乱序执行。</p>
-<p>不要将<code>volatile</code>用在<code>getAndOperate</code>场合，仅仅<code>set</code>或者<code>get</code>的场景是适合<code>volatile</code>的</p>
-<p><a href="http://www.importnew.com/24082.html" target="_blank" rel="noopener">对volatile更详细的参考</a><br><a href="https://juejin.im/post/5ae9b41b518825670b33e6c4" target="_blank" rel="noopener">彻底理解volatile</a></p>
-
           
         
       
@@ -2211,11 +2151,9 @@ Test.Human</code></pre>
 <li>织入(Weaving): 利用代理实现切面方法增强连接点方法的过程叫织入</li>
 </ul>
 <h4 id="Aspect"><a href="#Aspect" class="headerlink" title="Aspect"></a>Aspect</h4><p>声明一个切面有两种方法，一种是通过xml配置的方法</p>
-<pre><code class="highlight plain">&lt;bean id&#x3D;&quot;myAspect&quot; class&#x3D;&quot;org.xyz.NotVeryUsefulAspect&quot;&gt;
+<pre><code>&lt;bean id=&quot;myAspect&quot; class=&quot;org.xyz.NotVeryUsefulAspect&quot;&gt;
     &lt;!-- configure properties of the aspect here --&gt;
-&lt;&#x2F;bean&gt;</code></pre>
-
-<p>当然，配置的这个类上需要有<code>@Aspect</code>注解</p>
+&lt;/bean&gt;</code></pre><p>当然，配置的这个类上需要有<code>@Aspect</code>注解</p>
 <p>第二种就是注解配置的方法</p>
 <p>在需要声明为切面的类上配置<code>@Aspect</code>注解，但是，注意Spring文档中，However, note that the @Aspect annotation is not sufficient for autodetection in the classpath. For that purpose, you need to add a separate @Component annotation</p>
 <p>意思就是采用注解的方式声明，不仅需要<code>@Aspect</code>注解，还需要配置上<code>@Component</code>注解才行</p>
@@ -2231,28 +2169,22 @@ Test.Human</code></pre>
 <ol>
 <li>execution</li>
 </ol>
-<pre><code class="highlight plain">@Pointcut(&quot;execution(public String org.baeldung.dao.FooDao.findById(Long))&quot;)
+<pre><code>@Pointcut(&quot;execution(public String org.baeldung.dao.FooDao.findById(Long))&quot;)
 
-@Pointcut(&quot;execution(* org.baeldung.dao.FooDao.*(..))&quot;)</code></pre>
-
-<p>通过第一种指定特定方法或者第二种模糊匹配</p>
+@Pointcut(&quot;execution(* org.baeldung.dao.FooDao.*(..))&quot;)</code></pre><p>通过第一种指定特定方法或者第二种模糊匹配</p>
 <ol start="2">
 <li>within</li>
 </ol>
 <p>within是用来指定类型的，指定类型中的所有方法将被拦截</p>
-<pre><code class="highlight plain">@Pointcut(&quot;within(org.baeldung.dao.FooDao)&quot;)
+<pre><code>@Pointcut(&quot;within(org.baeldung.dao.FooDao)&quot;)
 
-@Pointcut(&quot;within(org.baeldung..*)&quot;)</code></pre>
-
-<p>指定某个类或者某个包下所有类的所有方法(子类型无效)</p>
+@Pointcut(&quot;within(org.baeldung..*)&quot;)</code></pre><p>指定某个类或者某个包下所有类的所有方法(子类型无效)</p>
 <ol start="3">
 <li>this and target</li>
 </ol>
-<pre><code class="highlight plain">@Pointcut(&quot;target(org.baeldung.dao.BarDao)&quot;)
+<pre><code>@Pointcut(&quot;target(org.baeldung.dao.BarDao)&quot;)
 
-@Pointcut(&quot;this(org.baeldung.dao.FooDao)&quot;)</code></pre>
-
-<p>其中target指代被代理的类(连接点方法所在的类)，this表示代理类，匹配条件为是给定值的类的实例</p>
+@Pointcut(&quot;this(org.baeldung.dao.FooDao)&quot;)</code></pre><p>其中target指代被代理的类(连接点方法所在的类)，this表示代理类，匹配条件为是给定值的类的实例</p>
 <ol start="4">
 <li>args</li>
 </ol>
@@ -2268,80 +2200,69 @@ Test.Human</code></pre>
 <li>@target</li>
 </ol>
 <p>与上面的target是不同的，这个是指定目标类(子类无效)要有指定的注解才能匹配，</p>
-<pre><code class="highlight plain">@Pointcut(&quot;@target(org.springframework.stereotype.Repository)&quot;)</code></pre>
-
-<ol start="6">
+<pre><code>@Pointcut(&quot;@target(org.springframework.stereotype.Repository)&quot;)</code></pre><ol start="6">
 <li>@args</li>
 </ol>
 <p>用来匹配参数带有指定注解的方法</p>
-<pre><code class="highlight plain">@Pointcut(&quot;@args(com.elim.spring.support.MyAnnotation)&quot;)</code></pre>
-
-<ol start="7">
+<pre><code>@Pointcut(&quot;@args(com.elim.spring.support.MyAnnotation)&quot;)</code></pre><ol start="7">
 <li>@within</li>
 </ol>
 <p>和<code>@target</code>差不多，但是<code>@within</code>范围更大，被注解类的子类中未被覆写的方法也匹配</p>
-<pre><code class="highlight plain">@Pointcut(&quot;@target(org.springframework.stereotype.Repository)&quot;)</code></pre>
-
-
-<ol start="8">
+<pre><code>@Pointcut(&quot;@target(org.springframework.stereotype.Repository)&quot;)</code></pre><ol start="8">
 <li>@annotation</li>
 </ol>
 <p>@annotation用于匹配方法上拥有指定注解的情况。</p>
-<pre><code class="highlight plain">@Point(&quot;@annotation(com.elim.spring.support.MyAnnotation)&quot;)</code></pre>
-
-<h3 id="五种通知方法"><a href="#五种通知方法" class="headerlink" title="五种通知方法"></a>五种通知方法</h3><pre><code class="highlight plain">@Aspect
+<pre><code>@Point(&quot;@annotation(com.elim.spring.support.MyAnnotation)&quot;)</code></pre><h3 id="五种通知方法"><a href="#五种通知方法" class="headerlink" title="五种通知方法"></a>五种通知方法</h3><pre><code>@Aspect
 @Component
-public class Log &#123;
-	@Pointcut(&quot;execution(* crj.ssm.service.*.*(..))&quot;)
-	private void startLog() &#123;
-		
-	&#125;
+public class Log {
+    @Pointcut(&quot;execution(* crj.ssm.service.*.*(..))&quot;)
+    private void startLog() {
 
-	@Before(&quot;startLog()&quot;)
-	public void beforeMethod(JoinPoint point) &#123;
-		System.out.println(&quot;@Before方法开始&quot;);
-		System.out.println(&quot;getSignature方法：&quot;+point.getSignature().getName());
-		&#x2F;&#x2F;获取目标方法的参数，返回的是Object[]
-		System.out.println(&quot;getArgs方法： &quot;+point.getArgs());
-		&#x2F;&#x2F;返回目标方法所在的类
-		System.out.println(&quot;getTarget方法：&quot;+point.getTarget());
-		&#x2F;&#x2F;也是返回目标方法所在的类
-		System.out.println(&quot;getThis方法&quot; +point.getThis());
-		System.out.println(&quot;@Before方法结束&quot;);
-	&#125;
+    }
 
-	@Around(&quot;startLog()&quot;)
-	public Object aroundMethod(ProceedingJoinPoint point) throws Throwable&#123;
-		System.out.println(&quot;@aroundMethod方法开始&quot;);
-		&#x2F;&#x2F;同上
-		System.out.println(point.getArgs());
-		Object object &#x3D; point.proceed(point.getArgs());
-		System.out.println(&quot;@aroundMethod方法结束&quot;);
-		return object;
-	&#125;
+    @Before(&quot;startLog()&quot;)
+    public void beforeMethod(JoinPoint point) {
+        System.out.println(&quot;@Before方法开始&quot;);
+        System.out.println(&quot;getSignature方法：&quot;+point.getSignature().getName());
+        //获取目标方法的参数，返回的是Object[]
+        System.out.println(&quot;getArgs方法： &quot;+point.getArgs());
+        //返回目标方法所在的类
+        System.out.println(&quot;getTarget方法：&quot;+point.getTarget());
+        //也是返回目标方法所在的类
+        System.out.println(&quot;getThis方法&quot; +point.getThis());
+        System.out.println(&quot;@Before方法结束&quot;);
+    }
 
-	@After(&quot;startLog()&quot;)
-	public void afterMethod(JoinPoint point) &#123;
-		System.out.println(&quot;@afterMethod方法开始&quot;);
-		System.out.println(&quot;this is after-method&quot;);
-		System.out.println(&quot;@afterMethod方法结束&quot;);
-	&#125;
+    @Around(&quot;startLog()&quot;)
+    public Object aroundMethod(ProceedingJoinPoint point) throws Throwable{
+        System.out.println(&quot;@aroundMethod方法开始&quot;);
+        //同上
+        System.out.println(point.getArgs());
+        Object object = point.proceed(point.getArgs());
+        System.out.println(&quot;@aroundMethod方法结束&quot;);
+        return object;
+    }
 
-	@AfterReturning(value &#x3D; &quot;startLog()&quot;, returning &#x3D; &quot;result&quot;)
-	public void afterReturningMethod(JoinPoint point, Object result) &#123;
-		System.out.println(&quot;@AfterReturning方法开始&quot;);
-		System.out.println(result);
-		System.out.println(&quot;@AfterReturning方法结束&quot;);
-	&#125;
+    @After(&quot;startLog()&quot;)
+    public void afterMethod(JoinPoint point) {
+        System.out.println(&quot;@afterMethod方法开始&quot;);
+        System.out.println(&quot;this is after-method&quot;);
+        System.out.println(&quot;@afterMethod方法结束&quot;);
+    }
 
-	@AfterThrowing(value &#x3D; &quot;startLog()&quot;, throwing &#x3D; &quot;ex&quot;)
-	public void afterThrowingMethod(JoinPoint point, Throwable ex) &#123;
-		System.out.println(&quot;this is afterThrowing-method&quot;);
-	&#125;
-&#125;</code></pre>
+    @AfterReturning(value = &quot;startLog()&quot;, returning = &quot;result&quot;)
+    public void afterReturningMethod(JoinPoint point, Object result) {
+        System.out.println(&quot;@AfterReturning方法开始&quot;);
+        System.out.println(result);
+        System.out.println(&quot;@AfterReturning方法结束&quot;);
+    }
 
-<p>执行顺序为</p>
-<pre><code class="highlight plain">prehandle方法
+    @AfterThrowing(value = &quot;startLog()&quot;, throwing = &quot;ex&quot;)
+    public void afterThrowingMethod(JoinPoint point, Throwable ex) {
+        System.out.println(&quot;this is afterThrowing-method&quot;);
+    }
+}</code></pre><p>执行顺序为</p>
+<pre><code>prehandle方法
 @aroundMethod方法开始
 getArgs方法[Ljava.lang.Object;@493d696c
 @Before方法开始
@@ -2354,9 +2275,9 @@ getThis方法crj.ssm.service.impl.PersonServiceImpl@177185be
 22:44:37.933 [http-bio-8080-exec-2] DEBUG org.mybatis.spring.SqlSessionUtils - Creating a new SqlSession
 22:44:37.946 [http-bio-8080-exec-2] DEBUG org.mybatis.spring.SqlSessionUtils - Registering transaction synchronization for SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@711b6130]
 22:44:37.960 [http-bio-8080-exec-2] DEBUG o.m.s.t.SpringManagedTransaction - JDBC Connection [com.mchange.v2.c3p0.impl.NewProxyConnection@21118e0c] will be managed by Spring
-22:44:37.967 [http-bio-8080-exec-2] DEBUG crj.ssm.dao.PersonDao.selectById - &#x3D;&#x3D;&gt;  Preparing: SELECT * from person where id &#x3D; ? 
-22:44:38.029 [http-bio-8080-exec-2] DEBUG crj.ssm.dao.PersonDao.selectById - &#x3D;&#x3D;&gt; Parameters: 1(Integer)
-22:44:38.065 [http-bio-8080-exec-2] DEBUG crj.ssm.dao.PersonDao.selectById - &lt;&#x3D;&#x3D;      Total: 1
+22:44:37.967 [http-bio-8080-exec-2] DEBUG crj.ssm.dao.PersonDao.selectById - ==&gt;  Preparing: SELECT * from person where id = ? 
+22:44:38.029 [http-bio-8080-exec-2] DEBUG crj.ssm.dao.PersonDao.selectById - ==&gt; Parameters: 1(Integer)
+22:44:38.065 [http-bio-8080-exec-2] DEBUG crj.ssm.dao.PersonDao.selectById - &lt;==      Total: 1
 22:44:38.078 [http-bio-8080-exec-2] DEBUG org.mybatis.spring.SqlSessionUtils - Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@711b6130]
 @aroundMethod方法结束
 @afterMethod方法开始
@@ -2369,9 +2290,7 @@ crj.ssm.entity.Person@77e5c255
 22:44:38.108 [http-bio-8080-exec-2] DEBUG org.mybatis.spring.SqlSessionUtils - Transaction synchronization deregistering SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@711b6130]
 22:44:38.108 [http-bio-8080-exec-2] DEBUG org.mybatis.spring.SqlSessionUtils - Transaction synchronization closing SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@711b6130]
 postHandle方法
-afterCompletion方法</code></pre>
-
-<p>先执行<code>@Around</code>方法，直到调用proceed方法前，调用<code>@Before</code>方法，然后就是执行目标方法，执行完目标方法，开始执行<code>@AfterMethod</code>方法，然后<code>@Around</code>方法执行完proceed返回值，然后是<code>@AfterReturning</code>方法。</p>
+afterCompletion方法</code></pre><p>先执行<code>@Around</code>方法，直到调用proceed方法前，调用<code>@Before</code>方法，然后就是执行目标方法，执行完目标方法，开始执行<code>@AfterMethod</code>方法，然后<code>@Around</code>方法执行完proceed返回值，然后是<code>@AfterReturning</code>方法。</p>
 
           
         
@@ -2515,39 +2434,35 @@ afterCompletion方法</code></pre>
           
             <h3 id="拦截器"><a href="#拦截器" class="headerlink" title="拦截器"></a>拦截器</h3><p>Java 里的拦截器是动态拦截action调用的对象。它提供了一种机制可以使开发者可以定义在一个action执行的前后执行的代码，也可以在一个action执行前阻止其执行，同时也提供了一种可以提取action中可重用部分的方式。</p>
 <h3 id="HandlerInterceptorAdapter类"><a href="#HandlerInterceptorAdapter类" class="headerlink" title="HandlerInterceptorAdapter类"></a>HandlerInterceptorAdapter类</h3><p>它有以下三个方法</p>
-<pre><code class="highlight plain">&#x2F;&#x2F;handler中方法被执行前被调用
-@Override
-public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
-	throws Exception &#123;
-	return true;
-&#125;
+<pre><code>    //handler中方法被执行前被调用
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+        throws Exception {
+        return true;
+    }
 
-&#x2F;&#x2F;handler中方法被执行后被调用
-public void postHandle(
-		HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView)
-		throws Exception &#123;
-&#125;
+    //handler中方法被执行后被调用
+    public void postHandle(
+            HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView)
+            throws Exception {
+    }
 
-&#x2F;&#x2F;handler方法被调用，渲染视图之后被调用
-@Override
-public void afterCompletion(
-		HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
-		throws Exception &#123;
-&#125;</code></pre>
-
-<ul>
+    //handler方法被调用，渲染视图之后被调用
+    @Override
+    public void afterCompletion(
+            HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
+            throws Exception {
+    }</code></pre><ul>
 <li><code>preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)</code>方法，该方法在请求处理之前进行调用。<code>SpringMVC</code>中的<code>Interceptor</code>是链式调用的，在一个应用中或者说是在一个请求中可以同时存在多个<code>Interceptor</code>。每个<code>Interceptor</code>的调用会依据它的声明顺序依次执行，而且最先执行的都是<code>Interceptor</code>中的<code>preHandle</code>方法，所以可以在这个方法中进行一些前置初始化操作或者是对当前请求做一个预处理，也可以在这个方法中进行一些判断来决定请求是否要继续进行下去。该方法的返回值是布尔（Boolean）类型的，当它返回为<code>false</code>时，表示请求结束，后续的<code>Interceptor</code>和控制器（Controller）都不会再执行；当返回值为<code>true</code>时，就会继续调用下一个<code>Interceptor</code>的<code>preHandle</code>方法，如果已经是最后一个Interceptor的时候，就会是调用当前请求的控制器中的方法。</li>
 <li><code>postHandle(HttpServletRequest request, HttpServletResponse response, Object handle, ModelAndView modelAndView)</code>方法，通过<code>preHandle</code>方法的解释，我们知道这个方法包括后面要说到的<code>afterCompletion</code>方法都只能在当前所属的<code>Interceptor</code>的<code>preHandle</code>方法的返回值为<code>true</code>的时候，才能被调用。<code>postHandle</code>方法在当前请求进行处理之后，也就是在控制器中的方法调用之后执行，但是它会在<code>DispatcherServlet</code>进行视图返回渲染之前被调用，所以我们可以在这个方法中对控制器处理之后的<code>ModelAndView</code>对象进行操作。<code>postHandle</code>方法被调用的方向跟<code>preHandle</code>是相反的，也就是说，先声明的<code>Interceptor</code>的<code>postHandle</code>方法反而会后执行。</li>
 <li>afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handle, Exception ex)方法，也是需要当前对应的Interceptor的preHandle方法的返回值为true时才会执行。因此，该方法将在整个请求结束之后，也就是在DispatcherServlet渲染了对应的视图之后执行，这个方法的主要作用是用于进行资源清理的工作。</li>
 </ul>
-<h3 id="配置方法"><a href="#配置方法" class="headerlink" title="配置方法"></a>配置方法</h3><pre><code class="highlight plain">&lt;mvc:interceptors&gt;
-	&lt;mvc:interceptor&gt;
-		&lt;mvc:mapping path&#x3D;&quot;&#x2F;**&quot;&#x2F;&gt;
-		&lt;bean class&#x3D;&quot;crj.ssm.intercepter.MyIntercepter&quot;&gt;&lt;&#x2F;bean&gt;
-	&lt;&#x2F;mvc:interceptor&gt;
-&lt;&#x2F;mvc:interceptors&gt;</code></pre>
-
-<p>注意匹配所有不是使用/，而是/*<em>，/代表服务器根目录，/</em>代表一级目录，两个星号代表多级目录</p>
+<h3 id="配置方法"><a href="#配置方法" class="headerlink" title="配置方法"></a>配置方法</h3><pre><code> &lt;mvc:interceptors&gt;
+     &lt;mvc:interceptor&gt;
+         &lt;mvc:mapping path=&quot;/**&quot;/&gt;
+         &lt;bean class=&quot;crj.ssm.intercepter.MyIntercepter&quot;&gt;&lt;/bean&gt;
+     &lt;/mvc:interceptor&gt;
+ &lt;/mvc:interceptors&gt;</code></pre><p>注意匹配所有不是使用/，而是/*<em>，/代表服务器根目录，/</em>代表一级目录，两个星号代表多级目录</p>
 
           
         
@@ -2710,159 +2625,143 @@ public void afterCompletion(
 <p>配置controller方式-&gt;获取对应HandlerMapping-&gt;得到HandlerExecutionChain(HandlerMapping决定了HandlerExecutionChain中handler实际变量类型)-&gt;根据HandlerExecutionChain中handler实际变量类型获取对应HandlerAdapter-&gt;执行HandlerAdapter中的handler方法</p>
 <p><code>mv = ha.handle(processedRequest, response, mappedHandler.getHandler());</code></p>
 <p>适配器的作用</p>
-<pre><code class="highlight plain">&#x2F;&#x2F;RequestMappingHandlerApapter
-@Override
-public final ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)
-		throws Exception &#123;
+<pre><code>    //RequestMappingHandlerApapter
+    @Override
+    public final ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)
+            throws Exception {
 
-	return handleInternal(request, response, (HandlerMethod) handler);
-&#125;
+        return handleInternal(request, response, (HandlerMethod) handler);
+    }
 
-&#x2F;&#x2F;HttpRequestHandlerAdapter
-@Override
-public ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)
-		throws Exception &#123;
+    //HttpRequestHandlerAdapter
+    @Override
+    public ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)
+            throws Exception {
 
-	((HttpRequestHandler) handler).handleRequest(request, response);
-	return null;
-&#125;
+        ((HttpRequestHandler) handler).handleRequest(request, response);
+        return null;
+    }
 
-&#x2F;&#x2F;SimpleControllerHandlerAdapter
-@Override
-public ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)
-		throws Exception &#123;
+    //SimpleControllerHandlerAdapter
+    @Override
+    public ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)
+            throws Exception {
 
-	return ((Controller) handler).handleRequest(request, response);
-&#125;</code></pre>
-
-<h3 id="HandlerExecutionChain"><a href="#HandlerExecutionChain" class="headerlink" title="HandlerExecutionChain"></a>HandlerExecutionChain</h3><h3 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h3><p><img src="http://wx4.sinaimg.cn/large/96b7c0f4ly1g2cfxsdnhfj20w20q878x.jpg" alt="springmvc流程"></p>
+        return ((Controller) handler).handleRequest(request, response);
+    }</code></pre><h3 id="HandlerExecutionChain"><a href="#HandlerExecutionChain" class="headerlink" title="HandlerExecutionChain"></a>HandlerExecutionChain</h3><h3 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h3><p><img src="http://wx4.sinaimg.cn/large/96b7c0f4ly1g2cfxsdnhfj20w20q878x.jpg" alt="springmvc流程"></p>
 <ol>
 <li>得到最高优先级HandlerMapping和由它获得的HandlerExecutionChain</li>
 </ol>
-<pre><code class="highlight plain">protected HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception &#123;
-	for (HandlerMapping hm : this.handlerMappings) &#123;
-		if (logger.isTraceEnabled()) &#123;
-			logger.trace(
-					&quot;Testing handler map [&quot; + hm + &quot;] in DispatcherServlet with name &#39;&quot; + getServletName() + &quot;&#39;&quot;);
-		&#125;
-		&#x2F;&#x2F;handler
-		HandlerExecutionChain handler &#x3D; hm.getHandler(request);
-		
-		if (handler !&#x3D; null) &#123;
-			return handler;
-		&#125;
-	&#125;
-	return null;
-&#125;</code></pre>
+<pre><code>    protected HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
+        for (HandlerMapping hm : this.handlerMappings) {
+            if (logger.isTraceEnabled()) {
+                logger.trace(
+                        &quot;Testing handler map [&quot; + hm + &quot;] in DispatcherServlet with name &#39;&quot; + getServletName() + &quot;&#39;&quot;);
+            }
+            //handler
+            HandlerExecutionChain handler = hm.getHandler(request);
 
-<ol start="2">
+            if (handler != null) {
+                return handler;
+            }
+        }
+        return null;
+    }</code></pre><ol start="2">
 <li>HandlerExecutionChain中handler变量实际类型决定HandlerAdatper</li>
 </ol>
-<pre><code class="highlight plain">protected HandlerAdapter getHandlerAdapter(Object handler) throws ServletException &#123;
-	for (HandlerAdapter ha : this.handlerAdapters) &#123;
-		if (logger.isTraceEnabled()) &#123;
-			logger.trace(&quot;Testing handler adapter [&quot; + ha + &quot;]&quot;);
-		&#125;
-		if (ha.supports(handler)) &#123;
-			return ha;
-		&#125;
-	&#125;
-	throw new ServletException(&quot;No adapter for handler [&quot; + handler +
-			&quot;]: The DispatcherServlet configuration needs to include a HandlerAdapter that supports this handler&quot;);
-&#125;</code></pre>
-
-<ol start="3">
+<pre><code>    protected HandlerAdapter getHandlerAdapter(Object handler) throws ServletException {
+        for (HandlerAdapter ha : this.handlerAdapters) {
+            if (logger.isTraceEnabled()) {
+                logger.trace(&quot;Testing handler adapter [&quot; + ha + &quot;]&quot;);
+            }
+            if (ha.supports(handler)) {
+                return ha;
+            }
+        }
+        throw new ServletException(&quot;No adapter for handler [&quot; + handler +
+                &quot;]: The DispatcherServlet configuration needs to include a HandlerAdapter that supports this handler&quot;);
+    }</code></pre><ol start="3">
 <li>调用拦截器PreHandler方法</li>
 </ol>
-<pre><code class="highlight plain">if (!mappedHandler.applyPreHandle(processedRequest, response)) &#123;
-	return;
-&#125;</code></pre>
-
-<ol start="4">
+<pre><code>    if (!mappedHandler.applyPreHandle(processedRequest, response)) {
+        return;
+    }</code></pre><ol start="4">
 <li>适配器调用controller目标方法返回ModelAndView对象</li>
 </ol>
-<pre><code class="highlight plain">mv &#x3D; ha.handle(processedRequest, response, mappedHandler.getHandler());</code></pre>
-
-<ol start="5">
+<pre><code>    mv = ha.handle(processedRequest, response, mappedHandler.getHandler());</code></pre><ol start="5">
 <li>调用拦截器的postHandle方法</li>
 </ol>
-<pre><code class="highlight plain">mappedHandler.applyPostHandle(processedRequest, response, mv);
+<pre><code>    mappedHandler.applyPostHandle(processedRequest, response, mv);
 
-&#x2F;&#x2F;倒序调用
-void applyPostHandle(HttpServletRequest request, HttpServletResponse response, ModelAndView mv) throws Exception &#123;
-	HandlerInterceptor[] interceptors &#x3D; getInterceptors();
-	if (!ObjectUtils.isEmpty(interceptors)) &#123;
-		for (int i &#x3D; interceptors.length - 1; i &gt;&#x3D; 0; i--) &#123;
-			HandlerInterceptor interceptor &#x3D; interceptors[i];
-			interceptor.postHandle(request, response, this.handler, mv);
-		&#125;
-	&#125;
-&#125;</code></pre>
-
-<ol start="6">
+    //倒序调用
+    void applyPostHandle(HttpServletRequest request, HttpServletResponse response, ModelAndView mv) throws Exception {
+        HandlerInterceptor[] interceptors = getInterceptors();
+        if (!ObjectUtils.isEmpty(interceptors)) {
+            for (int i = interceptors.length - 1; i &gt;= 0; i--) {
+                HandlerInterceptor interceptor = interceptors[i];
+                interceptor.postHandle(request, response, this.handler, mv);
+            }
+        }
+    }</code></pre><ol start="6">
 <li>渲染视图</li>
 </ol>
-<pre><code class="highlight plain">protected void render(ModelAndView mv, HttpServletRequest request, HttpServletResponse response) throws Exception &#123;
-	&#x2F;&#x2F; Determine locale for request and apply it to the response.
-	Locale locale &#x3D; this.localeResolver.resolveLocale(request);
-	response.setLocale(locale);
+<pre><code>    protected void render(ModelAndView mv, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        // Determine locale for request and apply it to the response.
+        Locale locale = this.localeResolver.resolveLocale(request);
+        response.setLocale(locale);
 
-	View view;
-	if (mv.isReference()) &#123;
-		&#x2F;&#x2F; 视图处理器处理得到视图
-		view &#x3D; resolveViewName(mv.getViewName(), mv.getModelInternal(), locale, request);
-		if (view &#x3D;&#x3D; null) &#123;
-			throw new ServletException(&quot;Could not resolve view with name &#39;&quot; + mv.getViewName() +
-					&quot;&#39; in servlet with name &#39;&quot; + getServletName() + &quot;&#39;&quot;);
-		&#125;
-	&#125;
-	else &#123;
-		&#x2F;&#x2F; No need to lookup: the ModelAndView object contains the actual View object.
-		view &#x3D; mv.getView();
-		if (view &#x3D;&#x3D; null) &#123;
-			throw new ServletException(&quot;ModelAndView [&quot; + mv + &quot;] neither contains a view name nor a &quot; +
-					&quot;View object in servlet with name &#39;&quot; + getServletName() + &quot;&#39;&quot;);
-		&#125;
-	&#125;
+        View view;
+        if (mv.isReference()) {
+            // 视图处理器处理得到视图
+            view = resolveViewName(mv.getViewName(), mv.getModelInternal(), locale, request);
+            if (view == null) {
+                throw new ServletException(&quot;Could not resolve view with name &#39;&quot; + mv.getViewName() +
+                        &quot;&#39; in servlet with name &#39;&quot; + getServletName() + &quot;&#39;&quot;);
+            }
+        }
+        else {
+            // No need to lookup: the ModelAndView object contains the actual View object.
+            view = mv.getView();
+            if (view == null) {
+                throw new ServletException(&quot;ModelAndView [&quot; + mv + &quot;] neither contains a view name nor a &quot; +
+                        &quot;View object in servlet with name &#39;&quot; + getServletName() + &quot;&#39;&quot;);
+            }
+        }
 
-	&#x2F;&#x2F; Delegate to the View object for rendering.
-	if (logger.isDebugEnabled()) &#123;
-		logger.debug(&quot;Rendering view [&quot; + view + &quot;] in DispatcherServlet with name &#39;&quot; + getServletName() + &quot;&#39;&quot;);
-	&#125;
-	try &#123;
-		&#x2F;&#x2F;开始渲染视图
-		view.render(mv.getModelInternal(), request, response);
-	&#125;
-	catch (Exception ex) &#123;
-		if (logger.isDebugEnabled()) &#123;
-			logger.debug(&quot;Error rendering view [&quot; + view + &quot;] in DispatcherServlet with name &#39;&quot; +
-					getServletName() + &quot;&#39;&quot;, ex);
-		&#125;
-		throw ex;
-	&#125;
-&#125;</code></pre>
-
-<ol start="7">
+        // Delegate to the View object for rendering.
+        if (logger.isDebugEnabled()) {
+            logger.debug(&quot;Rendering view [&quot; + view + &quot;] in DispatcherServlet with name &#39;&quot; + getServletName() + &quot;&#39;&quot;);
+        }
+        try {
+            //开始渲染视图
+            view.render(mv.getModelInternal(), request, response);
+        }
+        catch (Exception ex) {
+            if (logger.isDebugEnabled()) {
+                logger.debug(&quot;Error rendering view [&quot; + view + &quot;] in DispatcherServlet with name &#39;&quot; +
+                        getServletName() + &quot;&#39;&quot;, ex);
+            }
+            throw ex;
+        }
+    }</code></pre><ol start="7">
 <li>调用拦截器的afterCompletion方法</li>
 </ol>
-<pre><code class="highlight plain">void triggerAfterCompletion(HttpServletRequest request, HttpServletResponse response, Exception ex)
-		throws Exception &#123;
+<pre><code>    void triggerAfterCompletion(HttpServletRequest request, HttpServletResponse response, Exception ex)
+            throws Exception {
 
-	HandlerInterceptor[] interceptors &#x3D; getInterceptors();
-	if (!ObjectUtils.isEmpty(interceptors)) &#123;
-		for (int i &#x3D; this.interceptorIndex; i &gt;&#x3D; 0; i--) &#123;
-			HandlerInterceptor interceptor &#x3D; interceptors[i];
-			try &#123;
-				interceptor.afterCompletion(request, response, this.handler, ex);
-			&#125;
-			catch (Throwable ex2) &#123;
-				logger.error(&quot;HandlerInterceptor.afterCompletion threw exception&quot;, ex2);
-			&#125;
-		&#125;
-	&#125;
-&#125;</code></pre>
-
-
+        HandlerInterceptor[] interceptors = getInterceptors();
+        if (!ObjectUtils.isEmpty(interceptors)) {
+            for (int i = this.interceptorIndex; i &gt;= 0; i--) {
+                HandlerInterceptor interceptor = interceptors[i];
+                try {
+                    interceptor.afterCompletion(request, response, this.handler, ex);
+                }
+                catch (Throwable ex2) {
+                    logger.error(&quot;HandlerInterceptor.afterCompletion threw exception&quot;, ex2);
+                }
+            }
+        }
+    }</code></pre>
           
         
       

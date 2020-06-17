@@ -351,105 +351,102 @@
 <hr>
 <p>得到这样一个结构图就能更好的理解io，以装饰类<code>BufferedInputStream</code>为例，如果使用继承的方法，那么要为具体构件例如<code>ByteArrayInputStream</code>，<code>FileInputStream</code>等都添加缓冲功能，需要为他们都设计一个子类，而现在，只需要将他们传入<code>BufferedInputStream</code>中，就能获取相应的带缓冲的流。</p>
 <p>首先看构造方法，需要传入一个普通字节输入流</p>
-<pre><code class="highlight plain">public BufferedInputStream(InputStream in) &#123;
+<pre><code>public BufferedInputStream(InputStream in) {
     this(in, DEFAULT_BUFFER_SIZE);
-&#125;
+}
 
-public BufferedInputStream(InputStream in, int size) &#123;
+public BufferedInputStream(InputStream in, int size) {
     super(in);
-    if (size &lt;&#x3D; 0) &#123;
-        throw new IllegalArgumentException(&quot;Buffer size &lt;&#x3D; 0&quot;);
-    &#125;
-    buf &#x3D; new byte[size];
-&#125;</code></pre>
-
-<p>接着，装饰类中新定义一个字节数组作为缓冲区</p>
+    if (size &lt;= 0) {
+        throw new IllegalArgumentException(&quot;Buffer size &lt;= 0&quot;);
+    }
+    buf = new byte[size];
+}</code></pre><p>接着，装饰类中新定义一个字节数组作为缓冲区</p>
 <p><code>protected volatile byte buf[]</code></p>
 <p>接下来我们看装饰类是怎么让普通的输入流用上缓冲的,这是装饰类中的read方法，在调用普通输入流的read方法前后进行了一系列操作(对read方法进行修饰)。</p>
-<pre><code class="highlight plain">public synchronized int read(byte b[], int off, int len)
+<pre><code>public synchronized int read(byte b[], int off, int len)
     throws IOException
-&#123;
-    getBufIfOpen(); &#x2F;&#x2F; Check for closed stream
-    if ((off | len | (off + len) | (b.length - (off + len))) &lt; 0) &#123;
+{
+    getBufIfOpen(); // Check for closed stream
+    if ((off | len | (off + len) | (b.length - (off + len))) &lt; 0) {
         throw new IndexOutOfBoundsException();
-    &#125; else if (len &#x3D;&#x3D; 0) &#123;
+    } else if (len == 0) {
         return 0;
-    &#125;
+    }
 
-    int n &#x3D; 0;
-    for (;;) &#123;
-        int nread &#x3D; read1(b, off + n, len - n);&#x2F;&#x2F;此处跳入read1方法
-        if (nread &lt;&#x3D; 0)
-            return (n &#x3D;&#x3D; 0) ? nread : n;
-        n +&#x3D; nread;
-        if (n &gt;&#x3D; len)
+    int n = 0;
+    for (;;) {
+        int nread = read1(b, off + n, len - n);//此处跳入read1方法
+        if (nread &lt;= 0)
+            return (n == 0) ? nread : n;
+        n += nread;
+        if (n &gt;= len)
             return n;
-        &#x2F;&#x2F; if not closed but no bytes available, return
-        InputStream input &#x3D; in;
-        if (input !&#x3D; null &amp;&amp; input.available() &lt;&#x3D; 0)
+        // if not closed but no bytes available, return
+        InputStream input = in;
+        if (input != null &amp;&amp; input.available() &lt;= 0)
             return n;
-    &#125;
-&#125;
+    }
+}
 
-private int read1(byte[] b, int off, int len) throws IOException &#123;
-    int avail &#x3D; count - pos;
-    if (avail &lt;&#x3D; 0) &#123;
-        &#x2F;* If the requested length is at least as large as the buffer, and
-           if there is no mark&#x2F;reset activity, do not bother to copy the
+private int read1(byte[] b, int off, int len) throws IOException {
+    int avail = count - pos;
+    if (avail &lt;= 0) {
+        /* If the requested length is at least as large as the buffer, and
+           if there is no mark/reset activity, do not bother to copy the
            bytes into the local buffer.  In this way buffered streams will
-           cascade harmlessly. *&#x2F;
-        if (len &gt;&#x3D; getBufIfOpen().length &amp;&amp; markpos &lt; 0) &#123;
-            return getInIfOpen().read(b, off, len);&#x2F;&#x2F;这里调用了普通输入流的read方法，读取长度超过缓冲默认长度时，不使用缓冲直接读取。
-        &#125;
-        fill();&#x2F;&#x2F;填充缓冲区，进入这个方法
-        avail &#x3D; count - pos;
-        if (avail &lt;&#x3D; 0) return -1;
-    &#125;
-    int cnt &#x3D; (avail &lt; len) ? avail : len;
+           cascade harmlessly. */
+        if (len &gt;= getBufIfOpen().length &amp;&amp; markpos &lt; 0) {
+            return getInIfOpen().read(b, off, len);//这里调用了普通输入流的read方法，读取长度超过缓冲默认长度时，不使用缓冲直接读取。
+        }
+        fill();//填充缓冲区，进入这个方法
+        avail = count - pos;
+        if (avail &lt;= 0) return -1;
+    }
+    int cnt = (avail &lt; len) ? avail : len;
     System.arraycopy(getBufIfOpen(), pos, b, off, cnt);
-    pos +&#x3D; cnt;
+    pos += cnt;
     return cnt;
-&#125;
+}
 
 
-private void fill() throws IOException &#123;
-    byte[] buffer &#x3D; getBufIfOpen();
+private void fill() throws IOException {
+    byte[] buffer = getBufIfOpen();
     if (markpos &lt; 0)
-        pos &#x3D; 0;            &#x2F;* no mark: throw away the buffer *&#x2F;
-    else if (pos &gt;&#x3D; buffer.length)  &#x2F;* no room left in buffer *&#x2F;
-        if (markpos &gt; 0) &#123;  &#x2F;* can throw away early part of the buffer *&#x2F;
-            int sz &#x3D; pos - markpos;
+        pos = 0;            /* no mark: throw away the buffer */
+    else if (pos &gt;= buffer.length)  /* no room left in buffer */
+        if (markpos &gt; 0) {  /* can throw away early part of the buffer */
+            int sz = pos - markpos;
             System.arraycopy(buffer, markpos, buffer, 0, sz);
-            pos &#x3D; sz;
-            markpos &#x3D; 0;
-        &#125; else if (buffer.length &gt;&#x3D; marklimit) &#123;
-            markpos &#x3D; -1;   &#x2F;* buffer got too big, invalidate mark *&#x2F;
-            pos &#x3D; 0;        &#x2F;* drop buffer contents *&#x2F;
-        &#125; else if (buffer.length &gt;&#x3D; MAX_BUFFER_SIZE) &#123;
+            pos = sz;
+            markpos = 0;
+        } else if (buffer.length &gt;= marklimit) {
+            markpos = -1;   /* buffer got too big, invalidate mark */
+            pos = 0;        /* drop buffer contents */
+        } else if (buffer.length &gt;= MAX_BUFFER_SIZE) {
             throw new OutOfMemoryError(&quot;Required array size too large&quot;);
-        &#125; else &#123;            &#x2F;* grow buffer *&#x2F;
-            int nsz &#x3D; (pos &lt;&#x3D; MAX_BUFFER_SIZE - pos) ?
+        } else {            /* grow buffer */
+            int nsz = (pos &lt;= MAX_BUFFER_SIZE - pos) ?
                     pos * 2 : MAX_BUFFER_SIZE;
             if (nsz &gt; marklimit)
-                nsz &#x3D; marklimit;
-            byte nbuf[] &#x3D; new byte[nsz];
+                nsz = marklimit;
+            byte nbuf[] = new byte[nsz];
             System.arraycopy(buffer, 0, nbuf, 0, pos);
-            if (!bufUpdater.compareAndSet(this, buffer, nbuf)) &#123;
-                &#x2F;&#x2F; Can&#39;t replace buf if there was an async close.
-                &#x2F;&#x2F; Note: This would need to be changed if fill()
-                &#x2F;&#x2F; is ever made accessible to multiple threads.
-                &#x2F;&#x2F; But for now, the only way CAS can fail is via close.
-                &#x2F;&#x2F; assert buf &#x3D;&#x3D; null;
+            if (!bufUpdater.compareAndSet(this, buffer, nbuf)) {
+                // Can&#39;t replace buf if there was an async close.
+                // Note: This would need to be changed if fill()
+                // is ever made accessible to multiple threads.
+                // But for now, the only way CAS can fail is via close.
+                // assert buf == null;
                 throw new IOException(&quot;Stream closed&quot;);
-            &#125;
-            buffer &#x3D; nbuf;
-        &#125;
-    count &#x3D; pos;
-    int n &#x3D; getInIfOpen().read(buffer, pos, buffer.length - pos);&#x2F;&#x2F;在这个地方又再次调用普通输入流的read方法，一次读取默认长度8192个长度的数据到缓冲区
+            }
+            buffer = nbuf;
+        }
+    count = pos;
+    int n = getInIfOpen().read(buffer, pos, buffer.length - pos);//在这个地方又再次调用普通输入流的read方法，一次读取默认长度8192个长度的数据到缓冲区
     if (n &gt; 0)
-        count &#x3D; n + pos;
-&#125;</code></pre>
-<p>就这样，BufferedInputStream就成了带缓冲区的字节输入流，通过使用装饰者模式，对普通输入流的read方法添加修改，扩充了普通输入流的功能。</p>
+        count = n + pos;
+}</code></pre><p>就这样，BufferedInputStream就成了带缓冲区的字节输入流，通过使用装饰者模式，对普通输入流的read方法添加修改，扩充了普通输入流的功能。</p>
 
       
     </div>
@@ -482,8 +479,8 @@ private void fill() throws IOException &#123;
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/06/17/final/" rel="next" title="final关键字">
-                <i class="fa fa-chevron-left"></i> final关键字
+              <a href="/2020/06/17/deference%20between%20sb%20and%20str/" rel="next" title="StringBuffer与String的区别">
+                <i class="fa fa-chevron-left"></i> StringBuffer与String的区别
               </a>
             
           </div>

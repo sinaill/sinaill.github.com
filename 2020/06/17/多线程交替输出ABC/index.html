@@ -79,12 +79,12 @@
 
 
 
-<meta name="description" content="synchronizedpublic class Mythread2 &amp;#123; 	public static void main(String[] args) throws InterruptedException &amp;#123; 		Object A &#x3D; new Object(); 		Object B &#x3D; new Object(); 		Object C &#x3D; n">
+<meta name="description" content="synchronizedpublic class Mythread2 {     public static void main(String[] args) throws InterruptedException {         Object A &#x3D; new Object();         Object B &#x3D; new Object();         Object C &#x3D; new O">
 <meta property="og:type" content="article">
 <meta property="og:title" content="多线程交替输出ABC">
 <meta property="og:url" content="http://yoursite.com/2020/06/17/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%BA%A4%E6%9B%BF%E8%BE%93%E5%87%BAABC/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="synchronizedpublic class Mythread2 &amp;#123; 	public static void main(String[] args) throws InterruptedException &amp;#123; 		Object A &#x3D; new Object(); 		Object B &#x3D; new Object(); 		Object C &#x3D; n">
+<meta property="og:description" content="synchronizedpublic class Mythread2 {     public static void main(String[] args) throws InterruptedException {         Object A &#x3D; new Object();         Object B &#x3D; new Object();         Object C &#x3D; new O">
 <meta property="article:published_time" content="2020-06-16T17:43:37.256Z">
 <meta property="article:modified_time" content="2020-06-16T17:43:37.256Z">
 <meta property="article:author" content="sinaill">
@@ -341,96 +341,94 @@
       
 
       
-        <h3 id="synchronized"><a href="#synchronized" class="headerlink" title="synchronized"></a>synchronized</h3><pre><code class="highlight plain">public class Mythread2 &#123;
-	public static void main(String[] args) throws InterruptedException &#123;
-		Object A &#x3D; new Object();
-		Object B &#x3D; new Object();
-		Object C &#x3D; new Object();
-		new ThreadABC(C,A,&#39;A&#39;).start();
-		Thread.sleep(100);
-		new ThreadABC(A,B,&#39;B&#39;).start();
-		Thread.sleep(100);
-		new ThreadABC(B,C,&#39;C&#39;).start();
-	&#125;
-&#125;
+        <h3 id="synchronized"><a href="#synchronized" class="headerlink" title="synchronized"></a>synchronized</h3><pre><code>public class Mythread2 {
+    public static void main(String[] args) throws InterruptedException {
+        Object A = new Object();
+        Object B = new Object();
+        Object C = new Object();
+        new ThreadABC(C,A,&#39;A&#39;).start();
+        Thread.sleep(100);
+        new ThreadABC(A,B,&#39;B&#39;).start();
+        Thread.sleep(100);
+        new ThreadABC(B,C,&#39;C&#39;).start();
+    }
+}
 
-class ThreadABC extends Thread&#123;
-	private Object pre;
-	private Object self;
-	private char c;
-	public ThreadABC(Object pre, Object self, char c) &#123;
-		this.pre &#x3D; pre;
-		this.self &#x3D; self;
-		this.c &#x3D; c;
-	&#125;
-	@Override
-	public void run() &#123;
-		&#x2F;&#x2F; TODO Auto-generated method stub
-		super.run();
-		while(true)&#123;
-			synchronized (pre) &#123;
-				synchronized (self) &#123;
-					System.out.println(c);
-					self.notifyAll();&#x2F;&#x2F;执行完同步代码块才会释放锁
-				&#125;
-				try &#123;
-					pre.wait();
-				&#125; catch (InterruptedException e) &#123;
-					&#x2F;&#x2F; TODO Auto-generated catch block
-					e.printStackTrace();
-				&#125;
-			&#125;
-		&#125;
-	&#125;
-	
-&#125;</code></pre>
+class ThreadABC extends Thread{
+    private Object pre;
+    private Object self;
+    private char c;
+    public ThreadABC(Object pre, Object self, char c) {
+        this.pre = pre;
+        this.self = self;
+        this.c = c;
+    }
+    @Override
+    public void run() {
+        // TODO Auto-generated method stub
+        super.run();
+        while(true){
+            synchronized (pre) {
+                synchronized (self) {
+                    System.out.println(c);
+                    self.notifyAll();//执行完同步代码块才会释放锁
+                }
+                try {
+                    pre.wait();
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 
-<h3 id="ReentrantLock"><a href="#ReentrantLock" class="headerlink" title="ReentrantLock"></a>ReentrantLock</h3><pre><code class="highlight plain">public class Mythread3 &#123;
+}</code></pre><h3 id="ReentrantLock"><a href="#ReentrantLock" class="headerlink" title="ReentrantLock"></a>ReentrantLock</h3><pre><code>public class Mythread3 {
 
-	public static void main(String[] args) &#123;
-		ReentrantLock lock &#x3D; new ReentrantLock();
-		Condition A &#x3D; lock.newCondition();
-		Condition B &#x3D; lock.newCondition();
-		Condition C &#x3D; lock.newCondition();
-		new ThreadReen(C, A, &#39;A&#39;, lock).start();
-		new ThreadReen(A, B, &#39;B&#39;, lock).start();
-		new ThreadReen(B, C, &#39;C&#39;, lock).start();
-	&#125;
-	
-&#125;
+    public static void main(String[] args) {
+        ReentrantLock lock = new ReentrantLock();
+        Condition A = lock.newCondition();
+        Condition B = lock.newCondition();
+        Condition C = lock.newCondition();
+        new ThreadReen(C, A, &#39;A&#39;, lock).start();
+        new ThreadReen(A, B, &#39;B&#39;, lock).start();
+        new ThreadReen(B, C, &#39;C&#39;, lock).start();
+    }
 
-class ThreadReen extends Thread&#123;
-	private Condition pre;
-	private Condition self;
-	private char c;
-	private ReentrantLock lock;
-	
-	public ThreadReen(Condition pre, Condition self, char c, ReentrantLock lock) &#123;
-		this.pre &#x3D; pre;
-		this.self &#x3D; self;
-		this.c &#x3D; c;
-		this.lock &#x3D; lock;
-	&#125;
+}
 
-	@Override
-	public void run() &#123;
-		&#x2F;&#x2F; TODO Auto-generated method stub
-		super.run();
-		while(true)&#123;
-			lock.lock();
-			System.out.println(c);
-			self.signalAll();&#x2F;&#x2F;执行完同步代码块才会释放锁
-			try &#123;
-				pre.await();
-			&#125; catch (InterruptedException e) &#123;
-				&#x2F;&#x2F; TODO Auto-generated catch block
-				e.printStackTrace();
-			&#125;
-			lock.unlock();
-		&#125;
-	&#125;
-	
-&#125;</code></pre>
+class ThreadReen extends Thread{
+    private Condition pre;
+    private Condition self;
+    private char c;
+    private ReentrantLock lock;
+
+    public ThreadReen(Condition pre, Condition self, char c, ReentrantLock lock) {
+        this.pre = pre;
+        this.self = self;
+        this.c = c;
+        this.lock = lock;
+    }
+
+    @Override
+    public void run() {
+        // TODO Auto-generated method stub
+        super.run();
+        while(true){
+            lock.lock();
+            System.out.println(c);
+            self.signalAll();//执行完同步代码块才会释放锁
+            try {
+                pre.await();
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            lock.unlock();
+        }
+    }
+
+}</code></pre>
       
     </div>
     
@@ -470,8 +468,8 @@ class ThreadReen extends Thread&#123;
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2020/06/17/%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/" rel="prev" title="工厂模式">
-                工厂模式 <i class="fa fa-chevron-right"></i>
+              <a href="/2020/06/17/%E6%89%8B%E5%8A%A8%E5%AE%9E%E7%8E%B0%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8/" rel="prev" title="手动实现线程安全">
+                手动实现线程安全 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
