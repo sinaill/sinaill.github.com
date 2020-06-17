@@ -593,6 +593,247 @@ public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer m
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/ArrayList/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/ArrayList/" itemprop="url">ArrayList</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="结构"><a href="#结构" class="headerlink" title="结构"></a>结构</h3><p>内部维护了一个自动扩容的Object类型数组</p>
+<h3 id="成员变量"><a href="#成员变量" class="headerlink" title="成员变量"></a>成员变量</h3><p><code>private static final int DEFAULT_CAPACITY = 10;</code> </p>
+<p>默认初始化容量</p>
+<p><code>private static final Object[] EMPTY_ELEMENTDATA = {};</code> </p>
+<p>Shared empty array instance used for empty instances.</p>
+<p><code>private static final Object[] DEFAULTCAPACITY_EMPTY_ELEMENTDATA = {};</code></p>
+<p>两个的区别是，上面的是初始化容量为0时共享的array instance，下面的是以默认容量初始化时共享的array instance.</p>
+<pre><code class="highlight plain">&#x2F;**
+     * The array buffer into which the elements of the ArrayList are stored.
+     * The capacity of the ArrayList is the length of this array buffer. Any
+     * empty ArrayList with elementData &#x3D;&#x3D; DEFAULTCAPACITY_EMPTY_ELEMENTDATA
+     * will be expanded to DEFAULT_CAPACITY when the first element is added.
+     *&#x2F;
+	   transient Object[] elementData;</code></pre>
+
+<p>存储元素的Object数组，empty ArrayList with elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA will be expanded to DEFAULT_CAPACITY when the first element is added</p>
+<h3 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h3><pre><code class="highlight plain">&#x2F;**
+ * Constructs an empty list with an initial capacity of ten.
+ *&#x2F;
+public ArrayList() &#123;
+    this.elementData &#x3D; DEFAULTCAPACITY_EMPTY_ELEMENTDATA;
+&#125;</code></pre>
+<p>无参构造函数时，Constructs an empty list with an initial capacity of ten</p>
+<pre><code class="highlight plain">&#x2F;**
+     * Constructs an empty list with the specified initial capacity.
+     *
+     * @param  initialCapacity  the initial capacity of the list
+     * @throws IllegalArgumentException if the specified initial capacity
+     *         is negative
+     *&#x2F;
+    public ArrayList(int initialCapacity) &#123;
+        if (initialCapacity &gt; 0) &#123;
+            this.elementData &#x3D; new Object[initialCapacity];
+        &#125; else if (initialCapacity &#x3D;&#x3D; 0) &#123;
+            this.elementData &#x3D; EMPTY_ELEMENTDATA;
+        &#125; else &#123;
+            throw new IllegalArgumentException(&quot;Illegal Capacity: &quot;+
+                                               initialCapacity);
+        &#125;
+    &#125;</code></pre>
+
+<p>int类型为参数的构造函数，构造确定容量的ArrayList，<strong>而不是默认的10位</strong></p>
+<pre><code class="highlight plain">&#x2F;**
+     * Constructs a list containing the elements of the specified
+     * collection, in the order they are returned by the collection&#39;s
+     * iterator.
+     *
+     * @param c the collection whose elements are to be placed into this list
+     * @throws NullPointerException if the specified collection is null
+     *&#x2F;
+    public ArrayList(Collection&lt;? extends E&gt; c) &#123;
+        elementData &#x3D; c.toArray();
+        if ((size &#x3D; elementData.length) !&#x3D; 0) &#123;
+            &#x2F;&#x2F; c.toArray might (incorrectly) not return Object[] (see 6260652)
+            if (elementData.getClass() !&#x3D; Object[].class)
+                elementData &#x3D; Arrays.copyOf(elementData, size, Object[].class);
+        &#125; else &#123;
+            &#x2F;&#x2F; replace with empty array.
+            this.elementData &#x3D; EMPTY_ELEMENTDATA;
+        &#125;
+    &#125;</code></pre>
+
+<p>可传入List或者Set类型参数，由它们存放的内容来实例化ArrayList</p>
+<h3 id="遍历方法"><a href="#遍历方法" class="headerlink" title="遍历方法"></a>遍历方法</h3><pre><code class="highlight plain">List&lt;String&gt; a &#x3D; new ArrayList&lt;String&gt;();
+a.add(&quot;abc&quot;);
+a.add(&quot;ddd&quot;);
+a.add(&quot;ccc&quot;);
+
+for (String string : a) &#123;
+	System.out.println(string);
+&#125;
+
+Iterator&lt;String&gt; it &#x3D; a.iterator();
+while(it.hasNext())&#123;	
+	System.out.println(it.next());
+&#125;
+
+a.forEach(str-&gt;system.out.println(str))</code></pre>
+
+<h3 id="自动扩容"><a href="#自动扩容" class="headerlink" title="自动扩容"></a>自动扩容</h3><pre><code class="highlight plain"> private void grow(int minCapacity) &#123;
+     &#x2F;&#x2F; overflow-conscious code
+     int oldCapacity &#x3D; elementData.length;
+     int newCapacity &#x3D; oldCapacity + (oldCapacity &gt;&gt; 1);
+     if (newCapacity - minCapacity &lt; 0)
+         newCapacity &#x3D; minCapacity;
+     if (newCapacity - MAX_ARRAY_SIZE &gt; 0)
+         newCapacity &#x3D; hugeCapacity(minCapacity);
+     &#x2F;&#x2F; minCapacity is usually close to size, so this is a win:
+     elementData &#x3D; Arrays.copyOf(elementData, newCapacity);
+ &#125;
+
+private static int hugeCapacity(int minCapacity) &#123;
+     if (minCapacity &lt; 0) &#x2F;&#x2F; overflow
+         throw new OutOfMemoryError();
+     return (minCapacity &gt; MAX_ARRAY_SIZE) ?
+         Integer.MAX_VALUE :
+         MAX_ARRAY_SIZE;
+ &#125;</code></pre>
+
+<p>先1.5倍扩容，如果还是不够，直接设置为当前size，再比较MAX_ARRAY_SIZE，扩容后新容量大于它时，且minCapacity即当前包含元素个数&lt;MAX_ARRAY_SIZE，则新容量设置为MAX_ARRAY_SIZE。<br>反之，扩容后新容量和当前包含元素个数都都大于MAX_ARRAY_SIZE时，新容量设置为Integer.MAX_VALUE</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/BeanWrapperImpl%E5%9C%A8SpringMVC/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1742,7 +1983,7 @@ public boolean supportsParameter(MethodParameter parameter) &#123;
               
                 <a href="/archives/%20%7C%7C%20archive">
               
-                  <span class="site-state-item-count">85</span>
+                  <span class="site-state-item-count">86</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

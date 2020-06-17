@@ -248,7 +248,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/comparable%20and%20comparator/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/final/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="sinaill">
@@ -267,7 +267,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/06/17/comparable%20and%20comparator/" itemprop="url">comparable和comparator</a></h1>
+                <a class="post-title-link" href="/2020/06/17/final/" itemprop="url">final关键字</a></h1>
         
 
         <div class="post-meta">
@@ -341,76 +341,46 @@
       
         
           
-            <h3 id="comparable"><a href="#comparable" class="headerlink" title="comparable"></a>comparable</h3><p>集合中元素实现comparable，可以调用sort方法排序</p>
-<pre><code class="highlight plain">class user implements Comparable&lt;user&gt;&#123;
-	private int id;
-	private String name;
-	
-	public user() &#123;
-		super();
-	&#125;
-	public user(int id, String name) &#123;
-		this.id &#x3D; id;
-		this.name &#x3D; name;
-	&#125;
-	&#x2F;**
-	 * @return the id
-	 *&#x2F;
-	
-	
-	public int getId() &#123;
-		return id;
-	&#125;
-	&#x2F;* (non-Javadoc)
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
-	 *&#x2F;
-	@Override
-	public int compareTo(user o) &#123;
-		&#x2F;&#x2F; TODO Auto-generated method stub
-		return this.id-o.id;
-	&#125;
-	&#x2F;**
-	 * @param id the id to set
-	 *&#x2F;
-	public void setId(int id) &#123;
-		this.id &#x3D; id;
-	&#125;
-	&#x2F;**
-	 * @return the name
-	 *&#x2F;
-	public String getName() &#123;
-		return name;
-	&#125;
-	&#x2F;**
-	 * @param name the name to set
-	 *&#x2F;
-	public void setName(String name) &#123;
-		this.name &#x3D; name;
-	&#125;
-	
+            <h3 id="final用法"><a href="#final用法" class="headerlink" title="final用法"></a>final用法</h3><p>1.final用来修饰类时，该类不可被继承</p>
+<p>2.final用来修饰方法时，方法不可被复写</p>
+<p>3.final修饰的基本变量时，值不可变，修饰的引用类型时，引用不可变，值可变</p>
+<h3 id="final类型成员变量初始化"><a href="#final类型成员变量初始化" class="headerlink" title="final类型成员变量初始化"></a>final类型成员变量初始化</h3><p>1.final修饰的成员变量没有默认值</p>
+<p>2.final初始化可以在三个地方<br>(1)声明的时候初始化<br>(2)构造函数里初始化(！ static &amp;&amp; final，一起时会报错)<br>(3)要是没有static修饰的话可以在非静态块里初始化,要是有static修饰的话可以在静态块里初始化</p>
+<p>3.使用final成员前要确保已经初始化</p>
+<h3 id="深入理解"><a href="#深入理解" class="headerlink" title="深入理解"></a>深入理解</h3><p>1.当final变量是基本数据类型以及String类型时，如果在编译期间能知道它的确切值，则编译器会把它当做编译期常量使用。也就是说在用到该final变量的地方，相当于直接访问的这个常量，不需要在运行时确定。</p>
+<pre><code class="highlight plain">public class Test &#123;
+    public static void main(String[] args)  &#123;
+        String a &#x3D; &quot;hello2&quot;; 
+        final String b &#x3D; &quot;hello&quot;;
+        String d &#x3D; &quot;hello&quot;;
+        String c &#x3D; b + 2; 
+        String e &#x3D; d + 2;
+        System.out.println((a &#x3D;&#x3D; c));
+        System.out.println((a &#x3D;&#x3D; e));
+    &#125;
 &#125;</code></pre>
 
-<p>调用Collections.sort(List<T> list)</p>
-<pre><code class="highlight plain">List&lt;user&gt; users &#x3D; new ArrayList&lt;user&gt;();
-users.add(new user(1, &quot;sdg&quot;));
-users.add(new user(5, &quot;dsf&quot;));
-users.add(new user(2, &quot;xzcv&quot;));
-users.add(new user(4, &quot;derg&quot;));
-users.add(new user(3, &quot;dfg&quot;));
-Collections.sort(users);
-users.forEach(u-&gt;System.out.println(u.getId()));</code></pre>
+<p><code>true false</code></p>
+<p>不过要注意，只有在编译期间能确切知道final变量值的情况下，编译器才会进行这样的优化</p>
+<pre><code class="highlight plain">public class Test &#123;
+    public static void main(String[] args)  &#123;
+        String a &#x3D; &quot;hello2&quot;; 
+        final String b &#x3D; getHello();
+        String c &#x3D; b + 2; 
+        System.out.println((a &#x3D;&#x3D; c));
+ 
+    &#125;
+     
+    public static String getHello() &#123;
+        return &quot;hello&quot;;
+    &#125;
+&#125;</code></pre>
 
-<p>输出<br><code>1,2,3,4,5</code></p>
-<h3 id="comparator"><a href="#comparator" class="headerlink" title="comparator"></a>comparator</h3><p>当集合中元素没有实现comparable接口时，可以使用Collections.sort(List<T> list, Comparator&lt;? super T&gt; c)进行排序</p>
-<pre><code class="highlight plain">List&lt;user&gt; users &#x3D; new ArrayList&lt;user&gt;();
-users.add(new user(1, &quot;sdg&quot;));
-users.add(new user(5, &quot;dsf&quot;));
-users.add(new user(2, &quot;xzcv&quot;));
-users.add(new user(4, &quot;derg&quot;));
-users.add(new user(3, &quot;dfg&quot;));
-Collections.sort(users,Comparator.comparing(user::getId));
-users.forEach(u-&gt;System.out.println(u.getId()));</code></pre>
-<p>输出<br><code>1,2,3,4,5</code></p>
+<p><code>false</code></p>
+<p>2.final也可以用来修饰方法的形参，防止方法内部修改形参</p>
+<p>3.匿名内部类使用的外部变量必须为final</p>
+<p><strong>外部类和外部局部变量是作为构造方法的参数传入匿名内部类的</strong></p>
+<p>为什么在匿名内部类中引用外部对象要加final修饰符呢，因为，在匿名内部类中引用的外部对象受到外部线程的作用域的制约有其特定的生命周期，以线程为例，当外部的变量生命周期已经完结之后，内部的线程还在运行，怎么样解决这个外部生命周期已经结束而在内部却需要继续使用呢，这个时候就需要在外部变量中添加final修饰符，<strong>其实内部匿名类使用的这个变量就是外部变量的一个“复制品”</strong>，即使外部变量生命周期已经结束，内部的“复制品“依然可用。并且<strong>final保证复制品与原始变量保持一致</strong></p>
 
           
         
@@ -646,7 +616,7 @@ a.forEach(stu-&gt;System.out::println)</code></pre>
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/ajax%E4%B8%ADjson%E5%92%8Cspringmvc/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/comparable%20and%20comparator/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="sinaill">
@@ -665,7 +635,7 @@ a.forEach(stu-&gt;System.out::println)</code></pre>
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/06/17/ajax%E4%B8%ADjson%E5%92%8Cspringmvc/" itemprop="url">ajax中json和SpringMVC</a></h1>
+                <a class="post-title-link" href="/2020/06/17/comparable%20and%20comparator/" itemprop="url">comparable和comparator</a></h1>
         
 
         <div class="post-meta">
@@ -700,8 +670,8 @@ a.forEach(stu-&gt;System.out::println)</code></pre>
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
-                    <span itemprop="name">框架</span>
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
                   </a>
                 </span>
 
@@ -739,42 +709,77 @@ a.forEach(stu-&gt;System.out::println)</code></pre>
       
         
           
-            <h3 id="json"><a href="#json" class="headerlink" title="json"></a>json</h3><p>json对象格式:<code>{&quot;param&quot;:&quot;value&quot;,&quot;param&quot;:&quot;value&quot;}</code></p>
-<p>普通js对象:<code>{param:&quot;value&quot;,param:&quot;value&quot;}</code></p>
-<p>js对象转json对象:</p>
-<ul>
-<li>先将js转json字符串：<code>JSON.stringify()</code></li>
-<li>将json字符串转json对象:<code>JSON.parse()</code></li>
-</ul>
-<h3 id="ajax中的contentType"><a href="#ajax中的contentType" class="headerlink" title="ajax中的contentType"></a>ajax中的contentType</h3><p>ajax中，没有指定<code>contentType</code>的话，Jquery默认使用<code>application/x-www-form-urlencoded</code>类型，data使用json对象格式,<code>springmvc</code>可以<code>@RequestParam</code>接收数据(变量同名不需要)</p>
-<p>指定<code>contentType</code>为<code>application/json</code>时，data必须为json字符串格式，springmvc接收数据要用<code>@RequestBody</code>注解</p>
-<pre><code class="highlight plain">$.ajax(&#123;
-    type: &quot;post&quot;,
-    url:  &quot;mobile&#x2F;notice&#x2F;addMessageInfo.jspx&quot;,
-    contentType: &quot;application&#x2F;json&quot;,
-    data:&quot;&#123;&#39;name&#39;:&#39;zhangsan&#39;,&#39;age&#39;:&#39;15&#39;&#125;&quot;,
-    dataType: &quot;json&quot;,
-    success: function(data) &#123;
-        console.log(data);
-    &#125;,
-    error: function(msg) &#123;
-        console.log(msg)
-    &#125;
-&#125;)
+            <h3 id="comparable"><a href="#comparable" class="headerlink" title="comparable"></a>comparable</h3><p>集合中元素实现comparable，可以调用sort方法排序</p>
+<pre><code class="highlight plain">class user implements Comparable&lt;user&gt;&#123;
+	private int id;
+	private String name;
+	
+	public user() &#123;
+		super();
+	&#125;
+	public user(int id, String name) &#123;
+		this.id &#x3D; id;
+		this.name &#x3D; name;
+	&#125;
+	&#x2F;**
+	 * @return the id
+	 *&#x2F;
+	
+	
+	public int getId() &#123;
+		return id;
+	&#125;
+	&#x2F;* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 *&#x2F;
+	@Override
+	public int compareTo(user o) &#123;
+		&#x2F;&#x2F; TODO Auto-generated method stub
+		return this.id-o.id;
+	&#125;
+	&#x2F;**
+	 * @param id the id to set
+	 *&#x2F;
+	public void setId(int id) &#123;
+		this.id &#x3D; id;
+	&#125;
+	&#x2F;**
+	 * @return the name
+	 *&#x2F;
+	public String getName() &#123;
+		return name;
+	&#125;
+	&#x2F;**
+	 * @param name the name to set
+	 *&#x2F;
+	public void setName(String name) &#123;
+		this.name &#x3D; name;
+	&#125;
+	
+&#125;</code></pre>
 
+<p>调用Collections.sort(List<T> list)</p>
+<pre><code class="highlight plain">List&lt;user&gt; users &#x3D; new ArrayList&lt;user&gt;();
+users.add(new user(1, &quot;sdg&quot;));
+users.add(new user(5, &quot;dsf&quot;));
+users.add(new user(2, &quot;xzcv&quot;));
+users.add(new user(4, &quot;derg&quot;));
+users.add(new user(3, &quot;dfg&quot;));
+Collections.sort(users);
+users.forEach(u-&gt;System.out.println(u.getId()));</code></pre>
 
-$.ajax(&#123;
-    type: &quot;post&quot;,
-    url:  &quot;mobile&#x2F;notice&#x2F;addMessageInfo.jspx&quot;,
-    data:&#123;name:&#39;zhangsan&#39;,age:&#39;15&#39;&#125;,
-    dataType: &quot;json&quot;,
-    success: function(data) &#123;
-        console.log(data);
-    &#125;,
-    error: function(msg) &#123;
-        console.log(msg)
-    &#125;
-&#125;)</code></pre>
+<p>输出<br><code>1,2,3,4,5</code></p>
+<h3 id="comparator"><a href="#comparator" class="headerlink" title="comparator"></a>comparator</h3><p>当集合中元素没有实现comparable接口时，可以使用Collections.sort(List<T> list, Comparator&lt;? super T&gt; c)进行排序</p>
+<pre><code class="highlight plain">List&lt;user&gt; users &#x3D; new ArrayList&lt;user&gt;();
+users.add(new user(1, &quot;sdg&quot;));
+users.add(new user(5, &quot;dsf&quot;));
+users.add(new user(2, &quot;xzcv&quot;));
+users.add(new user(4, &quot;derg&quot;));
+users.add(new user(3, &quot;dfg&quot;));
+Collections.sort(users,Comparator.comparing(user::getId));
+users.forEach(u-&gt;System.out.println(u.getId()));</code></pre>
+<p>输出<br><code>1,2,3,4,5</code></p>
+
           
         
       
@@ -1299,6 +1304,182 @@ private void doSignalAll(Node first) &#123;
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/ajax%E4%B8%ADjson%E5%92%8Cspringmvc/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/ajax%E4%B8%ADjson%E5%92%8Cspringmvc/" itemprop="url">ajax中json和SpringMVC</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">框架</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="json"><a href="#json" class="headerlink" title="json"></a>json</h3><p>json对象格式:<code>{&quot;param&quot;:&quot;value&quot;,&quot;param&quot;:&quot;value&quot;}</code></p>
+<p>普通js对象:<code>{param:&quot;value&quot;,param:&quot;value&quot;}</code></p>
+<p>js对象转json对象:</p>
+<ul>
+<li>先将js转json字符串：<code>JSON.stringify()</code></li>
+<li>将json字符串转json对象:<code>JSON.parse()</code></li>
+</ul>
+<h3 id="ajax中的contentType"><a href="#ajax中的contentType" class="headerlink" title="ajax中的contentType"></a>ajax中的contentType</h3><p>ajax中，没有指定<code>contentType</code>的话，Jquery默认使用<code>application/x-www-form-urlencoded</code>类型，data使用json对象格式,<code>springmvc</code>可以<code>@RequestParam</code>接收数据(变量同名不需要)</p>
+<p>指定<code>contentType</code>为<code>application/json</code>时，data必须为json字符串格式，springmvc接收数据要用<code>@RequestBody</code>注解</p>
+<pre><code class="highlight plain">$.ajax(&#123;
+    type: &quot;post&quot;,
+    url:  &quot;mobile&#x2F;notice&#x2F;addMessageInfo.jspx&quot;,
+    contentType: &quot;application&#x2F;json&quot;,
+    data:&quot;&#123;&#39;name&#39;:&#39;zhangsan&#39;,&#39;age&#39;:&#39;15&#39;&#125;&quot;,
+    dataType: &quot;json&quot;,
+    success: function(data) &#123;
+        console.log(data);
+    &#125;,
+    error: function(msg) &#123;
+        console.log(msg)
+    &#125;
+&#125;)
+
+
+$.ajax(&#123;
+    type: &quot;post&quot;,
+    url:  &quot;mobile&#x2F;notice&#x2F;addMessageInfo.jspx&quot;,
+    data:&#123;name:&#39;zhangsan&#39;,age:&#39;15&#39;&#125;,
+    dataType: &quot;json&quot;,
+    success: function(data) &#123;
+        console.log(data);
+    &#125;,
+    error: function(msg) &#123;
+        console.log(msg)
+    &#125;
+&#125;)</code></pre>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/String%20and%20constant%20pool/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1642,210 +1823,6 @@ ThreadLocalMap(ThreadLocal&lt;?&gt; firstKey, Object firstValue) &#123;
 <p>调用<code>ThreadLocal</code>的<code>set</code>方法时，先获取当前线程，查看线程中<code>ThreadLocalMap</code>引用为不为空，若为空，为当前线程创建<code>ThreadLocalMap</code>实例，传入键值对<code>key</code>为当前<code>ThreadLocal</code>实例，<code>value</code>为<code>set</code>方法传入的参数值。若不为空，为<code>ThreadLocalMap</code>实例添加新键值对，<code>key</code>为当前<code>ThreadLocal</code>实例，<code>value</code>为<code>set</code>方法传入的参数值。</p>
 <p>调用<code>ThreadLocal</code>的<code>get</code>方法时，如果之前为调用过<code>set</code>方法或<code>ThreadLocalMap</code>实例中<code>key</code>没有与当前<code>ThreadLocal</code>实例对应的，则返回一个默认值<code>null</code>。照旧先获取当前线程，获取线程中<code>ThreadLocalMap</code>实例，再根据当前<code>ThreadLocal</code>实例获取对应的键值对<code>Entry</code>，从而获取线程中存储的变量副本。</p>
 <p>为什么不用一个<code>map Entry&lt;Thread,value&gt;</code>来存储所有线程和线程变量副本，<code>map</code>过大会造成哈希冲突，造成性能变差。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/Spring%E4%B8%AD%E4%BE%9D%E8%B5%96%E7%9A%84%E6%B3%A8%E5%85%A5%E6%96%B9%E5%BC%8F/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/Spring%E4%B8%AD%E4%BE%9D%E8%B5%96%E7%9A%84%E6%B3%A8%E5%85%A5%E6%96%B9%E5%BC%8F/" itemprop="url">Spring中依赖的注入方式</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
-                    <span itemprop="name">框架</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="构造器注入"><a href="#构造器注入" class="headerlink" title="构造器注入"></a>构造器注入</h3><p>构造器注入作用在第二次后置处理器调用，找到合适构造器后，用它实例化类的同时，注入依赖属性</p>
-<pre><code class="highlight plain">public class userServiceImpl implements userService&#123;
-
-	private userDao userdao;
-	@Autowired
-	public userServiceImpl(userDao userdao)&#123;
-		this.userdao &#x3D; userdao;
-	&#125;
-
-	@Override
-	public void query() &#123;
-		userdao.query();
-	&#125;
-&#125;</code></pre>
-
-<p><code>Autowired</code>注解可省略，当不需要无参构造函数时</p>
-<h3 id="set方法注入"><a href="#set方法注入" class="headerlink" title="set方法注入"></a>set方法注入</h3><pre><code class="highlight plain">public class userServiceImpl implements userService&#123;
-
-	private userDao userdao;
-	@Override
-	public void query() &#123;
-		userdao.query();
-	&#125;
-	@Autowired
-	public void setuserDao(userDao userdao)&#123;
-		this.userdao &#x3D; userdao;
-	&#125;
-
-
-&#125;</code></pre>
-
-<h3 id="普通属性注入"><a href="#普通属性注入" class="headerlink" title="普通属性注入"></a>普通属性注入</h3><p>使用<code>@Value</code>注解</p>
-<h3 id="Method-Injection方法注入"><a href="#Method-Injection方法注入" class="headerlink" title="Method Injection方法注入"></a>Method Injection方法注入</h3><p>Spring文档</p>
-<p>In most application scenarios, most beans in the container are singletons. When a singleton bean needs to collaborate with another singleton bean or a non-singleton bean needs to collaborate with another non-singleton bean, you typically handle the dependency by defining one bean as a property of the other. A problem arises when the bean lifecycles are different. Suppose singleton bean A needs to use non-singleton (prototype) bean B, perhaps on each method invocation on A. The container creates the singleton bean A only once, and thus only gets one opportunity to set the properties. The container cannot provide bean A with a new instance of bean B every time one is needed.</p>
-<p>当一个singleton的Bean A，内部依赖为prototype的Bean B，因为A只初始化一次，所以它的内部依赖B始终为同一个实例，如果要使每次用到B时都是新实例，就需要用到Method Injection</p>
-<p>文档要我们实现<code>ApplicationContextAware</code>接口，从而获得容器对象</p>
-<pre><code class="highlight plain">public class CommandManager implements ApplicationContextAware &#123;
-
-    private ApplicationContext applicationContext;
-
-    public Object process(Map commandState) &#123;
-        &#x2F;&#x2F; grab a new instance of the appropriate Command
-        Command command &#x3D; createCommand();
-        &#x2F;&#x2F; set the state on the (hopefully brand new) Command instance
-        command.setState(commandState);
-        return command.execute();
-    &#125;
-
-    protected Command createCommand() &#123;
-        &#x2F;&#x2F; notice the Spring API dependency!
-        return this.applicationContext.getBean(&quot;command&quot;, Command.class);
-    &#125;
-
-    public void setApplicationContext(
-            ApplicationContext applicationContext) throws BeansException &#123;
-        this.applicationContext &#x3D; applicationContext;
-    &#125;
-&#125;</code></pre>
-
-<p>官方例子中，实现接口，获取容器对象，每次使用这个类时都手动从容器获取这个对象的实例，从而每次都是新的实例B</p>
-<h3 id="depends-on"><a href="#depends-on" class="headerlink" title="depends-on"></a>depends-on</h3><p>文档中</p>
-<p>The depends-on attribute can explicitly force one or more beans to be initialized before the bean using this element is initialized</p>
-<p>depends-on属性可以强制在初始化使用这个元素的类之前初始化一个指定的类</p>
 
           
         
@@ -2568,7 +2545,7 @@ public Object applyBeanPostProcessorsAfterInitialization(Object existingBean, St
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/SpringServletContainerInitializer%E4%B8%8Ejava%20config%E9%85%8D%E7%BD%AE/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/Spring%E4%B8%AD%E4%BE%9D%E8%B5%96%E7%9A%84%E6%B3%A8%E5%85%A5%E6%96%B9%E5%BC%8F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="sinaill">
@@ -2587,7 +2564,7 @@ public Object applyBeanPostProcessorsAfterInitialization(Object existingBean, St
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/06/17/SpringServletContainerInitializer%E4%B8%8Ejava%20config%E9%85%8D%E7%BD%AE/" itemprop="url">SpringServletContainerInitializer与java config配置</a></h1>
+                <a class="post-title-link" href="/2020/06/17/Spring%E4%B8%AD%E4%BE%9D%E8%B5%96%E7%9A%84%E6%B3%A8%E5%85%A5%E6%96%B9%E5%BC%8F/" itemprop="url">Spring中依赖的注入方式</a></h1>
         
 
         <div class="post-meta">
@@ -2661,186 +2638,69 @@ public Object applyBeanPostProcessorsAfterInitialization(Object existingBean, St
       
         
           
-            <h3 id="ServletContainerInitializer"><a href="#ServletContainerInitializer" class="headerlink" title="ServletContainerInitializer"></a>ServletContainerInitializer</h3><p>这是<code>serlvet3.0</code>的特性，它主要是用来实现<code>java config</code>的方式来配置框架，比如ssm，它通过编程的方式代理<code>web.xml</code>配置文件，通过编程的方式注册<code>serlvet</code>、<code>filter</code>、<code>Listener</code>等组件</p>
-<p><code>serlvet</code>容器在启动时会扫描应用中所有<code>jar</code>包下的<code>META-INF/services/javax.servlet.ServletContainerInitializer</code>文件，文件中的内容为实现了<code>ServletContainerInitializer</code>的实现类的全限定名</p>
-<p>容器会自动创建它的实例，并且调用接口方法<code>onStartup</code></p>
-<p><code>@handlesTypes</code>注解在实现了<code>servletContainerInitializer</code>的类上，决定可以这个类可以处理的类型，作为第一个参数<code>set</code>类型，被传到<code>onStartup</code>方法中</p>
-<h3 id="SpringServletContainerInitializer"><a href="#SpringServletContainerInitializer" class="headerlink" title="SpringServletContainerInitializer"></a>SpringServletContainerInitializer</h3><p>在<code>spring-web-4.17.RELEASE.jar</code>的<code>META-INF</code>目录的<code>services</code>下找到文件<code>javax.servlet.ServlerContainerInitializer</code>，其中内容为</p>
-<pre><code class="highlight plain">org.springframework.web.SpringServletContainerInitializer</code></pre>
+            <h3 id="构造器注入"><a href="#构造器注入" class="headerlink" title="构造器注入"></a>构造器注入</h3><p>构造器注入作用在第二次后置处理器调用，找到合适构造器后，用它实例化类的同时，注入依赖属性</p>
+<pre><code class="highlight plain">public class userServiceImpl implements userService&#123;
 
-<p>查看这个类</p>
-<pre><code class="highlight plain">@HandlesTypes(WebApplicationInitializer.class)
-public class SpringServletContainerInitializer implements ServletContainerInitializer &#123;
+	private userDao userdao;
+	@Autowired
+	public userServiceImpl(userDao userdao)&#123;
+		this.userdao &#x3D; userdao;
+	&#125;
 
 	@Override
-	public void onStartup(Set&lt;Class&lt;?&gt;&gt; webAppInitializerClasses, ServletContext servletContext)
-			throws ServletException &#123;
-
-		List&lt;WebApplicationInitializer&gt; initializers &#x3D; new LinkedList&lt;WebApplicationInitializer&gt;();
-
-		if (webAppInitializerClasses !&#x3D; null) &#123;
-			for (Class&lt;?&gt; waiClass : webAppInitializerClasses) &#123;
-				&#x2F;&#x2F; Be defensive: Some servlet containers provide us with invalid classes,
-				&#x2F;&#x2F; no matter what @HandlesTypes says...
-				if (!waiClass.isInterface() &amp;&amp; !Modifier.isAbstract(waiClass.getModifiers()) &amp;&amp;
-						WebApplicationInitializer.class.isAssignableFrom(waiClass)) &#123;
-					try &#123;
-						initializers.add((WebApplicationInitializer) waiClass.newInstance());
-					&#125;
-					catch (Throwable ex) &#123;
-						throw new ServletException(&quot;Failed to instantiate WebApplicationInitializer class&quot;, ex);
-					&#125;
-				&#125;
-			&#125;
-		&#125;
-
-		if (initializers.isEmpty()) &#123;
-			servletContext.log(&quot;No Spring WebApplicationInitializer types detected on classpath&quot;);
-			return;
-		&#125;
-
-		AnnotationAwareOrderComparator.sort(initializers);
-		servletContext.log(&quot;Spring WebApplicationInitializers detected on classpath: &quot; + initializers);
-
-		for (WebApplicationInitializer initializer : initializers) &#123;
-			initializer.onStartup(servletContext);
-		&#125;
+	public void query() &#123;
+		userdao.query();
 	&#125;
+&#125;</code></pre>
+
+<p><code>Autowired</code>注解可省略，当不需要无参构造函数时</p>
+<h3 id="set方法注入"><a href="#set方法注入" class="headerlink" title="set方法注入"></a>set方法注入</h3><pre><code class="highlight plain">public class userServiceImpl implements userService&#123;
+
+	private userDao userdao;
+	@Override
+	public void query() &#123;
+		userdao.query();
+	&#125;
+	@Autowired
+	public void setuserDao(userDao userdao)&#123;
+		this.userdao &#x3D; userdao;
+	&#125;
+
 
 &#125;</code></pre>
 
-<p>我们看到类上有<code>handlesTypes</code>注解，值为<code>WebApplicationInitializer.class</code></p>
-<p>断点调试查看<code>onStartup</code>方法第一个参数</p>
-<p><img src="https://raw.githubusercontent.com/sinaill/pic/master/wenAppInitializerClasses.jpg" alt="webApplicationInitializerClasses"></p>
-<p>确实把我们定义的继承了<code>WebApplicationInitializer</code>的子类<code>AbstractAnnotationConfigDispatcherServletInitializer</code>的类传入了</p>
-<pre><code class="highlight plain">public class WebInitializer extends AbstractAnnotationConfigDispatcherServletInitializer &#123;
-    protected Class&lt;?&gt;[] getRootConfigClasses() &#123;
-        return new Class&lt;?&gt;[]&#123;RootConfig.class&#125;;
+<h3 id="普通属性注入"><a href="#普通属性注入" class="headerlink" title="普通属性注入"></a>普通属性注入</h3><p>使用<code>@Value</code>注解</p>
+<h3 id="Method-Injection方法注入"><a href="#Method-Injection方法注入" class="headerlink" title="Method Injection方法注入"></a>Method Injection方法注入</h3><p>Spring文档</p>
+<p>In most application scenarios, most beans in the container are singletons. When a singleton bean needs to collaborate with another singleton bean or a non-singleton bean needs to collaborate with another non-singleton bean, you typically handle the dependency by defining one bean as a property of the other. A problem arises when the bean lifecycles are different. Suppose singleton bean A needs to use non-singleton (prototype) bean B, perhaps on each method invocation on A. The container creates the singleton bean A only once, and thus only gets one opportunity to set the properties. The container cannot provide bean A with a new instance of bean B every time one is needed.</p>
+<p>当一个singleton的Bean A，内部依赖为prototype的Bean B，因为A只初始化一次，所以它的内部依赖B始终为同一个实例，如果要使每次用到B时都是新实例，就需要用到Method Injection</p>
+<p>文档要我们实现<code>ApplicationContextAware</code>接口，从而获得容器对象</p>
+<pre><code class="highlight plain">public class CommandManager implements ApplicationContextAware &#123;
+
+    private ApplicationContext applicationContext;
+
+    public Object process(Map commandState) &#123;
+        &#x2F;&#x2F; grab a new instance of the appropriate Command
+        Command command &#x3D; createCommand();
+        &#x2F;&#x2F; set the state on the (hopefully brand new) Command instance
+        command.setState(commandState);
+        return command.execute();
     &#125;
 
-    protected Class&lt;?&gt;[] getServletConfigClasses() &#123;
-        return new Class&lt;?&gt;[]&#123;MvcConfig.class&#125;;
+    protected Command createCommand() &#123;
+        &#x2F;&#x2F; notice the Spring API dependency!
+        return this.applicationContext.getBean(&quot;command&quot;, Command.class);
     &#125;
 
-    protected String[] getServletMappings() &#123;
-        return new String[]&#123;&quot;&#x2F;&quot;&#125;;
+    public void setApplicationContext(
+            ApplicationContext applicationContext) throws BeansException &#123;
+        this.applicationContext &#x3D; applicationContext;
     &#125;
-
 &#125;</code></pre>
 
-<h3 id="开始配置"><a href="#开始配置" class="headerlink" title="开始配置"></a>开始配置</h3><p>最后容器会调用<code>WebApplicationInitializer</code>接口的<code>onStartup</code>方法，也就是调用我们上面的那个类来开始配置</p>
-<p>由于我们是继承的<code>AbstractAnnotationConfigDispatcherServletInitializer</code>，所以该方法调用的是<code>AbstractDispatcherServletInitializer</code>的<code>onStartup</code>方法</p>
-<pre><code class="highlight plain">@Override
-public void onStartup(ServletContext servletContext) throws ServletException &#123;
-	super.onStartup(servletContext);
-	registerDispatcherServlet(servletContext);
-&#125;</code></pre>
-
-<h4 id="super-onStartup-servletContext"><a href="#super-onStartup-servletContext" class="headerlink" title="super.onStartup(servletContext)"></a>super.onStartup(servletContext)</h4><p>调用了父类<code>AbstractContextLoaderInitializer</code>的<code>onStartup</code>方法</p>
-<pre><code class="highlight plain">@Override
-public void onStartup(ServletContext servletContext) throws ServletException &#123;
-	registerContextLoaderListener(servletContext);
-&#125;
-
-
-
-protected void registerContextLoaderListener(ServletContext servletContext) &#123;
-	WebApplicationContext rootAppContext &#x3D; createRootApplicationContext();
-	if (rootAppContext !&#x3D; null) &#123;
-		servletContext.addListener(new ContextLoaderListener(rootAppContext));
-	&#125;
-	else &#123;
-		logger.debug(&quot;No ContextLoaderListener registered, as &quot; +
-				&quot;createRootApplicationContext() did not return an application context&quot;);
-	&#125;
-&#125;</code></pre>
-
-<p>这里调用了<code>createRootApplicationContext</code>方法创建<code>Spring</code>容器，然后创建了<code>ContextLoaderListener</code>监听器，注册到<code>servletContext</code>中，所以使用注解式配置ssm的时候，在<code>contextLoaderListener</code>被触发的时候，容器已经被创建好了，而使用配置文件的方式就是在触发<code>contextLoaderListener</code>的时候创建<code>Spring</code>容器和<code>SpringMVC</code>容器</p>
-<pre><code class="highlight plain">@Override
-protected WebApplicationContext createRootApplicationContext() &#123;
-	Class&lt;?&gt;[] configClasses &#x3D; getRootConfigClasses();
-	if (!ObjectUtils.isEmpty(configClasses)) &#123;
-		&#x2F;&#x2F;创建Spring容器
-		AnnotationConfigWebApplicationContext rootAppContext &#x3D; new AnnotationConfigWebApplicationContext();
-		rootAppContext.register(configClasses);
-		return rootAppContext;
-	&#125;
-	else &#123;
-		return null;
-	&#125;
-&#125;</code></pre>
-
-<p>可以看到创建了<code>Spring</code>容器并且调用了我们实现的<code>getRootConfigClasses</code>方法，把获得的<code>Class</code>注册到<code>Spring容器中</code>，然后只要调用<code>Spring</code>容器的<code>refresh</code>方法就能在容器中实例化它们</p>
-<h4 id="registerDispatcherServlet-servletContext"><a href="#registerDispatcherServlet-servletContext" class="headerlink" title="registerDispatcherServlet(servletContext)"></a>registerDispatcherServlet(servletContext)</h4><pre><code class="highlight plain">protected void registerDispatcherServlet(ServletContext servletContext) &#123;
-	String servletName &#x3D; getServletName();
-	Assert.hasLength(servletName, &quot;getServletName() must not return empty or null&quot;);
-
-	WebApplicationContext servletAppContext &#x3D; createServletApplicationContext();
-	Assert.notNull(servletAppContext,
-			&quot;createServletApplicationContext() did not return an application &quot; +
-			&quot;context for servlet [&quot; + servletName + &quot;]&quot;);
-
-	DispatcherServlet dispatcherServlet &#x3D; new DispatcherServlet(servletAppContext);
-	ServletRegistration.Dynamic registration &#x3D; servletContext.addServlet(servletName, dispatcherServlet);
-	Assert.notNull(registration,
-			&quot;Failed to register servlet with name &#39;&quot; + servletName + &quot;&#39;.&quot; +
-			&quot;Check if there is another servlet registered under the same name.&quot;);
-
-	registration.setLoadOnStartup(1);
-	registration.addMapping(getServletMappings());
-	registration.setAsyncSupported(isAsyncSupported());
-
-	Filter[] filters &#x3D; getServletFilters();
-	if (!ObjectUtils.isEmpty(filters)) &#123;
-		for (Filter filter : filters) &#123;
-			registerServletFilter(servletContext, filter);
-		&#125;
-	&#125;
-
-	customizeRegistration(registration);
-&#125;</code></pre>
-
-<p><code>createServletApplicationContext</code>创建<code>SpringMVC</code>容器</p>
-<pre><code class="highlight plain">@Override
-protected WebApplicationContext createServletApplicationContext() &#123;
-	AnnotationConfigWebApplicationContext servletAppContext &#x3D; new AnnotationConfigWebApplicationContext();
-	Class&lt;?&gt;[] configClasses &#x3D; getServletConfigClasses();
-	if (!ObjectUtils.isEmpty(configClasses)) &#123;
-		servletAppContext.register(configClasses);
-	&#125;
-	return servletAppContext;
-&#125;</code></pre>
-
-<p>同样创建了一个<code>AnnotationConfigWebApplicationContext</code>对象，然后调用我们实现的<code>getServletConfigClasses</code>将获取的<code>Class</code>注册到<code>SpringMVC</code>容器中</p>
-<p>接着开始注册<code>DispatcherServlet</code>，创建<code>DispatcherServlet</code>对象绑定到<code>servetContext</code>中，并将<code>SpringMVC</code>容器传入<code>DispatcherServlet</code></p>
-<pre><code class="highlight plain">registration.setLoadOnStartup(1);
-registration.addMapping(getServletMappings());
-registration.setAsyncSupported(isAsyncSupported());</code></pre>
-
-<p>配置启动优先级，配置<code>serlvet</code>映射方式</p>
-<p>还有后面调用<code>getServletFilters</code>方法获取过滤器</p>
-<h3 id="疑问"><a href="#疑问" class="headerlink" title="疑问"></a>疑问</h3><p>在使用配置文件方式的时候，创建<code>SpringMVC</code>容器</p>
-<pre><code class="highlight plain">wac &#x3D; createWebApplicationContext(rootContext);</code></pre>
-
-<p>将<code>Spring</code>作为父容器传入，所以<code>SpringMVC</code>容器中能取出在<code>Spring</code>容器中的对象</p>
-<p>而这里使用注解方式了，没发现两个容器的关联</p>
-<p>原来在两个容器关联的代码在<code>ContextLoaderListener</code>中的<code>initWebApplicationContext</code>方法中</p>
-<pre><code class="highlight plain">if (this.context instanceof ConfigurableWebApplicationContext) &#123;
-	ConfigurableWebApplicationContext cwac &#x3D; (ConfigurableWebApplicationContext) this.context;
-	if (!cwac.isActive()) &#123;
-		&#x2F;&#x2F; The context has not yet been refreshed -&gt; provide services such as
-		&#x2F;&#x2F; setting the parent context, setting the application context id, etc
-		if (cwac.getParent() &#x3D;&#x3D; null) &#123;
-			&#x2F;&#x2F; The context instance was injected without an explicit parent -&gt;
-			&#x2F;&#x2F; determine parent for root web application context, if any.
-			ApplicationContext parent &#x3D; loadParentContext(servletContext);
-			cwac.setParent(parent);
-		&#125;
-		configureAndRefreshWebApplicationContext(cwac, servletContext);
-	&#125;
-&#125;</code></pre>
-
-<p>调用了<code>setParent</code>方法将<code>Spring</code>容器作为<code>SpringMVC</code>的父容器</p>
+<p>官方例子中，实现接口，获取容器对象，每次使用这个类时都手动从容器获取这个对象的实例，从而每次都是新的实例B</p>
+<h3 id="depends-on"><a href="#depends-on" class="headerlink" title="depends-on"></a>depends-on</h3><p>文档中</p>
+<p>The depends-on attribute can explicitly force one or more beans to be initialized before the bean using this element is initialized</p>
+<p>depends-on属性可以强制在初始化使用这个元素的类之前初始化一个指定的类</p>
 
           
         
@@ -2926,7 +2786,7 @@ registration.setAsyncSupported(isAsyncSupported());</code></pre>
               
                 <a href="/archives/%20%7C%7C%20archive">
               
-                  <span class="site-state-item-count">85</span>
+                  <span class="site-state-item-count">86</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
