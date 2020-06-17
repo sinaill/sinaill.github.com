@@ -903,306 +903,6 @@ END</code></pre><h5 id="其它"><a href="#其它" class="headerlink" title="其�
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/java%E4%B8%AD%E7%9A%84Type/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/java%E4%B8%AD%E7%9A%84Type/" itemprop="url">java中的Type</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="什么是Type"><a href="#什么是Type" class="headerlink" title="什么是Type"></a>什么是Type</h3><p>在Java中，泛型与反射是两个重要的概念，我们几乎能够经常的使用到它们。而谈起Type，如果有人还比较陌生的话 ，那么说起一个它的直接实现类——Class的话，大家都应该明白了。Type是Java语言中所有类型的公共父接口。</p>
-<p><img src="https://raw.githubusercontent.com/sinaill/pic/master/Type.jpg" alt=""></p>
-<p>其实在jdk1.5之前Java中只有原始类型而没有泛型类型，而在JDK 1.5 之后引入泛型，但是这种泛型仅仅存在于编译阶段，当在JVM运行的过程中，与泛型相关的信息将会被擦除，如List与List都将会在运行时被擦除成为List这个类型。而类型擦除机制存在的原因正是因为如果在运行时存在泛型，那么将要修改JVM指令集，这是非常致命的。<br>此外，<strong>原始类型在会生成字节码文件对象，而泛型类型相关的类型并不会生成与其相对应的字节码文件(因为泛型类型将会被擦除)，因此，无法将泛型相关的新类型与class相统一。因此，为了程序的扩展性以及为了开发需要去反射操作这些类型，就引入了Type这个类型</strong>，并且新增了ParameterizedType, TypeVariable, GenericArrayType, WildcardType四个表示泛型相关的类型，再加上Class，这样就可以用Type类型的参数来接受以上五种子类的实参或者返回值类型就是Type类型的参数。统一了与泛型有关的类型和原始类型Class。而且这样一来，我们也可以通过反射获取泛型类型参数<br>。</p>
-<h3 id="四个子类"><a href="#四个子类" class="headerlink" title="四个子类"></a>四个子类</h3><h4 id="ParameterizedType：参数化类型"><a href="#ParameterizedType：参数化类型" class="headerlink" title="ParameterizedType：参数化类型"></a>ParameterizedType：参数化类型</h4><p>参数化类型即我们通常所说的泛型类型，一提到参数，最熟悉的就是定义方法时有形参，然后调用此方法时传递实参。那么参数化类型怎么理解呢？顾名思义，就是将类型由原来的具体的类型参数化，类似于方法中的变量参数，此时类型也定义成参数形式（可以称之为类型形参），然后在使用/调用时传入具体的类型（类型实参）。那么我们的ParameterizedType就是这样一个类型，下面我们来看看它的三个重要的方法：</p>
-<ul>
-<li>Type getRawType();</li>
-</ul>
-<p>该方法的作用是返回当前的ParameterizedType的类型。如一个List，返回的是List的Type，即返回当前参数化类型本身的Type。</p>
-<ul>
-<li>Type getOwnerType();</li>
-</ul>
-<p>返回ParameterizedType类型所在的类的Type。如Map.Entry&lt;String, Object&gt;这个参数化类型返回的事Map(因为Map.Entry这个类型所在的类是Map)的类型。</p>
-<ul>
-<li>Type[] getActualTypeArguments();</li>
-</ul>
-<p>该方法返回参数化类型&lt;&gt;中的实际参数类型， 如 Map&lt;String,Person&gt; map 这个 ParameterizedType 返回的是 String 类,Person 类的全限定类名的 Type Array。注意: 该方法只返回最外层的&lt;&gt;中的类型，无论该&lt;&gt;内有多少个&lt;&gt;。</p>
-<pre><code>class testType{
-    HashMap&lt;String,Object&gt; map;
-    List&lt;Integer&gt; list;
-    String str;
-}
-
-@Test
-public void testType() {
-    Field fields[] = testType.class.getDeclaredFields();
-    for(Field field:fields) {
-        System.out.println(&quot;Field : &quot;+field.getName() + &quot; is parameterizedType :&quot;+(field.getGenericType() instanceof ParameterizedType));
-
-        if(field.getGenericType() instanceof ParameterizedType) {
-            System.out.println(&quot;getRawType: &quot;+((ParameterizedType)field.getGenericType()).getRawType());
-            for(Type type:((ParameterizedType)field.getGenericType()).getActualTypeArguments())
-            //getActualTypeArguments返回的类型为TypeVariable
-            System.out.println(&quot;getActualTypeArguments: &quot;+type.getTypeName());
-        }
-    }
-}
-
-
-Field : map is parameterizedType :true
-getRawType: class java.util.HashMap
-getActualTypeArguments: java.lang.String
-getActualTypeArguments: java.lang.Object
-Field : list is parameterizedType :true
-getRawType: interface java.util.List
-getActualTypeArguments: java.lang.Integer
-Field : str is parameterizedType :false</code></pre><h4 id="TypeVariable"><a href="#TypeVariable" class="headerlink" title="TypeVariable"></a>TypeVariable</h4><p>类型变量，即泛型中的变量；例如：T、K、V等变量，可以表示任何类；在这需要强调的是，TypeVariable代表着泛型中的变量，而ParameterizedType则代表整个泛型；</p>
-<ul>
-<li>Type[] getBounds();</li>
-</ul>
-<p>返回当前类型的上边界，如果没有指定上边界，则默认为Object</p>
-<ul>
-<li>D getGenericDeclaration();</li>
-</ul>
-<p>返回当前类型所在的类的Type</p>
-<ul>
-<li>String getName();</li>
-</ul>
-<p>返回当前类型的类名</p>
-<pre><code>class testType&lt;k extends Number,T&gt;{
-    HashMap&lt;String,Object&gt; map;
-    List&lt;Integer&gt; list;
-    String str;
-}
-
-@Test
-public void testTypeVariable(){
-     Type types[] = testType.class.getTypeParameters();
-     //返回的数组包含泛型表示的类型变量K,T
-     for(Type type:types) {
-         //遍历K,T
-         TypeVariable t = (TypeVariable)type;
-         int index = t.getBounds().length-1;
-         //返回的表示上边界的是一个数组
-         System.out.println(&quot;getBounds: &quot;+t.getBounds()[index]);
-         System.out.println(&quot;getName: &quot;+t.getName());
-         //表示泛型变量所在的类
-         System.out.println(&quot;getGenericDeclaration: &quot;+t.getGenericDeclaration());
-     }
-}
-
-
-getBounds: class java.lang.Number
-getName: K
-getGenericDeclaration: class test.testType
-getBounds: class java.lang.Object
-getName: T
-getGenericDeclaration: class test.testType</code></pre><h4 id="GenericArrayType"><a href="#GenericArrayType" class="headerlink" title="GenericArrayType"></a>GenericArrayType</h4><p>泛型数组类型，用来描述ParameterizedType、TypeVariable类型的数组；即List<T>[] 、T[]等</p>
-<pre><code>class testType&lt;K,T&gt;{
-    HashMap&lt;K,T&gt;[] map;
-    List&lt;K&gt;[] list;
-    T Array[];
-}
-
-@Test
-public void testGenericArrayType() {
-    Field fields[] = testType.class.getDeclaredFields();
-    for(Field field:fields) {
-        System.out.println(field.getName()+&quot; instance of GenericArrayType: &quot;+(field.getGenericType() instanceof GenericArrayType));
-        System.out.println(field.getName()+&quot; instance of GenericArrayType: &quot;+(field.getGenericType() instanceof ParameterizedType));
-        //对于getGenericComponentType
-        //如果是参数化类型数组，则这里返回的是parameterizedType类型
-        //普通泛型数组，返回的TypeVariable类型
-        System.out.println(field.getName()+&quot;:getGenericComponentType &quot;+((GenericArrayType)field.getGenericType()).getGenericComponentType());
-    }
-}
-
-
-map instance of GenericArrayType: true
-map instance of GenericArrayType: false
-map:getGenericComponentType java.util.HashMap&lt;K, T&gt;
-list instance of GenericArrayType: true
-list instance of GenericArrayType: false
-list:getGenericComponentType java.util.List&lt;K&gt;
-Array instance of GenericArrayType: true
-Array instance of GenericArrayType: false
-Array:getGenericComponentType T</code></pre><h4 id="WildcardType"><a href="#WildcardType" class="headerlink" title="WildcardType"></a>WildcardType</h4><p>表示通配符类型，比如 &lt;?&gt;, &lt;? Extends Number&gt;等</p>
-<ul>
-<li>Type[] getUpperBounds()</li>
-</ul>
-<p>得到上边界的type数组</p>
-<ul>
-<li>Type[] getLowerBounds();</li>
-</ul>
-<p>得到下边界的type数组</p>
-<p><strong>如果没有指定上边界，则默认为Object，如果没有指定下边界，则默认为String</strong></p>
-<pre><code>class testWildcardType{
-    List&lt;? extends Number&gt; listNum;
-    List&lt;? super String&gt; listStr;
-}
-
-@Test
-public void testWildcardType() {
-    Field fields[] = testWildcardType.class.getDeclaredFields();
-    for(Field field:fields) {
-
-        ParameterizedType t = (ParameterizedType) field.getGenericType();
-        System.out.println(t.getTypeName());
-        Type[] Type = t.getActualTypeArguments();
-        System.out.println(field.getName()+&quot;.getGenericType.getActualTypeArguments(): instance of WildcardType is &quot;+(Type[0] instanceof WildcardType));
-        WildcardType wildcardType = (WildcardType) Type[0];
-        if(wildcardType.getUpperBounds().length&gt;0) {
-
-            System.out.println(&quot;getUpperBounds: &quot;+wildcardType.getUpperBounds()[0].getTypeName());
-        }
-        if(wildcardType.getLowerBounds().length&gt;0) {
-
-            System.out.println(&quot;getLowerBouds: &quot;+wildcardType.getLowerBounds()[0].getTypeName());
-        }
-    }
-}
-
-java.util.List&lt;? extends java.lang.Number&gt;
-listNum.getGenericType.getActualTypeArguments(): instance of WildcardType is true
-getUpperBounds: java.lang.Number
-java.util.List&lt;? super java.lang.String&gt;
-listStr.getGenericType.getActualTypeArguments(): instance of WildcardType is true
-getUpperBounds: java.lang.Object
-getLowerBouds: java.lang.String</code></pre><p>相关链接</p>
-<p><a href="https://juejin.im/post/5adefaba518825670e5cb44d" target="_blank" rel="noopener">参考一</a><br><a href="https://blog.csdn.net/ZytheMoon/article/details/79241988" target="_blank" rel="noopener">参考二</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/java8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1487,6 +1187,306 @@ public interface Supplier&lt;T&gt; {
      */
     T get();
 }</code></pre><p><strong>()-&gt;new class()等同于class:new</strong></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/java%E4%B8%AD%E7%9A%84Type/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/java%E4%B8%AD%E7%9A%84Type/" itemprop="url">java中的Type</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="什么是Type"><a href="#什么是Type" class="headerlink" title="什么是Type"></a>什么是Type</h3><p>在Java中，泛型与反射是两个重要的概念，我们几乎能够经常的使用到它们。而谈起Type，如果有人还比较陌生的话 ，那么说起一个它的直接实现类——Class的话，大家都应该明白了。Type是Java语言中所有类型的公共父接口。</p>
+<p><img src="https://raw.githubusercontent.com/sinaill/pic/master/Type.jpg" alt=""></p>
+<p>其实在jdk1.5之前Java中只有原始类型而没有泛型类型，而在JDK 1.5 之后引入泛型，但是这种泛型仅仅存在于编译阶段，当在JVM运行的过程中，与泛型相关的信息将会被擦除，如List与List都将会在运行时被擦除成为List这个类型。而类型擦除机制存在的原因正是因为如果在运行时存在泛型，那么将要修改JVM指令集，这是非常致命的。<br>此外，<strong>原始类型在会生成字节码文件对象，而泛型类型相关的类型并不会生成与其相对应的字节码文件(因为泛型类型将会被擦除)，因此，无法将泛型相关的新类型与class相统一。因此，为了程序的扩展性以及为了开发需要去反射操作这些类型，就引入了Type这个类型</strong>，并且新增了ParameterizedType, TypeVariable, GenericArrayType, WildcardType四个表示泛型相关的类型，再加上Class，这样就可以用Type类型的参数来接受以上五种子类的实参或者返回值类型就是Type类型的参数。统一了与泛型有关的类型和原始类型Class。而且这样一来，我们也可以通过反射获取泛型类型参数<br>。</p>
+<h3 id="四个子类"><a href="#四个子类" class="headerlink" title="四个子类"></a>四个子类</h3><h4 id="ParameterizedType：参数化类型"><a href="#ParameterizedType：参数化类型" class="headerlink" title="ParameterizedType：参数化类型"></a>ParameterizedType：参数化类型</h4><p>参数化类型即我们通常所说的泛型类型，一提到参数，最熟悉的就是定义方法时有形参，然后调用此方法时传递实参。那么参数化类型怎么理解呢？顾名思义，就是将类型由原来的具体的类型参数化，类似于方法中的变量参数，此时类型也定义成参数形式（可以称之为类型形参），然后在使用/调用时传入具体的类型（类型实参）。那么我们的ParameterizedType就是这样一个类型，下面我们来看看它的三个重要的方法：</p>
+<ul>
+<li>Type getRawType();</li>
+</ul>
+<p>该方法的作用是返回当前的ParameterizedType的类型。如一个List，返回的是List的Type，即返回当前参数化类型本身的Type。</p>
+<ul>
+<li>Type getOwnerType();</li>
+</ul>
+<p>返回ParameterizedType类型所在的类的Type。如Map.Entry&lt;String, Object&gt;这个参数化类型返回的事Map(因为Map.Entry这个类型所在的类是Map)的类型。</p>
+<ul>
+<li>Type[] getActualTypeArguments();</li>
+</ul>
+<p>该方法返回参数化类型&lt;&gt;中的实际参数类型， 如 Map&lt;String,Person&gt; map 这个 ParameterizedType 返回的是 String 类,Person 类的全限定类名的 Type Array。注意: 该方法只返回最外层的&lt;&gt;中的类型，无论该&lt;&gt;内有多少个&lt;&gt;。</p>
+<pre><code>class testType{
+    HashMap&lt;String,Object&gt; map;
+    List&lt;Integer&gt; list;
+    String str;
+}
+
+@Test
+public void testType() {
+    Field fields[] = testType.class.getDeclaredFields();
+    for(Field field:fields) {
+        System.out.println(&quot;Field : &quot;+field.getName() + &quot; is parameterizedType :&quot;+(field.getGenericType() instanceof ParameterizedType));
+
+        if(field.getGenericType() instanceof ParameterizedType) {
+            System.out.println(&quot;getRawType: &quot;+((ParameterizedType)field.getGenericType()).getRawType());
+            for(Type type:((ParameterizedType)field.getGenericType()).getActualTypeArguments())
+            //getActualTypeArguments返回的类型为TypeVariable
+            System.out.println(&quot;getActualTypeArguments: &quot;+type.getTypeName());
+        }
+    }
+}
+
+
+Field : map is parameterizedType :true
+getRawType: class java.util.HashMap
+getActualTypeArguments: java.lang.String
+getActualTypeArguments: java.lang.Object
+Field : list is parameterizedType :true
+getRawType: interface java.util.List
+getActualTypeArguments: java.lang.Integer
+Field : str is parameterizedType :false</code></pre><h4 id="TypeVariable"><a href="#TypeVariable" class="headerlink" title="TypeVariable"></a>TypeVariable</h4><p>类型变量，即泛型中的变量；例如：T、K、V等变量，可以表示任何类；在这需要强调的是，TypeVariable代表着泛型中的变量，而ParameterizedType则代表整个泛型；</p>
+<ul>
+<li>Type[] getBounds();</li>
+</ul>
+<p>返回当前类型的上边界，如果没有指定上边界，则默认为Object</p>
+<ul>
+<li>D getGenericDeclaration();</li>
+</ul>
+<p>返回当前类型所在的类的Type</p>
+<ul>
+<li>String getName();</li>
+</ul>
+<p>返回当前类型的类名</p>
+<pre><code>class testType&lt;k extends Number,T&gt;{
+    HashMap&lt;String,Object&gt; map;
+    List&lt;Integer&gt; list;
+    String str;
+}
+
+@Test
+public void testTypeVariable(){
+     Type types[] = testType.class.getTypeParameters();
+     //返回的数组包含泛型表示的类型变量K,T
+     for(Type type:types) {
+         //遍历K,T
+         TypeVariable t = (TypeVariable)type;
+         int index = t.getBounds().length-1;
+         //返回的表示上边界的是一个数组
+         System.out.println(&quot;getBounds: &quot;+t.getBounds()[index]);
+         System.out.println(&quot;getName: &quot;+t.getName());
+         //表示泛型变量所在的类
+         System.out.println(&quot;getGenericDeclaration: &quot;+t.getGenericDeclaration());
+     }
+}
+
+
+getBounds: class java.lang.Number
+getName: K
+getGenericDeclaration: class test.testType
+getBounds: class java.lang.Object
+getName: T
+getGenericDeclaration: class test.testType</code></pre><h4 id="GenericArrayType"><a href="#GenericArrayType" class="headerlink" title="GenericArrayType"></a>GenericArrayType</h4><p>泛型数组类型，用来描述ParameterizedType、TypeVariable类型的数组；即List<T>[] 、T[]等</p>
+<pre><code>class testType&lt;K,T&gt;{
+    HashMap&lt;K,T&gt;[] map;
+    List&lt;K&gt;[] list;
+    T Array[];
+}
+
+@Test
+public void testGenericArrayType() {
+    Field fields[] = testType.class.getDeclaredFields();
+    for(Field field:fields) {
+        System.out.println(field.getName()+&quot; instance of GenericArrayType: &quot;+(field.getGenericType() instanceof GenericArrayType));
+        System.out.println(field.getName()+&quot; instance of GenericArrayType: &quot;+(field.getGenericType() instanceof ParameterizedType));
+        //对于getGenericComponentType
+        //如果是参数化类型数组，则这里返回的是parameterizedType类型
+        //普通泛型数组，返回的TypeVariable类型
+        System.out.println(field.getName()+&quot;:getGenericComponentType &quot;+((GenericArrayType)field.getGenericType()).getGenericComponentType());
+    }
+}
+
+
+map instance of GenericArrayType: true
+map instance of GenericArrayType: false
+map:getGenericComponentType java.util.HashMap&lt;K, T&gt;
+list instance of GenericArrayType: true
+list instance of GenericArrayType: false
+list:getGenericComponentType java.util.List&lt;K&gt;
+Array instance of GenericArrayType: true
+Array instance of GenericArrayType: false
+Array:getGenericComponentType T</code></pre><h4 id="WildcardType"><a href="#WildcardType" class="headerlink" title="WildcardType"></a>WildcardType</h4><p>表示通配符类型，比如 &lt;?&gt;, &lt;? Extends Number&gt;等</p>
+<ul>
+<li>Type[] getUpperBounds()</li>
+</ul>
+<p>得到上边界的type数组</p>
+<ul>
+<li>Type[] getLowerBounds();</li>
+</ul>
+<p>得到下边界的type数组</p>
+<p><strong>如果没有指定上边界，则默认为Object，如果没有指定下边界，则默认为String</strong></p>
+<pre><code>class testWildcardType{
+    List&lt;? extends Number&gt; listNum;
+    List&lt;? super String&gt; listStr;
+}
+
+@Test
+public void testWildcardType() {
+    Field fields[] = testWildcardType.class.getDeclaredFields();
+    for(Field field:fields) {
+
+        ParameterizedType t = (ParameterizedType) field.getGenericType();
+        System.out.println(t.getTypeName());
+        Type[] Type = t.getActualTypeArguments();
+        System.out.println(field.getName()+&quot;.getGenericType.getActualTypeArguments(): instance of WildcardType is &quot;+(Type[0] instanceof WildcardType));
+        WildcardType wildcardType = (WildcardType) Type[0];
+        if(wildcardType.getUpperBounds().length&gt;0) {
+
+            System.out.println(&quot;getUpperBounds: &quot;+wildcardType.getUpperBounds()[0].getTypeName());
+        }
+        if(wildcardType.getLowerBounds().length&gt;0) {
+
+            System.out.println(&quot;getLowerBouds: &quot;+wildcardType.getLowerBounds()[0].getTypeName());
+        }
+    }
+}
+
+java.util.List&lt;? extends java.lang.Number&gt;
+listNum.getGenericType.getActualTypeArguments(): instance of WildcardType is true
+getUpperBounds: java.lang.Number
+java.util.List&lt;? super java.lang.String&gt;
+listStr.getGenericType.getActualTypeArguments(): instance of WildcardType is true
+getUpperBounds: java.lang.Object
+getLowerBouds: java.lang.String</code></pre><p>相关链接</p>
+<p><a href="https://juejin.im/post/5adefaba518825670e5cb44d" target="_blank" rel="noopener">参考一</a><br><a href="https://blog.csdn.net/ZytheMoon/article/details/79241988" target="_blank" rel="noopener">参考二</a></p>
 
           
         

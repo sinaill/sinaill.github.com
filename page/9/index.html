@@ -248,7 +248,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/BeanWrapperImpl%E5%9C%A8SpringMVC/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/ArrayList/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="sinaill">
@@ -267,7 +267,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/06/17/BeanWrapperImpl%E5%9C%A8SpringMVC/" itemprop="url">BeanWrapperImpl初探</a></h1>
+                <a class="post-title-link" href="/2020/06/17/ArrayList/" itemprop="url">ArrayList</a></h1>
         
 
         <div class="post-meta">
@@ -302,8 +302,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
-                    <span itemprop="name">框架</span>
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
                   </a>
                 </span>
 
@@ -341,253 +341,95 @@
       
         
           
-            <h3 id="BeanWrapperImpl"><a href="#BeanWrapperImpl" class="headerlink" title="BeanWrapperImpl"></a>BeanWrapperImpl</h3><p><code>BeanWrapper</code>接口是用来操作javaBean属性，例如在SpringMVC中，在<code>Databinder</code>中也使用了<code>BeanWrapperImpl</code>来对入参的类进行属性设置和对应的将<code>Request</code>中传来的类型为<code>String</code>的参数转化为入参类对应的属性的类型</p>
-<h3 id="操作属性"><a href="#操作属性" class="headerlink" title="操作属性"></a>操作属性</h3><h4 id="BeanWrapperImpl-1"><a href="#BeanWrapperImpl-1" class="headerlink" title="BeanWrapperImpl"></a>BeanWrapperImpl</h4><p>定义一个测试类</p>
-<pre><code>class Man{
-    private String name;
-    private int age;
+            <h3 id="结构"><a href="#结构" class="headerlink" title="结构"></a>结构</h3><p>内部维护了一个自动扩容的Object类型数组</p>
+<h3 id="成员变量"><a href="#成员变量" class="headerlink" title="成员变量"></a>成员变量</h3><p><code>private static final int DEFAULT_CAPACITY = 10;</code> </p>
+<p>默认初始化容量</p>
+<p><code>private static final Object[] EMPTY_ELEMENTDATA = {};</code> </p>
+<p>Shared empty array instance used for empty instances.</p>
+<p><code>private static final Object[] DEFAULTCAPACITY_EMPTY_ELEMENTDATA = {};</code></p>
+<p>两个的区别是，上面的是初始化容量为0时共享的array instance，下面的是以默认容量初始化时共享的array instance.</p>
+<pre><code>/**
+     * The array buffer into which the elements of the ArrayList are stored.
+     * The capacity of the ArrayList is the length of this array buffer. Any
+     * empty ArrayList with elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA
+     * will be expanded to DEFAULT_CAPACITY when the first element is added.
+     */
+       transient Object[] elementData;</code></pre><p>存储元素的Object数组，empty ArrayList with elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA will be expanded to DEFAULT_CAPACITY when the first element is added</p>
+<h3 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h3><pre><code>    /**
+     * Constructs an empty list with an initial capacity of ten.
+     */
+    public ArrayList() {
+        this.elementData = DEFAULTCAPACITY_EMPTY_ELEMENTDATA;
+    }</code></pre><p>无参构造函数时，Constructs an empty list with an initial capacity of ten</p>
+<pre><code>/**
+     * Constructs an empty list with the specified initial capacity.
+     *
+     * @param  initialCapacity  the initial capacity of the list
+     * @throws IllegalArgumentException if the specified initial capacity
+     *         is negative
+     */
+    public ArrayList(int initialCapacity) {
+        if (initialCapacity &gt; 0) {
+            this.elementData = new Object[initialCapacity];
+        } else if (initialCapacity == 0) {
+            this.elementData = EMPTY_ELEMENTDATA;
+        } else {
+            throw new IllegalArgumentException(&quot;Illegal Capacity: &quot;+
+                                               initialCapacity);
+        }
+    }</code></pre><p>int类型为参数的构造函数，构造确定容量的ArrayList，<strong>而不是默认的10位</strong></p>
+<pre><code>/**
+     * Constructs a list containing the elements of the specified
+     * collection, in the order they are returned by the collection&#39;s
+     * iterator.
+     *
+     * @param c the collection whose elements are to be placed into this list
+     * @throws NullPointerException if the specified collection is null
+     */
+    public ArrayList(Collection&lt;? extends E&gt; c) {
+        elementData = c.toArray();
+        if ((size = elementData.length) != 0) {
+            // c.toArray might (incorrectly) not return Object[] (see 6260652)
+            if (elementData.getClass() != Object[].class)
+                elementData = Arrays.copyOf(elementData, size, Object[].class);
+        } else {
+            // replace with empty array.
+            this.elementData = EMPTY_ELEMENTDATA;
+        }
+    }</code></pre><p>可传入List或者Set类型参数，由它们存放的内容来实例化ArrayList</p>
+<h3 id="遍历方法"><a href="#遍历方法" class="headerlink" title="遍历方法"></a>遍历方法</h3><pre><code>        List&lt;String&gt; a = new ArrayList&lt;String&gt;();
+        a.add(&quot;abc&quot;);
+        a.add(&quot;ddd&quot;);
+        a.add(&quot;ccc&quot;);
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
-
-    @Override
-    public String toString() {
-        return this.name+ &quot; &quot;+ this.age;
-    }
-}</code></pre><p>然后获取它的<code>BeanWrapper</code>实例</p>
-<pre><code>@Test
-public void test2(){
-    BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(new Man());
-    bw.setPropertyValue(&quot;name&quot;, &quot;张三&quot;);
-    bw.setPropertyValue(&quot;age&quot;, &quot;11&quot;);
-    System.out.println(bw.getWrappedInstance().toString());
-}</code></pre><p>正好输出结果为</p>
-<pre><code>张三 11</code></pre><p>在没有调用<code>Man</code>对象自身的<code>set</code>方法的情况下，为<code>Man</code>对象的属性成功赋了值</p>
-<h4 id="CachedIntrospectionResults"><a href="#CachedIntrospectionResults" class="headerlink" title="CachedIntrospectionResults"></a>CachedIntrospectionResults</h4><p><code>CachedIntrospectionResults</code>为<code>BeanWrapperImpl</code>中的<code>final</code>私有属性</p>
-<p><code>BeanWrapperImpl</code>类能对属性进行操作主要在于<code>CachedIntrospectionResults</code>的作用</p>
-<p>看<code>CachedIntrospectionResults</code>的构造函数</p>
-<pre><code>private CachedIntrospectionResults(Class&lt;?&gt; beanClass) throws BeansException {
-    try {
-        if (logger.isTraceEnabled()) {
-            logger.trace(&quot;Getting BeanInfo for class [&quot; + beanClass.getName() + &quot;]&quot;);
+        for (String string : a) {
+            System.out.println(string);
         }
 
-        BeanInfo beanInfo = null;
-        for (BeanInfoFactory beanInfoFactory : beanInfoFactories) {
-            beanInfo = beanInfoFactory.getBeanInfo(beanClass);
-            if (beanInfo != null) {
-                break;
-            }
-        }
-        if (beanInfo == null) {
-            // If none of the factories supported the class, fall back to the default
-            beanInfo = (shouldIntrospectorIgnoreBeaninfoClasses ?
-                    Introspector.getBeanInfo(beanClass, Introspector.IGNORE_ALL_BEANINFO) :
-                    Introspector.getBeanInfo(beanClass));
-        }
-        this.beanInfo = beanInfo;
-
-        if (logger.isTraceEnabled()) {
-            logger.trace(&quot;Caching PropertyDescriptors for class [&quot; + beanClass.getName() + &quot;]&quot;);
-        }
-        this.propertyDescriptorCache = new LinkedHashMap&lt;String, PropertyDescriptor&gt;();
-
-        // This call is slow so we do it once.
-        PropertyDescriptor[] pds = this.beanInfo.getPropertyDescriptors();
-        for (PropertyDescriptor pd : pds) {
-            if (Class.class.equals(beanClass) &amp;&amp;
-                    (&quot;classLoader&quot;.equals(pd.getName()) ||  &quot;protectionDomain&quot;.equals(pd.getName()))) {
-                // Ignore Class.getClassLoader() and getProtectionDomain() methods - nobody needs to bind to those
-                continue;
-            }
-            if (logger.isTraceEnabled()) {
-                logger.trace(&quot;Found bean property &#39;&quot; + pd.getName() + &quot;&#39;&quot; +
-                        (pd.getPropertyType() != null ? &quot; of type [&quot; + pd.getPropertyType().getName() + &quot;]&quot; : &quot;&quot;) +
-                        (pd.getPropertyEditorClass() != null ?
-                                &quot;; editor [&quot; + pd.getPropertyEditorClass().getName() + &quot;]&quot; : &quot;&quot;));
-            }
-            pd = buildGenericTypeAwarePropertyDescriptor(beanClass, pd);
-            this.propertyDescriptorCache.put(pd.getName(), pd);
+        Iterator&lt;String&gt; it = a.iterator();
+        while(it.hasNext()){    
+            System.out.println(it.next());
         }
 
-        this.typeDescriptorCache = new ConcurrentReferenceHashMap&lt;PropertyDescriptor, TypeDescriptor&gt;();
-    }
-    catch (IntrospectionException ex) {
-        throw new FatalBeanException(&quot;Failed to obtain BeanInfo for class [&quot; + beanClass.getName() + &quot;]&quot;, ex);
-    }
-}</code></pre><p>主要看这段代码<code>PropertyDescriptor[] pds = this.beanInfo.getPropertyDescriptors();</code>，由传入的<code>Class</code>对象获取到<code>BeanInfo</code>对象，然后从这个对象获取<code>PropertyDescriptor[]</code>数组，有关于<code>PropertyDescriptor</code>类的作用为，存放了目标类中某个属性的<code>get</code>，<code>set</code>方法，就是用它们来对类的属性进行填充设置</p>
-<p>由于源代码太长，我们进行简单模拟一下实现原理</p>
-<pre><code>@Test
-public void test3() throws Exception{
-    //构建`BeanWrapperImpl对象`
-    BeanWrapperImpl bw = new BeanWrapperImpl(new Man());
-    //反射获取getCachedIntrospectionResults放啊
-    Method getCachedIntrospectionResults = bw.getClass().getDeclaredMethod(&quot;getCachedIntrospectionResults&quot;);
-    //设置私有方法可访问
-    getCachedIntrospectionResults.setAccessible(true);
-    //反射调用方法获取CachedIntrospectionResults属性
-    CachedIntrospectionResults cir = (CachedIntrospectionResults)getCachedIntrospectionResults.invoke(bw);
-    //获取CachedIntrospectionResults变量内部的getPropertyDescriptor方法对象
-    Method method = cir.getClass().getDeclaredMethod(&quot;getPropertyDescriptor&quot;,new Class[]{String.class});
-    method.setAccessible(true);
-    //反射获取属性名为age的PropertyDescriptor变量
-    PropertyDescriptor agePropertyDescriptor = (PropertyDescriptor)method.invoke(cir, &quot;age&quot;);
-    //从PropertyDescriptor中获取`set`方法
-    Method ageWriteMethod = agePropertyDescriptor.getWriteMethod();
-    //调用set方法对属性进行设置
-    ageWriteMethod.invoke(bw.getWrappedInstance(), 11);
-    System.out.println(bw.getWrappedInstance().toString());
-
-}</code></pre><p>结果输出的是<code>null 11</code>，成功对属性进行了设置</p>
-<h4 id="PropertyEditor"><a href="#PropertyEditor" class="headerlink" title="PropertyEditor"></a>PropertyEditor</h4><p>可以注意到我们在直接使用<code>BeanWrapperImpl</code>设置属性的时候，传入的属性会由<code>String</code>自动转化为对应的属性类型，比如我们给<code>age</code>传入的是<code>String</code>类型的11，自动转化成了<code>int</code>类型</p>
-<p><code>BeanWrapperImpl</code>在调用<code>PropertyDescrptor</code>的<code>WriteMethod</code>之前，对属性进行了转化，这个工作是由<code>PropertyEditor</code>在起作用，它内置了多个类型的转化器<code>PropertyEditor</code></p>
-<p>我们先看<code>BeanWrapperImpl</code>的构造函数</p>
-<pre><code>public BeanWrapperImpl(Object object) {
-    registerDefaultEditors();
-    setWrappedInstance(object);
-}
-
-protected void registerDefaultEditors() {
-    this.defaultEditorsActive = true;
-}</code></pre><p>可以看到注册了默认属性编辑器，并且它是属于懒加载</p>
-<pre><code>public PropertyEditor getDefaultEditor(Class&lt;?&gt; requiredType) {
-    if (!this.defaultEditorsActive) {
-        return null;
-    }
-    if (this.overriddenDefaultEditors != null) {
-        PropertyEditor editor = this.overriddenDefaultEditors.get(requiredType);
-        if (editor != null) {
-            return editor;
-        }
-    }
-    if (this.defaultEditors == null) {
-        createDefaultEditors();
-    }
-    return this.defaultEditors.get(requiredType);
-}</code></pre><p>在需要对属性进行转化的时候，获取默认属性编辑器时，开始初始化内置的<code>PropertyEditor</code></p>
-<pre><code>private void createDefaultEditors() {
-    this.defaultEditors = new HashMap&lt;Class&lt;?&gt;, PropertyEditor&gt;(64);
-
-    // Simple editors, without parameterization capabilities.
-    // The JDK does not contain a default editor for any of these target types.
-    this.defaultEditors.put(Charset.class, new CharsetEditor());
-    this.defaultEditors.put(Class.class, new ClassEditor());
-    this.defaultEditors.put(Class[].class, new ClassArrayEditor());
-    this.defaultEditors.put(Currency.class, new CurrencyEditor());
-    this.defaultEditors.put(File.class, new FileEditor());
-    this.defaultEditors.put(InputStream.class, new InputStreamEditor());
-    this.defaultEditors.put(InputSource.class, new InputSourceEditor());
-    this.defaultEditors.put(Locale.class, new LocaleEditor());
-    this.defaultEditors.put(Pattern.class, new PatternEditor());
-    this.defaultEditors.put(Properties.class, new PropertiesEditor());
-    this.defaultEditors.put(Resource[].class, new ResourceArrayPropertyEditor());
-    this.defaultEditors.put(TimeZone.class, new TimeZoneEditor());
-    this.defaultEditors.put(URI.class, new URIEditor());
-    this.defaultEditors.put(URL.class, new URLEditor());
-    this.defaultEditors.put(UUID.class, new UUIDEditor());
-    if (zoneIdClass != null) {
-        this.defaultEditors.put(zoneIdClass, new ZoneIdEditor());
+        a.forEach(str-&gt;system.out.println(str))</code></pre><h3 id="自动扩容"><a href="#自动扩容" class="headerlink" title="自动扩容"></a>自动扩容</h3><pre><code>    private void grow(int minCapacity) {
+        // overflow-conscious code
+        int oldCapacity = elementData.length;
+        int newCapacity = oldCapacity + (oldCapacity &gt;&gt; 1);
+        if (newCapacity - minCapacity &lt; 0)
+            newCapacity = minCapacity;
+        if (newCapacity - MAX_ARRAY_SIZE &gt; 0)
+            newCapacity = hugeCapacity(minCapacity);
+        // minCapacity is usually close to size, so this is a win:
+        elementData = Arrays.copyOf(elementData, newCapacity);
     }
 
-    // Default instances of collection editors.
-    // Can be overridden by registering custom instances of those as custom editors.
-    this.defaultEditors.put(Collection.class, new CustomCollectionEditor(Collection.class));
-    this.defaultEditors.put(Set.class, new CustomCollectionEditor(Set.class));
-    this.defaultEditors.put(SortedSet.class, new CustomCollectionEditor(SortedSet.class));
-    this.defaultEditors.put(List.class, new CustomCollectionEditor(List.class));
-    this.defaultEditors.put(SortedMap.class, new CustomMapEditor(SortedMap.class));
-
-    // Default editors for primitive arrays.
-    this.defaultEditors.put(byte[].class, new ByteArrayPropertyEditor());
-    this.defaultEditors.put(char[].class, new CharArrayPropertyEditor());
-
-    // The JDK does not contain a default editor for char!
-    this.defaultEditors.put(char.class, new CharacterEditor(false));
-    this.defaultEditors.put(Character.class, new CharacterEditor(true));
-
-    // Spring&#39;s CustomBooleanEditor accepts more flag values than the JDK&#39;s default editor.
-    this.defaultEditors.put(boolean.class, new CustomBooleanEditor(false));
-    this.defaultEditors.put(Boolean.class, new CustomBooleanEditor(true));
-
-    // The JDK does not contain default editors for number wrapper types!
-    // Override JDK primitive number editors with our own CustomNumberEditor.
-    this.defaultEditors.put(byte.class, new CustomNumberEditor(Byte.class, false));
-    this.defaultEditors.put(Byte.class, new CustomNumberEditor(Byte.class, true));
-    this.defaultEditors.put(short.class, new CustomNumberEditor(Short.class, false));
-    this.defaultEditors.put(Short.class, new CustomNumberEditor(Short.class, true));
-    this.defaultEditors.put(int.class, new CustomNumberEditor(Integer.class, false));
-    this.defaultEditors.put(Integer.class, new CustomNumberEditor(Integer.class, true));
-    this.defaultEditors.put(long.class, new CustomNumberEditor(Long.class, false));
-    this.defaultEditors.put(Long.class, new CustomNumberEditor(Long.class, true));
-    this.defaultEditors.put(float.class, new CustomNumberEditor(Float.class, false));
-    this.defaultEditors.put(Float.class, new CustomNumberEditor(Float.class, true));
-    this.defaultEditors.put(double.class, new CustomNumberEditor(Double.class, false));
-    this.defaultEditors.put(Double.class, new CustomNumberEditor(Double.class, true));
-    this.defaultEditors.put(BigDecimal.class, new CustomNumberEditor(BigDecimal.class, true));
-    this.defaultEditors.put(BigInteger.class, new CustomNumberEditor(BigInteger.class, true));
-
-    // Only register config value editors if explicitly requested.
-    if (this.configValueEditorsActive) {
-        StringArrayPropertyEditor sae = new StringArrayPropertyEditor();
-        this.defaultEditors.put(String[].class, sae);
-        this.defaultEditors.put(short[].class, sae);
-        this.defaultEditors.put(int[].class, sae);
-        this.defaultEditors.put(long[].class, sae);
-    }
-}
-</code></pre><p><code>createDefaultEditors</code>方法初始化了以上属性编辑器</p>
-<p>这些编辑器继承了<code>PropertyEditorSupport</code>，覆写它内部的<code>setAsText</code>方法来对<code>String</code>转化为其他类型变量</p>
-<p>例如我们这里使用的应该是<code>CustomNumberEditor</code>来将字符串<code>11</code>转化为<code>int</code>类型<code>11</code></p>
-<pre><code>@Override
-public void setAsText(String text) throws IllegalArgumentException {
-    if (this.allowEmpty &amp;&amp; !StringUtils.hasText(text)) {
-        // Treat empty String as null value.
-        setValue(null);
-    }
-    else if (this.numberFormat != null) {
-        // Use given NumberFormat for parsing text.
-        setValue(NumberUtils.parseNumber(text, this.numberClass, this.numberFormat));
-    }
-    else {
-        // Use default valueOf methods for parsing text.
-        setValue(NumberUtils.parseNumber(text, this.numberClass));
-    }
-}</code></pre><p>将我们传入的<code>String</code>类型属性转化为对应的<code>numberClass</code></p>
-<p>接着我们使用代码模拟下这个过程，根据目标属性选择一个合适的<code>PropertyEditor</code></p>
-<pre><code>@Test
-public void test3() throws Exception{
-    BeanWrapperImpl bw = new BeanWrapperImpl(new Man());
-    Method getCachedIntrospectionResults = bw.getClass().getDeclaredMethod(&quot;getCachedIntrospectionResults&quot;);
-    getCachedIntrospectionResults.setAccessible(true);
-    CachedIntrospectionResults cir = (CachedIntrospectionResults)getCachedIntrospectionResults.invoke(bw);
-    Method method = cir.getClass().getDeclaredMethod(&quot;getPropertyDescriptor&quot;,new Class[]{String.class});
-    method.setAccessible(true);
-    PropertyDescriptor agePropertyDescriptor = (PropertyDescriptor)method.invoke(cir, &quot;age&quot;);
-    Method ageWriteMethod = agePropertyDescriptor.getWriteMethod();
-    //根据目标属性的类选择对应的PropertyEditor
-    PropertyEditor propertyEditor = bw.getDefaultEditor(ageWriteMethod.getParameterTypes()[0]);
-    //转化
-    propertyEditor.setAsText(&quot;11&quot;);
-    //获取转化后的值
-    Object value = propertyEditor.getValue();
-    ageWriteMethod.invoke(bw.getWrappedInstance(), value);
-    System.out.println(bw.getWrappedInstance().toString());
-
-}</code></pre><h3 id="在SpringMVC中"><a href="#在SpringMVC中" class="headerlink" title="在SpringMVC中"></a>在SpringMVC中</h3><p>在<code>SpringMVC</code>中<code>BeanWrapperImpl</code>帮助我们将客户端发来的<code>Request</code>中的参数由<code>String</code>类型转化为我们需要的类型，它与<code>DataBinder</code>对象一起使用，在<code>DataBinder</code>中被初始化，然后传入了另一些<code>Converter</code>转换器，<code>BeanWrapperImpl</code>中有个<code>ConversionService</code>类型的成员变量，所有的转换器是以它为载体传入的</p>
-<p>常用场景为将<code>Request</code>中多个参数填充到方法的的某个入参类中，在其中进行必要的类型转换</p>
+   private static int hugeCapacity(int minCapacity) {
+        if (minCapacity &lt; 0) // overflow
+            throw new OutOfMemoryError();
+        return (minCapacity &gt; MAX_ARRAY_SIZE) ?
+            Integer.MAX_VALUE :
+            MAX_ARRAY_SIZE;
+    }</code></pre><p>先1.5倍扩容，如果还是不够，直接设置为当前size，再比较MAX_ARRAY_SIZE，扩容后新容量大于它时，且minCapacity即当前包含元素个数&lt;MAX_ARRAY_SIZE，则新容量设置为MAX_ARRAY_SIZE。<br>反之，扩容后新容量和当前包含元素个数都都大于MAX_ARRAY_SIZE时，新容量设置为Integer.MAX_VALUE</p>
 
           
         
@@ -970,7 +812,7 @@ public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer m
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/ArrayList/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/BeanWrapperImpl%E5%9C%A8SpringMVC/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="sinaill">
@@ -989,7 +831,7 @@ public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer m
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/06/17/ArrayList/" itemprop="url">ArrayList</a></h1>
+                <a class="post-title-link" href="/2020/06/17/BeanWrapperImpl%E5%9C%A8SpringMVC/" itemprop="url">BeanWrapperImpl初探</a></h1>
         
 
         <div class="post-meta">
@@ -1024,8 +866,8 @@ public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer m
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
+                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">框架</span>
                   </a>
                 </span>
 
@@ -1063,95 +905,253 @@ public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer m
       
         
           
-            <h3 id="结构"><a href="#结构" class="headerlink" title="结构"></a>结构</h3><p>内部维护了一个自动扩容的Object类型数组</p>
-<h3 id="成员变量"><a href="#成员变量" class="headerlink" title="成员变量"></a>成员变量</h3><p><code>private static final int DEFAULT_CAPACITY = 10;</code> </p>
-<p>默认初始化容量</p>
-<p><code>private static final Object[] EMPTY_ELEMENTDATA = {};</code> </p>
-<p>Shared empty array instance used for empty instances.</p>
-<p><code>private static final Object[] DEFAULTCAPACITY_EMPTY_ELEMENTDATA = {};</code></p>
-<p>两个的区别是，上面的是初始化容量为0时共享的array instance，下面的是以默认容量初始化时共享的array instance.</p>
-<pre><code>/**
-     * The array buffer into which the elements of the ArrayList are stored.
-     * The capacity of the ArrayList is the length of this array buffer. Any
-     * empty ArrayList with elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA
-     * will be expanded to DEFAULT_CAPACITY when the first element is added.
-     */
-       transient Object[] elementData;</code></pre><p>存储元素的Object数组，empty ArrayList with elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA will be expanded to DEFAULT_CAPACITY when the first element is added</p>
-<h3 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h3><pre><code>    /**
-     * Constructs an empty list with an initial capacity of ten.
-     */
-    public ArrayList() {
-        this.elementData = DEFAULTCAPACITY_EMPTY_ELEMENTDATA;
-    }</code></pre><p>无参构造函数时，Constructs an empty list with an initial capacity of ten</p>
-<pre><code>/**
-     * Constructs an empty list with the specified initial capacity.
-     *
-     * @param  initialCapacity  the initial capacity of the list
-     * @throws IllegalArgumentException if the specified initial capacity
-     *         is negative
-     */
-    public ArrayList(int initialCapacity) {
-        if (initialCapacity &gt; 0) {
-            this.elementData = new Object[initialCapacity];
-        } else if (initialCapacity == 0) {
-            this.elementData = EMPTY_ELEMENTDATA;
-        } else {
-            throw new IllegalArgumentException(&quot;Illegal Capacity: &quot;+
-                                               initialCapacity);
-        }
-    }</code></pre><p>int类型为参数的构造函数，构造确定容量的ArrayList，<strong>而不是默认的10位</strong></p>
-<pre><code>/**
-     * Constructs a list containing the elements of the specified
-     * collection, in the order they are returned by the collection&#39;s
-     * iterator.
-     *
-     * @param c the collection whose elements are to be placed into this list
-     * @throws NullPointerException if the specified collection is null
-     */
-    public ArrayList(Collection&lt;? extends E&gt; c) {
-        elementData = c.toArray();
-        if ((size = elementData.length) != 0) {
-            // c.toArray might (incorrectly) not return Object[] (see 6260652)
-            if (elementData.getClass() != Object[].class)
-                elementData = Arrays.copyOf(elementData, size, Object[].class);
-        } else {
-            // replace with empty array.
-            this.elementData = EMPTY_ELEMENTDATA;
-        }
-    }</code></pre><p>可传入List或者Set类型参数，由它们存放的内容来实例化ArrayList</p>
-<h3 id="遍历方法"><a href="#遍历方法" class="headerlink" title="遍历方法"></a>遍历方法</h3><pre><code>        List&lt;String&gt; a = new ArrayList&lt;String&gt;();
-        a.add(&quot;abc&quot;);
-        a.add(&quot;ddd&quot;);
-        a.add(&quot;ccc&quot;);
+            <h3 id="BeanWrapperImpl"><a href="#BeanWrapperImpl" class="headerlink" title="BeanWrapperImpl"></a>BeanWrapperImpl</h3><p><code>BeanWrapper</code>接口是用来操作javaBean属性，例如在SpringMVC中，在<code>Databinder</code>中也使用了<code>BeanWrapperImpl</code>来对入参的类进行属性设置和对应的将<code>Request</code>中传来的类型为<code>String</code>的参数转化为入参类对应的属性的类型</p>
+<h3 id="操作属性"><a href="#操作属性" class="headerlink" title="操作属性"></a>操作属性</h3><h4 id="BeanWrapperImpl-1"><a href="#BeanWrapperImpl-1" class="headerlink" title="BeanWrapperImpl"></a>BeanWrapperImpl</h4><p>定义一个测试类</p>
+<pre><code>class Man{
+    private String name;
+    private int age;
 
-        for (String string : a) {
-            System.out.println(string);
-        }
-
-        Iterator&lt;String&gt; it = a.iterator();
-        while(it.hasNext()){    
-            System.out.println(it.next());
-        }
-
-        a.forEach(str-&gt;system.out.println(str))</code></pre><h3 id="自动扩容"><a href="#自动扩容" class="headerlink" title="自动扩容"></a>自动扩容</h3><pre><code>    private void grow(int minCapacity) {
-        // overflow-conscious code
-        int oldCapacity = elementData.length;
-        int newCapacity = oldCapacity + (oldCapacity &gt;&gt; 1);
-        if (newCapacity - minCapacity &lt; 0)
-            newCapacity = minCapacity;
-        if (newCapacity - MAX_ARRAY_SIZE &gt; 0)
-            newCapacity = hugeCapacity(minCapacity);
-        // minCapacity is usually close to size, so this is a win:
-        elementData = Arrays.copyOf(elementData, newCapacity);
+    public String getName() {
+        return name;
     }
 
-   private static int hugeCapacity(int minCapacity) {
-        if (minCapacity &lt; 0) // overflow
-            throw new OutOfMemoryError();
-        return (minCapacity &gt; MAX_ARRAY_SIZE) ?
-            Integer.MAX_VALUE :
-            MAX_ARRAY_SIZE;
-    }</code></pre><p>先1.5倍扩容，如果还是不够，直接设置为当前size，再比较MAX_ARRAY_SIZE，扩容后新容量大于它时，且minCapacity即当前包含元素个数&lt;MAX_ARRAY_SIZE，则新容量设置为MAX_ARRAY_SIZE。<br>反之，扩容后新容量和当前包含元素个数都都大于MAX_ARRAY_SIZE时，新容量设置为Integer.MAX_VALUE</p>
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    @Override
+    public String toString() {
+        return this.name+ &quot; &quot;+ this.age;
+    }
+}</code></pre><p>然后获取它的<code>BeanWrapper</code>实例</p>
+<pre><code>@Test
+public void test2(){
+    BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(new Man());
+    bw.setPropertyValue(&quot;name&quot;, &quot;张三&quot;);
+    bw.setPropertyValue(&quot;age&quot;, &quot;11&quot;);
+    System.out.println(bw.getWrappedInstance().toString());
+}</code></pre><p>正好输出结果为</p>
+<pre><code>张三 11</code></pre><p>在没有调用<code>Man</code>对象自身的<code>set</code>方法的情况下，为<code>Man</code>对象的属性成功赋了值</p>
+<h4 id="CachedIntrospectionResults"><a href="#CachedIntrospectionResults" class="headerlink" title="CachedIntrospectionResults"></a>CachedIntrospectionResults</h4><p><code>CachedIntrospectionResults</code>为<code>BeanWrapperImpl</code>中的<code>final</code>私有属性</p>
+<p><code>BeanWrapperImpl</code>类能对属性进行操作主要在于<code>CachedIntrospectionResults</code>的作用</p>
+<p>看<code>CachedIntrospectionResults</code>的构造函数</p>
+<pre><code>private CachedIntrospectionResults(Class&lt;?&gt; beanClass) throws BeansException {
+    try {
+        if (logger.isTraceEnabled()) {
+            logger.trace(&quot;Getting BeanInfo for class [&quot; + beanClass.getName() + &quot;]&quot;);
+        }
+
+        BeanInfo beanInfo = null;
+        for (BeanInfoFactory beanInfoFactory : beanInfoFactories) {
+            beanInfo = beanInfoFactory.getBeanInfo(beanClass);
+            if (beanInfo != null) {
+                break;
+            }
+        }
+        if (beanInfo == null) {
+            // If none of the factories supported the class, fall back to the default
+            beanInfo = (shouldIntrospectorIgnoreBeaninfoClasses ?
+                    Introspector.getBeanInfo(beanClass, Introspector.IGNORE_ALL_BEANINFO) :
+                    Introspector.getBeanInfo(beanClass));
+        }
+        this.beanInfo = beanInfo;
+
+        if (logger.isTraceEnabled()) {
+            logger.trace(&quot;Caching PropertyDescriptors for class [&quot; + beanClass.getName() + &quot;]&quot;);
+        }
+        this.propertyDescriptorCache = new LinkedHashMap&lt;String, PropertyDescriptor&gt;();
+
+        // This call is slow so we do it once.
+        PropertyDescriptor[] pds = this.beanInfo.getPropertyDescriptors();
+        for (PropertyDescriptor pd : pds) {
+            if (Class.class.equals(beanClass) &amp;&amp;
+                    (&quot;classLoader&quot;.equals(pd.getName()) ||  &quot;protectionDomain&quot;.equals(pd.getName()))) {
+                // Ignore Class.getClassLoader() and getProtectionDomain() methods - nobody needs to bind to those
+                continue;
+            }
+            if (logger.isTraceEnabled()) {
+                logger.trace(&quot;Found bean property &#39;&quot; + pd.getName() + &quot;&#39;&quot; +
+                        (pd.getPropertyType() != null ? &quot; of type [&quot; + pd.getPropertyType().getName() + &quot;]&quot; : &quot;&quot;) +
+                        (pd.getPropertyEditorClass() != null ?
+                                &quot;; editor [&quot; + pd.getPropertyEditorClass().getName() + &quot;]&quot; : &quot;&quot;));
+            }
+            pd = buildGenericTypeAwarePropertyDescriptor(beanClass, pd);
+            this.propertyDescriptorCache.put(pd.getName(), pd);
+        }
+
+        this.typeDescriptorCache = new ConcurrentReferenceHashMap&lt;PropertyDescriptor, TypeDescriptor&gt;();
+    }
+    catch (IntrospectionException ex) {
+        throw new FatalBeanException(&quot;Failed to obtain BeanInfo for class [&quot; + beanClass.getName() + &quot;]&quot;, ex);
+    }
+}</code></pre><p>主要看这段代码<code>PropertyDescriptor[] pds = this.beanInfo.getPropertyDescriptors();</code>，由传入的<code>Class</code>对象获取到<code>BeanInfo</code>对象，然后从这个对象获取<code>PropertyDescriptor[]</code>数组，有关于<code>PropertyDescriptor</code>类的作用为，存放了目标类中某个属性的<code>get</code>，<code>set</code>方法，就是用它们来对类的属性进行填充设置</p>
+<p>由于源代码太长，我们进行简单模拟一下实现原理</p>
+<pre><code>@Test
+public void test3() throws Exception{
+    //构建`BeanWrapperImpl对象`
+    BeanWrapperImpl bw = new BeanWrapperImpl(new Man());
+    //反射获取getCachedIntrospectionResults放啊
+    Method getCachedIntrospectionResults = bw.getClass().getDeclaredMethod(&quot;getCachedIntrospectionResults&quot;);
+    //设置私有方法可访问
+    getCachedIntrospectionResults.setAccessible(true);
+    //反射调用方法获取CachedIntrospectionResults属性
+    CachedIntrospectionResults cir = (CachedIntrospectionResults)getCachedIntrospectionResults.invoke(bw);
+    //获取CachedIntrospectionResults变量内部的getPropertyDescriptor方法对象
+    Method method = cir.getClass().getDeclaredMethod(&quot;getPropertyDescriptor&quot;,new Class[]{String.class});
+    method.setAccessible(true);
+    //反射获取属性名为age的PropertyDescriptor变量
+    PropertyDescriptor agePropertyDescriptor = (PropertyDescriptor)method.invoke(cir, &quot;age&quot;);
+    //从PropertyDescriptor中获取`set`方法
+    Method ageWriteMethod = agePropertyDescriptor.getWriteMethod();
+    //调用set方法对属性进行设置
+    ageWriteMethod.invoke(bw.getWrappedInstance(), 11);
+    System.out.println(bw.getWrappedInstance().toString());
+
+}</code></pre><p>结果输出的是<code>null 11</code>，成功对属性进行了设置</p>
+<h4 id="PropertyEditor"><a href="#PropertyEditor" class="headerlink" title="PropertyEditor"></a>PropertyEditor</h4><p>可以注意到我们在直接使用<code>BeanWrapperImpl</code>设置属性的时候，传入的属性会由<code>String</code>自动转化为对应的属性类型，比如我们给<code>age</code>传入的是<code>String</code>类型的11，自动转化成了<code>int</code>类型</p>
+<p><code>BeanWrapperImpl</code>在调用<code>PropertyDescrptor</code>的<code>WriteMethod</code>之前，对属性进行了转化，这个工作是由<code>PropertyEditor</code>在起作用，它内置了多个类型的转化器<code>PropertyEditor</code></p>
+<p>我们先看<code>BeanWrapperImpl</code>的构造函数</p>
+<pre><code>public BeanWrapperImpl(Object object) {
+    registerDefaultEditors();
+    setWrappedInstance(object);
+}
+
+protected void registerDefaultEditors() {
+    this.defaultEditorsActive = true;
+}</code></pre><p>可以看到注册了默认属性编辑器，并且它是属于懒加载</p>
+<pre><code>public PropertyEditor getDefaultEditor(Class&lt;?&gt; requiredType) {
+    if (!this.defaultEditorsActive) {
+        return null;
+    }
+    if (this.overriddenDefaultEditors != null) {
+        PropertyEditor editor = this.overriddenDefaultEditors.get(requiredType);
+        if (editor != null) {
+            return editor;
+        }
+    }
+    if (this.defaultEditors == null) {
+        createDefaultEditors();
+    }
+    return this.defaultEditors.get(requiredType);
+}</code></pre><p>在需要对属性进行转化的时候，获取默认属性编辑器时，开始初始化内置的<code>PropertyEditor</code></p>
+<pre><code>private void createDefaultEditors() {
+    this.defaultEditors = new HashMap&lt;Class&lt;?&gt;, PropertyEditor&gt;(64);
+
+    // Simple editors, without parameterization capabilities.
+    // The JDK does not contain a default editor for any of these target types.
+    this.defaultEditors.put(Charset.class, new CharsetEditor());
+    this.defaultEditors.put(Class.class, new ClassEditor());
+    this.defaultEditors.put(Class[].class, new ClassArrayEditor());
+    this.defaultEditors.put(Currency.class, new CurrencyEditor());
+    this.defaultEditors.put(File.class, new FileEditor());
+    this.defaultEditors.put(InputStream.class, new InputStreamEditor());
+    this.defaultEditors.put(InputSource.class, new InputSourceEditor());
+    this.defaultEditors.put(Locale.class, new LocaleEditor());
+    this.defaultEditors.put(Pattern.class, new PatternEditor());
+    this.defaultEditors.put(Properties.class, new PropertiesEditor());
+    this.defaultEditors.put(Resource[].class, new ResourceArrayPropertyEditor());
+    this.defaultEditors.put(TimeZone.class, new TimeZoneEditor());
+    this.defaultEditors.put(URI.class, new URIEditor());
+    this.defaultEditors.put(URL.class, new URLEditor());
+    this.defaultEditors.put(UUID.class, new UUIDEditor());
+    if (zoneIdClass != null) {
+        this.defaultEditors.put(zoneIdClass, new ZoneIdEditor());
+    }
+
+    // Default instances of collection editors.
+    // Can be overridden by registering custom instances of those as custom editors.
+    this.defaultEditors.put(Collection.class, new CustomCollectionEditor(Collection.class));
+    this.defaultEditors.put(Set.class, new CustomCollectionEditor(Set.class));
+    this.defaultEditors.put(SortedSet.class, new CustomCollectionEditor(SortedSet.class));
+    this.defaultEditors.put(List.class, new CustomCollectionEditor(List.class));
+    this.defaultEditors.put(SortedMap.class, new CustomMapEditor(SortedMap.class));
+
+    // Default editors for primitive arrays.
+    this.defaultEditors.put(byte[].class, new ByteArrayPropertyEditor());
+    this.defaultEditors.put(char[].class, new CharArrayPropertyEditor());
+
+    // The JDK does not contain a default editor for char!
+    this.defaultEditors.put(char.class, new CharacterEditor(false));
+    this.defaultEditors.put(Character.class, new CharacterEditor(true));
+
+    // Spring&#39;s CustomBooleanEditor accepts more flag values than the JDK&#39;s default editor.
+    this.defaultEditors.put(boolean.class, new CustomBooleanEditor(false));
+    this.defaultEditors.put(Boolean.class, new CustomBooleanEditor(true));
+
+    // The JDK does not contain default editors for number wrapper types!
+    // Override JDK primitive number editors with our own CustomNumberEditor.
+    this.defaultEditors.put(byte.class, new CustomNumberEditor(Byte.class, false));
+    this.defaultEditors.put(Byte.class, new CustomNumberEditor(Byte.class, true));
+    this.defaultEditors.put(short.class, new CustomNumberEditor(Short.class, false));
+    this.defaultEditors.put(Short.class, new CustomNumberEditor(Short.class, true));
+    this.defaultEditors.put(int.class, new CustomNumberEditor(Integer.class, false));
+    this.defaultEditors.put(Integer.class, new CustomNumberEditor(Integer.class, true));
+    this.defaultEditors.put(long.class, new CustomNumberEditor(Long.class, false));
+    this.defaultEditors.put(Long.class, new CustomNumberEditor(Long.class, true));
+    this.defaultEditors.put(float.class, new CustomNumberEditor(Float.class, false));
+    this.defaultEditors.put(Float.class, new CustomNumberEditor(Float.class, true));
+    this.defaultEditors.put(double.class, new CustomNumberEditor(Double.class, false));
+    this.defaultEditors.put(Double.class, new CustomNumberEditor(Double.class, true));
+    this.defaultEditors.put(BigDecimal.class, new CustomNumberEditor(BigDecimal.class, true));
+    this.defaultEditors.put(BigInteger.class, new CustomNumberEditor(BigInteger.class, true));
+
+    // Only register config value editors if explicitly requested.
+    if (this.configValueEditorsActive) {
+        StringArrayPropertyEditor sae = new StringArrayPropertyEditor();
+        this.defaultEditors.put(String[].class, sae);
+        this.defaultEditors.put(short[].class, sae);
+        this.defaultEditors.put(int[].class, sae);
+        this.defaultEditors.put(long[].class, sae);
+    }
+}
+</code></pre><p><code>createDefaultEditors</code>方法初始化了以上属性编辑器</p>
+<p>这些编辑器继承了<code>PropertyEditorSupport</code>，覆写它内部的<code>setAsText</code>方法来对<code>String</code>转化为其他类型变量</p>
+<p>例如我们这里使用的应该是<code>CustomNumberEditor</code>来将字符串<code>11</code>转化为<code>int</code>类型<code>11</code></p>
+<pre><code>@Override
+public void setAsText(String text) throws IllegalArgumentException {
+    if (this.allowEmpty &amp;&amp; !StringUtils.hasText(text)) {
+        // Treat empty String as null value.
+        setValue(null);
+    }
+    else if (this.numberFormat != null) {
+        // Use given NumberFormat for parsing text.
+        setValue(NumberUtils.parseNumber(text, this.numberClass, this.numberFormat));
+    }
+    else {
+        // Use default valueOf methods for parsing text.
+        setValue(NumberUtils.parseNumber(text, this.numberClass));
+    }
+}</code></pre><p>将我们传入的<code>String</code>类型属性转化为对应的<code>numberClass</code></p>
+<p>接着我们使用代码模拟下这个过程，根据目标属性选择一个合适的<code>PropertyEditor</code></p>
+<pre><code>@Test
+public void test3() throws Exception{
+    BeanWrapperImpl bw = new BeanWrapperImpl(new Man());
+    Method getCachedIntrospectionResults = bw.getClass().getDeclaredMethod(&quot;getCachedIntrospectionResults&quot;);
+    getCachedIntrospectionResults.setAccessible(true);
+    CachedIntrospectionResults cir = (CachedIntrospectionResults)getCachedIntrospectionResults.invoke(bw);
+    Method method = cir.getClass().getDeclaredMethod(&quot;getPropertyDescriptor&quot;,new Class[]{String.class});
+    method.setAccessible(true);
+    PropertyDescriptor agePropertyDescriptor = (PropertyDescriptor)method.invoke(cir, &quot;age&quot;);
+    Method ageWriteMethod = agePropertyDescriptor.getWriteMethod();
+    //根据目标属性的类选择对应的PropertyEditor
+    PropertyEditor propertyEditor = bw.getDefaultEditor(ageWriteMethod.getParameterTypes()[0]);
+    //转化
+    propertyEditor.setAsText(&quot;11&quot;);
+    //获取转化后的值
+    Object value = propertyEditor.getValue();
+    ageWriteMethod.invoke(bw.getWrappedInstance(), value);
+    System.out.println(bw.getWrappedInstance().toString());
+
+}</code></pre><h3 id="在SpringMVC中"><a href="#在SpringMVC中" class="headerlink" title="在SpringMVC中"></a>在SpringMVC中</h3><p>在<code>SpringMVC</code>中<code>BeanWrapperImpl</code>帮助我们将客户端发来的<code>Request</code>中的参数由<code>String</code>类型转化为我们需要的类型，它与<code>DataBinder</code>对象一起使用，在<code>DataBinder</code>中被初始化，然后传入了另一些<code>Converter</code>转换器，<code>BeanWrapperImpl</code>中有个<code>ConversionService</code>类型的成员变量，所有的转换器是以它为载体传入的</p>
+<p>常用场景为将<code>Request</code>中多个参数填充到方法的的某个入参类中，在其中进行必要的类型转换</p>
 
           
         

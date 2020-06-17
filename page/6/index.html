@@ -502,187 +502,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/consumer/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/consumer/" itemprop="url">consumer接口</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="consumer"><a href="#consumer" class="headerlink" title="consumer"></a>consumer</h3><pre><code>@FunctionalInterface
-public interface Consumer&lt;T&gt; {
-
-    /**
-     * Performs this operation on the given argument.
-     *
-     * @param t the input argument
-     */
-    void accept(T t);
-
-    /**
-     * Returns a composed {@code Consumer} that performs, in sequence, this
-     * operation followed by the {@code after} operation. If performing either
-     * operation throws an exception, it is relayed to the caller of the
-     * composed operation.  If performing this operation throws an exception,
-     * the {@code after} operation will not be performed.
-     *
-     * @param after the operation to perform after this operation
-     * @return a composed {@code Consumer} that performs in sequence this
-     * operation followed by the {@code after} operation
-     * @throws NullPointerException if {@code after} is null
-     */
-    default Consumer&lt;T&gt; andThen(Consumer&lt;? super T&gt; after) {
-        Objects.requireNonNull(after);
-        return (T t) -&gt; { accept(t); after.accept(t); };
-    }
-}</code></pre><p>consumer是一个函数式接口，可配合实现了Iterable的类和Iterator使用。</p>
-<pre><code>        List&lt;student&gt; a = new ArrayList&lt;student&gt;();
-        a.add(new student(1, &quot;aa&quot;));
-        a.add(new student(2, &quot;bb&quot;));
-        a.add(new student(3, &quot;cc&quot;));
-        a.forEach(stu-&gt;stu.id=4);
-        a.forEach(stu-&gt;System.out::println)</code></pre><p><code>4 4 4</code></p>
-<p>List继承自Collection，而Collection又实现了Iterable接口，接口的foreach方法如下：</p>
-<pre><code>    default void forEach(Consumer&lt;? super T&gt; action) {
-        Objects.requireNonNull(action);
-        for (T t : this) {
-            action.accept(t);
-        }
-    }</code></pre><p><strong>所以，此接口是用来处理集合中所有元素，Performs this operation on the given argument.</strong></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/comparable%20and%20comparator/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -889,7 +708,7 @@ public interface Consumer&lt;T&gt; {
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/ajax%E4%B8%ADjson%E5%92%8Cspringmvc/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/consumer/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="sinaill">
@@ -908,7 +727,7 @@ public interface Consumer&lt;T&gt; {
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/06/17/ajax%E4%B8%ADjson%E5%92%8Cspringmvc/" itemprop="url">ajax中json和SpringMVC</a></h1>
+                <a class="post-title-link" href="/2020/06/17/consumer/" itemprop="url">consumer接口</a></h1>
         
 
         <div class="post-meta">
@@ -943,8 +762,8 @@ public interface Consumer&lt;T&gt; {
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
-                    <span itemprop="name">框架</span>
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
                   </a>
                 </span>
 
@@ -982,42 +801,47 @@ public interface Consumer&lt;T&gt; {
       
         
           
-            <h3 id="json"><a href="#json" class="headerlink" title="json"></a>json</h3><p>json对象格式:<code>{&quot;param&quot;:&quot;value&quot;,&quot;param&quot;:&quot;value&quot;}</code></p>
-<p>普通js对象:<code>{param:&quot;value&quot;,param:&quot;value&quot;}</code></p>
-<p>js对象转json对象:</p>
-<ul>
-<li>先将js转json字符串：<code>JSON.stringify()</code></li>
-<li>将json字符串转json对象:<code>JSON.parse()</code></li>
-</ul>
-<h3 id="ajax中的contentType"><a href="#ajax中的contentType" class="headerlink" title="ajax中的contentType"></a>ajax中的contentType</h3><p>ajax中，没有指定<code>contentType</code>的话，Jquery默认使用<code>application/x-www-form-urlencoded</code>类型，data使用json对象格式,<code>springmvc</code>可以<code>@RequestParam</code>接收数据(变量同名不需要)</p>
-<p>指定<code>contentType</code>为<code>application/json</code>时，data必须为json字符串格式，springmvc接收数据要用<code>@RequestBody</code>注解</p>
-<pre><code>$.ajax({
-    type: &quot;post&quot;,
-    url:  &quot;mobile/notice/addMessageInfo.jspx&quot;,
-    contentType: &quot;application/json&quot;,
-    data:&quot;{&#39;name&#39;:&#39;zhangsan&#39;,&#39;age&#39;:&#39;15&#39;}&quot;,
-    dataType: &quot;json&quot;,
-    success: function(data) {
-        console.log(data);
-    },
-    error: function(msg) {
-        console.log(msg)
-    }
-})
+            <h3 id="consumer"><a href="#consumer" class="headerlink" title="consumer"></a>consumer</h3><pre><code>@FunctionalInterface
+public interface Consumer&lt;T&gt; {
 
+    /**
+     * Performs this operation on the given argument.
+     *
+     * @param t the input argument
+     */
+    void accept(T t);
 
-$.ajax({
-    type: &quot;post&quot;,
-    url:  &quot;mobile/notice/addMessageInfo.jspx&quot;,
-    data:{name:&#39;zhangsan&#39;,age:&#39;15&#39;},
-    dataType: &quot;json&quot;,
-    success: function(data) {
-        console.log(data);
-    },
-    error: function(msg) {
-        console.log(msg)
+    /**
+     * Returns a composed {@code Consumer} that performs, in sequence, this
+     * operation followed by the {@code after} operation. If performing either
+     * operation throws an exception, it is relayed to the caller of the
+     * composed operation.  If performing this operation throws an exception,
+     * the {@code after} operation will not be performed.
+     *
+     * @param after the operation to perform after this operation
+     * @return a composed {@code Consumer} that performs in sequence this
+     * operation followed by the {@code after} operation
+     * @throws NullPointerException if {@code after} is null
+     */
+    default Consumer&lt;T&gt; andThen(Consumer&lt;? super T&gt; after) {
+        Objects.requireNonNull(after);
+        return (T t) -&gt; { accept(t); after.accept(t); };
     }
-})</code></pre>
+}</code></pre><p>consumer是一个函数式接口，可配合实现了Iterable的类和Iterator使用。</p>
+<pre><code>        List&lt;student&gt; a = new ArrayList&lt;student&gt;();
+        a.add(new student(1, &quot;aa&quot;));
+        a.add(new student(2, &quot;bb&quot;));
+        a.add(new student(3, &quot;cc&quot;));
+        a.forEach(stu-&gt;stu.id=4);
+        a.forEach(stu-&gt;System.out::println)</code></pre><p><code>4 4 4</code></p>
+<p>List继承自Collection，而Collection又实现了Iterable接口，接口的foreach方法如下：</p>
+<pre><code>    default void forEach(Consumer&lt;? super T&gt; action) {
+        Objects.requireNonNull(action);
+        for (T t : this) {
+            action.accept(t);
+        }
+    }</code></pre><p><strong>所以，此接口是用来处理集合中所有元素，Performs this operation on the given argument.</strong></p>
+
           
         
       
@@ -1525,7 +1349,7 @@ private void doSignalAll(Node first) {
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/String%20and%20constant%20pool/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/ajax%E4%B8%ADjson%E5%92%8Cspringmvc/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="sinaill">
@@ -1544,7 +1368,7 @@ private void doSignalAll(Node first) {
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/06/17/String%20and%20constant%20pool/" itemprop="url">String与常量池</a></h1>
+                <a class="post-title-link" href="/2020/06/17/ajax%E4%B8%ADjson%E5%92%8Cspringmvc/" itemprop="url">ajax中json和SpringMVC</a></h1>
         
 
         <div class="post-meta">
@@ -1579,8 +1403,8 @@ private void doSignalAll(Node first) {
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
+                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">框架</span>
                   </a>
                 </span>
 
@@ -1618,33 +1442,42 @@ private void doSignalAll(Node first) {
       
         
           
-            <h3 id="创建方法"><a href="#创建方法" class="headerlink" title="创建方法"></a>创建方法</h3><p><code>String str=new String(&quot;abc&quot;)</code></p>
-<p><strong>一共创建两个对象，其中new方法在堆中创建一个String对象，””为String特有的创建对象的方法，这行代码被执行的时候，JAVA虚拟机首先在字符串池中查找是否已经存在了值为”abc”的这么一个对象，它的判断依据是String类equals(Object obj)方法的返回值。如果有，则不再创建新的对象，直接返回已存在对象的引用；如果没有，则先创建这个对象，然后把它加入到字符串池中，再将它的引用返回</strong></p>
-<pre><code>        String str1 = &quot;abc&quot;;
-        String str2 = new String(&quot;abc&quot;);
-        System.out.println(str1 == str2);</code></pre><p><code>false</code></p>
-<p><strong>str2指向堆中的对象，str1指向常量池中的对象</strong></p>
-<h3 id="intern方法"><a href="#intern方法" class="headerlink" title="intern方法"></a>intern方法</h3><p><code>string.intern()</code></p>
-<p>实例1：</p>
-<pre><code>        String str1 = &quot;abc&quot;;
-        String str2 = new String(&quot;abc&quot;);
-        str2 = &quot;abc&quot;.intern();
-        System.out.println(str1 == str2);</code></pre><p><code>true</code></p>
-<p><strong>会检查常量池中是否存在string，存在则返回池里的字符串引用；如果不存在则将string引用放入常量池中(jdk1.7后)。这样做可以避免在堆中不断的创建字符串对象，起到节省空间的作用。</strong></p>
-<p>实例2：</p>
-<pre><code>String s3 = new String(&quot;1&quot;) + new String(&quot;1&quot;);  
-s3.intern();  
-String s4 = &quot;11&quot;;  
-System.out.println(s3 == s4);</code></pre><p><code>true</code></p>
-<p>实例3：</p>
-<pre><code>String s3 = new String(&quot;1&quot;) + new String(&quot;1&quot;);  
-String s4 = &quot;11&quot;;  
-s3.intern();  
-System.out.println(s3 == s4);</code></pre><p><code>false</code></p>
-<p><strong>调换顺序后出现不同结果的原因</strong></p>
-<p><strong>1.String s3 = new String(“1”) + new String(“1”)，字符串常量池中生成“1” ，并在堆空间中生成s3引用指向的对象（内容为”11”）。注意此时常量池中是没有 “11”对象的</strong></p>
-<p><strong>2.实例2中s3.intern()，此时常量池中没有”11”对象，所以在常量池中存储s3引用(jdk1.7以后)，String s4 = “11”,首先从常量池中查看(equals方法)有无”11”对象，所以将s3引用传回去，所以结果true，而在实例3中，String s4 = “11”在s3.intern()方法前，此时常量池中已经有”11”对象，s3.intern()无效，所以s3还是指向堆中对象，所以结果false</strong></p>
+            <h3 id="json"><a href="#json" class="headerlink" title="json"></a>json</h3><p>json对象格式:<code>{&quot;param&quot;:&quot;value&quot;,&quot;param&quot;:&quot;value&quot;}</code></p>
+<p>普通js对象:<code>{param:&quot;value&quot;,param:&quot;value&quot;}</code></p>
+<p>js对象转json对象:</p>
+<ul>
+<li>先将js转json字符串：<code>JSON.stringify()</code></li>
+<li>将json字符串转json对象:<code>JSON.parse()</code></li>
+</ul>
+<h3 id="ajax中的contentType"><a href="#ajax中的contentType" class="headerlink" title="ajax中的contentType"></a>ajax中的contentType</h3><p>ajax中，没有指定<code>contentType</code>的话，Jquery默认使用<code>application/x-www-form-urlencoded</code>类型，data使用json对象格式,<code>springmvc</code>可以<code>@RequestParam</code>接收数据(变量同名不需要)</p>
+<p>指定<code>contentType</code>为<code>application/json</code>时，data必须为json字符串格式，springmvc接收数据要用<code>@RequestBody</code>注解</p>
+<pre><code>$.ajax({
+    type: &quot;post&quot;,
+    url:  &quot;mobile/notice/addMessageInfo.jspx&quot;,
+    contentType: &quot;application/json&quot;,
+    data:&quot;{&#39;name&#39;:&#39;zhangsan&#39;,&#39;age&#39;:&#39;15&#39;}&quot;,
+    dataType: &quot;json&quot;,
+    success: function(data) {
+        console.log(data);
+    },
+    error: function(msg) {
+        console.log(msg)
+    }
+})
 
+
+$.ajax({
+    type: &quot;post&quot;,
+    url:  &quot;mobile/notice/addMessageInfo.jspx&quot;,
+    data:{name:&#39;zhangsan&#39;,age:&#39;15&#39;},
+    dataType: &quot;json&quot;,
+    success: function(data) {
+        console.log(data);
+    },
+    error: function(msg) {
+        console.log(msg)
+    }
+})</code></pre>
           
         
       
@@ -1846,6 +1679,173 @@ ThreadLocalMap(ThreadLocal&lt;?&gt; firstKey, Object firstValue) {
 <p>调用<code>ThreadLocal</code>的<code>set</code>方法时，先获取当前线程，查看线程中<code>ThreadLocalMap</code>引用为不为空，若为空，为当前线程创建<code>ThreadLocalMap</code>实例，传入键值对<code>key</code>为当前<code>ThreadLocal</code>实例，<code>value</code>为<code>set</code>方法传入的参数值。若不为空，为<code>ThreadLocalMap</code>实例添加新键值对，<code>key</code>为当前<code>ThreadLocal</code>实例，<code>value</code>为<code>set</code>方法传入的参数值。</p>
 <p>调用<code>ThreadLocal</code>的<code>get</code>方法时，如果之前为调用过<code>set</code>方法或<code>ThreadLocalMap</code>实例中<code>key</code>没有与当前<code>ThreadLocal</code>实例对应的，则返回一个默认值<code>null</code>。照旧先获取当前线程，获取线程中<code>ThreadLocalMap</code>实例，再根据当前<code>ThreadLocal</code>实例获取对应的键值对<code>Entry</code>，从而获取线程中存储的变量副本。</p>
 <p>为什么不用一个<code>map Entry&lt;Thread,value&gt;</code>来存储所有线程和线程变量副本，<code>map</code>过大会造成哈希冲突，造成性能变差。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/String%20and%20constant%20pool/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/String%20and%20constant%20pool/" itemprop="url">String与常量池</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="创建方法"><a href="#创建方法" class="headerlink" title="创建方法"></a>创建方法</h3><p><code>String str=new String(&quot;abc&quot;)</code></p>
+<p><strong>一共创建两个对象，其中new方法在堆中创建一个String对象，””为String特有的创建对象的方法，这行代码被执行的时候，JAVA虚拟机首先在字符串池中查找是否已经存在了值为”abc”的这么一个对象，它的判断依据是String类equals(Object obj)方法的返回值。如果有，则不再创建新的对象，直接返回已存在对象的引用；如果没有，则先创建这个对象，然后把它加入到字符串池中，再将它的引用返回</strong></p>
+<pre><code>        String str1 = &quot;abc&quot;;
+        String str2 = new String(&quot;abc&quot;);
+        System.out.println(str1 == str2);</code></pre><p><code>false</code></p>
+<p><strong>str2指向堆中的对象，str1指向常量池中的对象</strong></p>
+<h3 id="intern方法"><a href="#intern方法" class="headerlink" title="intern方法"></a>intern方法</h3><p><code>string.intern()</code></p>
+<p>实例1：</p>
+<pre><code>        String str1 = &quot;abc&quot;;
+        String str2 = new String(&quot;abc&quot;);
+        str2 = &quot;abc&quot;.intern();
+        System.out.println(str1 == str2);</code></pre><p><code>true</code></p>
+<p><strong>会检查常量池中是否存在string，存在则返回池里的字符串引用；如果不存在则将string引用放入常量池中(jdk1.7后)。这样做可以避免在堆中不断的创建字符串对象，起到节省空间的作用。</strong></p>
+<p>实例2：</p>
+<pre><code>String s3 = new String(&quot;1&quot;) + new String(&quot;1&quot;);  
+s3.intern();  
+String s4 = &quot;11&quot;;  
+System.out.println(s3 == s4);</code></pre><p><code>true</code></p>
+<p>实例3：</p>
+<pre><code>String s3 = new String(&quot;1&quot;) + new String(&quot;1&quot;);  
+String s4 = &quot;11&quot;;  
+s3.intern();  
+System.out.println(s3 == s4);</code></pre><p><code>false</code></p>
+<p><strong>调换顺序后出现不同结果的原因</strong></p>
+<p><strong>1.String s3 = new String(“1”) + new String(“1”)，字符串常量池中生成“1” ，并在堆空间中生成s3引用指向的对象（内容为”11”）。注意此时常量池中是没有 “11”对象的</strong></p>
+<p><strong>2.实例2中s3.intern()，此时常量池中没有”11”对象，所以在常量池中存储s3引用(jdk1.7以后)，String s4 = “11”,首先从常量池中查看(equals方法)有无”11”对象，所以将s3引用传回去，所以结果true，而在实例3中，String s4 = “11”在s3.intern()方法前，此时常量池中已经有”11”对象，s3.intern()无效，所以s3还是指向堆中对象，所以结果false</strong></p>
 
           
         
