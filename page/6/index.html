@@ -811,185 +811,6 @@ $.ajax({
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/bit%20arithmetic/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/bit%20arithmetic/" itemprop="url">java中的位运算</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="原码，补码，反码"><a href="#原码，补码，反码" class="headerlink" title="原码，补码，反码"></a>原码，补码，反码</h3><h4 id="原码"><a href="#原码" class="headerlink" title="原码"></a>原码</h4><p>原码就是符号位加上真值的绝对值, 即用第一位表示符号, 其余位表示值. 比如如果是8位二进制:</p>
-<p>[+1]原 = 0000 0001</p>
-<p>[-1]原 = 1000 0001</p>
-<h4 id="补码"><a href="#补码" class="headerlink" title="补码"></a>补码</h4><p>正数的补码就是其本身，负数的补码是在其原码的基础上, 符号位不变, 其余各位取反, 最后+1. (即在反码的基础上+1),<strong>负数的补码转为原码也是符号位不变, 其余各位取反, 最后+1</strong></p>
-<p>[+1] = [00000001]原 = [00000001]反 = [00000001]补</p>
-<p>[-1] = [10000001]原 = [11111110]反 = [11111111]补</p>
-<h4 id="反码"><a href="#反码" class="headerlink" title="反码"></a>反码</h4><p>正数的反码是其本身，负数的反码是在其原码的基础上, 符号位不变，其余各个位取反。</p>
-<p>[+1] = [00000001]原 = [00000001]反</p>
-<p>[-1] = [10000001]原 = [11111110]反</p>
-<h3 id="或运算"><a href="#或运算" class="headerlink" title="或运算"></a>或运算</h3><p><code>System.out.println(3 | 4);</code></p>
-<p><code>7</code></p>
-<p>转化为2进制补码运算，0 1 1与 1 0 0 相或 结果为1 1 1，所以为7</p>
-<h3 id="与运算"><a href="#与运算" class="headerlink" title="与运算"></a>与运算</h3><p><code>System.out.println(3 &amp; 4);</code></p>
-<p><code>0</code></p>
-<p>转化为2进制补码运算，0 1 1与 1 0 0 相与，结果为0 0 0，所以为0</p>
-<h3 id="左移-lt-lt"><a href="#左移-lt-lt" class="headerlink" title="左移&lt;&lt;"></a>左移&lt;&lt;</h3><p><code>System.out.println(5&lt;&lt;2)</code></p>
-<p><code>20</code></p>
-<p>首先会将5转为2进制表示形式(java中，整数默认就是int类型,也就是32位):</p>
-<p>0000 0000 0000 0000 0000 0000 0000 0101           然后左移2位后，低位补0<br>0000 0000 0000 0000 0000 0000 0001 0100           换算成10进制为20</p>
-<p><code>System.out.println(-5 &lt;&lt; 2);</code></p>
-<p><code>-20</code></p>
-<p>1111 1111 1111 1111 1111 1111 1111 1011           然后左移2位后，低位也是补0<br>1111 1111 1111 1111 1111 1111 1110 1100           换算成10进制为-20</p>
-<h3 id="右移-gt-gt"><a href="#右移-gt-gt" class="headerlink" title="右移&gt;&gt;"></a>右移&gt;&gt;</h3><p><code>System.out.println(5&gt;&gt;2);</code></p>
-<p><code>1</code></p>
-<p>还是先将5转为2进制表示形式：<br>0000 0000 0000 0000 0000 0000 0000 0101           然后右移2位，高位补0：<br>0000 0000 0000 0000 0000 0000 0000 0001              换算成10进制为1</p>
-<p><code>System.out.println(-5&gt;&gt;3);</code></p>
-<p><code>-1</code></p>
-<p>-5换算成二进制:<br>1111 1111 1111 1111 1111 1111 1111 1011          然后右移三位，高位补1<br>1111 1111 1111 1111 1111 1111 1111 1111          换算成10进制为-1</p>
-<h3 id="无符号右移-gt-gt-gt"><a href="#无符号右移-gt-gt-gt" class="headerlink" title="无符号右移&gt;&gt;&gt;"></a>无符号右移&gt;&gt;&gt;</h3><p><code>System.out.println(5 &gt;&gt;&gt; 3);</code></p>
-<p><code>0</code></p>
-<p>5换算成二进制:<br>0000 0000 0000 0000 0000 0000 0000 0101          然后右移三位，高位补0<br>0000 0000 0000 0000 0000 0000 0000 0000          换算成10进制为0</p>
-<p><code>System.out.println(-5 &gt;&gt;&gt; 3);</code></p>
-<p><code>536870911</code></p>
-<p>-5换算成二进制:<br>1111 1111 1111 1111 1111 1111 1111 1011         带符号右移，高位补0<br>0001 1111 1111 1111 1111 1111 1111 1111         换算成10进制为536870911</p>
-<h3 id="位异或"><a href="#位异或" class="headerlink" title="位异或^"></a>位异或^</h3><p>位异或：第一个操作数的的第n位于第二个操作数的第n位 相反，那么结果的第n为也为1，否则为0</p>
-<p><code>System.out.println(5 ^ 3);</code></p>
-<p><code>6</code></p>
-<p>5转换为二进制：0000 0000 0000 0000 0000 0000 0000 0101<br>3转换为二进制：0000 0000 0000 0000 0000 0000 0000 0011<br>得：0000 0000 0000 0000 0000 0000 0000 0110</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/await%E3%80%81signal%E5%92%8CsignalAll%E6%BA%90%E7%A0%81/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1223,6 +1044,185 @@ private void doSignalAll(Node first) {
         first = next;
     } while (first != null);
 }</code></pre><p>和<code>signal()</code>方法相比，这里跳出循环的条件少了<code>transferForSignal</code>的返回值，所以这里会将<code>conditionqueue</code>中所有节点转移到<code>waitqueue</code>中</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/bit%20arithmetic/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/bit%20arithmetic/" itemprop="url">java中的位运算</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="原码，补码，反码"><a href="#原码，补码，反码" class="headerlink" title="原码，补码，反码"></a>原码，补码，反码</h3><h4 id="原码"><a href="#原码" class="headerlink" title="原码"></a>原码</h4><p>原码就是符号位加上真值的绝对值, 即用第一位表示符号, 其余位表示值. 比如如果是8位二进制:</p>
+<p>[+1]原 = 0000 0001</p>
+<p>[-1]原 = 1000 0001</p>
+<h4 id="补码"><a href="#补码" class="headerlink" title="补码"></a>补码</h4><p>正数的补码就是其本身，负数的补码是在其原码的基础上, 符号位不变, 其余各位取反, 最后+1. (即在反码的基础上+1),<strong>负数的补码转为原码也是符号位不变, 其余各位取反, 最后+1</strong></p>
+<p>[+1] = [00000001]原 = [00000001]反 = [00000001]补</p>
+<p>[-1] = [10000001]原 = [11111110]反 = [11111111]补</p>
+<h4 id="反码"><a href="#反码" class="headerlink" title="反码"></a>反码</h4><p>正数的反码是其本身，负数的反码是在其原码的基础上, 符号位不变，其余各个位取反。</p>
+<p>[+1] = [00000001]原 = [00000001]反</p>
+<p>[-1] = [10000001]原 = [11111110]反</p>
+<h3 id="或运算"><a href="#或运算" class="headerlink" title="或运算"></a>或运算</h3><p><code>System.out.println(3 | 4);</code></p>
+<p><code>7</code></p>
+<p>转化为2进制补码运算，0 1 1与 1 0 0 相或 结果为1 1 1，所以为7</p>
+<h3 id="与运算"><a href="#与运算" class="headerlink" title="与运算"></a>与运算</h3><p><code>System.out.println(3 &amp; 4);</code></p>
+<p><code>0</code></p>
+<p>转化为2进制补码运算，0 1 1与 1 0 0 相与，结果为0 0 0，所以为0</p>
+<h3 id="左移-lt-lt"><a href="#左移-lt-lt" class="headerlink" title="左移&lt;&lt;"></a>左移&lt;&lt;</h3><p><code>System.out.println(5&lt;&lt;2)</code></p>
+<p><code>20</code></p>
+<p>首先会将5转为2进制表示形式(java中，整数默认就是int类型,也就是32位):</p>
+<p>0000 0000 0000 0000 0000 0000 0000 0101           然后左移2位后，低位补0<br>0000 0000 0000 0000 0000 0000 0001 0100           换算成10进制为20</p>
+<p><code>System.out.println(-5 &lt;&lt; 2);</code></p>
+<p><code>-20</code></p>
+<p>1111 1111 1111 1111 1111 1111 1111 1011           然后左移2位后，低位也是补0<br>1111 1111 1111 1111 1111 1111 1110 1100           换算成10进制为-20</p>
+<h3 id="右移-gt-gt"><a href="#右移-gt-gt" class="headerlink" title="右移&gt;&gt;"></a>右移&gt;&gt;</h3><p><code>System.out.println(5&gt;&gt;2);</code></p>
+<p><code>1</code></p>
+<p>还是先将5转为2进制表示形式：<br>0000 0000 0000 0000 0000 0000 0000 0101           然后右移2位，高位补0：<br>0000 0000 0000 0000 0000 0000 0000 0001              换算成10进制为1</p>
+<p><code>System.out.println(-5&gt;&gt;3);</code></p>
+<p><code>-1</code></p>
+<p>-5换算成二进制:<br>1111 1111 1111 1111 1111 1111 1111 1011          然后右移三位，高位补1<br>1111 1111 1111 1111 1111 1111 1111 1111          换算成10进制为-1</p>
+<h3 id="无符号右移-gt-gt-gt"><a href="#无符号右移-gt-gt-gt" class="headerlink" title="无符号右移&gt;&gt;&gt;"></a>无符号右移&gt;&gt;&gt;</h3><p><code>System.out.println(5 &gt;&gt;&gt; 3);</code></p>
+<p><code>0</code></p>
+<p>5换算成二进制:<br>0000 0000 0000 0000 0000 0000 0000 0101          然后右移三位，高位补0<br>0000 0000 0000 0000 0000 0000 0000 0000          换算成10进制为0</p>
+<p><code>System.out.println(-5 &gt;&gt;&gt; 3);</code></p>
+<p><code>536870911</code></p>
+<p>-5换算成二进制:<br>1111 1111 1111 1111 1111 1111 1111 1011         带符号右移，高位补0<br>0001 1111 1111 1111 1111 1111 1111 1111         换算成10进制为536870911</p>
+<h3 id="位异或"><a href="#位异或" class="headerlink" title="位异或^"></a>位异或^</h3><p>位异或：第一个操作数的的第n位于第二个操作数的第n位 相反，那么结果的第n为也为1，否则为0</p>
+<p><code>System.out.println(5 ^ 3);</code></p>
+<p><code>6</code></p>
+<p>5转换为二进制：0000 0000 0000 0000 0000 0000 0000 0101<br>3转换为二进制：0000 0000 0000 0000 0000 0000 0000 0011<br>得：0000 0000 0000 0000 0000 0000 0000 0110</p>
 
           
         
@@ -1592,204 +1592,6 @@ ThreadLocalMap(ThreadLocal&lt;?&gt; firstKey, Object firstValue) {
 <p>调用<code>ThreadLocal</code>的<code>set</code>方法时，先获取当前线程，查看线程中<code>ThreadLocalMap</code>引用为不为空，若为空，为当前线程创建<code>ThreadLocalMap</code>实例，传入键值对<code>key</code>为当前<code>ThreadLocal</code>实例，<code>value</code>为<code>set</code>方法传入的参数值。若不为空，为<code>ThreadLocalMap</code>实例添加新键值对，<code>key</code>为当前<code>ThreadLocal</code>实例，<code>value</code>为<code>set</code>方法传入的参数值。</p>
 <p>调用<code>ThreadLocal</code>的<code>get</code>方法时，如果之前为调用过<code>set</code>方法或<code>ThreadLocalMap</code>实例中<code>key</code>没有与当前<code>ThreadLocal</code>实例对应的，则返回一个默认值<code>null</code>。照旧先获取当前线程，获取线程中<code>ThreadLocalMap</code>实例，再根据当前<code>ThreadLocal</code>实例获取对应的键值对<code>Entry</code>，从而获取线程中存储的变量副本。</p>
 <p>为什么不用一个<code>map Entry&lt;Thread,value&gt;</code>来存储所有线程和线程变量副本，<code>map</code>过大会造成哈希冲突，造成性能变差。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/Spring%E4%B8%AD%E4%BE%9D%E8%B5%96%E7%9A%84%E6%B3%A8%E5%85%A5%E6%96%B9%E5%BC%8F/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/Spring%E4%B8%AD%E4%BE%9D%E8%B5%96%E7%9A%84%E6%B3%A8%E5%85%A5%E6%96%B9%E5%BC%8F/" itemprop="url">Spring中依赖的注入方式</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
-                    <span itemprop="name">框架</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="构造器注入"><a href="#构造器注入" class="headerlink" title="构造器注入"></a>构造器注入</h3><p>构造器注入作用在第二次后置处理器调用，找到合适构造器后，用它实例化类的同时，注入依赖属性</p>
-<pre><code>public class userServiceImpl implements userService{
-
-    private userDao userdao;
-    @Autowired
-    public userServiceImpl(userDao userdao){
-        this.userdao = userdao;
-    }
-
-    @Override
-    public void query() {
-        userdao.query();
-    }
-}</code></pre><p><code>Autowired</code>注解可省略，当不需要无参构造函数时</p>
-<h3 id="set方法注入"><a href="#set方法注入" class="headerlink" title="set方法注入"></a>set方法注入</h3><pre><code>public class userServiceImpl implements userService{
-
-    private userDao userdao;
-    @Override
-    public void query() {
-        userdao.query();
-    }
-    @Autowired
-    public void setuserDao(userDao userdao){
-        this.userdao = userdao;
-    }
-
-
-}</code></pre><h3 id="普通属性注入"><a href="#普通属性注入" class="headerlink" title="普通属性注入"></a>普通属性注入</h3><p>使用<code>@Value</code>注解</p>
-<h3 id="Method-Injection方法注入"><a href="#Method-Injection方法注入" class="headerlink" title="Method Injection方法注入"></a>Method Injection方法注入</h3><p>Spring文档</p>
-<p>In most application scenarios, most beans in the container are singletons. When a singleton bean needs to collaborate with another singleton bean or a non-singleton bean needs to collaborate with another non-singleton bean, you typically handle the dependency by defining one bean as a property of the other. A problem arises when the bean lifecycles are different. Suppose singleton bean A needs to use non-singleton (prototype) bean B, perhaps on each method invocation on A. The container creates the singleton bean A only once, and thus only gets one opportunity to set the properties. The container cannot provide bean A with a new instance of bean B every time one is needed.</p>
-<p>当一个singleton的Bean A，内部依赖为prototype的Bean B，因为A只初始化一次，所以它的内部依赖B始终为同一个实例，如果要使每次用到B时都是新实例，就需要用到Method Injection</p>
-<p>文档要我们实现<code>ApplicationContextAware</code>接口，从而获得容器对象</p>
-<pre><code>public class CommandManager implements ApplicationContextAware {
-
-    private ApplicationContext applicationContext;
-
-    public Object process(Map commandState) {
-        // grab a new instance of the appropriate Command
-        Command command = createCommand();
-        // set the state on the (hopefully brand new) Command instance
-        command.setState(commandState);
-        return command.execute();
-    }
-
-    protected Command createCommand() {
-        // notice the Spring API dependency!
-        return this.applicationContext.getBean(&quot;command&quot;, Command.class);
-    }
-
-    public void setApplicationContext(
-            ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
-    }
-}</code></pre><p>官方例子中，实现接口，获取容器对象，每次使用这个类时都手动从容器获取这个对象的实例，从而每次都是新的实例B</p>
-<h3 id="depends-on"><a href="#depends-on" class="headerlink" title="depends-on"></a>depends-on</h3><p>文档中</p>
-<p>The depends-on attribute can explicitly force one or more beans to be initialized before the bean using this element is initialized</p>
-<p>depends-on属性可以强制在初始化使用这个元素的类之前初始化一个指定的类</p>
 
           
         
@@ -2400,6 +2202,204 @@ public Object applyBeanPostProcessorsAfterInitialization(Object existingBean, St
     return result;
 }</code></pre><h3 id="附加"><a href="#附加" class="headerlink" title="附加"></a>附加</h3><p>这几个后置处理器在<code>AnnotationConfigUtils</code>中的<code>registerBeanDefinition</code>方法中注册到<code>DefaultListableBeanFactory</code>的<code>beanDefinitionNames</code>和<code>beanDefinitionMap</code>中</p>
 <p>使用注解式配置ssm时，这个过程发生在容器refresh的时候    ，在创建工厂对象后调用<code>loadBeanDefinitions</code>方法开始注册</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/Spring%E4%B8%AD%E4%BE%9D%E8%B5%96%E7%9A%84%E6%B3%A8%E5%85%A5%E6%96%B9%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/Spring%E4%B8%AD%E4%BE%9D%E8%B5%96%E7%9A%84%E6%B3%A8%E5%85%A5%E6%96%B9%E5%BC%8F/" itemprop="url">Spring中依赖的注入方式</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">框架</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="构造器注入"><a href="#构造器注入" class="headerlink" title="构造器注入"></a>构造器注入</h3><p>构造器注入作用在第二次后置处理器调用，找到合适构造器后，用它实例化类的同时，注入依赖属性</p>
+<pre><code>public class userServiceImpl implements userService{
+
+    private userDao userdao;
+    @Autowired
+    public userServiceImpl(userDao userdao){
+        this.userdao = userdao;
+    }
+
+    @Override
+    public void query() {
+        userdao.query();
+    }
+}</code></pre><p><code>Autowired</code>注解可省略，当不需要无参构造函数时</p>
+<h3 id="set方法注入"><a href="#set方法注入" class="headerlink" title="set方法注入"></a>set方法注入</h3><pre><code>public class userServiceImpl implements userService{
+
+    private userDao userdao;
+    @Override
+    public void query() {
+        userdao.query();
+    }
+    @Autowired
+    public void setuserDao(userDao userdao){
+        this.userdao = userdao;
+    }
+
+
+}</code></pre><h3 id="普通属性注入"><a href="#普通属性注入" class="headerlink" title="普通属性注入"></a>普通属性注入</h3><p>使用<code>@Value</code>注解</p>
+<h3 id="Method-Injection方法注入"><a href="#Method-Injection方法注入" class="headerlink" title="Method Injection方法注入"></a>Method Injection方法注入</h3><p>Spring文档</p>
+<p>In most application scenarios, most beans in the container are singletons. When a singleton bean needs to collaborate with another singleton bean or a non-singleton bean needs to collaborate with another non-singleton bean, you typically handle the dependency by defining one bean as a property of the other. A problem arises when the bean lifecycles are different. Suppose singleton bean A needs to use non-singleton (prototype) bean B, perhaps on each method invocation on A. The container creates the singleton bean A only once, and thus only gets one opportunity to set the properties. The container cannot provide bean A with a new instance of bean B every time one is needed.</p>
+<p>当一个singleton的Bean A，内部依赖为prototype的Bean B，因为A只初始化一次，所以它的内部依赖B始终为同一个实例，如果要使每次用到B时都是新实例，就需要用到Method Injection</p>
+<p>文档要我们实现<code>ApplicationContextAware</code>接口，从而获得容器对象</p>
+<pre><code>public class CommandManager implements ApplicationContextAware {
+
+    private ApplicationContext applicationContext;
+
+    public Object process(Map commandState) {
+        // grab a new instance of the appropriate Command
+        Command command = createCommand();
+        // set the state on the (hopefully brand new) Command instance
+        command.setState(commandState);
+        return command.execute();
+    }
+
+    protected Command createCommand() {
+        // notice the Spring API dependency!
+        return this.applicationContext.getBean(&quot;command&quot;, Command.class);
+    }
+
+    public void setApplicationContext(
+            ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
+}</code></pre><p>官方例子中，实现接口，获取容器对象，每次使用这个类时都手动从容器获取这个对象的实例，从而每次都是新的实例B</p>
+<h3 id="depends-on"><a href="#depends-on" class="headerlink" title="depends-on"></a>depends-on</h3><p>文档中</p>
+<p>The depends-on attribute can explicitly force one or more beans to be initialized before the bean using this element is initialized</p>
+<p>depends-on属性可以强制在初始化使用这个元素的类之前初始化一个指定的类</p>
 
           
         
