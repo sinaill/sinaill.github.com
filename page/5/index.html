@@ -177,7 +177,7 @@
       
         
         <li class="menu-item menu-item-home">
-          <a href="/%20" rel="section">
+          <a href="/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
@@ -187,7 +187,7 @@
       
         
         <li class="menu-item menu-item-tags">
-          <a href="/tags/%20" rel="section">
+          <a href="/tags/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
             
@@ -197,7 +197,7 @@
       
         
         <li class="menu-item menu-item-categories">
-          <a href="/categories/%20" rel="section">
+          <a href="/categories/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
             
@@ -207,7 +207,7 @@
       
         
         <li class="menu-item menu-item-archives">
-          <a href="/archives/%20" rel="section">
+          <a href="/archives/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
@@ -428,283 +428,6 @@ END</code></pre><h5 id="其它"><a href="#其它" class="headerlink" title="其�
 <li>存储过程可以返回结果集</li>
 </ol>
 
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/io%E5%9F%BA%E7%A1%80/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/io%E5%9F%BA%E7%A1%80/" itemprop="url">io基础</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="流的概念"><a href="#流的概念" class="headerlink" title="流的概念"></a>流的概念</h3><p>流是一种有顺序的，有起点和终点的字节集合，是对数据传输的总成或抽象。即数据在两设备之间的传输称之为流，流的本质是数据传输，根据数据传输的特性讲流抽象为各种类，方便更直观的进行数据操作。</p>
-<p>###io流的分类</p>
-<p>根据数据处理类的不同分为：字符流和字节流。<br>根据数据流向不同分为：输入流和输出流。</p>
-<h3 id="字符流和字节流"><a href="#字符流和字节流" class="headerlink" title="字符流和字节流"></a>字符流和字节流</h3><p>实际上最根本的流都是字节流，因为计算机上数据存储的最终形式实际上都是字节。而字符流的由来是因为：不同文字的数据编码不同，所以才有了对字符进行高效操作的流对象。本质其实就是基于字节流读取时，去查了指定的码表。所以，字节流和字符流的区别在于：</p>
-<ol>
-<li>读写单位不同：字节流以字节（8bit）为单位，字符流以字符为单位，根据码表映射字符，一次可能读多个字节。</li>
-<li>处理对象不同：字节流能处理所有类型的数据（如图片、avi等），而字符流只能处理字符类型，即纯文本的数据。</li>
-</ol>
-<h3 id="java流类结构图"><a href="#java流类结构图" class="headerlink" title="java流类结构图"></a>java流类结构图</h3><p>通过一张关系图来了解一下Java中的IO流构成：</p>
-<p><img src="http://wx4.sinaimg.cn/large/96b7c0f4gy1fzorzopl97j20j30l70tu.jpg" alt=""></p>
-<h3 id="IO流的具体应用"><a href="#IO流的具体应用" class="headerlink" title="IO流的具体应用"></a>IO流的具体应用</h3><h4 id="FileinputStream-FileoutputStream"><a href="#FileinputStream-FileoutputStream" class="headerlink" title="FileinputStream/FileoutputStream"></a>FileinputStream/FileoutputStream</h4><p>从类名就看出是用来操作文件的字节流，将c盘中一张jpg格式的图片复制并更改文件名</p>
-<pre><code>public class Copy {
-    public static void main(String[] args){
-        InputStream in = null;
-        OutputStream out = null;
-        try {
-            in = new FileInputStream(&quot;c:/1.jpg&quot;);
-            out = new FileOutputStream(new File(&quot;c:/2.jpg&quot;));
-            byte buffer[] = new byte[20];
-            while(in.read(buffer) != -1){
-                out.write(buffer);
-            }
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }catch (IOException e) {
-            // TODO: handle exception
-            e.printStackTrace();
-        }finally {
-            try {
-                in.close();
-                out.close();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-
-        }
-    }
-}</code></pre><h4 id="FileReader-FileWriter"><a href="#FileReader-FileWriter" class="headerlink" title="FileReader/FileWriter"></a>FileReader/FileWriter</h4><p>从类名能看出是操作文件的字符流(实际上是简单装饰了父类<code>InputStreamReader/OutputStreamWriter</code>，这两个字符流仅仅只有构造函数没有覆写方法，可以当作可接收字符流的<code>InputStreamReader/OutputStreamWriter</code>)，将一个txt文件的内容复制到一个新建的名为test2的txt文件里。</p>
-<pre><code>public class Copy2 {
-    public static void main(String[] args) {
-        Reader reader = null;
-        Writer writer = null;
-        try {
-            reader = new FileReader(&quot;c:/test.txt&quot;);
-            writer = new FileWriter(new File(&quot;c:/test2.txt&quot;));
-            char buff[] = new char[20];
-            while(reader.read(buff) != -1){
-                writer.write(buff);
-            }
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }finally {
-            try {
-                reader.close();
-                writer.close();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-    }
-}</code></pre><h4 id="BufferedReader-BufferedWriter"><a href="#BufferedReader-BufferedWriter" class="headerlink" title="BufferedReader/BufferedWriter"></a>BufferedReader/BufferedWriter</h4><p>这两个类为带缓冲的字符流，采用装饰者模式对普通字符流进行装饰，构造方法传入一个<code>Reader/Writer</code>，内部维护一个8192长度的字符数组作为缓冲，当使用<code>public int read(char cbuf[], int offset, int length)</code>一次读取字符数超过缓冲默认长度8192，将不使用缓冲，直接读取到我们自定义的字符数组中(另一个输出流同理)。关闭输出流时，<code>close</code>方法清空缓冲并将缓冲中剩余字符写入。</p>
-<pre><code>public class BufferCopy {
-    public static void main(String[] args) {
-        Reader reader = null;
-        Writer writer = null;
-        try {
-            reader = new BufferedReader(new FileReader(&quot;c:/test.txt&quot;));
-            writer = new BufferedWriter(new FileWriter(&quot;c:/test2.txt&quot;));
-            int ch;
-            while((ch = reader.read()) != -1){
-                writer.write(ch);
-            }
-        } catch (Exception e) {
-            // TODO: handle exception
-        }finally {
-            try {
-                reader.close();
-                writer.close();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-    }
-}</code></pre><h4 id="BufferedInputStream-BufferedOutputStream"><a href="#BufferedInputStream-BufferedOutputStream" class="headerlink" title="BufferedInputStream/BufferedOutputStream"></a>BufferedInputStream/BufferedOutputStream</h4><p>带缓冲的字节流，采用装饰者模式对普通字节流进行装饰，构造方法传入一个<code>InputStream</code>，内部维护8192长度的字节数组作为缓冲，当使用<code>public synchronized int read(byte b[], int off, int len)</code>一次读取字节数超过8192个字节，将不使用缓冲，直接读取到我们自定义的字节数组中(另一个输出流同理)，关闭输出流时，<code>close</code>方法清空缓冲并将剩余字节写入。</p>
-<pre><code>public class BufferCopy2 {
-    public static void main(String[] args) {
-        BufferedInputStream bis = null;
-        BufferedOutputStream bos = null;
-        try {
-            bis = new BufferedInputStream(new FileInputStream(&quot;c:/test.txt&quot;));
-            bos = new BufferedOutputStream(new FileOutputStream(&quot;c:/test2.txt&quot;));
-            int b;
-            while((b=bis.read()) != -1){
-                bos.write(b);
-            }
-        } catch (Exception e) {
-            // TODO: handle exception
-        }finally {
-            try {
-                bis.close();
-                bos.close();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-    }
-}</code></pre><h4 id="InputStreamReader-OutputStreamWriter"><a href="#InputStreamReader-OutputStreamWriter" class="headerlink" title="InputStreamReader/OutputStreamWriter"></a>InputStreamReader/OutputStreamWriter</h4><p>这两个类是转化流，就是将字节流转化为字符流，通过构造函数传入的字节流和编码，使用<code>StreamDecoder/StreamEncode</code>将传进来的字节输入流/字节输出流编码为字符流。<code>StreamDecoder</code>的<code>read/write</code>实现字符的读写。</p>
-<pre><code>public class Transfer {
-    public static void main(String[] args) {
-        Reader isr = null;
-        Writer osw = null;
-        try {
-            isr = new InputStreamReader(new FileInputStream(&quot;c:/test.txt&quot;));
-            osw = new OutputStreamWriter(new FileOutputStream(&quot;c:/test2.txt&quot;));
-            int ch;
-            while((ch = isr.read()) != -1){
-                osw.write(ch);
-            }
-        } catch (Exception e) {
-            // TODO: handle exception
-        }finally {
-            try {
-                isr.close();
-                osw.close();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-    }
-}</code></pre>
           
         
       
@@ -1037,6 +760,283 @@ public interface Supplier&lt;T&gt; {
     T get();
 }</code></pre><p><strong>()-&gt;new class()等同于class:new</strong></p>
 
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/io%E5%9F%BA%E7%A1%80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/io%E5%9F%BA%E7%A1%80/" itemprop="url">io基础</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="流的概念"><a href="#流的概念" class="headerlink" title="流的概念"></a>流的概念</h3><p>流是一种有顺序的，有起点和终点的字节集合，是对数据传输的总成或抽象。即数据在两设备之间的传输称之为流，流的本质是数据传输，根据数据传输的特性讲流抽象为各种类，方便更直观的进行数据操作。</p>
+<p>###io流的分类</p>
+<p>根据数据处理类的不同分为：字符流和字节流。<br>根据数据流向不同分为：输入流和输出流。</p>
+<h3 id="字符流和字节流"><a href="#字符流和字节流" class="headerlink" title="字符流和字节流"></a>字符流和字节流</h3><p>实际上最根本的流都是字节流，因为计算机上数据存储的最终形式实际上都是字节。而字符流的由来是因为：不同文字的数据编码不同，所以才有了对字符进行高效操作的流对象。本质其实就是基于字节流读取时，去查了指定的码表。所以，字节流和字符流的区别在于：</p>
+<ol>
+<li>读写单位不同：字节流以字节（8bit）为单位，字符流以字符为单位，根据码表映射字符，一次可能读多个字节。</li>
+<li>处理对象不同：字节流能处理所有类型的数据（如图片、avi等），而字符流只能处理字符类型，即纯文本的数据。</li>
+</ol>
+<h3 id="java流类结构图"><a href="#java流类结构图" class="headerlink" title="java流类结构图"></a>java流类结构图</h3><p>通过一张关系图来了解一下Java中的IO流构成：</p>
+<p><img src="http://wx4.sinaimg.cn/large/96b7c0f4gy1fzorzopl97j20j30l70tu.jpg" alt=""></p>
+<h3 id="IO流的具体应用"><a href="#IO流的具体应用" class="headerlink" title="IO流的具体应用"></a>IO流的具体应用</h3><h4 id="FileinputStream-FileoutputStream"><a href="#FileinputStream-FileoutputStream" class="headerlink" title="FileinputStream/FileoutputStream"></a>FileinputStream/FileoutputStream</h4><p>从类名就看出是用来操作文件的字节流，将c盘中一张jpg格式的图片复制并更改文件名</p>
+<pre><code>public class Copy {
+    public static void main(String[] args){
+        InputStream in = null;
+        OutputStream out = null;
+        try {
+            in = new FileInputStream(&quot;c:/1.jpg&quot;);
+            out = new FileOutputStream(new File(&quot;c:/2.jpg&quot;));
+            byte buffer[] = new byte[20];
+            while(in.read(buffer) != -1){
+                out.write(buffer);
+            }
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }catch (IOException e) {
+            // TODO: handle exception
+            e.printStackTrace();
+        }finally {
+            try {
+                in.close();
+                out.close();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+        }
+    }
+}</code></pre><h4 id="FileReader-FileWriter"><a href="#FileReader-FileWriter" class="headerlink" title="FileReader/FileWriter"></a>FileReader/FileWriter</h4><p>从类名能看出是操作文件的字符流(实际上是简单装饰了父类<code>InputStreamReader/OutputStreamWriter</code>，这两个字符流仅仅只有构造函数没有覆写方法，可以当作可接收字符流的<code>InputStreamReader/OutputStreamWriter</code>)，将一个txt文件的内容复制到一个新建的名为test2的txt文件里。</p>
+<pre><code>public class Copy2 {
+    public static void main(String[] args) {
+        Reader reader = null;
+        Writer writer = null;
+        try {
+            reader = new FileReader(&quot;c:/test.txt&quot;);
+            writer = new FileWriter(new File(&quot;c:/test2.txt&quot;));
+            char buff[] = new char[20];
+            while(reader.read(buff) != -1){
+                writer.write(buff);
+            }
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }finally {
+            try {
+                reader.close();
+                writer.close();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
+}</code></pre><h4 id="BufferedReader-BufferedWriter"><a href="#BufferedReader-BufferedWriter" class="headerlink" title="BufferedReader/BufferedWriter"></a>BufferedReader/BufferedWriter</h4><p>这两个类为带缓冲的字符流，采用装饰者模式对普通字符流进行装饰，构造方法传入一个<code>Reader/Writer</code>，内部维护一个8192长度的字符数组作为缓冲，当使用<code>public int read(char cbuf[], int offset, int length)</code>一次读取字符数超过缓冲默认长度8192，将不使用缓冲，直接读取到我们自定义的字符数组中(另一个输出流同理)。关闭输出流时，<code>close</code>方法清空缓冲并将缓冲中剩余字符写入。</p>
+<pre><code>public class BufferCopy {
+    public static void main(String[] args) {
+        Reader reader = null;
+        Writer writer = null;
+        try {
+            reader = new BufferedReader(new FileReader(&quot;c:/test.txt&quot;));
+            writer = new BufferedWriter(new FileWriter(&quot;c:/test2.txt&quot;));
+            int ch;
+            while((ch = reader.read()) != -1){
+                writer.write(ch);
+            }
+        } catch (Exception e) {
+            // TODO: handle exception
+        }finally {
+            try {
+                reader.close();
+                writer.close();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
+}</code></pre><h4 id="BufferedInputStream-BufferedOutputStream"><a href="#BufferedInputStream-BufferedOutputStream" class="headerlink" title="BufferedInputStream/BufferedOutputStream"></a>BufferedInputStream/BufferedOutputStream</h4><p>带缓冲的字节流，采用装饰者模式对普通字节流进行装饰，构造方法传入一个<code>InputStream</code>，内部维护8192长度的字节数组作为缓冲，当使用<code>public synchronized int read(byte b[], int off, int len)</code>一次读取字节数超过8192个字节，将不使用缓冲，直接读取到我们自定义的字节数组中(另一个输出流同理)，关闭输出流时，<code>close</code>方法清空缓冲并将剩余字节写入。</p>
+<pre><code>public class BufferCopy2 {
+    public static void main(String[] args) {
+        BufferedInputStream bis = null;
+        BufferedOutputStream bos = null;
+        try {
+            bis = new BufferedInputStream(new FileInputStream(&quot;c:/test.txt&quot;));
+            bos = new BufferedOutputStream(new FileOutputStream(&quot;c:/test2.txt&quot;));
+            int b;
+            while((b=bis.read()) != -1){
+                bos.write(b);
+            }
+        } catch (Exception e) {
+            // TODO: handle exception
+        }finally {
+            try {
+                bis.close();
+                bos.close();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
+}</code></pre><h4 id="InputStreamReader-OutputStreamWriter"><a href="#InputStreamReader-OutputStreamWriter" class="headerlink" title="InputStreamReader/OutputStreamWriter"></a>InputStreamReader/OutputStreamWriter</h4><p>这两个类是转化流，就是将字节流转化为字符流，通过构造函数传入的字节流和编码，使用<code>StreamDecoder/StreamEncode</code>将传进来的字节输入流/字节输出流编码为字符流。<code>StreamDecoder</code>的<code>read/write</code>实现字符的读写。</p>
+<pre><code>public class Transfer {
+    public static void main(String[] args) {
+        Reader isr = null;
+        Writer osw = null;
+        try {
+            isr = new InputStreamReader(new FileInputStream(&quot;c:/test.txt&quot;));
+            osw = new OutputStreamWriter(new FileOutputStream(&quot;c:/test2.txt&quot;));
+            int ch;
+            while((ch = isr.read()) != -1){
+                osw.write(ch);
+            }
+        } catch (Exception e) {
+            // TODO: handle exception
+        }finally {
+            try {
+                isr.close();
+                osw.close();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
+}</code></pre>
           
         
       
@@ -2093,192 +2093,6 @@ private void fill() throws IOException {
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/deference%20between%20sb%20and%20str/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/deference%20between%20sb%20and%20str/" itemprop="url">StringBuffer与String的区别</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">java基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="查阅"><a href="#查阅" class="headerlink" title="查阅"></a>查阅</h3><p>翻阅String和StringBuffer和源码可知<br>String中用来存储字符串的char[]为</p>
-<p><code>private final char value[]</code></p>
-<p>StringBuffer中用来存储字符串的char[]为</p>
-<p><code>char[] value;</code></p>
-<h3 id="构造方法的差别"><a href="#构造方法的差别" class="headerlink" title="构造方法的差别"></a>构造方法的差别</h3><h4 id="String"><a href="#String" class="headerlink" title="String"></a>String</h4><p>String的构造方法较为简单</p>
-<pre><code> public String(String original) {
-        this.value = original.value;
-        this.hash = original.hash;
-    }</code></pre><p>通过反射获取两个String对象中的value[]，结果为true;</p>
-<pre><code>        String a = new String(&quot;abc&quot;);
-        String b = new String(&quot;abc&quot;);
-        //&quot;abc&quot;返回同一个String对象(常量池)，调用参数为String的构造方法
-        Field af = a.getClass().getDeclaredField(&quot;value&quot;);
-        Field bf = b.getClass().getDeclaredField(&quot;value&quot;);
-        af.setAccessible(true);
-        bf.setAccessible(true);
-        System.out.println(af.get(a) == bf.get(b));</code></pre><p><strong>由此我们可以看出，由于String常量池的存在，当我们用同一字符串来构造String对象时，他们中的value[]都指向了常量池中的该字符串对象的value[]</strong></p>
-<h4 id="StringBuffer"><a href="#StringBuffer" class="headerlink" title="StringBuffer"></a>StringBuffer</h4><p>StringBuffer中参数为StringBuffer和String的构造函数，跟源码得</p>
-<pre><code>    public StringBuffer(String str) {
-        super(str.length() + 16);
-        append(str);
-    }
-
-    public AbstractStringBuilder append(String str) {
-        if (str == null)
-            return appendNull();
-        int len = str.length();
-        ensureCapacityInternal(count + len);
-        str.getChars(0, len, value, count);
-        count += len;
-        return this;
-    }</code></pre><p>与String不同，它时将传进来的string复制到变量value中，所以用相同字符串初始化StringBuffer，利用反射获取value[]，比较它们的引用，结果为false</p>
-<pre><code>        StringBuffer a = new StringBuffer(&quot;abc&quot;);
-        StringBuffer b = new StringBuffer(&quot;abc&quot;);
-        Field af = a.getClass().getSuperclass().getDeclaredField(&quot;value&quot;);
-        Field bf = a.getClass().getSuperclass().getDeclaredField(&quot;value&quot;);
-        af.setAccessible(true);
-        bf.setAccessible(true);
-        System.out.println(af.get(a) == bf.get(b));</code></pre><p><strong>可以看出StringBuffer中的value[]指向不同地址</strong></p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p><strong>1.对于equals为true的String对象，它们内部value[]指向相同地址，且为final类型，初始化后无法改变其引用，虽然可以通过反射获取引用，来改变value中的值，但是会改变所有String对象中的value</strong></p>
-<p><strong>2.StringBuffer中的value为default,所以上面我们不能直接用a.value或者b.vlaue获取value[],并且StringBuffer中即使用相同String对象或者StringBuffer初始化时，它们之间的value[]也是指向不同地址</strong></p>
-<p><strong>3.String和StringBuffer类型为final</strong></p>
-<p><strong>所以当为String对象改变值时，其实是创建了新的String对象再复制给它</strong></p>
-<p><strong>而在StringBuffer中改变值时可以改变自身value[]，不用创建对象，节省资源</strong></p>
-<p><strong>当我们需要频繁改变字符串内容时最好使用StringBuffer而不是String</strong></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/final/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2697,6 +2511,192 @@ private void fill() throws IOException {
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/deference%20between%20sb%20and%20str/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/deference%20between%20sb%20and%20str/" itemprop="url">StringBuffer与String的区别</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="查阅"><a href="#查阅" class="headerlink" title="查阅"></a>查阅</h3><p>翻阅String和StringBuffer和源码可知<br>String中用来存储字符串的char[]为</p>
+<p><code>private final char value[]</code></p>
+<p>StringBuffer中用来存储字符串的char[]为</p>
+<p><code>char[] value;</code></p>
+<h3 id="构造方法的差别"><a href="#构造方法的差别" class="headerlink" title="构造方法的差别"></a>构造方法的差别</h3><h4 id="String"><a href="#String" class="headerlink" title="String"></a>String</h4><p>String的构造方法较为简单</p>
+<pre><code> public String(String original) {
+        this.value = original.value;
+        this.hash = original.hash;
+    }</code></pre><p>通过反射获取两个String对象中的value[]，结果为true;</p>
+<pre><code>        String a = new String(&quot;abc&quot;);
+        String b = new String(&quot;abc&quot;);
+        //&quot;abc&quot;返回同一个String对象(常量池)，调用参数为String的构造方法
+        Field af = a.getClass().getDeclaredField(&quot;value&quot;);
+        Field bf = b.getClass().getDeclaredField(&quot;value&quot;);
+        af.setAccessible(true);
+        bf.setAccessible(true);
+        System.out.println(af.get(a) == bf.get(b));</code></pre><p><strong>由此我们可以看出，由于String常量池的存在，当我们用同一字符串来构造String对象时，他们中的value[]都指向了常量池中的该字符串对象的value[]</strong></p>
+<h4 id="StringBuffer"><a href="#StringBuffer" class="headerlink" title="StringBuffer"></a>StringBuffer</h4><p>StringBuffer中参数为StringBuffer和String的构造函数，跟源码得</p>
+<pre><code>    public StringBuffer(String str) {
+        super(str.length() + 16);
+        append(str);
+    }
+
+    public AbstractStringBuilder append(String str) {
+        if (str == null)
+            return appendNull();
+        int len = str.length();
+        ensureCapacityInternal(count + len);
+        str.getChars(0, len, value, count);
+        count += len;
+        return this;
+    }</code></pre><p>与String不同，它时将传进来的string复制到变量value中，所以用相同字符串初始化StringBuffer，利用反射获取value[]，比较它们的引用，结果为false</p>
+<pre><code>        StringBuffer a = new StringBuffer(&quot;abc&quot;);
+        StringBuffer b = new StringBuffer(&quot;abc&quot;);
+        Field af = a.getClass().getSuperclass().getDeclaredField(&quot;value&quot;);
+        Field bf = a.getClass().getSuperclass().getDeclaredField(&quot;value&quot;);
+        af.setAccessible(true);
+        bf.setAccessible(true);
+        System.out.println(af.get(a) == bf.get(b));</code></pre><p><strong>可以看出StringBuffer中的value[]指向不同地址</strong></p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p><strong>1.对于equals为true的String对象，它们内部value[]指向相同地址，且为final类型，初始化后无法改变其引用，虽然可以通过反射获取引用，来改变value中的值，但是会改变所有String对象中的value</strong></p>
+<p><strong>2.StringBuffer中的value为default,所以上面我们不能直接用a.value或者b.vlaue获取value[],并且StringBuffer中即使用相同String对象或者StringBuffer初始化时，它们之间的value[]也是指向不同地址</strong></p>
+<p><strong>3.String和StringBuffer类型为final</strong></p>
+<p><strong>所以当为String对象改变值时，其实是创建了新的String对象再复制给它</strong></p>
+<p><strong>而在StringBuffer中改变值时可以改变自身value[]，不用创建对象，节省资源</strong></p>
+<p><strong>当我们需要频繁改变字符串内容时最好使用StringBuffer而不是String</strong></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
@@ -2745,7 +2745,7 @@ private void fill() throws IOException {
             
               <div class="site-state-item site-state-posts">
               
-                <a href="/archives/%20%7C%7C%20archive">
+                <a href="/archives/%7C%7C%20archive">
               
                   <span class="site-state-item-count">85</span>
                   <span class="site-state-item-name">日志</span>

@@ -177,7 +177,7 @@
       
         
         <li class="menu-item menu-item-home">
-          <a href="/%20" rel="section">
+          <a href="/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
@@ -187,7 +187,7 @@
       
         
         <li class="menu-item menu-item-tags">
-          <a href="/tags/%20" rel="section">
+          <a href="/tags/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
             
@@ -197,7 +197,7 @@
       
         
         <li class="menu-item menu-item-categories">
-          <a href="/categories/%20" rel="section">
+          <a href="/categories/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
             
@@ -207,7 +207,7 @@
       
         
         <li class="menu-item menu-item-archives">
-          <a href="/archives/%20" rel="section">
+          <a href="/archives/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
@@ -4410,318 +4410,6 @@ private &lt;T&gt; T doConvert(Object value, Class&lt;T&gt; requiredType, MethodP
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/Mysql%E8%AF%AD%E6%B3%95%E7%BB%83%E4%B9%A0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sinaill">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/17/Mysql%E8%AF%AD%E6%B3%95%E7%BB%83%E4%B9%A0/" itemprop="url">Mysql语法练习</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
-                2020-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/mysql/" itemprop="url" rel="index">
-                    <span itemprop="name">mysql</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="表名和字段"><a href="#表名和字段" class="headerlink" title="表名和字段"></a>表名和字段</h3><p>学生表<br>Student(s_id,s_name,s_birth,s_sex) –学生编号,学生姓名, 出生年月,学生性别<br>课程表<br>Course(c_id,c_name,t_id) – –课程编号, 课程名称, 教师编号<br>教师表<br>Teacher(t_id,t_name) –教师编号,教师姓名<br>成绩表<br>Score(s_id,c_id,s_score) –学生编号,课程编号,分数</p>
-<h3 id="建表"><a href="#建表" class="headerlink" title="建表"></a>建表</h3><pre><code>--建表
---学生表
-CREATE TABLE `Student`(
-    `s_id` VARCHAR(20),
-    `s_name` VARCHAR(20) NOT NULL DEFAULT &#39;&#39;,
-    `s_birth` VARCHAR(20) NOT NULL DEFAULT &#39;&#39;,
-    `s_sex` VARCHAR(10) NOT NULL DEFAULT &#39;&#39;,
-    PRIMARY KEY(`s_id`)
-);
---课程表
-CREATE TABLE `Course`(
-    `c_id`  VARCHAR(20),
-    `c_name` VARCHAR(20) NOT NULL DEFAULT &#39;&#39;,
-    `t_id` VARCHAR(20) NOT NULL,
-    PRIMARY KEY(`c_id`)
-);
---教师表
-CREATE TABLE `Teacher`(
-    `t_id` VARCHAR(20),
-    `t_name` VARCHAR(20) NOT NULL DEFAULT &#39;&#39;,
-    PRIMARY KEY(`t_id`)
-);
---成绩表
-CREATE TABLE `Score`(
-    `s_id` VARCHAR(20),
-    `c_id`  VARCHAR(20),
-    `s_score` INT(3),
-    PRIMARY KEY(`s_id`,`c_id`)
-);
-
---插入学生表测试数据
-insert into Student values(&#39;01&#39; , &#39;赵雷&#39; , &#39;1990-01-01&#39; , &#39;男&#39;);
-insert into Student values(&#39;02&#39; , &#39;钱电&#39; , &#39;1990-12-21&#39; , &#39;男&#39;);
-insert into Student values(&#39;03&#39; , &#39;孙风&#39; , &#39;1990-05-20&#39; , &#39;男&#39;);
-insert into Student values(&#39;04&#39; , &#39;李云&#39; , &#39;1990-08-06&#39; , &#39;男&#39;);
-insert into Student values(&#39;05&#39; , &#39;周梅&#39; , &#39;1991-12-01&#39; , &#39;女&#39;);
-insert into Student values(&#39;06&#39; , &#39;吴兰&#39; , &#39;1992-03-01&#39; , &#39;女&#39;);
-insert into Student values(&#39;07&#39; , &#39;郑竹&#39; , &#39;1989-07-01&#39; , &#39;女&#39;);
-insert into Student values(&#39;08&#39; , &#39;王菊&#39; , &#39;1990-01-20&#39; , &#39;女&#39;);
---课程表测试数据
-insert into Course values(&#39;01&#39; , &#39;语文&#39; , &#39;02&#39;);
-insert into Course values(&#39;02&#39; , &#39;数学&#39; , &#39;01&#39;);
-insert into Course values(&#39;03&#39; , &#39;英语&#39; , &#39;03&#39;);
-
---教师表测试数据
-insert into Teacher values(&#39;01&#39; , &#39;张三&#39;);
-insert into Teacher values(&#39;02&#39; , &#39;李四&#39;);
-insert into Teacher values(&#39;03&#39; , &#39;王五&#39;);
-
---成绩表测试数据
-insert into Score values(&#39;01&#39; , &#39;01&#39; , 80);
-insert into Score values(&#39;01&#39; , &#39;02&#39; , 90);
-insert into Score values(&#39;01&#39; , &#39;03&#39; , 99);
-insert into Score values(&#39;02&#39; , &#39;01&#39; , 70);
-insert into Score values(&#39;02&#39; , &#39;02&#39; , 60);
-insert into Score values(&#39;02&#39; , &#39;03&#39; , 80);
-insert into Score values(&#39;03&#39; , &#39;01&#39; , 80);
-insert into Score values(&#39;03&#39; , &#39;02&#39; , 80);
-insert into Score values(&#39;03&#39; , &#39;03&#39; , 80);
-insert into Score values(&#39;04&#39; , &#39;01&#39; , 50);
-insert into Score values(&#39;04&#39; , &#39;02&#39; , 30);
-insert into Score values(&#39;04&#39; , &#39;03&#39; , 20);
-insert into Score values(&#39;05&#39; , &#39;01&#39; , 76);
-insert into Score values(&#39;05&#39; , &#39;02&#39; , 87);
-insert into Score values(&#39;06&#39; , &#39;01&#39; , 31);
-insert into Score values(&#39;06&#39; , &#39;03&#39; , 34);
-insert into Score values(&#39;07&#39; , &#39;02&#39; , 89);
-insert into Score values(&#39;07&#39; , &#39;03&#39; , 98);</code></pre><h3 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h3><p>查询”01”课程比”02”课程成绩高的学生的信息及课程分数</p>
-<pre><code class="sql">SELECT a.*,b.c_id,b.s_score,c.c_id AS c_id2,c.s_score AS s_score2 FROM student a 
-LEFT JOIN score b on a.s_id = b.s_id LEFT JOIN score c on a.s_id=c.s_id 
-AND c.c_id=&#39;02&#39; where b.s_score&gt;c.s_score and b.c_id=&#39;01&#39;</code></pre>
-<p><strong>同表内比较使用同表内联</strong></p>
-<p>查询”01”课程比”02”课程成绩低的学生的信息及课程分数</p>
-<pre><code class="sql">SELECT a.*,b.c_id,b.s_score,c.c_id AS c_id2,c.s_score AS s_score2 FROM student a LEFT JOIN score b on a.s_id = b.s_id LEFT JOIN score c on a.s_id=c.s_id AND c.c_id=&#39;02&#39; where b.s_score&lt;c.s_score and b.c_id=&#39;01&#39;</code></pre>
-<p>查询平均成绩大于等于60分的同学的学生编号和学生姓名和平均成绩</p>
-<pre><code class="sql">SELECT a.s_id,a.s_name,ROUND(AVG(b.s_score),2) AS avg_score FROM student a INNER JOIN score b on a.s_id=b.s_id GROUP BY a.s_id HAVING avg_score&gt;=60</code></pre>
-<p>查询平均成绩小于60分的同学的学生编号和学生姓名和平均成绩(包括有成绩的和无成绩的)</p>
-<pre><code class="sql">SELECT a.s_id,a.s_name,ROUND(AVG(b.s_score),2) AS avg_score FROM student a left JOIN score b on a.s_id=b.s_id GROUP BY a.s_id HAVING avg_score&lt;60 UNION SELECT c.s_id,c.s_name,0 AS avg_score FROM student c WHERE c.s_id not IN (SELECT DISTINCT s_id FROM score)</code></pre>
-<p><strong>UNION 用于合并两个或多个 SELECT 语句的结果集，并消去表中任何重复行</strong></p>
-<p>查询所有同学的学生编号、学生姓名、选课总数、所有课程的总成绩</p>
-<pre><code class="sql">SELECT a.s_id,a.s_name,COUNT(b.c_id),SUM(b.s_score) as score FROM student a JOIN score b on a.s_id=b.s_id GROUP BY a.s_id</code></pre>
-<p>查询”李”姓老师的数量</p>
-<pre><code class="sql">SELECT COUNT(a.t_id) FROM teacher a WHERE a.t_name REGEXP &#39;^李&#39;(like &#39;李%&#39;)</code></pre>
-<p>查询学过”张三”老师授课的同学的信息</p>
-<pre><code class="sql">select a.* from student a join score b on a.s_id=b.s_id where b.c_id in(select c_id from course where t_id =(select t_id from teacher where t_name = &#39;张三&#39;);</code></pre>
-<p>查询没学过”张三”老师授课的同学的信息</p>
-<pre><code class="sql">SELECT * FROM student WHERE s_id not in (SELECT a.s_id FROM student a LEFT JOIN score b ON a.s_id=b.s_id where b.c_id in (SELECT c_id FROM course WHERE t_id in (SELECT t_id FROM teacher WHERE t_name=&#39;张三&#39;)))    
-```sql
-
-查询学过编号为”01”并且也学过编号为”02”的课程的同学的信息
-
-```sql
-select a.* from student a,score b,score c where a.s_id = b.s_id and a.s_id = c.s_id and b.c_id=&#39;01&#39; and c.c_id=&#39;02&#39;;</code></pre>
-<p><strong>交叉连接：因为没有连接条件，所进行的表与表间的所有行的连接</strong></p>
-<p>查询学过编号为”01”但是没有学过编号为”02”的课程的同学的信息</p>
-<pre><code class="sql">select a.* from student a where a.s_id in (select s_id from score where c_id=&#39;01&#39; ) and a.s_id NOT in(select s_id from score where c_id=&#39;02&#39;)</code></pre>
-<p>查询没有学全所有课程的同学的信息</p>
-<pre><code class="sql">SELECT * FROM student WHERE s_id NOT IN (select a.s_id from student a LEFT JOIN score b on a.s_id = b.s_id GROUP BY a.s_id HAVING COUNT(a.s_id)&gt;2)</code></pre>
-<p>查询至少有一门课与学号为”01”的同学所学相同的同学的信息</p>
-<pre><code class="sql">select * from student where s_id in(select distinct a.s_id from score a where a.c_id in(select a.c_id from score a where a.s_id=&#39;01&#39;));</code></pre>
-<p>查询和”01”号的同学学习的课程完全相同的其他同学的信息</p>
-<pre><code class="sql">select a.* from student a where a.s_id in(select distinct s_id from score where s_id!=’01’ and c_id in(select c_id from score where s_id=’01’)group by s_id having count(1)=(select count(1) from score where s_id=&#39;01&#39;));</code></pre>
-<p>查询没学过”张三”老师讲授的任一门课程的学生姓名</p>
-<pre><code class="sql">SELECT s_name FROM student WHERE s_id NOT IN (SELECT a.s_id FROM student a LEFT JOIN score b ON a.s_id = b.s_id WHERE b.c_id IN (SELECT c_id FROM course WHERE t_id IN (SELECT t_id FROM teacher WHERE t_name=&#39;张三&#39;)))</code></pre>
-<p>查询两门及其以上不及格课程的同学的学号，姓名及其平均成绩</p>
-<pre><code class="sql">SELECT a.s_id,a.s_name,ROUND(AVG(b.s_score),2) AS avg_score FROM student a LEFT JOIN score b on a.s_id = b.s_id AND b.s_score&lt;60 group by a.s_id having count(a.s_id)&gt;1</code></pre>
-<p>检索”01”课程分数小于60，按分数降序排列的学生信息</p>
-<pre><code class="sql">SELECT a.* FROM student a LEFT JOIN score b ON a.s_id = b.s_id AND b.c_id=’01’ WHERE b.s_score&lt;60 ORDER BY b.s_score DESC</code></pre>
-<p>按平均成绩从高到低显示所有学生的所有课程的成绩以及平均成绩</p>
-<pre><code class="sql">SELECT a.s_id,(SELECT s_score FROM score WHERE s_id = a.s_id AND c_id=&#39;01&#39;) AS 语文,(SELECT s_score FROM score WHERE s_id = a.s_id AND c_id=&#39;02&#39;) AS 数学,(SELECT s_score FROM score WHERE s_id = a.s_id AND c_id = &#39;03&#39;) AS 英语,ROUND(AVG(a.s_score),2) AS 平均分 FROM score a GROUP BY a.s_id ORDER BY 平均分 DESC</code></pre>
-<p>查询各科成绩最高分、最低分和平均分：以如下形式显示：课程ID，课程name，最高分，最低分，平均分，及格率，中等率，优良率，优秀率，及格为&gt;=60，中等为：70-80，优良为：80-90，优秀为：&gt;=90</p>
-<pre><code class="sql">SELECT a.c_id,b.c_name,MAX(s_score) AS 最高分,MIN(s_score) AS 最低分,ROUND(AVG(s_score),2) AS 平均分,ROUND(100SUM(CASE WHEN a.s_score&gt;=60 THEN 1 ELSE 0 END)/SUM(case WHEN a.s_score THEN 1 ELSE 0 END),2) AS 及格率,ROUND(100(SUM(case when a.s_score&gt;=70 and a.s_score&lt;=80 then 1 else 0 end)/SUM(case when a.s_score then 1 else 0 end)),2) as 中等率, ROUND(100(SUM(case when a.s_score&gt;=80 and a.s_score&lt;=90 then 1 else 0 end)/SUM(case when a.s_score then 1 else 0 end)),2) as 优良率,ROUND(100(SUM(case when a.s_score&gt;=90 then 1 else 0 end)/SUM(case when a.s_score then 1 else 0 end)),2) as 优秀率 FROM score a LEFT JOIN course b ON a.c_id = b.c_id GROUP BY c_id`</code></pre>
-<p>按各科成绩进行排序，并显示排名</p>
-<pre><code class="sql">SELECT ,(@i:=@i+1) 排名 FROM (SELECT FROM score WHERE c_id = ‘01’ ORDER BY s_score LIMIT 10000) a,(SELECT @i:=0) AS 排名 UNION
-SELECT ,(@j:=@j+1) 排名 FROM (SELECT FROM score WHERE c_id = ‘02’ ORDER BY s_score LIMIT 10000) a,(SELECT @j:=0) AS 排名 UNION
-SELECT ,(@k:=@k+1) 排名 FROM (SELECT FROM score WHERE c_id = ‘03’ ORDER BY s_score LIMIT 10000) a,(SELECT @k:=0) AS 排名</code></pre>
-<p>查询学生的总成绩并进行排名</p>
-<p>查询学生平均成绩及其名次</p>
-<pre><code class="sql">select a.s_id,@i:=@i+1 as ‘不保留空缺排名’,@k:=(case when @avg_score=a.avg_s then @k else @i end) as ‘保留空缺排名’,@avg_score:=avg_s as ‘平均分’from (select s_id,ROUND(AVG(s_score),2) as avg_s from score GROUP BY s_id)a,(select @avg_score:=0,@i:=0,@k:=0)b;</code></pre>
-<p>查询各科成绩前三名的记录</p>
-<pre><code class="sql">select a.s_id,a.c_id,a.s_score,b.* from score a left join score b on a.c_id = b.c_id and a.s_score&lt;b.s_score group by a.s_id,a.c_id,a.s_score HAVING COUNT(b.s_id)&lt;3 ORDER BY a.c_id,a.s_score DESC</code></pre>
-<p>查询每门课程被选修的学生数</p>
-<pre><code class="sql">SELECT a.c_id,a.c_name,COUNT(1) as 数量 FROM course a LEFT JOIN score b on a.c_id = b.c_id GROUP BY a.c_id,a.c_name</code></pre>
-<p>查询出只有两门课程的全部学生的学号和姓名</p>
-<pre><code class="sql">SELECT a.s_id,a.s_name FROM student a LEFT JOIN score b ON a.s_id = b.s_id GROUP BY a.s_id,a.s_name HAVING COUNT(1)=2</code></pre>
-<p>查询男生、女生人数</p>
-<pre><code class="sql">SELECT s_sex,COUNT(1) FROM student GROUP BY s_sex</code></pre>
-<p>查询名字中含有”风”字的学生信息</p>
-<pre><code class="sql">SELECT * FROM student WHERE s_name RLIKE “风”</code></pre>
-<p>查询同名同性学生名单，并统计同名人数</p>
-<pre><code class="sql">SELECT s_name,s_sex FROM student GROUP BY s_name,s_sex HAVING COUNT(1)&gt;1</code></pre>
-<p>查询1990年出生的学生名单</p>
-<pre><code class="sql">SELECT s_id,s_name FROM student WHERE YEAR(s_birth)=’1990’</code></pre>
-<p>查询每门课程的平均成绩，结果按平均成绩降序排列，平均成绩相同时，按课程编号升序排列</p>
-<pre><code class="sql">SELECT b.c_id,b.c_name,AVG(a.s_score) AS 平均分 FROM score a LEFT JOIN course b ON a.c_id=b.c_id GROUP BY b.c_id ORDER BY 平均分 DESC,b.c_id</code></pre>
-<p>查询平均成绩大于等于85的所有学生的学号、姓名和平均成绩</p>
-<pre><code class="sql">SELECT a.s_id,a.s_name,AVG(b.s_score) AS 平均分 FROM student a LEFT JOIN score b ON a.s_id = b.s_id GROUP BY a.s_id,a.s_name HAVING 平均分&gt;=85</code></pre>
-<p>查询课程名称为”数学”，且分数低于60的学生姓名和分数</p>
-<pre><code class="sql">select a.s_name,b.s_score from score b LEFT JOIN student a on a.s_id=b.s_id where b.c_id=(select c_id from course where c_name =’数学’) and b.s_score&lt;60</code></pre>
-<p>查询所有学生的课程及分数情况</p>
-<pre><code class="sql">select a.s_id,a.s_name,SUM(case c.c_name when ‘语文’ then b.s_score else 0 end) as ‘语文’,SUM(case c.c_name when ‘数学’ then b.s_score else 0 end) as ‘数学’,SUM(case c.c_name when ‘英语’ then b.s_score else 0 end) as ‘英语’,SUM(b.s_score) as ‘总分’ from student a left join score b on a.s_id = b.s_id left join course c on b.c_id = c.c_id GROUP BY a.s_id,a.s_name</code></pre>
-<p>查询任何一门课程成绩在70分以上的姓名、课程名称和分数</p>
-<pre><code class="sql">SELECT a.s_name,b.s_score,c.c_name FROM student a LEFT JOIN score b on a.s_id=b.s_id LEFT JOIN course c on b.c_id=c.c_id WHERE b.s_score&gt;70</code></pre>
-<p>查询不及格的课程</p>
-<pre><code class="sql">SELECT a.s_id,a.s_name,b.s_score,c.c_name FROM student a LEFT JOIN score b on a.s_id=b.s_id LEFT JOIN course c on b.c_id=c.c_id WHERE b.s_score&lt;60</code></pre>
-<p>查询课程编号为01且课程成绩在80分以上的学生的学号和姓名</p>
-<pre><code class="sql">SELECT a.s_id,a.s_name FROM student a LEFT JOIN score b on a.s_id = b.s_id WHERE b.s_score&gt;80 AND b.c_id=’01’</code></pre>
-<p>求每门课程的学生人数</p>
-<pre><code class="sql">SELECT COUNT(1) FROM score GROUP BY c_id</code></pre>
-<p>查询选修”张三”老师所授课程的学生中，成绩最高的学生信息及其成绩</p>
-<pre><code class="sql">select a.*,b.s_score,b.c_id,c.c_name from student a LEFT JOIN score b on a.s_id = b.s_id LEFT JOIN course c on b.c_id=c.c_id where b.c_id =(select c_id from course c,teacher d where c.t_id=d.t_id and d.t_name=’张三’) and b.s_score in (select MAX(s_score) from score where c_id=’02’)</code></pre>
-<p>查询不同课程成绩相同的学生的学生编号、课程编号、学生成绩</p>
-<pre><code class="sql">select DISTINCT b.s_id,b.c_id,b.s_score from score a,score b where a.c_id != b.c_id and a.s_score = b.s_score</code></pre>
-<p>查询每门功成绩最好的前两名</p>
-<pre><code class="sql">select a.s_id,a.c_id,a.s_score from score a where (select COUNT(1) from score b where b.c_id=a.c_id and b.s_score&gt;=a.s_score)&lt;=2 ORDER BY a.c_id</code></pre>
-<p>统计每门课程的学生选修人数（超过5人的课程才统计）。要求输出课程号和选修人数，查询结果按人数降序排 列，若人数相同，按课程号升序排列</p>
-<pre><code class="sql">SELECT a.c_id,COUNT(1) as n FROM score a GROUP BY a.c_id HAVING COUNT(a.c_id)&gt;5 ORDER BY n DESC,c_id</code></pre>
-<p>检索至少选修两门课程的学生学号</p>
-<pre><code class="sql">SELECT a.* FROM student a LEFT JOIN score b on a.s_id=b.s_id GROUP BY a.s_id HAVING COUNT(a.s_id)&gt;1</code></pre>
-<p>查询选修了全部课程的学生信息</p>
-<pre><code class="sql">SELECT a.* FROM student a LEFT JOIN score b on a.s_id=b.s_id GROUP BY a.s_id HAVING COUNT(a.s_id)&gt;2</code></pre>
-<p>查询各学生的年龄(当前月日 &lt; 出生年月的月日则，年龄减一)</p>
-<pre><code class="sql">SELECT *,YEAR(NOW())-YEAR(s_birth)-(case WHEN MONTH(NOW())-MONTH(s_birth)&gt;0 THEN 1 else 0 end) AS 年龄 FROM student</code></pre>
-<p>查询本周过生日的学生</p>
-<pre><code class="sql">SELECT s_name FROM student WHERE WEEK(NOW())=WEEK(s_birth)</code></pre>
-<p>查询下周过生日的学生</p>
-<pre><code class="sql">SELECT s_name FROM student WHERE (WEEK(NOW())+1)=WEEK(s_birth)</code></pre>
-<p>查询本月过生日的学生</p>
-<pre><code class="sql">SELECT * FROM student WHERE MONTH(s_birth) = MONTH(NOW())</code></pre>
-<p>查询下月过生日的学生</p>
-<pre><code>SELECT * FROM student WHERE MONTH(s_birth) = (MONTH(NOW())+1)</code></pre>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/ReentrantLock%E8%8E%B7%E5%8F%96%E9%94%81%E9%87%8A%E6%94%BE%E9%94%81%E6%BA%90%E7%A0%81/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -5100,7 +4788,7 @@ public final boolean release(int arg) {
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/Mysql%E5%9F%BA%E7%A1%80%E8%AF%AD%E5%8F%A5/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/Mysql%E8%AF%AD%E6%B3%95%E7%BB%83%E4%B9%A0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="sinaill">
@@ -5119,7 +4807,7 @@ public final boolean release(int arg) {
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/06/17/Mysql%E5%9F%BA%E7%A1%80%E8%AF%AD%E5%8F%A5/" itemprop="url">Mysql基础语句</a></h1>
+                <a class="post-title-link" href="/2020/06/17/Mysql%E8%AF%AD%E6%B3%95%E7%BB%83%E4%B9%A0/" itemprop="url">Mysql语法练习</a></h1>
         
 
         <div class="post-meta">
@@ -5193,279 +4881,533 @@ public final boolean release(int arg) {
       
         
           
-            <h3 id="运行环境"><a href="#运行环境" class="headerlink" title="运行环境"></a>运行环境</h3><p>系统：win10 1803 mysql版本：5.7.24 可视化管理工具：Navicat Premium</p>
-<h3 id="基本语句"><a href="#基本语句" class="headerlink" title="基本语句"></a>基本语句</h3><h4 id="建库，删库"><a href="#建库，删库" class="headerlink" title="建库，删库"></a>建库，删库</h4><p><code>CREATE DATABASE database-name</code></p>
-<p><code>drop database database-name</code></p>
-<h4 id="建表，删表"><a href="#建表，删表" class="headerlink" title="建表，删表"></a>建表，删表</h4><h5 id="建表模板"><a href="#建表模板" class="headerlink" title="建表模板"></a>建表模板</h5><pre><code>create table 库名.表名(
-    字段名1 类型[(宽度) 约束条件],
-    ···
-)</code></pre><p><code>create table table_new like table_old</code></p>
-<h5 id="常用约束条件"><a href="#常用约束条件" class="headerlink" title="常用约束条件"></a>常用约束条件</h5><p><code>primary key (PK)</code> #标识该字段为该表的主键，可以唯一的标识记录，主键就是不为空且唯一当然其还有加速查询的作用<br><code>foreign key (FK)</code> #标识该字段为该表的外键，用来建立表与表的关联关系<br><code>not null</code> #标识该字段不能为空<br><code>unique key (UK)</code> #标识该字段的值是唯一的<br><code>auto_increment</code> #标识该字段的值自动增长（整数类型，而且为主键）<br><code>default</code> #为该字段设置默认值<br><code>unsigned</code> #将整型设置为无符号即正数<br><code>zerofill</code> #不够使用0进行填充</p>
-<h5 id="显示宽度"><a href="#显示宽度" class="headerlink" title="显示宽度"></a>显示宽度</h5><p>对于数字型，指定显示宽度不影响存储范围，使用zerofill约束条件后，实际显示宽度小于指定显示宽度时，自动加0代替，大于显示宽度时，按实际宽度显示</p>
-<p>对于字符型(utf8)，指定显示宽度即指定存储字符个数 (最大65535-3/3)</p>
-<p><code>TINYINT[(M)] [UNSIGNED] [ZEROFILL]</code> M默认为4</p>
-<p><code>SMALLINT[(M)] [UNSIGNED] [ZEROFILL]</code> M默认为6</p>
-<p><code>MEDIUMINT[(M)] [UNSIGNED] [ZEROFILL]</code> M默认为9</p>
-<p><code>INT[(M)] [UNSIGNED] [ZEROFILL]</code> M默认为11</p>
-<p><code>BIGINT[(M)] [UNSIGNED] [ZEROFILL]</code> M默认为20</p>
-<h5 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h5><h6 id="数字型"><a href="#数字型" class="headerlink" title="数字型"></a>数字型</h6><table>
-<thead>
-<tr>
-<th>类型</th>
-<th>大小</th>
-<th>范围（有符号）</th>
-<th>范围（无符号）</th>
-<th>用途</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>TINYINT</td>
-<td>1字节</td>
-<td>(-128，127)</td>
-<td>(0，255)</td>
-<td>小整数值</td>
-</tr>
-<tr>
-<td>SMALLINT</td>
-<td>2字节</td>
-<td>(-32768，32767)</td>
-<td>(0，65535)</td>
-<td>大整数值</td>
-</tr>
-<tr>
-<td>MEDIUMINT</td>
-<td>3字节</td>
-<td>(-8388608，8388607)</td>
-<td>(0，16777215)</td>
-<td>大整数值</td>
-</tr>
-<tr>
-<td>INT或INTEGER</td>
-<td>4字节</td>
-<td>(-2147483648，2147483647)</td>
-<td>(0，4294967295)</td>
-<td>大整数值</td>
-</tr>
-<tr>
-<td>BIGINT</td>
-<td>8字节</td>
-<td>(-9233372036854775808，9223372036854775807)</td>
-<td>(0，18446744073709551615)</td>
-<td>极大整数值</td>
-</tr>
-<tr>
-<td>FLOAT</td>
-<td>4字节</td>
-<td>(-3.402 823466E+38，1.175494351E-38)，0，(1.175494351E-38，3.402823466351E+38)</td>
-<td>0，(1.175494351E-38，3.402823466 E+38)</td>
-<td>单精度浮点数值</td>
-</tr>
-<tr>
-<td>DOUBLE</td>
-<td>8字节</td>
-<td>(1.7976931348623157E+308，2.2250738585072014E-308)，0，(2.2250738585072014E-308，1.797 693 134 862 315 7 E+308)</td>
-<td>0，(2.2250738585072014E-308，1.7976931348623157E+308)</td>
-<td>双精度浮点数值</td>
-</tr>
-<tr>
-<td>DECIMAL</td>
-<td>对DECIMAL(M,D) ，如果M&gt;D，为M+2否则为D+2</td>
-<td>依赖于M和D的值</td>
-<td>依赖于M和D的值</td>
-<td>小数值</td>
-</tr>
-</tbody></table>
-<h6 id="字符型"><a href="#字符型" class="headerlink" title="字符型"></a>字符型</h6><table>
-<thead>
-<tr>
-<th>类型</th>
-<th>大小</th>
-<th>用途</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>CHAR</td>
-<td>0-255字节</td>
-<td>定长字符串</td>
-</tr>
-<tr>
-<td>VARCHAR</td>
-<td>0-65535字节</td>
-<td>变长字符串</td>
-</tr>
-<tr>
-<td>TINYBLOB</td>
-<td>0-255字节</td>
-<td>不超过255个字符的二进制字符串</td>
-</tr>
-<tr>
-<td>TINYTEXT</td>
-<td>0-255字节</td>
-<td>短文本字符串</td>
-</tr>
-<tr>
-<td>BLOB</td>
-<td>0-65535字节</td>
-<td>二进制形式的长文本数据</td>
-</tr>
-<tr>
-<td>TEXT</td>
-<td>0-65535字节</td>
-<td>长文本数据</td>
-</tr>
-<tr>
-<td>MEDIUMBLOB</td>
-<td>0-16777215字节</td>
-<td>二进制形式的中等长度文本数据</td>
-</tr>
-<tr>
-<td>MEDIUMTEXT</td>
-<td>0-16777215字节</td>
-<td>中等长度文本数据</td>
-</tr>
-<tr>
-<td>LOGNGBLOB</td>
-<td>0-4294967295字节</td>
-<td>二进制形式的极大文本数据</td>
-</tr>
-<tr>
-<td>LONGTEXT</td>
-<td>0-4294967295字节</td>
-<td>极大文本数据</td>
-</tr>
-</tbody></table>
-<h6 id="枚举和集合"><a href="#枚举和集合" class="headerlink" title="枚举和集合"></a>枚举和集合</h6><p>ENUM （最多65535个成员） 64KB<br>SET （最多64个成员） 64KB</p>
-<h6 id="时间类型"><a href="#时间类型" class="headerlink" title="时间类型"></a>时间类型</h6><table>
-<thead>
-<tr>
-<th>类型</th>
-<th>大小</th>
-<th>范围</th>
-<th>格式</th>
-<th>用途</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>DATE</td>
-<td>3</td>
-<td>1000-01-01/9999-12-31</td>
-<td>YYYY-MM-DD</td>
-<td>日期值</td>
-</tr>
-<tr>
-<td>TIME</td>
-<td>3</td>
-<td>-838:59:59/838:59:59</td>
-<td>HH:MM:SS</td>
-<td>时间值或持续时间</td>
-</tr>
-<tr>
-<td>YEAR</td>
-<td>1</td>
-<td>1901/2155</td>
-<td>YYYY</td>
-<td>年份值</td>
-</tr>
-<tr>
-<td>DATETIME</td>
-<td>8</td>
-<td>1000-01-01 00:00:00/9999-12-31 23:59:59</td>
-<td>YYYY-MM-DD HH:MM:SS</td>
-<td>混合日期和时间值</td>
-</tr>
-<tr>
-<td>TIMESTAMP</td>
-<td>8</td>
-<td>1970-01-01 00:00:00/2037 年某时</td>
-<td>YYYYMMDD HHMMSS</td>
-<td>混合日期和时间值，时间戳</td>
-</tr>
-</tbody></table>
-<h5 id="删表"><a href="#删表" class="headerlink" title="删表"></a>删表</h5><p><code>drop table 表格</code></p>
-<h4 id="CRUD"><a href="#CRUD" class="headerlink" title="CRUD"></a>CRUD</h4><p><code>insert into 表格(字段···) values(值···),(),()···</code></p>
-<p><code>select * from table where 字段+条件</code></p>
-<p><code>update 表格 set 列名 where 字段+条件</code></p>
-<p><code>delete from 表格 where 字段+条件</code></p>
-<h4 id="查看字段"><a href="#查看字段" class="headerlink" title="查看字段"></a>查看字段</h4><p><code>desc 表名</code></p>
-<h4 id="分页"><a href="#分页" class="headerlink" title="分页"></a>分页</h4><p><code>limit x,y</code></p>
-<p>从第x条开始，查询y条记录</p>
-<h4 id="更改表"><a href="#更改表" class="headerlink" title="更改表"></a>更改表</h4><h5 id="更改表名"><a href="#更改表名" class="headerlink" title="更改表名"></a>更改表名</h5><p><code>alter table 表名 rename 新表名</code></p>
-<h5 id="更改列名"><a href="#更改列名" class="headerlink" title="更改列名"></a>更改列名</h5><p><code>ALTER TABLE 表名 CHANGE 旧字段 新字段 旧类型</code></p>
-<h5 id="新增列"><a href="#新增列" class="headerlink" title="新增列"></a>新增列</h5><p><code>alter table 表名 add column 新字段 类型</code></p>
-<h5 id="删除列"><a href="#删除列" class="headerlink" title="删除列"></a>删除列</h5><p><code>alter table 表名 drop column 字段</code></p>
-<h5 id="修改表列类型"><a href="#修改表列类型" class="headerlink" title="修改表列类型"></a>修改表列类型</h5><p><code>alter table 表名 modify 字段 新类型</code></p>
-<h5 id="删除约束"><a href="#删除约束" class="headerlink" title="删除约束"></a>删除约束</h5><p><code>alter table 表名 drop constraint 约束名字</code></p>
-<h5 id="添加一个表的字段的约束并指定默认值"><a href="#添加一个表的字段的约束并指定默认值" class="headerlink" title="添加一个表的字段的约束并指定默认值"></a>添加一个表的字段的约束并指定默认值</h5><p><code>alter table 表名 add constraint 约束名字 约束类型 for 字段</code></p>
-<h4 id="主外键关联"><a href="#主外键关联" class="headerlink" title="主外键关联"></a>主外键关联</h4><p>添加外键约束</p>
-<p>alter table 子表 add foreign key(子表外键字段) references 父表(父表主键字段)</p>
-<h4 id="创建索引"><a href="#创建索引" class="headerlink" title="创建索引"></a>创建索引</h4><h5 id="ALTER-TABLE"><a href="#ALTER-TABLE" class="headerlink" title="ALTER TABLE"></a>ALTER TABLE</h5><p><code>ALTER TABLE 表名 ADD INDEX 索引名 (column_list)</code></p>
-<p>索引名index_name可选，缺省时，MySQL将根据第一个索引列赋一个名称,column_list指出对哪些列进行索引，多列时各列之间用逗号分隔</p>
-<p><code>ALTER TABLE 表名 ADD UNIQUE (column_list)</code></p>
-<p><code>ALTER TABLE 表名 ADD PRIMARY KEY (column_list)</code></p>
-<h5 id="CREATE-TABLE"><a href="#CREATE-TABLE" class="headerlink" title="CREATE TABLE"></a>CREATE TABLE</h5><p><code>CREATE INDEX index_name ON table_name (column_list)</code></p>
-<p><code>CREATE UNIQUE INDEX index_name ON table_name (column_list)</code></p>
-<h4 id="删除索引"><a href="#删除索引" class="headerlink" title="删除索引"></a>删除索引</h4><p><code>DROP INDEX 索引名 ON 表名</code></p>
-<p><code>ALTER TABLE 表名 DROP INDEX 索引名</code></p>
-<p><code>ALTER TABLE 表名 DROP PRIMARY KEY</code></p>
-<p>其中，前两条语句是等价的，删除掉table_name中的索引index_name。</p>
-<p>第3条语句只在删除PRIMARY KEY索引时使用，因为一个表只可能有一个PRIMARY KEY索引，因此不需要指定索引名。如果没有创建PRIMARY KEY索引，但表具有一个或多个UNIQUE索引，则MySQL将删除第一个UNIQUE索引。</p>
-<p>如果从表中删除了某列，则索引会受到影响。对于多列组合的索引，如果删除其中的某列，则该列也会从索引中删除。如果删除组成索引的所有列，则整个索引将被删除。</p>
-<h4 id="查看索引"><a href="#查看索引" class="headerlink" title="查看索引"></a>查看索引</h4><p><code>show index from 表名</code></p>
-<h3 id="多表查询"><a href="#多表查询" class="headerlink" title="多表查询"></a>多表查询</h3><h4 id="内连接-inner-join"><a href="#内连接-inner-join" class="headerlink" title="内连接(inner join)"></a>内连接(inner join)</h4><p>只返回两张表中所有满足连接条件的行，即使用比较运算符根据每个表中共有的列的值匹配两个表中的行。(inner关键字是可省略的)</p>
-<p><code>select * from 表名1 a [INNER] join 表名2 b on a.字段+条件+b.字段（建议使用）</code></p>
-<p><code>select * from 表名1 a,表名2 b where a.字段+条件+b.字段</code></p>
-<h4 id="外连接-outer-join"><a href="#外连接-outer-join" class="headerlink" title="外连接(outer join)"></a>外连接(outer join)</h4><p>使用外连接不但返回符合连接和查询条件的数据行，还返回不符合条件的一些行</p>
-<p>左外连接、右外连接。(outer关键字可省略)。</p>
-<p>共同点：都返回符合连接条件和查询条件（即：内连接）的数据行</p>
-<p>不同点：</p>
-<ul>
-<li><p>左外连接还返回左表中不符合连接条件，但符合查询条件的数据行。(所谓左表，就是写在left join关键字左边的表)</p>
-</li>
-<li><p>右外连接还返回右表中不符合连接条件，但符合查询条件的数据行。(所谓右表，就是写在right join关键字右边的表)</p>
-</li>
-</ul>
-<p>左查询<code>left join</code></p>
-<p><code>select 字段 from 表1 left join 表2 on 表1.字段+条件+表2.字段</code></p>
-<p>右查询 <code>right join</code></p>
-<p><code>select 字段 from 表1 left join 表2 on 表1.字段+条件+表2.字段</code></p>
-<h3 id="交叉连接-cross-join"><a href="#交叉连接-cross-join" class="headerlink" title="交叉连接(cross join)"></a>交叉连接(cross join)</h3><p>因为没有连接条件，所进行的表与表间的所有行的连接,结果集中的总行数就是两张表中总行数的乘积(笛卡尔积)</p>
-<p><code>select * from 表名1 a,表名2 b</code></p>
-<p><code>select * from 表名1 a cross join 表名2 b</code></p>
-<h3 id="联合查询"><a href="#联合查询" class="headerlink" title="联合查询"></a>联合查询</h3><p>将多次查询(多条select语句), 在记录上进行拼接(字段不会增加)，每一条select语句获取的字段数必须严格一致(但是字段类型无关)</p>
-<p><code>union all</code> 保留所有(不去重)</p>
-<p><code>union [distinct]</code> 去重</p>
-<h3 id="Mysql常用函数"><a href="#Mysql常用函数" class="headerlink" title="Mysql常用函数"></a>Mysql常用函数</h3><h4 id="聚合函数"><a href="#聚合函数" class="headerlink" title="聚合函数"></a>聚合函数</h4><p>(1)找出最大值：max(字段名)</p>
-<p>(2)找出最小值: min(字段名)</p>
-<p>(3)求平均数：avg(字段名)</p>
-<p>(4)求和：sum(字段名)</p>
-<p>(5)统计记录 count(字段名)，不包含null，count(*)统计所有记录</p>
-<h4 id="日期函数"><a href="#日期函数" class="headerlink" title="日期函数"></a>日期函数</h4><p><img src="http://wx1.sinaimg.cn/large/96b7c0f4gy1g1bh3eakchj20uw0hvwn7.jpg" alt=""></p>
-<p>格式化参数：</p>
-<p>%y 表示两位数字年份。例如：（2017返回17）<br>%Y 表示四位数字年份。例如：（2017返回2017）<br>%m 表示两位数字月份。例如：（01,02，….，12）<br>%c 表示数字的月份。例如：（1,2,3,4…..,12）<br>%M 表示月明，英文名称。<br>%d 表示两位数字的天数。例如：（01,02,03,…..31）<br>%e 表示数字的天数。例如（1,2,3,4,…..,31）<br>%H 表示两位数字的小时数，24小时制。例如：（01,02，…..，24）<br>%i 表示两位数字的分钟数。例如：（01,02…,60）<br>%S %s 表示两位数字的秒数。例如：（01,02…,60）</p>
-<h4 id="字符串类函数"><a href="#字符串类函数" class="headerlink" title="字符串类函数"></a>字符串类函数</h4><p>(1)CONCAT(s1,s2,s3,…..) 连接字符串<br>例如：SELECT CONCAT(‘1’,’2’) FROM DUAL;<br>输出：12</p>
-<p>(2)LOWER(s) 将字符串全部变成小写<br>例如：SELECT LOWER(‘ABC’) FROM DUAL;<br>输出：abc</p>
-<p>(3)UPPER(s) 将字符串全部变成大写<br>例如：SELECT UPPER(‘abc’) FROM DUAL;<br>输出：ABC</p>
-<p>(4)LTRIM(s) 去除字符串左侧的空格<br>例如：select LTRIM(‘ abc’) from dual;<br>输出：abc</p>
-<p>(5)RTRIM(s) 去除字符串右侧的空格<br>例如：select LTRIM(‘abc ‘) from dual;<br>输出：abc</p>
-<p>(6)TRIM(s) 去除字符串左右两侧的空格<br>例如：select LTRIM( ‘abc ‘) from dual;<br>输出：abc</p>
-<p>(7)LPAD(s,len,pad) 用字符串pad来对s左侧进行填充，直至长度达到len<br>例如：SELECT LPAD(‘1’,5,’0’) FROM DUAL;<br>输出：00001</p>
-<p>(8)RPAD(s,len,pad) 用字符串pad来对s右侧进行填充，直至长度达到len<br>例如：SELECT RPAD(‘1’,5,’0’) FROM DUAL;<br>输出：10000</p>
-<p>(9)REPEAT(s,x) 将s重复x后返回<br>例如：select REPEAT(‘a’,5) from dual;<br>输出：aaaaa</p>
-<p>(10)REPLACE(s,form,target) 将字符串中包含form的字符替换成target<br>例如：SELECT REPLACE(‘abc’,’a’,’A’) FROM DUAL;<br>输出：Abc</p>
-<p>(11)STRCMP(s1,s2) 比较s1与s2，如果相同返回0，s2大于s1返回1，s2小于s1返回-1<br>例如：SELECT STRCMP(‘a’,’b’),STRCMP(‘a’,’a’),STRCMP(‘b’,’a’) FROM DUAL;<br>输出：-1 0 1</p>
-<p>(12)LEFT(s,x) 返回字符串左侧x个字符<br>例如：SELECT LEFT(‘abc’,2) FROM DUAL;<br>输出：ab</p>
-<p>(13)RIGHT(s,x) 返回字符串右侧x个字符<br>例如：SELECT RIGHT(‘abc’,2) FROM DUAL;<br>输出：bc</p>
-<p>(14)MID(s,x,y) 返回字符串x位置开始y个字符<br>例如：SELECT MID(‘abcd’,3,2) FROM DUAL;<br>输出：cd</p>
-<p>(15)SUBSTRING(s,x,y) 返回字符串x位子开始y个字符，与MID基本一样<br>例如：SELECT SUBSTRING(‘abcd’,3,2) FROM DUAL;<br>输出：cd</p>
-<p>(16)INSERT(s,x,y,form) 将字符串x位置开始y个字符替换成form字符<br>例如：SELECT INSERT(‘abcd’,3,2,’FF’) FROM DUAL;<br>输出：abFF</p>
-<p>(17)LENGTH(s) 返回s的长度<br>例如：SELECT LENGTH(‘123’) FROM DUAL;<br>输出：3</p>
-<p>(18)REVERSE(s) 返回s颠倒顺序<br>例如：SELECT REVERSE(‘abc’) FROM DUAL;<br>输出：cba</p>
-<h4 id="转换类型函数"><a href="#转换类型函数" class="headerlink" title="转换类型函数"></a>转换类型函数</h4><p>CAST(v as type) 转换数据类型</p>
-<p>Type参数：</p>
-<p>字符型：CHAR<br>日期：DATE<br>时间：TIME<br>日期时间型：DATETIME<br>浮点数：DECIMAL<br>整数：SIGNED<br>无符号整数：UNSIGNED</p>
-<h4 id="数据库类函数"><a href="#数据库类函数" class="headerlink" title="数据库类函数"></a>数据库类函数</h4><p>DATABASE() 返回当前数据库名称<br>VERSION() 返回当前数据库版本<br>INET_ATON(ip) 返回数字表示的IP<br>INET_NTOA(num) 将数字表示的IP转换为IP<br>PASSWORD(s) 返回加密版本<br>MD5(s) 返回MD5加密值</p>
-<h4 id="数学函数"><a href="#数学函数" class="headerlink" title="数学函数"></a>数学函数</h4><p>ABS(X): 返回X的绝对值<br>MOD(N,M): 或%:返回N被M除的余数<br>FLOOR(X): 返回不大于X的最大整数值<br>CEILING(X): 返回不小于X的最小整数值<br>ROUND(X) : 返回参数X的四舍五入的一个整数<br>ROUND(X,D): 舍入函数。将参数X舍入到D小数位。 舍入算法取决于X的数据类型。如果未指定，则D默认为0。 D可能是负数，导致值X的小数点左边的D数字变为零</p>
+            <h3 id="表名和字段"><a href="#表名和字段" class="headerlink" title="表名和字段"></a>表名和字段</h3><p>学生表<br>Student(s_id,s_name,s_birth,s_sex) –学生编号,学生姓名, 出生年月,学生性别<br>课程表<br>Course(c_id,c_name,t_id) – –课程编号, 课程名称, 教师编号<br>教师表<br>Teacher(t_id,t_name) –教师编号,教师姓名<br>成绩表<br>Score(s_id,c_id,s_score) –学生编号,课程编号,分数</p>
+<h3 id="建表"><a href="#建表" class="headerlink" title="建表"></a>建表</h3><pre><code>--建表
+--学生表
+CREATE TABLE `Student`(
+    `s_id` VARCHAR(20),
+    `s_name` VARCHAR(20) NOT NULL DEFAULT &#39;&#39;,
+    `s_birth` VARCHAR(20) NOT NULL DEFAULT &#39;&#39;,
+    `s_sex` VARCHAR(10) NOT NULL DEFAULT &#39;&#39;,
+    PRIMARY KEY(`s_id`)
+);
+--课程表
+CREATE TABLE `Course`(
+    `c_id`  VARCHAR(20),
+    `c_name` VARCHAR(20) NOT NULL DEFAULT &#39;&#39;,
+    `t_id` VARCHAR(20) NOT NULL,
+    PRIMARY KEY(`c_id`)
+);
+--教师表
+CREATE TABLE `Teacher`(
+    `t_id` VARCHAR(20),
+    `t_name` VARCHAR(20) NOT NULL DEFAULT &#39;&#39;,
+    PRIMARY KEY(`t_id`)
+);
+--成绩表
+CREATE TABLE `Score`(
+    `s_id` VARCHAR(20),
+    `c_id`  VARCHAR(20),
+    `s_score` INT(3),
+    PRIMARY KEY(`s_id`,`c_id`)
+);
 
+--插入学生表测试数据
+insert into Student values(&#39;01&#39; , &#39;赵雷&#39; , &#39;1990-01-01&#39; , &#39;男&#39;);
+insert into Student values(&#39;02&#39; , &#39;钱电&#39; , &#39;1990-12-21&#39; , &#39;男&#39;);
+insert into Student values(&#39;03&#39; , &#39;孙风&#39; , &#39;1990-05-20&#39; , &#39;男&#39;);
+insert into Student values(&#39;04&#39; , &#39;李云&#39; , &#39;1990-08-06&#39; , &#39;男&#39;);
+insert into Student values(&#39;05&#39; , &#39;周梅&#39; , &#39;1991-12-01&#39; , &#39;女&#39;);
+insert into Student values(&#39;06&#39; , &#39;吴兰&#39; , &#39;1992-03-01&#39; , &#39;女&#39;);
+insert into Student values(&#39;07&#39; , &#39;郑竹&#39; , &#39;1989-07-01&#39; , &#39;女&#39;);
+insert into Student values(&#39;08&#39; , &#39;王菊&#39; , &#39;1990-01-20&#39; , &#39;女&#39;);
+--课程表测试数据
+insert into Course values(&#39;01&#39; , &#39;语文&#39; , &#39;02&#39;);
+insert into Course values(&#39;02&#39; , &#39;数学&#39; , &#39;01&#39;);
+insert into Course values(&#39;03&#39; , &#39;英语&#39; , &#39;03&#39;);
+
+--教师表测试数据
+insert into Teacher values(&#39;01&#39; , &#39;张三&#39;);
+insert into Teacher values(&#39;02&#39; , &#39;李四&#39;);
+insert into Teacher values(&#39;03&#39; , &#39;王五&#39;);
+
+--成绩表测试数据
+insert into Score values(&#39;01&#39; , &#39;01&#39; , 80);
+insert into Score values(&#39;01&#39; , &#39;02&#39; , 90);
+insert into Score values(&#39;01&#39; , &#39;03&#39; , 99);
+insert into Score values(&#39;02&#39; , &#39;01&#39; , 70);
+insert into Score values(&#39;02&#39; , &#39;02&#39; , 60);
+insert into Score values(&#39;02&#39; , &#39;03&#39; , 80);
+insert into Score values(&#39;03&#39; , &#39;01&#39; , 80);
+insert into Score values(&#39;03&#39; , &#39;02&#39; , 80);
+insert into Score values(&#39;03&#39; , &#39;03&#39; , 80);
+insert into Score values(&#39;04&#39; , &#39;01&#39; , 50);
+insert into Score values(&#39;04&#39; , &#39;02&#39; , 30);
+insert into Score values(&#39;04&#39; , &#39;03&#39; , 20);
+insert into Score values(&#39;05&#39; , &#39;01&#39; , 76);
+insert into Score values(&#39;05&#39; , &#39;02&#39; , 87);
+insert into Score values(&#39;06&#39; , &#39;01&#39; , 31);
+insert into Score values(&#39;06&#39; , &#39;03&#39; , 34);
+insert into Score values(&#39;07&#39; , &#39;02&#39; , 89);
+insert into Score values(&#39;07&#39; , &#39;03&#39; , 98);</code></pre><h3 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h3><p>查询”01”课程比”02”课程成绩高的学生的信息及课程分数</p>
+<pre><code class="sql">SELECT a.*,b.c_id,b.s_score,c.c_id AS c_id2,c.s_score AS s_score2 FROM student a 
+LEFT JOIN score b on a.s_id = b.s_id LEFT JOIN score c on a.s_id=c.s_id 
+AND c.c_id=&#39;02&#39; where b.s_score&gt;c.s_score and b.c_id=&#39;01&#39;</code></pre>
+<p><strong>同表内比较使用同表内联</strong></p>
+<p>查询”01”课程比”02”课程成绩低的学生的信息及课程分数</p>
+<pre><code class="sql">SELECT a.*,b.c_id,b.s_score,c.c_id AS c_id2,c.s_score AS s_score2 FROM student a LEFT JOIN score b on a.s_id = b.s_id LEFT JOIN score c on a.s_id=c.s_id AND c.c_id=&#39;02&#39; where b.s_score&lt;c.s_score and b.c_id=&#39;01&#39;</code></pre>
+<p>查询平均成绩大于等于60分的同学的学生编号和学生姓名和平均成绩</p>
+<pre><code class="sql">SELECT a.s_id,a.s_name,ROUND(AVG(b.s_score),2) AS avg_score FROM student a INNER JOIN score b on a.s_id=b.s_id GROUP BY a.s_id HAVING avg_score&gt;=60</code></pre>
+<p>查询平均成绩小于60分的同学的学生编号和学生姓名和平均成绩(包括有成绩的和无成绩的)</p>
+<pre><code class="sql">SELECT a.s_id,a.s_name,ROUND(AVG(b.s_score),2) AS avg_score FROM student a left JOIN score b on a.s_id=b.s_id GROUP BY a.s_id HAVING avg_score&lt;60 UNION SELECT c.s_id,c.s_name,0 AS avg_score FROM student c WHERE c.s_id not IN (SELECT DISTINCT s_id FROM score)</code></pre>
+<p><strong>UNION 用于合并两个或多个 SELECT 语句的结果集，并消去表中任何重复行</strong></p>
+<p>查询所有同学的学生编号、学生姓名、选课总数、所有课程的总成绩</p>
+<pre><code class="sql">SELECT a.s_id,a.s_name,COUNT(b.c_id),SUM(b.s_score) as score FROM student a JOIN score b on a.s_id=b.s_id GROUP BY a.s_id</code></pre>
+<p>查询”李”姓老师的数量</p>
+<pre><code class="sql">SELECT COUNT(a.t_id) FROM teacher a WHERE a.t_name REGEXP &#39;^李&#39;(like &#39;李%&#39;)</code></pre>
+<p>查询学过”张三”老师授课的同学的信息</p>
+<pre><code class="sql">select a.* from student a join score b on a.s_id=b.s_id where b.c_id in(select c_id from course where t_id =(select t_id from teacher where t_name = &#39;张三&#39;);</code></pre>
+<p>查询没学过”张三”老师授课的同学的信息</p>
+<pre><code class="sql">SELECT * FROM student WHERE s_id not in (SELECT a.s_id FROM student a LEFT JOIN score b ON a.s_id=b.s_id where b.c_id in (SELECT c_id FROM course WHERE t_id in (SELECT t_id FROM teacher WHERE t_name=&#39;张三&#39;)))    
+```sql
+
+查询学过编号为”01”并且也学过编号为”02”的课程的同学的信息
+
+```sql
+select a.* from student a,score b,score c where a.s_id = b.s_id and a.s_id = c.s_id and b.c_id=&#39;01&#39; and c.c_id=&#39;02&#39;;</code></pre>
+<p><strong>交叉连接：因为没有连接条件，所进行的表与表间的所有行的连接</strong></p>
+<p>查询学过编号为”01”但是没有学过编号为”02”的课程的同学的信息</p>
+<pre><code class="sql">select a.* from student a where a.s_id in (select s_id from score where c_id=&#39;01&#39; ) and a.s_id NOT in(select s_id from score where c_id=&#39;02&#39;)</code></pre>
+<p>查询没有学全所有课程的同学的信息</p>
+<pre><code class="sql">SELECT * FROM student WHERE s_id NOT IN (select a.s_id from student a LEFT JOIN score b on a.s_id = b.s_id GROUP BY a.s_id HAVING COUNT(a.s_id)&gt;2)</code></pre>
+<p>查询至少有一门课与学号为”01”的同学所学相同的同学的信息</p>
+<pre><code class="sql">select * from student where s_id in(select distinct a.s_id from score a where a.c_id in(select a.c_id from score a where a.s_id=&#39;01&#39;));</code></pre>
+<p>查询和”01”号的同学学习的课程完全相同的其他同学的信息</p>
+<pre><code class="sql">select a.* from student a where a.s_id in(select distinct s_id from score where s_id!=’01’ and c_id in(select c_id from score where s_id=’01’)group by s_id having count(1)=(select count(1) from score where s_id=&#39;01&#39;));</code></pre>
+<p>查询没学过”张三”老师讲授的任一门课程的学生姓名</p>
+<pre><code class="sql">SELECT s_name FROM student WHERE s_id NOT IN (SELECT a.s_id FROM student a LEFT JOIN score b ON a.s_id = b.s_id WHERE b.c_id IN (SELECT c_id FROM course WHERE t_id IN (SELECT t_id FROM teacher WHERE t_name=&#39;张三&#39;)))</code></pre>
+<p>查询两门及其以上不及格课程的同学的学号，姓名及其平均成绩</p>
+<pre><code class="sql">SELECT a.s_id,a.s_name,ROUND(AVG(b.s_score),2) AS avg_score FROM student a LEFT JOIN score b on a.s_id = b.s_id AND b.s_score&lt;60 group by a.s_id having count(a.s_id)&gt;1</code></pre>
+<p>检索”01”课程分数小于60，按分数降序排列的学生信息</p>
+<pre><code class="sql">SELECT a.* FROM student a LEFT JOIN score b ON a.s_id = b.s_id AND b.c_id=’01’ WHERE b.s_score&lt;60 ORDER BY b.s_score DESC</code></pre>
+<p>按平均成绩从高到低显示所有学生的所有课程的成绩以及平均成绩</p>
+<pre><code class="sql">SELECT a.s_id,(SELECT s_score FROM score WHERE s_id = a.s_id AND c_id=&#39;01&#39;) AS 语文,(SELECT s_score FROM score WHERE s_id = a.s_id AND c_id=&#39;02&#39;) AS 数学,(SELECT s_score FROM score WHERE s_id = a.s_id AND c_id = &#39;03&#39;) AS 英语,ROUND(AVG(a.s_score),2) AS 平均分 FROM score a GROUP BY a.s_id ORDER BY 平均分 DESC</code></pre>
+<p>查询各科成绩最高分、最低分和平均分：以如下形式显示：课程ID，课程name，最高分，最低分，平均分，及格率，中等率，优良率，优秀率，及格为&gt;=60，中等为：70-80，优良为：80-90，优秀为：&gt;=90</p>
+<pre><code class="sql">SELECT a.c_id,b.c_name,MAX(s_score) AS 最高分,MIN(s_score) AS 最低分,ROUND(AVG(s_score),2) AS 平均分,ROUND(100SUM(CASE WHEN a.s_score&gt;=60 THEN 1 ELSE 0 END)/SUM(case WHEN a.s_score THEN 1 ELSE 0 END),2) AS 及格率,ROUND(100(SUM(case when a.s_score&gt;=70 and a.s_score&lt;=80 then 1 else 0 end)/SUM(case when a.s_score then 1 else 0 end)),2) as 中等率, ROUND(100(SUM(case when a.s_score&gt;=80 and a.s_score&lt;=90 then 1 else 0 end)/SUM(case when a.s_score then 1 else 0 end)),2) as 优良率,ROUND(100(SUM(case when a.s_score&gt;=90 then 1 else 0 end)/SUM(case when a.s_score then 1 else 0 end)),2) as 优秀率 FROM score a LEFT JOIN course b ON a.c_id = b.c_id GROUP BY c_id`</code></pre>
+<p>按各科成绩进行排序，并显示排名</p>
+<pre><code class="sql">SELECT ,(@i:=@i+1) 排名 FROM (SELECT FROM score WHERE c_id = ‘01’ ORDER BY s_score LIMIT 10000) a,(SELECT @i:=0) AS 排名 UNION
+SELECT ,(@j:=@j+1) 排名 FROM (SELECT FROM score WHERE c_id = ‘02’ ORDER BY s_score LIMIT 10000) a,(SELECT @j:=0) AS 排名 UNION
+SELECT ,(@k:=@k+1) 排名 FROM (SELECT FROM score WHERE c_id = ‘03’ ORDER BY s_score LIMIT 10000) a,(SELECT @k:=0) AS 排名</code></pre>
+<p>查询学生的总成绩并进行排名</p>
+<p>查询学生平均成绩及其名次</p>
+<pre><code class="sql">select a.s_id,@i:=@i+1 as ‘不保留空缺排名’,@k:=(case when @avg_score=a.avg_s then @k else @i end) as ‘保留空缺排名’,@avg_score:=avg_s as ‘平均分’from (select s_id,ROUND(AVG(s_score),2) as avg_s from score GROUP BY s_id)a,(select @avg_score:=0,@i:=0,@k:=0)b;</code></pre>
+<p>查询各科成绩前三名的记录</p>
+<pre><code class="sql">select a.s_id,a.c_id,a.s_score,b.* from score a left join score b on a.c_id = b.c_id and a.s_score&lt;b.s_score group by a.s_id,a.c_id,a.s_score HAVING COUNT(b.s_id)&lt;3 ORDER BY a.c_id,a.s_score DESC</code></pre>
+<p>查询每门课程被选修的学生数</p>
+<pre><code class="sql">SELECT a.c_id,a.c_name,COUNT(1) as 数量 FROM course a LEFT JOIN score b on a.c_id = b.c_id GROUP BY a.c_id,a.c_name</code></pre>
+<p>查询出只有两门课程的全部学生的学号和姓名</p>
+<pre><code class="sql">SELECT a.s_id,a.s_name FROM student a LEFT JOIN score b ON a.s_id = b.s_id GROUP BY a.s_id,a.s_name HAVING COUNT(1)=2</code></pre>
+<p>查询男生、女生人数</p>
+<pre><code class="sql">SELECT s_sex,COUNT(1) FROM student GROUP BY s_sex</code></pre>
+<p>查询名字中含有”风”字的学生信息</p>
+<pre><code class="sql">SELECT * FROM student WHERE s_name RLIKE “风”</code></pre>
+<p>查询同名同性学生名单，并统计同名人数</p>
+<pre><code class="sql">SELECT s_name,s_sex FROM student GROUP BY s_name,s_sex HAVING COUNT(1)&gt;1</code></pre>
+<p>查询1990年出生的学生名单</p>
+<pre><code class="sql">SELECT s_id,s_name FROM student WHERE YEAR(s_birth)=’1990’</code></pre>
+<p>查询每门课程的平均成绩，结果按平均成绩降序排列，平均成绩相同时，按课程编号升序排列</p>
+<pre><code class="sql">SELECT b.c_id,b.c_name,AVG(a.s_score) AS 平均分 FROM score a LEFT JOIN course b ON a.c_id=b.c_id GROUP BY b.c_id ORDER BY 平均分 DESC,b.c_id</code></pre>
+<p>查询平均成绩大于等于85的所有学生的学号、姓名和平均成绩</p>
+<pre><code class="sql">SELECT a.s_id,a.s_name,AVG(b.s_score) AS 平均分 FROM student a LEFT JOIN score b ON a.s_id = b.s_id GROUP BY a.s_id,a.s_name HAVING 平均分&gt;=85</code></pre>
+<p>查询课程名称为”数学”，且分数低于60的学生姓名和分数</p>
+<pre><code class="sql">select a.s_name,b.s_score from score b LEFT JOIN student a on a.s_id=b.s_id where b.c_id=(select c_id from course where c_name =’数学’) and b.s_score&lt;60</code></pre>
+<p>查询所有学生的课程及分数情况</p>
+<pre><code class="sql">select a.s_id,a.s_name,SUM(case c.c_name when ‘语文’ then b.s_score else 0 end) as ‘语文’,SUM(case c.c_name when ‘数学’ then b.s_score else 0 end) as ‘数学’,SUM(case c.c_name when ‘英语’ then b.s_score else 0 end) as ‘英语’,SUM(b.s_score) as ‘总分’ from student a left join score b on a.s_id = b.s_id left join course c on b.c_id = c.c_id GROUP BY a.s_id,a.s_name</code></pre>
+<p>查询任何一门课程成绩在70分以上的姓名、课程名称和分数</p>
+<pre><code class="sql">SELECT a.s_name,b.s_score,c.c_name FROM student a LEFT JOIN score b on a.s_id=b.s_id LEFT JOIN course c on b.c_id=c.c_id WHERE b.s_score&gt;70</code></pre>
+<p>查询不及格的课程</p>
+<pre><code class="sql">SELECT a.s_id,a.s_name,b.s_score,c.c_name FROM student a LEFT JOIN score b on a.s_id=b.s_id LEFT JOIN course c on b.c_id=c.c_id WHERE b.s_score&lt;60</code></pre>
+<p>查询课程编号为01且课程成绩在80分以上的学生的学号和姓名</p>
+<pre><code class="sql">SELECT a.s_id,a.s_name FROM student a LEFT JOIN score b on a.s_id = b.s_id WHERE b.s_score&gt;80 AND b.c_id=’01’</code></pre>
+<p>求每门课程的学生人数</p>
+<pre><code class="sql">SELECT COUNT(1) FROM score GROUP BY c_id</code></pre>
+<p>查询选修”张三”老师所授课程的学生中，成绩最高的学生信息及其成绩</p>
+<pre><code class="sql">select a.*,b.s_score,b.c_id,c.c_name from student a LEFT JOIN score b on a.s_id = b.s_id LEFT JOIN course c on b.c_id=c.c_id where b.c_id =(select c_id from course c,teacher d where c.t_id=d.t_id and d.t_name=’张三’) and b.s_score in (select MAX(s_score) from score where c_id=’02’)</code></pre>
+<p>查询不同课程成绩相同的学生的学生编号、课程编号、学生成绩</p>
+<pre><code class="sql">select DISTINCT b.s_id,b.c_id,b.s_score from score a,score b where a.c_id != b.c_id and a.s_score = b.s_score</code></pre>
+<p>查询每门功成绩最好的前两名</p>
+<pre><code class="sql">select a.s_id,a.c_id,a.s_score from score a where (select COUNT(1) from score b where b.c_id=a.c_id and b.s_score&gt;=a.s_score)&lt;=2 ORDER BY a.c_id</code></pre>
+<p>统计每门课程的学生选修人数（超过5人的课程才统计）。要求输出课程号和选修人数，查询结果按人数降序排 列，若人数相同，按课程号升序排列</p>
+<pre><code class="sql">SELECT a.c_id,COUNT(1) as n FROM score a GROUP BY a.c_id HAVING COUNT(a.c_id)&gt;5 ORDER BY n DESC,c_id</code></pre>
+<p>检索至少选修两门课程的学生学号</p>
+<pre><code class="sql">SELECT a.* FROM student a LEFT JOIN score b on a.s_id=b.s_id GROUP BY a.s_id HAVING COUNT(a.s_id)&gt;1</code></pre>
+<p>查询选修了全部课程的学生信息</p>
+<pre><code class="sql">SELECT a.* FROM student a LEFT JOIN score b on a.s_id=b.s_id GROUP BY a.s_id HAVING COUNT(a.s_id)&gt;2</code></pre>
+<p>查询各学生的年龄(当前月日 &lt; 出生年月的月日则，年龄减一)</p>
+<pre><code class="sql">SELECT *,YEAR(NOW())-YEAR(s_birth)-(case WHEN MONTH(NOW())-MONTH(s_birth)&gt;0 THEN 1 else 0 end) AS 年龄 FROM student</code></pre>
+<p>查询本周过生日的学生</p>
+<pre><code class="sql">SELECT s_name FROM student WHERE WEEK(NOW())=WEEK(s_birth)</code></pre>
+<p>查询下周过生日的学生</p>
+<pre><code class="sql">SELECT s_name FROM student WHERE (WEEK(NOW())+1)=WEEK(s_birth)</code></pre>
+<p>查询本月过生日的学生</p>
+<pre><code class="sql">SELECT * FROM student WHERE MONTH(s_birth) = MONTH(NOW())</code></pre>
+<p>查询下月过生日的学生</p>
+<pre><code>SELECT * FROM student WHERE MONTH(s_birth) = (MONTH(NOW())+1)</code></pre>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/17/MyBatis%E5%A4%A7%E8%87%B4%E8%BF%90%E8%A1%8C%E6%B5%81%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sinaill">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/17/MyBatis%E5%A4%A7%E8%87%B4%E8%BF%90%E8%A1%8C%E6%B5%81%E7%A8%8B/" itemprop="url">MyBatis大致运行流程</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T01:43:37+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">框架</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="原生调用方式"><a href="#原生调用方式" class="headerlink" title="原生调用方式"></a>原生调用方式</h3><pre><code>//第一种
+SqlSession session = sqlSessionFactory.openSession();
+try {
+  Blog blog = (Blog) session.selectOne(&quot;org.mybatis.example.BlogMapper.selectBlog&quot;, 101);
+} finally {
+  session.close();
+}
+
+//第二种，使用到了代理(getMapper方法)
+
+SqlSession session = sqlSessionFactory.openSession();
+try {
+  BlogMapper mapper = session.getMapper(BlogMapper.class);
+  Blog blog = mapper.selectBlog(101);
+} finally {
+  session.close();
+}</code></pre><h3 id="集成框架后使用代理"><a href="#集成框架后使用代理" class="headerlink" title="集成框架后使用代理"></a>集成框架后使用代理</h3><ol>
+<li>启动服务器后，自动创建数据库服务接口的代理类</li>
+</ol>
+<pre><code>//MapperRegistry类的addMapper方法
+public &lt;T&gt; void addMapper(Class&lt;T&gt; type) {
+if (type.isInterface()) {
+  if (hasMapper(type)) {
+    throw new BindingException(&quot;Type &quot; + type + &quot; is already known to the MapperRegistry.&quot;);
+  }
+  boolean loadCompleted = false;
+  try {
+    //每个接口对应一个代理工厂实例
+    knownMappers.put(type, new MapperProxyFactory&lt;T&gt;(type));
+    // It&#39;s important that the type is added before the parser is run
+    // otherwise the binding may automatically be attempted by the
+    // mapper parser. If the type is already known, it won&#39;t try.
+    MapperAnnotationBuilder parser = new MapperAnnotationBuilder(config, type);
+    parser.parse();
+    loadCompleted = true;
+  } finally {
+    if (!loadCompleted) {
+      knownMappers.remove(type);
+    }
+  }
+}
+}</code></pre><ol start="2">
+<li>触发Spring的autowire自动向service注入接口的代理类，通过sqlsession的getMappder的方法</li>
+</ol>
+<pre><code>public &lt;T&gt; T getMapper(Class&lt;T&gt; type) {
+return getConfiguration().getMapper(type, this);
+}
+
+//跟踪源码
+public &lt;T&gt; T getMapper(Class&lt;T&gt; type, SqlSession sqlSession) {
+    return mapperRegistry.getMapper(type, sqlSession);
+}
+
+//mapperRegistry就是初始化容器时，通过addMapper方法，给每个接口确定了对应的代理工厂实例
+public &lt;T&gt; T getMapper(Class&lt;T&gt; type, SqlSession sqlSession) {
+    return mapperRegistry.getMapper(type, sqlSession);
+}
+
+//mapperRegistry类
+public &lt;T&gt; T getMapper(Class&lt;T&gt; type, SqlSession sqlSession) {
+//取出之前添加的代理工厂类
+    final MapperProxyFactory&lt;T&gt; mapperProxyFactory = (MapperProxyFactory&lt;T&gt;) knownMappers.get(type);
+    if (mapperProxyFactory == null) {
+      throw new BindingException(&quot;Type &quot; + type + &quot; is not known to the MapperRegistry.&quot;);
+    }
+    try {
+      //使用代理工厂类创建代理类实例
+      return mapperProxyFactory.newInstance(sqlSession);
+    } catch (Exception e) {
+      throw new BindingException(&quot;Error getting mapper instance. Cause: &quot; + e, e);
+    }
+}
+
+//转进mapperProxyFactory类
+protected T newInstance(MapperProxy&lt;T&gt; mapperProxy) {
+    //这行代码生成代理
+    return (T) Proxy.newProxyInstance(mapperInterface.getClassLoader(), new Class[] { mapperInterface }, mapperProxy);
+}
+
+public T newInstance(SqlSession sqlSession) {
+    final MapperProxy&lt;T&gt; mapperProxy = new MapperProxy&lt;T&gt;(sqlSession, mapperInterface, methodCache);
+    return newInstance(mapperProxy);
+}
+</code></pre><ol start="3">
+<li>代理类的生成</li>
+</ol>
+<p>我们知道代理类的生成需要一个实现invocationHandler接口的类，在MyBatis中这个类为MapperProxy，查看invoke方法</p>
+<pre><code>  public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    if (Object.class.equals(method.getDeclaringClass())) {
+      try {
+        return method.invoke(this, args);
+      } catch (Throwable t) {
+        throw ExceptionUtil.unwrapThrowable(t);
+      }
+    }
+    查看method方法对用的MapperMehtod是否存在，不存在则创建
+    final MapperMethod mapperMethod = cachedMapperMethod(method);
+    return mapperMethod.execute(sqlSession, args);
+  }
+
+  private MapperMethod cachedMapperMethod(Method method) {
+    MapperMethod mapperMethod = methodCache.get(method);
+    if (mapperMethod == null) {
+      mapperMethod = new MapperMethod(mapperInterface, method, sqlSession.getConfiguration());
+      methodCache.put(method, mapperMethod);
+    }
+    return mapperMethod;
+  }</code></pre><ol start="4">
+<li>通过代理调用原生调用方式</li>
+</ol>
+<p>通过MapperMehtod这个类来实现，先看下它的成员变量</p>
+<pre><code>  private final SqlCommand command;
+  private final MethodSignature method;
+
+  public MapperMethod(Class&lt;?&gt; mapperInterface, Method method, Configuration config) {
+    this.command = new SqlCommand(config, mapperInterface, method);
+    this.method = new MethodSignature(config, method);
+  }
+
+
+</code></pre><p>查看sqlcommand是什么，大概就是关于sql语句</p>
+<pre><code>public SqlCommand(Configuration configuration, Class&lt;?&gt; mapperInterface, Method method) {
+  //接口名加方法名，正好等于我们配置文件的命名空间namespace加上语句的id
+  String statementName = mapperInterface.getName() + &quot;.&quot; + method.getName();
+  MappedStatement ms = null;
+  if (configuration.hasStatement(statementName)) {
+    //大概是通过命名空间和id从配置文件查找具体配置对象
+    ms = configuration.getMappedStatement(statementName);
+  } else if (!mapperInterface.equals(method.getDeclaringClass())) { // issue #35
+    String parentStatementName = method.getDeclaringClass().getName() + &quot;.&quot; + method.getName();
+    if (configuration.hasStatement(parentStatementName)) {
+      ms = configuration.getMappedStatement(parentStatementName);
+    }
+  }
+  if (ms == null) {
+    if(method.getAnnotation(Flush.class) != null){
+      name = null;
+      type = SqlCommandType.FLUSH;
+    } else {
+      throw new BindingException(&quot;Invalid bound statement (not found): &quot; + statementName);
+    }
+  } else {
+    name = ms.getId();
+    type = ms.getSqlCommandType();
+    if (type == SqlCommandType.UNKNOWN) {
+      throw new BindingException(&quot;Unknown execution method for: &quot; + name);
+    }
+  }
+}</code></pre><p>看<code>MethodSignature</code>的创建</p>
+<pre><code>public MethodSignature(Configuration configuration, Method method) {
+  this.returnType = method.getReturnType();
+  this.returnsVoid = void.class.equals(this.returnType);
+  this.returnsMany = (configuration.getObjectFactory().isCollection(this.returnType) || this.returnType.isArray());
+  this.mapKey = getMapKey(method);
+  this.returnsMap = (this.mapKey != null);
+  //处理@Param
+  this.hasNamedParameters = hasNamedParams(method);
+  this.rowBoundsIndex = getUniqueParamIndex(method, RowBounds.class);
+  this.resultHandlerIndex = getUniqueParamIndex(method, ResultHandler.class);
+  this.params = Collections.unmodifiableSortedMap(getParams(method, this.hasNamedParameters));
+}</code></pre><p>在代理类中生成MethodMapper类后，调用execute方法来指定sqlcommand中的sql语句</p>
+<pre><code>  public Object execute(SqlSession sqlSession, Object[] args) {
+    //args是由代理类invoke方法传来的方法参数
+    Object result;
+    if (SqlCommandType.INSERT == command.getType()) {
+      Object param = method.convertArgsToSqlCommandParam(args);
+      //getName返回具体配置语句对象的id
+      result = rowCountResult(sqlSession.insert(command.getName(), param));
+    } else if (SqlCommandType.UPDATE == command.getType()) {
+      Object param = method.convertArgsToSqlCommandParam(args);
+      result = rowCountResult(sqlSession.update(command.getName(), param));
+    } else if (SqlCommandType.DELETE == command.getType()) {
+      Object param = method.convertArgsToSqlCommandParam(args);
+      result = rowCountResult(sqlSession.delete(command.getName(), param));
+    } else if (SqlCommandType.SELECT == command.getType()) {
+      if (method.returnsVoid() &amp;&amp; method.hasResultHandler()) {
+        executeWithResultHandler(sqlSession, args);
+        result = null;
+      } else if (method.returnsMany()) {
+        result = executeForMany(sqlSession, args);
+      } else if (method.returnsMap()) {
+        result = executeForMap(sqlSession, args);
+      } else {
+        Object param = method.convertArgsToSqlCommandParam(args);
+        result = sqlSession.selectOne(command.getName(), param);
+      }
+    } else if (SqlCommandType.FLUSH == command.getType()) {
+        result = sqlSession.flushStatements();
+    } else {
+      throw new BindingException(&quot;Unknown execution method for: &quot; + command.getName());
+    }
+    if (result == null &amp;&amp; method.getReturnType().isPrimitive() &amp;&amp; !method.returnsVoid()) {
+      throw new BindingException(&quot;Mapper method &#39;&quot; + command.getName() 
+          + &quot; attempted to return null from a method with a primitive return type (&quot; + method.getReturnType() + &quot;).&quot;);
+    }
+    //返回结果
+    return result;
+  }
+
+  //对返回结果result进行类型转换
+  private Object rowCountResult(int rowCount) {
+    final Object result;
+    if (method.returnsVoid()) {
+      result = null;
+    } else if (Integer.class.equals(method.getReturnType()) || Integer.TYPE.equals(method.getReturnType())) {
+      result = Integer.valueOf(rowCount);
+    } else if (Long.class.equals(method.getReturnType()) || Long.TYPE.equals(method.getReturnType())) {
+      result = Long.valueOf(rowCount);
+    } else if (Boolean.class.equals(method.getReturnType()) || Boolean.TYPE.equals(method.getReturnType())) {
+      result = Boolean.valueOf(rowCount &gt; 0);
+    } else {
+      throw new BindingException(&quot;Mapper method &#39;&quot; + command.getName() + &quot;&#39; has an unsupported return type: &quot; + method.getReturnType());
+    }
+    return result;
+  }</code></pre>
           
         
       
@@ -5548,7 +5490,7 @@ public final boolean release(int arg) {
             
               <div class="site-state-item site-state-posts">
               
-                <a href="/archives/%20%7C%7C%20archive">
+                <a href="/archives/%7C%7C%20archive">
               
                   <span class="site-state-item-count">85</span>
                   <span class="site-state-item-name">日志</span>
